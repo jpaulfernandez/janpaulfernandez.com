@@ -1,0 +1,308 @@
+@import "tailwindcss";
+
+/* Self-hosted fonts (@fontsource) — no Google Fonts requests. font-display: swap is the fontsource default. */
+@import "@fontsource/archivo-black/400.css";
+@import "@fontsource/lato/400.css";
+@import "@fontsource/lato/700.css";
+@import "@fontsource/lato/400-italic.css";
+
+@theme {
+  /* Color — spec §4.1 */
+  --color-moss-900: #1E2B20;
+  --color-moss-700: #3B5240;
+  --color-moss-500: #5F7D5C;
+  --color-moss-200: #CDD9C6;
+  --color-beige-100: #F5F1E6;
+  --color-beige-50: #FBF9F2;
+  --color-ink: #26251F;
+  --color-citrus-500: #E8A13C;
+  --color-citrus-300: #F4C566;
+
+  /* Additional palette tokens */
+  --color-action-lemon-light: #EFF6CF;
+  --color-dark-plum-900: #481828;
+  --color-magenta-900: #481828;
+  --color-magenta-800: #5C1F34;
+  --color-magenta-600: #8C2656;
+  --color-magenta-200: #E8D8F0;
+  --color-alert-terracotta-600: #C04810;
+  --color-alert-lavender-200: #E8D8F0;
+  --color-alert-light-blue-100: #D6E8F5;
+
+  /* Typography — spec §4.2 */
+  --font-display: "Archivo Black", sans-serif;
+  --font-body: "Lato", sans-serif;
+
+  /* Fluid type scale, clamp(min, preferred, max), viewport 375px -> 1140px */
+  --text-h1: clamp(2.5rem, 1.7647rem + 3.1373vw, 4rem);      /* 40px -> 64px */
+  --text-h2: clamp(1.75rem, 1.3824rem + 1.5686vw, 2.5rem);    /* 28px -> 40px */
+  --text-h3: clamp(1.375rem, 1.2525rem + 0.5229vw, 1.625rem); /* 22px -> 26px */
+  --text-body: clamp(1.0625rem, 1.0319rem + 0.1307vw, 1.125rem); /* 17px -> 18px */
+  --text-small: 0.875rem; /* 14px, fixed */
+}
+
+/*
+ * WCAG AA contrast verification (computed via relative luminance, WCAG 2.x formula).
+ * Required pairs (spec §4.1 / task T02) — all pass AA (4.5:1 body text minimum):
+ *   ink (#26251F) on beige-100 (#F5F1E6)        -> 13.61:1  (pass, exceeds AAA 7:1)
+ *   moss-700 (#3B5240) on beige-100 (#F5F1E6)   -> 7.54:1   (pass, exceeds AAA 7:1)
+ *   moss-900 (#1E2B20) on citrus-500 (#E8A13C)  -> 6.75:1   (pass)
+ * Note: moss-500 (#5F7D5C) on beige-100 is 4.07:1 — below the 4.5:1 body-text
+ * threshold, so moss-500 is used only for hover/large-UI states (>=3:1 required),
+ * never for static body copy, consistent with the "citrus never for body text"
+ * rule (spec §4.1).
+ */
+
+@layer base {
+  body {
+    background-color: var(--color-beige-100);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.7;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    color: var(--color-moss-900);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  h1 {
+    font-size: var(--text-h1);
+  }
+
+  h2 {
+    font-size: var(--text-h2);
+  }
+
+  h3 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--color-moss-900);
+    font-size: var(--text-h3);
+  }
+
+  small {
+    font-size: var(--text-small);
+  }
+
+  a {
+    color: var(--color-moss-700);
+  }
+
+  a:hover {
+    color: var(--color-moss-500);
+  }
+
+  /* Clearance for the fixed notch/pill nav. */
+  main {
+    padding-top: 4.75rem;
+  }
+
+  /* Anchor targets (e.g. /work-with-me#contact) shouldn't hide under the nav. */
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  /* Smooth scroll animation for anchor jumps and TOC links */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Article prose typography & spacing — generous line height and kerning for readability */
+  .prose {
+    font-size: var(--text-body);
+    line-height: 1.8;
+    letter-spacing: 0.01em;
+    color: var(--color-ink);
+  }
+
+  .prose p {
+    margin-top: 0;
+    margin-bottom: 1.75em;
+    line-height: 1.8;
+    letter-spacing: 0.01em;
+  }
+
+  .prose h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    color: var(--color-moss-900);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-top: 2.5em;
+    margin-bottom: 0.8em;
+  }
+
+  .prose h3 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: var(--text-h3);
+    color: var(--color-moss-900);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    margin-top: 2em;
+    margin-bottom: 0.6em;
+  }
+
+  .prose ul,
+  .prose ol {
+    margin-top: 0.5em;
+    margin-bottom: 1.75em;
+    padding-left: 1.5em;
+    line-height: 1.8;
+  }
+
+  .prose li {
+    margin-bottom: 0.5em;
+  }
+
+  .prose ul {
+    list-style-type: disc;
+  }
+
+  .prose ol {
+    list-style-type: decimal;
+  }
+
+  .prose blockquote {
+    border-left: 3px solid var(--color-moss-500);
+    padding-left: 1.25em;
+    margin-top: 1.75em;
+    margin-bottom: 1.75em;
+    font-style: italic;
+    color: var(--color-moss-700);
+  }
+
+  .prose code {
+    font-family: monospace;
+    font-size: 0.9em;
+    background-color: var(--color-beige-50);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-moss-200);
+  }
+
+  .prose pre {
+    background-color: var(--color-moss-900);
+    color: var(--color-beige-50);
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    margin-top: 1.5em;
+    margin-bottom: 1.75em;
+  }
+
+  .prose pre code {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    color: inherit;
+  }
+
+  .prose *:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Overrides for entire page when body has page-magenta class (/about) */
+  body.page-magenta {
+    background-color: var(--color-magenta-900) !important;
+    color: var(--color-beige-50) !important;
+  }
+
+  body.page-magenta h1,
+  body.page-magenta h2,
+  body.page-magenta h3,
+  body.page-magenta .text-h1,
+  body.page-magenta .text-h2,
+  body.page-magenta .text-h3 {
+    color: var(--color-beige-50) !important;
+  }
+
+  body.page-magenta .prose,
+  body.page-magenta .text-ink,
+  body.page-magenta p {
+    color: var(--color-beige-100) !important;
+  }
+
+  body.page-magenta .text-moss-700,
+  body.page-magenta .text-moss-500 {
+    color: var(--color-citrus-300) !important;
+  }
+
+  body.page-magenta .bg-moss-200 {
+    background-color: rgba(244, 197, 102, 0.2) !important;
+    color: var(--color-citrus-300) !important;
+  }
+
+  body.page-magenta [class*="border-moss-"] {
+    border-color: rgba(245, 241, 230, 0.2) !important;
+  }
+
+  body.page-magenta .bg-beige-50 {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: var(--color-beige-50) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Grain texture overlay — pair with a positioned, overflow-hidden container. */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/*
+ * Layout primitives (spec §4.3) — Tailwind utility conventions, not new tokens.
+ * Use these classes directly in markup rather than inventing new spacing values:
+ *   - Content max-width:   max-w-[1140px] mx-auto px-6  (page/section wrapper)
+ *   - Article measure:     max-w-[68ch]  (~720px at body font size, for prose columns)
+ *   - Section rhythm:      py-24 md:py-32  (96px mobile -> 128px desktop vertical rhythm)
+ */
+
+/* Skip link: visually hidden until focused (native pattern, no JS). */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -3rem;
+  z-index: 50;
+  background-color: var(--color-beige-50);
+  color: var(--color-moss-900);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: top 0.15s ease-in-out;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+/* Motion: fade-rise entrance for section content. CSS-only, respects reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .fade-rise {
+    animation: fade-rise 0.6s ease-out both;
+  }
+
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

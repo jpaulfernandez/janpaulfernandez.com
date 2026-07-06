@@ -1,0 +1,20 @@
+{
+  "title": "Product Consultation",
+  "description": "Clarity before code. We dig into your goals, users, and constraints, then shape a product direction and roadmap your team can actually execute — including where AI genuinely helps, and where it doesn't.",
+  "icon": "consult",
+  "order": 1,
+  "faq": [
+    {
+      "q": "What does a product consultation involve?",
+      "a": "It starts with a deep dive into your goals, users, current systems, and operational bottlenecks. From there we shape a practical product direction and a roadmap sequenced by impact — not by what's trendy."
+    },
+    {
+      "q": "How long does an engagement typically take?",
+      "a": "Anywhere from a 2-week focused assessment to a 3-month roadmap-and-advisory engagement, depending on scale."
+    },
+    {
+      "q": "Do we need custom AI or model training?",
+      "a": "Almost never. Most business value comes from simple workflow integration and off-the-shelf APIs. Part of my job is telling you when the boring solution is the right one."
+    }
+  ]
+}

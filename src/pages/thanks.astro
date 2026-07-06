@@ -1,0 +1,22 @@
+---
+// thanks.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Message Sent" description="Thank you for contacting me.">
+  <meta slot="head" name="robots" content="noindex" />
+
+  <div class="max-w-[720px] mx-auto px-6 py-24 text-center flex flex-col items-center gap-6">
+    <span class="text-4xl" role="img" aria-label="Mailbox">📬</span>
+    <h1>Thank you!</h1>
+    <p class="text-body text-ink leading-relaxed">
+      Your message has been sent successfully. I will review your details and get back to you as soon as possible.
+    </p>
+    <a
+      href="/"
+      class="bg-moss-900 hover:bg-moss-700 text-beige-100 font-bold px-8 py-4 rounded-xl no-underline transition-colors duration-200 focus:outline-2 focus:outline-offset-2 focus:outline-moss-900 inline-block"
+    >
+      Return to Home page
+    </a>
+  </div>
+</BaseLayout>

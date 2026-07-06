@@ -1,0 +1,106 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Timeline from '../components/Timeline.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { person, profilePage, breadcrumbs } from '../lib/schema';
+import paulImage from '../assets/paul.webp';
+
+const aboutEntry = await getEntry('about', 'about');
+if (!aboutEntry) {
+  throw new Error('About page singleton is missing. Run seed scripts first.');
+}
+const { Content: AboutIntro } = await render(aboutEntry);
+
+const careerEntries = await getCollection('career');
+
+// Setup detailed Person info for About page
+const detailedPerson = person({
+  alumniOf: 'Nueva Ecija University of Science and Technology',
+  worksFor: 'Mapúa Malayan Digital College (under MMCL)',
+  knowsAbout: [
+    'Technology',
+    'Digital Transformation',
+    'AI Implementation',
+    'Economy',
+    'Psychology',
+  ],
+});
+
+const seoData = [
+  profilePage(),
+  detailedPerson,
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'About', url: '/about' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Learn about Paul Fernandez's technical background, work philosophy, and full career track record."
+  bodyClass="page-magenta"
+>
+  <JsonLd data={seoData} slot="head" />
+
+  <article class="py-16 md:py-24 max-w-[1140px] mx-auto px-6 fade-rise">
+    {/* Bio Narrative & Timeline Grid */}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
+      <div class="lg:col-span-8 flex flex-col gap-10">
+        <div>
+          <span class="text-small font-bold uppercase tracking-wider text-moss-700">Biography</span>
+          <h1 class="text-h1 text-moss-900 mt-1">About me</h1>
+        </div>
+
+        <div class="prose prose-ink max-w-[68ch] text-ink leading-relaxed">
+          <AboutIntro />
+        </div>
+
+        {/* Career Timeline directly continuing after About Me content */}
+        <div class="mt-8">
+          <Timeline entries={careerEntries} variant="full" />
+        </div>
+      </div>
+
+      <div class="lg:col-span-4">
+        <div class="relative w-full shadow-md">
+          <Image
+            src={paulImage}
+            alt="Paul Fernandez"
+            class="w-full h-auto block"
+            width={400}
+            height={600}
+            loading="eager"
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* End CTA & Social Links */}
+    <div class="bg-beige-50 border border-moss-200 rounded-2xl p-8 md:p-12 text-center max-w-[800px] mx-auto">
+      <h3 class="text-h3 font-bold text-moss-900 mb-4">Let's build something together</h3>
+      <p class="text-body text-ink leading-relaxed mb-6">
+        I'm available for strategic consulting, technical leadership Advisory, and custom application engineering.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a 
+          href="/work-with-me" 
+          class="bg-citrus-500 hover:bg-citrus-300 text-moss-900 font-bold px-6 py-3 rounded-lg no-underline transition-colors duration-200 focus:outline-2 focus:outline-offset-2 focus:outline-moss-900"
+        >
+          Consulting services
+        </a>
+        <a 
+          href="https://www.linkedin.com/in/jpaulfernandez/" 
+          target="_blank"
+          rel="noopener noreferrer"
+          class="border-2 border-moss-700 text-moss-700 hover:bg-moss-200 hover:text-moss-900 font-bold px-6 py-3 rounded-lg no-underline transition-colors duration-200 focus:outline-2 focus:outline-offset-2 focus:outline-moss-900 inline-flex items-center gap-1"
+        >
+          Connect on LinkedIn
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+        </a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

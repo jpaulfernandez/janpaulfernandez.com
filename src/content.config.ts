@@ -1,0 +1,110 @@
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+
+const now = defineCollection({
+  loader: glob({
+    pattern: '*',
+    base: 'src/content/now',
+    generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ''),
+  }),
+  schema: z.object({
+    date: z.string(),
+    link: z.string().optional(),
+  }),
+});
+
+const career = defineCollection({
+  loader: glob({
+    pattern: '*.md',
+    base: 'src/content/career',
+    generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ''),
+  }),
+  schema: ({ image }) => z.object({
+    org: z.string(),
+    role: z.string(),
+    period: z.string(),
+    order: z.number(),
+    logo: image().optional(),
+  }),
+});
+
+const home = defineCollection({
+  loader: glob({
+    pattern: 'home.json',
+    base: 'src/content/pages',
+  }),
+  schema: z.object({
+    heroGreeting: z.string(),
+    heroIntro: z.string(),
+    ctaPrimaryLabel: z.string(),
+    ctaSecondaryLabel: z.string(),
+  }),
+});
+
+const about = defineCollection({
+  loader: glob({
+    pattern: 'about.md',
+    base: 'src/content/pages',
+  }),
+  schema: z.object({}),
+});
+
+const workWithMe = defineCollection({
+  loader: glob({
+    pattern: 'workWithMe.md',
+    base: 'src/content/pages',
+    generateId: () => 'workWithMe',
+  }),
+  schema: z.object({}),
+});
+
+const services = defineCollection({
+  loader: glob({
+    pattern: '*.json',
+    base: 'src/content/services',
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    icon: z.string().optional(),
+    order: z.number(),
+    faq: z.array(
+      z.object({
+        q: z.string(),
+        a: z.string(),
+      })
+    ).optional(),
+  }),
+});
+
+const seo = defineCollection({
+  loader: glob({
+    pattern: 'seo.json',
+    base: 'src/content/pages',
+  }),
+  schema: z.object({
+    defaultDescription: z.string(),
+    siteName: z.string(),
+  }),
+});
+
+const thoughts = defineCollection({
+  loader: glob({
+    pattern: '**/*.{md,mdx}',
+    base: 'src/content/thoughts',
+    generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, '').replace(/\/index$/, ''),
+  }),
+  schema: ({ image }) => z.object({
+    title: z.string(),
+    type: z.enum(['essay', 'note']),
+    topics: z.array(z.string()),
+    stage: z.enum(['seedling', 'budding', 'evergreen', 'none']).optional().transform((v) => v === 'none' ? undefined : v),
+    excerpt: z.string().max(160),
+    cover: image().optional(),
+    publishedDate: z.string(),
+    updatedDate: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { now, career, home, about, workWithMe, seo, thoughts, services };

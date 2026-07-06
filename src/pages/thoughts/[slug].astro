@@ -1,0 +1,50 @@
+---
+// [slug].astro
+import { render } from 'astro:content';
+import { getPublishedThoughts, getRelatedThoughts } from '../../lib/thoughts';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+import KeyTakeaway from '../../components/blocks/KeyTakeaway.astro';
+import Callout from '../../components/blocks/Callout.astro';
+import PullQuote from '../../components/blocks/PullQuote.astro';
+import Embed from '../../components/blocks/Embed.astro';
+
+export async function getStaticPaths() {
+  const allPosts = await getPublishedThoughts();
+
+  return allPosts.map((post, index) => {
+    const relatedPosts = getRelatedThoughts(post, allPosts);
+    // Since allPosts is sorted newest-first (publishedDate desc):
+    // Older post is at index + 1
+    const prevPost = index + 1 < allPosts.length ? allPosts[index + 1] : null;
+    // Newer post is at index - 1
+    const nextPost = index - 1 >= 0 ? allPosts[index - 1] : null;
+
+    return {
+      params: { slug: post.id },
+      props: { post, relatedPosts, prevPost, nextPost, allPosts },
+    };
+  });
+}
+
+const { post, relatedPosts, prevPost, nextPost } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Map custom component blocks for MDX rendering
+const components = {
+  KeyTakeaway,
+  Callout,
+  PullQuote,
+  Embed,
+};
+---
+
+<ArticleLayout
+  post={post}
+  headings={headings}
+  relatedPosts={relatedPosts}
+  prevPost={prevPost}
+  nextPost={nextPost}
+>
+  <Content components={components} />
+</ArticleLayout>

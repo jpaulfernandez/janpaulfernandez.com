@@ -1,0 +1,12 @@
+{
+  "title": "Talks & Workshops",
+  "description": "Interactive sessions on tech leadership, shipping under pressure, election-night engineering, and practical digital transformation — for teams, schools, and conferences.",
+  "icon": "talks",
+  "order": 2,
+  "faq": [
+    {
+      "q": "What topics do your talks and workshops cover?",
+      "a": "High-stakes software delivery under pressure, elections technology, practical AI adoption, and digital transformation strategies for schools and enterprises. Sessions are interactive, not lecture-style."
+    }
+  ]
+}

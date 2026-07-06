@@ -1,0 +1,145 @@
+---
+// index.astro (Thoughts index)
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostListItem from '../../components/PostListItem.astro';
+import { getPublishedThoughts } from '../../lib/thoughts';
+
+const allPosts = await getPublishedThoughts();
+
+// Derive unique topics from actual posts
+const allTopics = Array.from(
+  new Set(allPosts.flatMap((post) => post.data.topics || []))
+).sort();
+
+const description = "Thoughts on the intersection of technology, economy, and psychology. opinions, notes, and lessons from shipping national scale platforms.";
+---
+
+<BaseLayout title="Thoughts" description={description}>
+  <div class="max-w-[1140px] mx-auto px-6 py-12 md:py-16">
+    <header class="max-w-[720px] mb-10">
+      <h1 class="mb-4">Thoughts</h1>
+      <p class="text-body text-ink leading-relaxed">
+        Opinionated longform essays and raw working notes on technology, economy, and psychology.
+      </p>
+    </header>
+
+    <!-- Filter toolbar: one compact row instead of a boxed panel -->
+    <div class="mb-2 flex flex-col gap-4" role="group" aria-label="Filter thoughts">
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Type: segmented control -->
+        <div class="inline-flex rounded-full border border-moss-200 bg-beige-50 p-1" data-filter-group="type">
+          <button class="filter-chip cursor-pointer rounded-full px-3.5 py-1 text-small font-bold text-moss-700 aria-pressed:bg-moss-900 aria-pressed:text-beige-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-moss-500" aria-pressed="true" data-value="all">All</button>
+          <button class="filter-chip cursor-pointer rounded-full px-3.5 py-1 text-small font-bold text-moss-700 aria-pressed:bg-moss-900 aria-pressed:text-beige-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-moss-500" aria-pressed="false" data-value="essay">Essays</button>
+          <button class="filter-chip cursor-pointer rounded-full px-3.5 py-1 text-small font-bold text-moss-700 aria-pressed:bg-moss-900 aria-pressed:text-beige-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-moss-500" aria-pressed="false" data-value="note">Notes</button>
+        </div>
+
+        <span id="posts-counter" class="ml-auto text-small text-moss-700">
+          {allPosts.length} {allPosts.length === 1 ? 'thought' : 'thoughts'}
+        </span>
+        <div id="filter-aria-announcer" aria-live="polite" class="sr-only">
+          Showing {allPosts.length} thoughts
+        </div>
+      </div>
+
+      <!-- Topics: plain chip row -->
+      {allTopics.length > 0 && (
+        <div class="flex flex-wrap gap-2" data-filter-group="topic">
+          <button class="filter-chip cursor-pointer rounded-full px-3 py-1 text-small text-moss-700 border border-moss-200 hover:border-moss-500 aria-pressed:bg-moss-900 aria-pressed:text-beige-50 aria-pressed:border-moss-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-moss-500" aria-pressed="true" data-value="all">All topics</button>
+          {allTopics.map((topic) => (
+            <button class="filter-chip cursor-pointer rounded-full px-3 py-1 text-small text-moss-700 border border-moss-200 hover:border-moss-500 aria-pressed:bg-moss-900 aria-pressed:text-beige-50 aria-pressed:border-moss-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-moss-500" aria-pressed="false" data-value={topic}>
+              #{topic}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <!-- Posts list -->
+    <div id="posts-list" class="divide-y divide-moss-200 border-t border-moss-200">
+      {allPosts.map((post) => {
+        const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
+        const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+        return (
+          <div
+            class="post-row"
+            data-type={post.data.type}
+            data-topics={post.data.topics?.join(',')}
+          >
+            <PostListItem
+              title={post.data.title}
+              type={post.data.type}
+              topics={post.data.topics || []}
+              date={post.data.publishedDate}
+              excerpt={post.data.excerpt}
+              url={`/thoughts/${post.id}`}
+              readingTime={readingTime}
+              stage={post.data.stage}
+              cover={post.data.cover}
+            />
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-16 border border-dashed border-moss-200 rounded-xl bg-beige-50">
+      <p class="font-display text-moss-900 mb-2">No thoughts match your filter combo.</p>
+      <p class="text-small text-moss-500">Try selecting "All" to reset filters.</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<!-- Native client-side DOM filter script (Progressive Enhancement) -->
+<script>
+  const chips = document.querySelectorAll('.filter-chip');
+  const rows = document.querySelectorAll('.post-row') as NodeListOf<HTMLElement>;
+  const counter = document.getElementById('posts-counter');
+  const announcer = document.getElementById('filter-aria-announcer');
+  const emptyState = document.getElementById('empty-state');
+
+  const activeFilters = {
+    type: 'all',
+    topic: 'all',
+  };
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const parentGroup = chip.closest('[data-filter-group]') as HTMLElement | null;
+      if (!parentGroup) return;
+
+      const groupName = parentGroup.dataset.filterGroup;
+      if (groupName !== 'type' && groupName !== 'topic') return;
+
+      parentGroup.querySelectorAll('.filter-chip').forEach((c) => c.setAttribute('aria-pressed', 'false'));
+      chip.setAttribute('aria-pressed', 'true');
+      activeFilters[groupName] = chip.getAttribute('data-value') || 'all';
+
+      let visibleCount = 0;
+      rows.forEach((row) => {
+        const rowType = row.getAttribute('data-type');
+        const rowTopics = row.getAttribute('data-topics')?.split(',') || [];
+
+        const matchesType = activeFilters.type === 'all' || rowType === activeFilters.type;
+        const matchesTopic = activeFilters.topic === 'all' || rowTopics.includes(activeFilters.topic);
+
+        if (matchesType && matchesTopic) {
+          row.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+
+      const resultText = `${visibleCount} thought${visibleCount === 1 ? '' : 's'}`;
+      if (counter) counter.textContent = resultText;
+      if (announcer) announcer.textContent = `Showing ${resultText}`;
+
+      if (visibleCount === 0) {
+        emptyState?.classList.remove('hidden');
+      } else {
+        emptyState?.classList.add('hidden');
+      }
+    });
+  });
+</script>

@@ -1,0 +1,91 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { profilePage, breadcrumbs } from '../lib/schema';
+
+const nowEntries = await getCollection('now');
+
+// Sort reverse-chronologically (newest first)
+const sortedNow = [...nowEntries].sort((a, b) => b.data.date.localeCompare(a.data.date));
+
+const latestDate = sortedNow[0]?.data.date;
+const formattedLastUpdated = latestDate
+  ? new Date(latestDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  : 'Recently';
+
+const processedNow = await Promise.all(
+  sortedNow.map(async (entry) => {
+    const { Content } = await render(entry);
+    return { ...entry, Content };
+  })
+);
+
+// ProfilePage dateModified reflects the latest Now entry date for freshness signals
+const seoData = [
+  profilePage(latestDate ? new Date(latestDate).toISOString() : undefined),
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Now', url: '/now' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Now"
+  description="What Paul Fernandez is focused on, building, and learning right now."
+>
+  <JsonLd data={seoData} slot="head" />
+
+  <article class="py-16 md:py-24 max-w-[1140px] mx-auto px-6 fade-rise">
+    {/* Page Title */}
+    <div class="mb-8">
+      <span class="text-small font-bold uppercase tracking-wider text-moss-700">Current Status</span>
+      <h1 class="text-h1 text-moss-900 mt-1">What I'm doing now</h1>
+      <p class="text-small text-moss-700 font-bold mt-2">
+        Last updated: {formattedLastUpdated}
+      </p>
+    </div>
+
+    {/* Intro Explaining the Page */}
+    <div class="prose prose-ink max-w-[68ch] text-ink leading-relaxed mb-16 border-b border-moss-200 pb-8">
+      <p class="text-body font-normal">
+        This is a <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer" class="underline hover:text-moss-500">now page</a>. It serves as a public dashboard of my current priorities, projects, and learning focus. If you're wondering what I am up to these days, this is where you'll find it.
+      </p>
+    </div>
+
+    {/* Now Timeline */}
+    <div class="relative border-l-2 border-moss-200 ml-4 md:ml-8 pl-6 md:pl-8 py-2 flex flex-col gap-12">
+      {
+        processedNow.map(({ data, Content }) => (
+          <div class="relative group">
+            {/* Timeline Node dot */}
+            <div class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full border-2 border-moss-700 bg-beige-100 group-hover:bg-citrus-500 transition-colors duration-200" />
+            
+            <div class="flex flex-col gap-3">
+              <time class="inline-block self-start px-2.5 py-0.5 rounded-full text-small font-bold bg-moss-200 text-moss-900" datetime={data.date}>
+                {new Date(data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
+              </time>
+              
+              <div class="prose prose-ink max-w-[68ch] text-ink leading-relaxed text-body">
+                <Content />
+              </div>
+              
+              {data.link && (
+                <a 
+                  href={data.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="inline-flex items-center text-small font-bold text-moss-700 hover:text-moss-500 hover:underline gap-1 focus:outline-none focus:ring-2 focus:ring-moss-900 rounded"
+                >
+                  Reference link
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+                </a>
+              )}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </article>
+</BaseLayout>

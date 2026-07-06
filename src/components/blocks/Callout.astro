@@ -1,0 +1,43 @@
+---
+// Callout.astro
+interface Props {
+  variant?: 'note' | 'idea' | 'warning';
+}
+
+const { variant = 'note' } = Astro.props;
+
+const variants = {
+  note: {
+    classes: 'bg-alert-light-blue-100 text-ink border border-ink/10 shadow-sm',
+    kickerClasses: 'text-alert-terracotta-600',
+    textClasses: 'text-ink [&>p]:text-ink',
+    label: 'Note',
+    icon: '📝',
+  },
+  idea: {
+    classes: 'bg-alert-lavender-200 text-ink border border-ink/10 shadow-sm',
+    kickerClasses: 'text-dark-plum-900',
+    textClasses: 'text-ink [&>p]:text-ink',
+    label: 'Idea',
+    icon: '💡',
+  },
+  warning: {
+    classes: 'bg-dark-plum-900 text-beige-50 shadow-md',
+    kickerClasses: 'text-citrus-300',
+    textClasses: 'text-beige-50 [&>p]:text-beige-50',
+    label: 'Warning',
+    icon: '⚠️',
+  },
+};
+
+const config = variants[variant] || variants.note;
+---
+<div class={`p-6 md:p-7 my-8 rounded-2xl ${config.classes}`}>
+  <div class={`flex items-center gap-2 font-display text-xs tracking-widest uppercase mb-3 ${config.kickerClasses}`}>
+    <span>{config.icon}</span>
+    <span>{config.label}</span>
+  </div>
+  <div class={`prose max-w-none font-medium leading-relaxed [&>p]:m-0 ${config.textClasses}`}>
+    <slot />
+  </div>
+</div>

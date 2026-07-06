@@ -1,0 +1,179 @@
+---
+// work-with-me.astro
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceStack from '../components/ServiceStack.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { service, faqPage, breadcrumbs } from '../lib/schema';
+
+// Fetch work-with-me singleton and services collection
+const workWithMeEntry = await getEntry('workWithMe', 'workWithMe');
+if (!workWithMeEntry) {
+  throw new Error('Work with me page singleton is missing. Run seed scripts first.');
+}
+const { Content: IntroContent } = await render(workWithMeEntry);
+
+const services = await getCollection('services');
+const sortedServices = services.sort((a, b) => a.data.order - b.data.order);
+
+// Aggregate FAQs from services
+const faqItems = sortedServices.flatMap((s) => s.data.faq || []);
+
+// Schemas
+const serviceSchemas = sortedServices.map((s) => service({ title: s.data.title, description: s.data.description }));
+const faqSchema = faqItems.length > 0 ? faqPage(faqItems) : null;
+const breadcrumbsSchema = breadcrumbs([
+  { name: 'Home', url: '/' },
+  { name: 'Work with me', url: '/work-with-me' },
+]);
+
+const seoData = [
+  ...serviceSchemas,
+  ...(faqSchema ? [faqSchema] : []),
+  breadcrumbsSchema,
+];
+
+const description = "Work with Paul Fernandez: product consultation, talks and workshops, and fractional product ownership — a translator between your business and your dev team.";
+---
+
+<BaseLayout title="Work with me" description={description}>
+  <JsonLd data={seoData} slot="head" />
+
+  <div class="max-w-[1140px] mx-auto px-6 py-12 md:py-16">
+    <!-- Header/Intro -->
+    <header class="max-w-[720px] mb-16">
+      <h1 class="mb-6">Work with me</h1>
+      <div class="text-body text-ink leading-relaxed prose max-w-none">
+        <IntroContent />
+      </div>
+    </header>
+
+    <!-- Services: stacking cards -->
+    <section class="mb-20" aria-label="Services offered">
+      <ServiceStack
+        services={sortedServices.map((s) => ({
+          title: s.data.title,
+          description: s.data.description,
+          icon: s.data.icon,
+        }))}
+      />
+    </section>
+
+    <!-- How it works (Process) -->
+    <section class="mb-20" aria-label="Engagement process">
+      <h2 class="font-display text-h3 text-moss-900 mb-8 text-center">How it works</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Step 1 -->
+        <div class="bg-beige-50 border border-moss-200 rounded-xl p-6 relative">
+          <span class="absolute -top-4 left-6 bg-citrus-500 text-moss-900 font-display text-xs px-3 py-1 rounded-full uppercase tracking-wider">Step 1</span>
+          <h3 class="font-display text-small text-moss-900 mt-2 mb-3">Discovery Call</h3>
+          <p class="text-small text-ink leading-relaxed mb-0">
+            A 30-minute discussion to map out your challenges, evaluate your current technology systems, and define clear success parameters.
+          </p>
+        </div>
+        <!-- Step 2 -->
+        <div class="bg-beige-50 border border-moss-200 rounded-xl p-6 relative">
+          <span class="absolute -top-4 left-6 bg-citrus-500 text-moss-900 font-display text-xs px-3 py-1 rounded-full uppercase tracking-wider">Step 2</span>
+          <h3 class="font-display text-small text-moss-900 mt-2 mb-3">Proposal</h3>
+          <p class="text-small text-ink leading-relaxed mb-0">
+            A clear scope of what we'll do together — deliverables, milestones, cadence, and a fixed cost estimate. No vague retainers.
+          </p>
+        </div>
+        <!-- Step 3 -->
+        <div class="bg-beige-50 border border-moss-200 rounded-xl p-6 relative">
+          <span class="absolute -top-4 left-6 bg-citrus-500 text-moss-900 font-display text-xs px-3 py-1 rounded-full uppercase tracking-wider">Step 3</span>
+          <h3 class="font-display text-small text-moss-900 mt-2 mb-3">Hands-On Engagement</h3>
+          <p class="text-small text-ink leading-relaxed mb-0">
+            Advisory sessions, workshops, or embedded product ownership — with transparent checkpoints so you always know where things stand.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Collapsible FAQs -->
+    {faqItems.length > 0 && (
+      <section class="mb-20" aria-label="Frequently Asked Questions">
+        <h2 class="font-display text-h3 text-moss-900 mb-8 text-center">Frequently Asked Questions</h2>
+        <div class="max-w-[720px] mx-auto flex flex-col gap-4">
+          {faqItems.map((item) => (
+            <details class="group bg-beige-50 border border-moss-200 rounded-xl p-5 [&_summary::-webkit-details-marker]:hidden">
+              <summary class="flex justify-between items-center font-display text-small text-moss-900 cursor-pointer focus:outline-none list-none">
+                <span class="pr-4 leading-snug">{item.q}</span>
+                <span class="transition-transform group-open:rotate-180 shrink-0 text-moss-500 font-bold">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </span>
+              </summary>
+              <div class="mt-4 pt-4 border-t border-moss-200/40 text-small text-ink leading-relaxed prose max-w-none">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Contact Form -->
+    <section id="contact" class="max-w-[600px] mx-auto bg-beige-50 border border-moss-200 rounded-2xl p-6 md:p-8" aria-label="Contact form">
+      <div class="text-center mb-8">
+        <h2 class="font-display text-h3 text-moss-900 mb-2">Get in Touch</h2>
+        <p class="text-small text-ink">
+          Have a project, consult request, or talk in mind? Fill out this form or send a message directly to <a href="mailto:jpaul.fernandez18@gmail.com" class="font-bold">jpaul.fernandez18@gmail.com</a>.
+        </p>
+      </div>
+
+      <!-- Contact form submitting to Formspree -->
+      <form
+        action="https://formspree.io/f/placeholder_id_pending_paul"
+        method="POST"
+        class="flex flex-col gap-5"
+      >
+        <!-- Formspree fallback config values -->
+        <input type="text" name="_gotcha" style="display:none" />
+        <input type="hidden" name="_next" value="https://janpaulfernandez.com/thanks" />
+
+        <div>
+          <label for="name" class="block text-small font-bold text-moss-900 mb-1">Your Name <span class="text-citrus-500" aria-hidden="true">*</span></label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            class="w-full bg-beige-100 border border-moss-200 rounded-lg px-4 py-2.5 text-body text-ink focus:outline-none focus:border-moss-900 focus:ring-1 focus:ring-moss-900 transition-colors"
+            placeholder="Jane Doe"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-small font-bold text-moss-900 mb-1">Email Address <span class="text-citrus-500" aria-hidden="true">*</span></label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full bg-beige-100 border border-moss-200 rounded-lg px-4 py-2.5 text-body text-ink focus:outline-none focus:border-moss-900 focus:ring-1 focus:ring-moss-900 transition-colors"
+            placeholder="jane@example.com"
+          />
+        </div>
+
+        <div>
+          <label for="message" class="block text-small font-bold text-moss-900 mb-1">Project Details / Message <span class="text-citrus-500" aria-hidden="true">*</span></label>
+          <textarea
+            id="message"
+            name="message"
+            required
+            rows="5"
+            class="w-full bg-beige-100 border border-moss-200 rounded-lg px-4 py-2.5 text-body text-ink focus:outline-none focus:border-moss-900 focus:ring-1 focus:ring-moss-900 transition-colors"
+            placeholder="Tell me about your tech challenges, timeline, or goals..."
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-moss-900 hover:bg-moss-700 text-beige-100 font-bold py-3 rounded-xl cursor-pointer transition-colors duration-200 focus:outline-2 focus:outline-offset-2 focus:outline-moss-900 text-center"
+        >
+          Send Message
+        </button>
+      </form>
+    </section>
+  </div>
+</BaseLayout>

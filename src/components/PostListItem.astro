@@ -1,0 +1,82 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  title: string;
+  type: 'essay' | 'note';
+  topics: string[];
+  date: string;
+  excerpt: string;
+  url: string;
+  readingTime?: number;
+  stage?: 'seedling' | 'budding' | 'evergreen' | 'none';
+  cover?: ImageMetadata;
+}
+
+const { title, type, topics, date, excerpt, url, readingTime, stage, cover } = Astro.props;
+
+const stageEmojis = {
+  seedling: '🌱',
+  budding: '🌿',
+  evergreen: '🌳',
+};
+const stageEmoji = stage && stage !== 'none' ? stageEmojis[stage as keyof typeof stageEmojis] || '' : '';
+---
+
+<article class="group relative flex items-start gap-5 sm:gap-8 py-7">
+  <div class="flex-1 min-w-0 flex flex-col gap-2">
+    <p class="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-small font-bold text-moss-700">
+      <span class="uppercase tracking-wider">{type}</span>
+      <span class="text-moss-200 font-normal" aria-hidden="true">·</span>
+      <time datetime={date}>
+        {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+      </time>
+      {readingTime !== undefined && (
+        <>
+          <span class="text-moss-200 font-normal" aria-hidden="true">·</span>
+          <span>{readingTime} min</span>
+        </>
+      )}
+      {stageEmoji && (
+        <span title={`Stage: ${stage}`} aria-label={`Growth stage: ${stage}`}>{stageEmoji}</span>
+      )}
+    </p>
+
+    <h3 class="text-h3 font-bold text-moss-900 leading-tight m-0">
+      <a href={url} class="post-link no-underline text-moss-900 group-hover:text-moss-700 focus:outline-none focus-visible:underline">
+        {title}
+      </a>
+    </h3>
+
+    <p class="text-ink text-body leading-relaxed line-clamp-2 m-0">
+      {excerpt}
+    </p>
+
+    {topics.length > 0 && (
+      <p class="m-0 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-small text-moss-700">
+        {topics.map((topic) => (
+          <span>#{topic}</span>
+        ))}
+      </p>
+    )}
+  </div>
+
+  {cover && (
+    <Image
+      src={cover}
+      alt=""
+      width={480}
+      height={320}
+      class="w-24 h-20 sm:w-44 sm:h-28 shrink-0 object-cover"
+    />
+  )}
+</article>
+
+<style>
+  /* Stretch the title link over the whole row (topics aren't links, so nothing is lost). */
+  .post-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+</style>

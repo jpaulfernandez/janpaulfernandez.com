@@ -1,0 +1,83 @@
+---
+title: "The Architecture of Under-Pressure Systems: PHVote 2019"
+type: essay
+topics:
+  - technology
+  - psychology
+stage: budding
+excerpt: How we designed Rappler's election-night canvas systems to handle millions of views under pressure.
+publishedDate: "2026-07-01"
+draft: false
+---
+
+<KeyTakeaway>
+Building systems that survive under pressure requires prioritizing static distribution, minimizing run-time database operations, and decoupling data collection from presentation.
+</KeyTakeaway>
+
+On election nights in the Philippines, newsroom traffic doesn't just increase; it spikes vertically. Within a matter of minutes, as polls close and the first precinct tallies begin to transmit from optical scan machines to municipal and national servers, millions of citizens flock to news sites for real-time visualization of the results. 
+
+In 2019, leading the technology operations at Rappler, we were tasked with building **PHVote 2019**, the platform that would ingest the raw data streams from the Commission on Elections (COMELEC) and present them to the public. The constraint was absolute: the system could not fail. In media, downtime during a national election is not merely a technical glitch—it is a failure of public trust.
+
+Here is how we designed a system that held up under pressure, focusing on decoupling, strict static delivery, and managing the human psychology of engineering teams under fire.
+
+## Ingestion vs. Presentation: The Great Wall
+
+The classic failure mode of high-traffic web applications is the shared database. A typical user request hits an application server, which queries a database, formats the result, and returns it. Under normal load, this is fast enough. Under election-night load, the database locks up, connection pools exhaust, and the site crashes.
+
+Our first architectural decision was to build a complete separation between our **Ingestion Pipeline** and our **Presentation Layer**. 
+
+```
+[COMELEC Media Server] 
+         │ (Ingestion: Secure, private)
+         ▼
+[Ingestion Engine] ──(Generates static JSON/HTML)──► [Cloud Storage Bucket]
+                                                               │ (CDN edge cache)
+                                                               ▼
+                                                       [Public Browser]
+```
+
+The Ingestion Engine ran on a private, isolated network. It queried the COMELEC media server, validated the incoming data packets for schema correctness, and computed the aggregated statistics. Crucially, the Ingestion Engine did *not* serve web traffic. 
+
+Instead, it transformed the data into static files (JSON and HTML) and pushed them directly to cloud storage (Google Cloud Storage / Amazon S3). The public-facing website was entirely static. When a user visited the page, their browser requested these static files directly from the Content Delivery Network (CDN) edge. 
+
+<Callout variant="note">
+By serving static assets directly from edge caches, we reduced database queries to exactly zero for public visitors, transferring the scaling burden completely to global CDN infrastructures.
+</Callout>
+
+This separation meant that even if our public site received ten million concurrent hits, the load on our ingestion server remained constant. The ingestion engine only had to write the updated static files once every few minutes when new transmission batches arrived.
+
+## Invalidation at the Edge
+
+Decoupling ingestion from presentation solved the database load problem, but it introduced a new challenge: cache invalidation. How do we ensure that users see the latest results without overloading the origin when millions of browsers request updates?
+
+Standard TTL (Time-to-Live) caching was insufficient. If we set the TTL to 10 seconds, millions of users would re-request the file from the origin every 10 seconds. If we set it to 10 minutes, the data would feel stale, prompting users to manually refresh, exacerbating traffic.
+
+We solved this using **Stale-While-Revalidate (SWR)** and targeted cache invalidation headers:
+
+1. **Surrogate Keys:** We tagged every generated static resource with specific metadata headers (e.g., `Surrogate-Key: topic-national-results`).
+2. **Instant Purges:** When our ingestion pipeline wrote an updated file, it fired an API call to our CDN provider to instantly purge only the specific surrogate key that changed.
+3. **Graceful Degraded States:** If the ingestion engine went offline temporarily, the CDN was configured to serve stale cached content rather than a 502/504 error page.
+
+<PullQuote>
+"The cost of a database query on election night is not measured in milliseconds; it is measured in lost trust."
+</PullQuote>
+
+This approach ensured that updates were pushed to the edge instantly, while preserving the protective barrier of the CDN.
+
+## The Psychology of High-Stakes Operations
+
+Technical architecture is only half the battle. The other half is the human element. Under high stress, engineers make mistakes. We designed our deployment workflows to minimize cognitive load on the team.
+
+*   **Command Isolation:** During the 72 hours surrounding election night, we instituted a strict code freeze. No feature changes were allowed. Deployments were restricted to infrastructure scale-up commands.
+*   **Runbook Redundancy:** We documented every possible failure mode—e.g., COMELEC stream stalls, CDN edge failure, regional routing blocks—in clear, checkbox-driven runbooks. When things went wrong, engineers didn't have to think; they just had to follow the checklist.
+*   **Simulation Days:** Two weeks before the election, we simulated a total COMELEC feed failure and forced the team to recover the site using offline backup streams. 
+
+Ultimately, PHVote 2019 delivered the fastest and most stable results visualization in the country that year, with 100% uptime throughout the critical 48-hour peak.
+
+## Lessons for Enterprise AI and Digital Transformation
+
+While election coverage is a unique event, the principles of under-pressure systems apply directly to corporate digital transformation. 
+
+Organizations seeking to implement AI inside their legacy workflows often try to build complex, real-time middleware that connects legacy core databases to LLM models. This creates unstable dependencies. By applying the "Great Wall" separation—staging operational data into static, pre-processed cache layers before exposing them to AI agents—companies can adopt AI securely without risking core system outages.
+
+<Embed url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" title="PHVote 2019 System Architecture Retrospective" />

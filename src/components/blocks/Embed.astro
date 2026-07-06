@@ -1,0 +1,45 @@
+---
+// Embed.astro
+interface Props {
+  url: string;
+  title: string;
+}
+
+const { url, title } = Astro.props;
+
+if (!url) {
+  throw new Error('Embed block requires a URL.');
+}
+if (!title) {
+  throw new Error('Embed block requires a Title for accessibility.');
+}
+
+// Convert watch/share URLs to embed URLs if it's YouTube
+let embedUrl = url;
+if (url.includes('youtube.com/watch')) {
+  try {
+    const videoId = new URL(url).searchParams.get('v');
+    if (videoId) {
+      embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    }
+  } catch (e) {
+    // Ignore invalid URLs
+  }
+} else if (url.includes('youtu.be/')) {
+  const parts = url.split('/');
+  const videoId = parts.pop()?.split('?')[0];
+  if (videoId) {
+    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+  }
+}
+---
+<div class="aspect-video w-full my-6 overflow-hidden rounded-lg border border-moss-200">
+  <iframe
+    src={embedUrl}
+    title={title}
+    class="w-full h-full"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+</div>

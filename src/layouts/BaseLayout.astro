@@ -1,0 +1,382 @@
+---
+import '../styles/global.css';
+import { Image } from 'astro:assets';
+import paulImage from '../assets/paul.webp';
+import instagramCoffeeBg from '../assets/instagram_coffee_bg.jpg';
+import instagramWorkspaceBg from '../assets/instagram_workspace_bg.jpg';
+// Import the exact critical font files as URL assets so the preload hrefs
+// always match the hashed filenames Astro/Vite emits at build time.
+import archivoBlackWoff2 from '@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2?url';
+import latoWoff2 from '@fontsource/lato/files/lato-latin-400-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  type?: 'website' | 'article';
+  /** Home page shows the plain title with no site-name suffix. */
+  isHome?: boolean;
+  bodyClass?: string;
+}
+
+const { title, description, ogImage, type = 'website', isHome = false, bodyClass } = Astro.props;
+
+const pageTitle = isHome ? title : `${title} · Paul Fernandez`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const resolvedOgImage = new URL(ogImage ?? '/og-default.png', Astro.site);
+
+const navItems = [
+  { href: '/about', label: 'About' },
+  { href: '/thoughts', label: 'Thoughts' },
+  { href: '/now', label: 'Now' },
+];
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath === href || currentPath.startsWith(`${href}/`);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content={type} />
+    <meta property="og:image" content={resolvedOgImage} />
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/rss+xml" title="Paul Fernandez" href="/rss.xml" />
+
+    <!-- Critical font preloads (self-hosted @fontsource, weight 400 only) -->
+    <link rel="preload" as="font" type="font/woff2" href={archivoBlackWoff2} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={latoWoff2} crossorigin />
+
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <!-- Notch nav: sits flush at the top like a MacBook notch, detaches into a
+         floating pill once you scroll, and re-docks at the top of the page. -->
+    <header id="site-header" class="fixed inset-x-0 top-0 z-50 flex justify-center px-3 sm:px-6 pointer-events-none">
+      <nav
+        class="nav-shell pointer-events-auto w-full bg-ink text-beige-100 flex items-center justify-between gap-2 pl-4 pr-3 py-2.5"
+        aria-label="Main"
+      >
+        <a href="/" class="flex items-center no-underline text-beige-100 hover:text-beige-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-300 rounded-full py-1" aria-label="Paul Fernandez — home" aria-current={currentPath === '/' ? 'page' : undefined}>
+          <span class="font-display text-small leading-none">Paul</span>
+        </a>
+
+        <!-- Desktop links -->
+        <ul class="hidden sm:flex items-center gap-1 list-none m-0 p-0">
+          {navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                class="block rounded-full px-3.5 py-1.5 text-small no-underline text-beige-100 hover:text-beige-100 hover:bg-beige-100/10 aria-[current=page]:bg-beige-100/15 aria-[current=page]:font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-300"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a
+              href="/work-with-me"
+              aria-current={isActive('/work-with-me') ? 'page' : undefined}
+              class="ml-1 block rounded-full bg-citrus-500 hover:bg-citrus-300 px-4 py-1.5 text-small font-bold no-underline text-moss-900 hover:text-moss-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-beige-100"
+            >
+              Work with me
+            </a>
+          </li>
+        </ul>
+
+        <!-- Mobile menu -->
+        <details class="relative sm:hidden">
+          <summary class="cursor-pointer list-none rounded-full p-2 hover:bg-beige-100/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-300 [&::-webkit-details-marker]:hidden" aria-label="Menu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </summary>
+          <ul class="absolute right-0 z-10 mt-3 flex w-52 flex-col gap-1 rounded-2xl bg-ink border border-beige-100/10 p-2 list-none shadow-xl">
+            {[{ href: '/', label: 'Home' }, ...navItems].map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                  class="block rounded-xl px-3 py-2 text-small no-underline text-beige-100 hover:text-beige-100 hover:bg-beige-100/10 aria-[current=page]:bg-beige-100/15 aria-[current=page]:font-bold"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                href="/work-with-me"
+                class="mt-1 block rounded-xl bg-citrus-500 px-3 py-2 text-small font-bold no-underline text-moss-900 hover:text-moss-900 text-center"
+              >
+                Work with me
+              </a>
+            </li>
+          </ul>
+        </details>
+      </nav>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <!-- Bento footer: green grainy backdrop, tiled content. -->
+    <footer class="grain relative overflow-hidden text-beige-100 mx-4 mb-4 sm:mx-6 sm:mb-6 rounded-[2rem] sm:rounded-[2.5rem]" style="background: linear-gradient(165deg, var(--color-moss-700), var(--color-moss-900) 70%);">
+      <div class="relative max-w-[1140px] mx-auto px-6 py-14 flex flex-col gap-12">
+        
+        <!-- TOP SECTION: Social Feed Header & Grid -->
+        <div class="flex flex-col gap-6">
+          <!-- Social Feed Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full overflow-hidden border border-beige-100/20 shrink-0">
+                <Image src={paulImage} alt="Paul Fernandez" class="w-full h-full object-cover" width={40} height={40} />
+              </div>
+              <div class="flex flex-col">
+                <span class="font-bold text-body text-beige-50 leading-tight">Paul Fernandez · technologist & builder</span>
+                <a href="https://www.instagram.com/goofffball/" target="_blank" rel="noopener noreferrer" class="text-small text-moss-200 hover:text-citrus-300 no-underline leading-none">@goofffball</a>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-4 sm:self-center">
+              <span class="text-small text-moss-200 hidden sm:inline">1.2k followers</span>
+              <a 
+                href="https://www.instagram.com/goofffball/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="inline-flex items-center gap-1.5 rounded-full border border-beige-100/20 hover:border-beige-100/40 bg-beige-100/5 hover:bg-beige-100/10 px-4 py-1.5 text-small font-bold no-underline text-beige-100 transition-colors focus:outline-none focus:ring-2 focus:ring-citrus-300"
+              >
+                <!-- Instagram icon -->
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                </svg>
+                Follow
+              </a>
+            </div>
+          </div>
+          
+          <!-- Social Feed Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            
+            <!-- Tile 1: Coffee -->
+            <a href="/work-with-me#contact" class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-beige-100/10 hover:border-beige-100/25 transition-all duration-300 hover:scale-[1.02] block focus:outline-none focus:ring-2 focus:ring-citrus-300">
+              <Image src={instagramCoffeeBg} alt="Coffee with notebook" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={300} height={300} />
+              <!-- Overlay to make text readable -->
+              <div class="absolute inset-0 bg-gradient-to-t from-moss-900/90 via-moss-900/30 to-transparent"></div>
+              
+              <!-- Video indicator at top-right -->
+              <div class="absolute top-3 right-3 bg-moss-900/40 backdrop-blur-sm rounded-full p-1.5 text-beige-100 border border-beige-100/10">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M23 7l-7 5 7 5V7zM1 5h14v14H1z"/>
+                </svg>
+              </div>
+              
+              <!-- Bottom left text -->
+              <div class="absolute bottom-4 left-4 right-4">
+                <span class="block font-display text-small uppercase tracking-wide text-citrus-300 leading-snug">Invite me to coffee</span>
+              </div>
+            </a>
+            
+            <!-- Tile 2: Nature / About -->
+            <a href="/about" class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-beige-100/10 hover:border-beige-100/25 transition-all duration-300 hover:scale-[1.02] block focus:outline-none focus:ring-2 focus:ring-citrus-300 bg-alert-terracotta-600 p-6 flex flex-col justify-between">
+              <!-- Indicator at top-right -->
+              <div class="self-end bg-black/20 backdrop-blur-sm rounded-full p-1.5 text-beige-50 border border-beige-50/10">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M23 7l-7 5 7 5V7zM1 5h14v14H1z"/>
+                </svg>
+              </div>
+              <div class="my-auto">
+                <span class="block font-display text-small uppercase tracking-wide text-beige-50 leading-snug">Every season, something old dies</span>
+              </div>
+              <span class="text-[10px] uppercase font-bold tracking-widest text-beige-50/80">About Me →</span>
+            </a>
+            
+            <!-- Tile 3: Quote Block / Callout -->
+            <div class="relative aspect-square rounded-[1.5rem] overflow-hidden border border-dark-plum-900/10 bg-alert-lavender-200 p-6 flex flex-col justify-between text-dark-plum-900 shadow-sm">
+              <!-- Carousel indicator at top-right -->
+              <div class="self-end bg-dark-plum-900/10 backdrop-blur-sm rounded-full p-1.5 text-dark-plum-900">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                </svg>
+              </div>
+              
+              <!-- Quote text -->
+              <div class="my-auto">
+                <p class="font-display text-small uppercase tracking-tight text-dark-plum-900 leading-snug m-0">
+                  You shouldn't build things nobody wants.
+                </p>
+              </div>
+              
+              <!-- Bottom label -->
+              <span class="text-[10px] uppercase font-bold tracking-widest text-dark-plum-900/70">Thoughts Index</span>
+            </div>
+            
+            <!-- Tile 4: Workspace -->
+            <a href="/work-with-me" class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-beige-100/10 hover:border-beige-100/25 transition-all duration-300 hover:scale-[1.02] block focus:outline-none focus:ring-2 focus:ring-citrus-300">
+              <Image src={instagramWorkspaceBg} alt="Keyboard and workspace" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={300} height={300} />
+              <div class="absolute inset-0 bg-gradient-to-t from-moss-900/90 via-moss-900/30 to-transparent"></div>
+              
+              <!-- Video indicator at top-right -->
+              <div class="absolute top-3 right-3 bg-moss-900/40 backdrop-blur-sm rounded-full p-1.5 text-beige-100 border border-beige-100/10">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M23 7l-7 5 7 5V7zM1 5h14v14H1z"/>
+                </svg>
+              </div>
+              
+              <!-- Bottom left text -->
+              <div class="absolute bottom-4 left-4 right-4">
+                <span class="block font-display text-small uppercase tracking-wide text-beige-50 leading-snug">Building for the long game</span>
+              </div>
+            </a>
+            
+          </div>
+        </div>
+
+        <!-- DIVIDER line -->
+        <hr class="border-t border-beige-100/10 my-2" />
+
+        <!-- BOTTOM SECTION: Links & Identity -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-start">
+          
+          <!-- Identity column (takes 2/5 width) -->
+          <div class="md:col-span-2 flex flex-col gap-4">
+            <h2 class="font-display text-h2 uppercase text-citrus-300 m-0 tracking-tight leading-none">
+              Jan Paul<br />Fernandez
+            </h2>
+            <div class="flex items-center gap-3">
+              <!-- LinkedIn -->
+              <a 
+                href="https://www.linkedin.com/in/jpaulfernandez/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="text-beige-100 hover:text-citrus-300 transition-colors focus:outline-none focus:ring-2 focus:ring-citrus-300 rounded p-1 -m-1"
+                aria-label="LinkedIn"
+              >
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+              </a>
+              <!-- Instagram -->
+              <a 
+                href="https://www.instagram.com/goofffball/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="text-beige-100 hover:text-citrus-300 transition-colors focus:outline-none focus:ring-2 focus:ring-citrus-300 rounded p-1 -m-1"
+                aria-label="Instagram"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Links columns (takes 3/5 width) -->
+          <div class="md:col-span-3 grid grid-cols-3 gap-6">
+            
+            <!-- Explore Column -->
+            <div>
+              <span class="text-small font-bold uppercase tracking-wider text-moss-200 block mb-3">Explore</span>
+              <ul class="flex flex-col gap-2 list-none m-0 p-0">
+                <li><a href="/" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Home</a></li>
+                <li><a href="/about" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">About</a></li>
+                <li><a href="/thoughts" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Thoughts</a></li>
+                <li><a href="/work-with-me" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Work with me</a></li>
+              </ul>
+            </div>
+            
+            <!-- Now Column -->
+            <div>
+              <span class="text-small font-bold uppercase tracking-wider text-moss-200 block mb-3">Now</span>
+              <ul class="flex flex-col gap-2 list-none m-0 p-0">
+                <li><a href="/now" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Now Page</a></li>
+                <li><a href="/work-with-me#contact" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+            
+            <!-- Elsewhere Column -->
+            <div>
+              <span class="text-small font-bold uppercase tracking-wider text-moss-200 block mb-3">Elsewhere</span>
+              <ul class="flex flex-col gap-2 list-none m-0 p-0">
+                <li><a href="https://www.linkedin.com/in/jpaulfernandez/" target="_blank" rel="noopener noreferrer" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">LinkedIn</a></li>
+                <li><a href="https://www.instagram.com/goofffball/" target="_blank" rel="noopener noreferrer" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Instagram</a></li>
+                <li><a href="mailto:jpaul.fernandez18@gmail.com" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Email</a></li>
+                <li><a href="/rss.xml" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">RSS Feed</a></li>
+              </ul>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- COPYRIGHT & CREDITS -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-beige-100/5">
+          <p class="text-small text-moss-200 m-0">
+            &copy; {new Date().getFullYear()} Paul Fernandez. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <style>
+      .nav-shell {
+        max-width: 720px;
+        border-radius: 0 0 1.5rem 1.5rem;
+        transition:
+          border-radius 0.35s ease,
+          margin-top 0.35s ease,
+          max-width 0.35s ease,
+          box-shadow 0.35s ease,
+          background-color 0.35s ease;
+      }
+
+      #site-header.is-scrolled .nav-shell {
+        margin-top: 0.75rem;
+        border-radius: 9999px;
+        max-width: 620px;
+        box-shadow: 0 12px 32px rgb(38 37 31 / 0.28);
+        background-color: color-mix(in srgb, var(--color-ink) 92%, transparent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .nav-shell {
+          transition: none;
+        }
+      }
+    </style>
+
+    <script>
+      const header = document.getElementById('site-header');
+      const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    </script>
+  </body>
+</html>

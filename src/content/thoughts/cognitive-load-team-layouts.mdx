@@ -1,0 +1,24 @@
+---
+title: "Cognitive Load and Team Topologies"
+type: note
+topics:
+  - psychology
+stage: seedling
+excerpt: Why small, decoupled teams beat monolithic reporting lines, and how Conway's law affects tech architecture.
+publishedDate: "2026-06-20"
+draft: false
+---
+
+In software engineering, we often talk about system architecture in terms of servers, load, and data models. But the most constrained resource in any technology organization is actually **human cognitive load**.
+
+When an engineering team is responsible for too many things—e.g., maintaining legacy billing systems, building new consumer features, and managing Kubernetes clusters—they spend all their time context switching. Quality drops, deployments slow down, and burnout rises.
+
+According to Conway's Law, organizations design systems that copy their communication structures. If you have a single monolithic engineering department with everyone working on everything, you will inevitably build a monolithic, tightly coupled codebase.
+
+The solution is to restructure teams around **bounded contexts**:
+
+- Keep teams focused on single, cohesive domain areas.
+- Define strict, stable interface APIs between teams (rather than loose ad-hoc Slack coordination).
+- Minimize coordination overhead so teams can deploy independently.
+
+If you want to speed up your software delivery, don't buy a faster CI/CD server. Fix your organizational layout to respect your engineers' mental capacity.

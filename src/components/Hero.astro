@@ -1,0 +1,51 @@
+---
+interface Props {
+  greeting: string;
+  intro: string;
+  ctaPrimaryLabel?: string;
+  ctaSecondaryLabel?: string;
+  /** Plain-text snippet of the latest Now entry, shown as a one-liner. */
+  nowSnippet?: string;
+}
+
+const { greeting, intro } = Astro.props;
+---
+
+<section class="py-10 md:py-16 fade-rise">
+  <div class="max-w-[1140px] mx-auto px-6">
+    <div class="bg-magenta-900 text-beige-100 rounded-[2.5rem] p-8 sm:p-14 md:p-20 shadow-2xl relative overflow-hidden border border-magenta-800/40">
+      <div class="max-w-[980px] flex flex-col gap-8 md:gap-10 relative z-10">
+        <h1 class="font-display text-[2.75rem] sm:text-6xl md:text-7xl text-beige-50 tracking-tight leading-none">
+          {greeting}
+        </h1>
+        <p class="text-h2 font-normal text-beige-100/90 leading-relaxed max-w-[52ch] md:max-w-[60ch]">
+          {intro}
+        </p>
+
+        <div class="flex flex-col sm:flex-row flex-wrap gap-5 sm:gap-10 pt-8 border-t border-beige-100/20">
+          <a
+            href="/work-with-me#contact"
+            class="group inline-flex items-center gap-2 text-body font-bold text-beige-50 hover:text-citrus-300 no-underline transition-colors focus:outline-none focus:ring-2 focus:ring-citrus-300 rounded"
+          >
+            <span>Invite me to coffee</span>
+            <span class="text-citrus-300 group-hover:translate-x-1.5 transition-transform duration-200">→</span>
+          </a>
+          <a
+            href="/thoughts"
+            class="group inline-flex items-center gap-2 text-body font-bold text-beige-50 hover:text-citrus-300 no-underline transition-colors focus:outline-none focus:ring-2 focus:ring-citrus-300 rounded"
+          >
+            <span>Musings and Thoughts</span>
+            <span class="text-citrus-300 group-hover:translate-x-1.5 transition-transform duration-200">→</span>
+          </a>
+          <a
+            href="/now"
+            class="group inline-flex items-center gap-2 text-body font-bold text-beige-50 hover:text-citrus-300 no-underline transition-colors focus:outline-none focus:ring-2 focus:ring-citrus-300 rounded"
+          >
+            <span>See what I'm doing now</span>
+            <span class="text-citrus-300 group-hover:translate-x-1.5 transition-transform duration-200">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

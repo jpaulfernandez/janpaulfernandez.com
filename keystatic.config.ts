@@ -15,7 +15,11 @@ export default config({
       schema: {
         slug: fields.slug({ name: { label: 'Slug', description: 'Used for the filename only' } }),
         date: fields.date({ label: 'Date', validation: { isRequired: true } }),
-        body: fields.text({ label: 'Body', multiline: true }),
+        body: fields.document({
+          label: 'Body',
+          formatting: true,
+          links: true,
+        }),
         link: fields.url({ label: 'Link', validation: { isRequired: false } }),
       },
     }),

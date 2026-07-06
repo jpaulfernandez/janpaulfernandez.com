@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "SKIP_KEYSTATIC=true astro build",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run"
@@ -16,6 +16,7 @@
     "@astrojs/react": "6.0.1",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "3.7.3",
+    "@astrojs/vercel": "^9.0.5",
     "@fontsource/archivo-black": "5.2.8",
     "@fontsource/lato": "5.2.7",
     "@keystatic/astro": "5.1.0",

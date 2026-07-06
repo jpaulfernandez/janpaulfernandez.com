@@ -7,19 +7,17 @@ import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import vercel from '@astrojs/vercel';
 
-// react() + keystatic() power the /keystatic admin UI only (Keystatic's
-// Admin UI is a React app; its routes need server rendering). To keep
-// production output fully static (output: 'static', no adapter, zero
-// client-side React), both integrations are skipped when
-// SKIP_KEYSTATIC=true is set in the build environment (e.g. Vercel, or
-// via the "build" script in package.json for local builds).
-// https://keystatic.com/docs/recipes/astro-disable-admin-ui-in-production
+// react() + keystatic() power the /keystatic admin UI. The Vercel adapter
+// enables serverless functions for the Keystatic dashboard and auth routes
+// while keeping all public pages pre-rendered as 100% static HTML.
 const skipKeystatic = /** @type {any} */ (globalThis).process?.env?.SKIP_KEYSTATIC;
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://janpaulfernandez.com',
+  adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],
   },

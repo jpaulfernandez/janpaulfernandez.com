@@ -11,7 +11,7 @@ export default config({
       label: 'Now',
       slugField: 'slug',
       path: 'src/content/now/*',
-      format: { contentField: 'body' },
+      format: { data: 'yaml', contentField: 'body' },
       schema: {
         slug: fields.slug({ name: { label: 'Slug', description: 'Used for the filename only' } }),
         date: fields.date({ label: 'Date', validation: { isRequired: true } }),
@@ -27,7 +27,7 @@ export default config({
       label: 'Career',
       slugField: 'slug',
       path: 'src/content/career/*',
-      format: { contentField: 'story' },
+      format: { data: 'yaml', contentField: 'story' },
       schema: {
         slug: fields.slug({ name: { label: 'Slug', description: 'Used for the filename only' } }),
         org: fields.text({ label: 'Organization', validation: { isRequired: true } }),

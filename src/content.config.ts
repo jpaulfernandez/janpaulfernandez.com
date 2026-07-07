@@ -1,14 +1,18 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+const dateSchema = z.union([z.string(), z.date()]).transform((val) =>
+  val instanceof Date ? val.toISOString().slice(0, 10) : val
+);
+
 const now = defineCollection({
   loader: glob({
-    pattern: '*',
+    pattern: '*.md',
     base: 'src/content/now',
     generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ''),
   }),
   schema: z.object({
-    date: z.string(),
+    date: dateSchema,
     link: z.string().optional(),
   }),
 });
@@ -101,8 +105,8 @@ const thoughts = defineCollection({
     stage: z.enum(['seedling', 'budding', 'evergreen', 'none']).optional().transform((v) => v === 'none' ? undefined : v),
     excerpt: z.string().max(160),
     cover: image().optional(),
-    publishedDate: z.string(),
-    updatedDate: z.string().optional(),
+    publishedDate: dateSchema,
+    updatedDate: dateSchema.optional(),
     draft: z.boolean().default(false),
   }),
 });
@@ -114,7 +118,7 @@ const gallery = defineCollection({
   }),
   schema: ({ image }) => z.object({
     title: z.string(),
-    publishedDate: z.string(),
+    publishedDate: dateSchema,
     cover: image().optional(),
     description: z.string().optional(),
     tags: z.array(z.string()).default([]),

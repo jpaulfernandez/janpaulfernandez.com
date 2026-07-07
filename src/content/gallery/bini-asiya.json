@@ -1,0 +1,23 @@
+{
+  "title": "BINI: Asiya",
+  "publishedDate": "2024-10-15",
+  "cover": "../../assets/gallery/bini/bini-01.webp",
+  "description": "BINI live in concert — the Philippines' P-pop queens commanding the stage. Fierce choreography, powerful vocals, and Asiya-era energy.",
+  "tags": ["bini", "philippines", "asiya", "ppop", "concert"],
+  "featured": true,
+  "licensingAvailable": false,
+  "photos": [
+    { "image": "../../assets/gallery/bini/bini-01.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-02.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-03.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-04.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-05.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-06.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-07.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-08.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-09.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-10.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-11.webp", "caption": "" },
+    { "image": "../../assets/gallery/bini/bini-12.webp", "caption": "" }
+  ]
+}

@@ -1,9 +1,9 @@
 ---
 import '../styles/global.css';
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import paulImage from '../assets/paul.webp';
-import instagramCoffeeBg from '../assets/instagram_coffee_bg.jpg';
-import instagramWorkspaceBg from '../assets/instagram_workspace_bg.jpg';
+
 // Import the exact critical font files as URL assets so the preload hrefs
 // always match the hashed filenames Astro/Vite emits at build time.
 import archivoBlackWoff2 from '@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2?url';
@@ -25,15 +25,33 @@ const pageTitle = isHome ? title : `${title} · Paul Fernandez`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const resolvedOgImage = new URL(ogImage ?? '/og-default.png', Astro.site);
 
+const allGalleryItems = await getCollection('gallery').catch(() => []);
+const recentGalleryItems = allGalleryItems
+  .filter((i) => i.data.cover)
+  .sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime())
+  .slice(0, 4);
+
 const navItems = [
   { href: '/about', label: 'About' },
   { href: '/thoughts', label: 'Thoughts' },
+  { href: '/gallery', label: 'Gallery' },
   { href: '/now', label: 'Now' },
 ];
 
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
   href === '/' ? currentPath === '/' : currentPath === href || currentPath.startsWith(`${href}/`);
+
+const getActiveLabel = () => {
+  if (currentPath === '/') return '';
+  if (currentPath.startsWith('/about')) return 'About';
+  if (currentPath.startsWith('/thoughts')) return 'Thoughts';
+  if (currentPath.startsWith('/gallery')) return 'Gallery';
+  if (currentPath.startsWith('/now')) return 'Now';
+  if (currentPath.startsWith('/work-with-me')) return 'Work with me';
+  return '';
+};
+const activeLabel = getActiveLabel();
 ---
 
 <html lang="en">
@@ -76,12 +94,40 @@ const isActive = (href: string) =>
          floating pill once you scroll, and re-docks at the top of the page. -->
     <header id="site-header" class="fixed inset-x-0 top-0 z-50 flex justify-center px-3 sm:px-6 pointer-events-none">
       <nav
-        class="nav-shell pointer-events-auto w-full bg-ink text-beige-100 flex items-center justify-between gap-2 pl-4 pr-3 py-2.5"
+        id="nav-shell"
+        class="nav-shell pointer-events-auto w-full bg-ink text-beige-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pl-4 pr-3 py-2.5 transition-all duration-300"
         aria-label="Main"
       >
-        <a href="/" class="flex items-center no-underline text-beige-100 hover:text-beige-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-300 rounded-full py-1" aria-label="Paul Fernandez — home" aria-current={currentPath === '/' ? 'page' : undefined}>
-          <span class="font-display text-small leading-none">Paul</span>
-        </a>
+        <!-- Top row: logo and mobile menu toggle -->
+        <div class="flex items-center justify-between w-full sm:w-auto">
+          <a href="/" class="flex items-center no-underline text-beige-100 hover:text-beige-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-300 rounded-full py-1" aria-label="Paul Fernandez — home">
+            <span class="font-display text-small leading-none">Paul</span>
+          </a>
+
+          <div class="flex items-center gap-2">
+            {activeLabel && (
+              <button 
+                id="mobile-page-indicator"
+                class="sm:hidden flex items-center gap-1 text-small leading-none font-body font-bold text-moss-200 hover:text-beige-50 bg-transparent border-none p-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-300 rounded py-1"
+                aria-label={`Open menu from ${activeLabel}`}
+              >
+                <span>{activeLabel}</span>
+              </button>
+            )}
+            <button 
+              id="mobile-menu-toggle" 
+              class="sm:hidden cursor-pointer rounded-full p-2 hover:bg-beige-100/10 text-beige-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-300 relative w-9 h-9 flex items-center justify-center transition-transform active:scale-95" 
+              aria-label="Toggle menu"
+              aria-expanded="false"
+              aria-controls="mobile-menu-panel"
+            >
+              <!-- Hamburger icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 absolute transition-all duration-300 hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+              <!-- Close icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 absolute transition-all duration-300 close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
 
         <!-- Desktop links -->
         <ul class="hidden sm:flex items-center gap-1 list-none m-0 p-0">
@@ -107,33 +153,35 @@ const isActive = (href: string) =>
           </li>
         </ul>
 
-        <!-- Mobile menu -->
-        <details class="relative sm:hidden">
-          <summary class="cursor-pointer list-none rounded-full p-2 hover:bg-beige-100/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-300 [&::-webkit-details-marker]:hidden" aria-label="Menu">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          </summary>
-          <ul class="absolute right-0 z-10 mt-3 flex w-52 flex-col gap-1 rounded-2xl bg-ink border border-beige-100/10 p-2 list-none shadow-xl">
+        <!-- Mobile menu panel -->
+        <div 
+          id="mobile-menu-panel" 
+          class="sm:hidden w-full overflow-hidden"
+        >
+          <div class="pt-4 pb-2 flex flex-col">
             {[{ href: '/', label: 'Home' }, ...navItems].map((item) => (
-              <li>
-                <a
-                  href={item.href}
-                  aria-current={isActive(item.href) ? 'page' : undefined}
-                  class="block rounded-xl px-3 py-2 text-small no-underline text-beige-100 hover:text-beige-100 hover:bg-beige-100/10 aria-[current=page]:bg-beige-100/15 aria-[current=page]:font-bold"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-            <li>
               <a
-                href="/work-with-me"
-                class="mt-1 block rounded-xl bg-citrus-500 px-3 py-2 text-small font-bold no-underline text-moss-900 hover:text-moss-900 text-center"
+                href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                class="flex items-center justify-between py-4 border-b border-beige-100/10 text-beige-100 hover:text-citrus-300 no-underline transition-colors group px-1"
               >
-                Work with me
+                <span class="font-display text-body font-bold">{item.label}</span>
+                <svg class="w-4 h-4 text-moss-200 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
               </a>
-            </li>
-          </ul>
-        </details>
+            ))}
+            <a
+              href="/work-with-me"
+              class="flex items-center justify-between py-4 border-b border-beige-100/10 text-citrus-300 hover:text-citrus-300 no-underline transition-colors group px-1"
+            >
+              <span class="font-display text-body font-bold">Work with me</span>
+              <svg class="w-4 h-4 text-citrus-300 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -142,7 +190,7 @@ const isActive = (href: string) =>
     </main>
 
     <!-- Bento footer: green grainy backdrop, tiled content. -->
-    <footer class="grain relative overflow-hidden text-beige-100 mx-4 mb-4 sm:mx-6 sm:mb-6 rounded-[2rem] sm:rounded-[2.5rem]" style="background: linear-gradient(165deg, var(--color-moss-700), var(--color-moss-900) 70%);">
+    <footer class="grain relative overflow-hidden text-beige-100 mx-2 mb-2 sm:mx-3 sm:mb-3 rounded-[2rem] sm:rounded-[2.5rem]" style="background: linear-gradient(165deg, var(--color-moss-700), var(--color-moss-900) 70%);">
       <div class="relative max-w-[1140px] mx-auto px-6 py-14 flex flex-col gap-12">
         
         <!-- TOP SECTION: Social Feed Header & Grid -->
@@ -154,13 +202,12 @@ const isActive = (href: string) =>
                 <Image src={paulImage} alt="Paul Fernandez" class="w-full h-full object-cover" width={40} height={40} />
               </div>
               <div class="flex flex-col">
-                <span class="font-bold text-body text-beige-50 leading-tight">Paul Fernandez · technologist & builder</span>
+                <span class="font-bold text-body text-beige-50 leading-tight">Paul Fernandez</span>
                 <a href="https://www.instagram.com/goofffball/" target="_blank" rel="noopener noreferrer" class="text-small text-moss-200 hover:text-citrus-300 no-underline leading-none">@goofffball</a>
               </div>
             </div>
             
             <div class="flex items-center gap-4 sm:self-center">
-              <span class="text-small text-moss-200 hidden sm:inline">1.2k followers</span>
               <a 
                 href="https://www.instagram.com/goofffball/" 
                 target="_blank" 
@@ -178,82 +225,38 @@ const isActive = (href: string) =>
             </div>
           </div>
           
-          <!-- Social Feed Grid -->
+          <!-- Gallery intro text -->
+          <p class="text-body text-beige-100/80 m-0 font-bold">I also shoot.</p>
+
+          <!-- Gallery Thumbnails Grid -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            
-            <!-- Tile 1: Coffee -->
-            <a href="/work-with-me#contact" class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-beige-100/10 hover:border-beige-100/25 transition-all duration-300 hover:scale-[1.02] block focus:outline-none focus:ring-2 focus:ring-citrus-300">
-              <Image src={instagramCoffeeBg} alt="Coffee with notebook" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={300} height={300} />
-              <!-- Overlay to make text readable -->
-              <div class="absolute inset-0 bg-gradient-to-t from-moss-900/90 via-moss-900/30 to-transparent"></div>
-              
-              <!-- Video indicator at top-right -->
-              <div class="absolute top-3 right-3 bg-moss-900/40 backdrop-blur-sm rounded-full p-1.5 text-beige-100 border border-beige-100/10">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M23 7l-7 5 7 5V7zM1 5h14v14H1z"/>
-                </svg>
-              </div>
-              
-              <!-- Bottom left text -->
-              <div class="absolute bottom-4 left-4 right-4">
-                <span class="block font-display text-small uppercase tracking-wide text-citrus-300 leading-snug">Invite me to coffee</span>
-              </div>
-            </a>
-            
-            <!-- Tile 2: Nature / About -->
-            <a href="/about" class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-beige-100/10 hover:border-beige-100/25 transition-all duration-300 hover:scale-[1.02] block focus:outline-none focus:ring-2 focus:ring-citrus-300 bg-alert-terracotta-600 p-6 flex flex-col justify-between">
-              <!-- Indicator at top-right -->
-              <div class="self-end bg-black/20 backdrop-blur-sm rounded-full p-1.5 text-beige-50 border border-beige-50/10">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M23 7l-7 5 7 5V7zM1 5h14v14H1z"/>
-                </svg>
-              </div>
-              <div class="my-auto">
-                <span class="block font-display text-small uppercase tracking-wide text-beige-50 leading-snug">Every season, something old dies</span>
-              </div>
-              <span class="text-[10px] uppercase font-bold tracking-widest text-beige-50/80">About Me →</span>
-            </a>
-            
-            <!-- Tile 3: Quote Block / Callout -->
-            <div class="relative aspect-square rounded-[1.5rem] overflow-hidden border border-dark-plum-900/10 bg-alert-lavender-200 p-6 flex flex-col justify-between text-dark-plum-900 shadow-sm">
-              <!-- Carousel indicator at top-right -->
-              <div class="self-end bg-dark-plum-900/10 backdrop-blur-sm rounded-full p-1.5 text-dark-plum-900">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                </svg>
-              </div>
-              
-              <!-- Quote text -->
-              <div class="my-auto">
-                <p class="font-display text-small uppercase tracking-tight text-dark-plum-900 leading-snug m-0">
-                  You shouldn't build things nobody wants.
-                </p>
-              </div>
-              
-              <!-- Bottom label -->
-              <span class="text-[10px] uppercase font-bold tracking-widest text-dark-plum-900/70">Thoughts Index</span>
-            </div>
-            
-            <!-- Tile 4: Workspace -->
-            <a href="/work-with-me" class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-beige-100/10 hover:border-beige-100/25 transition-all duration-300 hover:scale-[1.02] block focus:outline-none focus:ring-2 focus:ring-citrus-300">
-              <Image src={instagramWorkspaceBg} alt="Keyboard and workspace" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={300} height={300} />
-              <div class="absolute inset-0 bg-gradient-to-t from-moss-900/90 via-moss-900/30 to-transparent"></div>
-              
-              <!-- Video indicator at top-right -->
-              <div class="absolute top-3 right-3 bg-moss-900/40 backdrop-blur-sm rounded-full p-1.5 text-beige-100 border border-beige-100/10">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M23 7l-7 5 7 5V7zM1 5h14v14H1z"/>
-                </svg>
-              </div>
-              
-              <!-- Bottom left text -->
-              <div class="absolute bottom-4 left-4 right-4">
-                <span class="block font-display text-small uppercase tracking-wide text-beige-50 leading-snug">Building for the long game</span>
-              </div>
-            </a>
-            
+            {recentGalleryItems.map((galleryItem, idx) => (
+              <a href={`/gallery/${galleryItem.id}`} class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-beige-100/10 hover:border-beige-100/25 transition-all duration-300 hover:scale-[1.02] block focus:outline-none focus:ring-2 focus:ring-citrus-300">
+                {galleryItem.data.cover && (
+                  <Image src={galleryItem.data.cover} alt={galleryItem.data.title} class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={300} height={300} />
+                )}
+                <div class="absolute inset-0 bg-gradient-to-t from-moss-900/90 via-moss-900/30 to-transparent"></div>
+                {/* Photo stack icon */}
+                <div class="absolute top-3 right-3 bg-moss-900/40 backdrop-blur-sm rounded-full p-1.5 text-beige-100 border border-beige-100/10">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                  </svg>
+                </div>
+                <div class="absolute bottom-4 left-4 right-4">
+                  <span class={`block font-display text-small uppercase tracking-wide leading-snug ${idx % 2 === 0 ? 'text-citrus-300' : 'text-beige-50'}`}>{galleryItem.data.title}</span>
+                </div>
+              </a>
+            ))}
           </div>
+
+          <!-- Browse more link -->
+          <a href="/gallery" class="inline-flex items-center gap-2 text-small font-bold text-citrus-300 hover:text-citrus-500 no-underline transition-colors group">
+            Browse the full gallery
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
         </div>
 
         <!-- DIVIDER line -->
@@ -307,6 +310,7 @@ const isActive = (href: string) =>
                 <li><a href="/" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Home</a></li>
                 <li><a href="/about" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">About</a></li>
                 <li><a href="/thoughts" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Thoughts</a></li>
+                <li><a href="/gallery" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Gallery</a></li>
                 <li><a href="/work-with-me" class="text-small text-beige-100 no-underline hover:text-citrus-300 transition-colors">Work with me</a></li>
               </ul>
             </div>
@@ -348,11 +352,11 @@ const isActive = (href: string) =>
         max-width: 720px;
         border-radius: 0 0 1.5rem 1.5rem;
         transition:
-          border-radius 0.35s ease,
-          margin-top 0.35s ease,
-          max-width 0.35s ease,
-          box-shadow 0.35s ease,
-          background-color 0.35s ease;
+          border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+          margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+          max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       #site-header.is-scrolled .nav-shell {
@@ -365,18 +369,121 @@ const isActive = (href: string) =>
         -webkit-backdrop-filter: blur(8px);
       }
 
+      /* Mobile menu open state overrides */
+      #nav-shell.is-menu-open {
+        border-radius: 2rem !important;
+        max-width: 100% !important;
+        margin-top: 0.75rem !important;
+        box-shadow: 0 20px 40px rgb(38 37 31 / 0.4) !important;
+        background-color: var(--color-ink) !important;
+        padding-bottom: 1rem;
+      }
+
+      /* Panel animation */
+      #mobile-menu-panel {
+        visibility: hidden;
+        max-height: 0;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.25s ease-out,
+          visibility 0.35s ease;
+      }
+
+      #mobile-menu-panel.show {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* Hamburger / Close Icon morph */
+      #mobile-menu-toggle .hamburger-icon {
+        transform: rotate(0deg) scale(1);
+        opacity: 1;
+      }
+      #mobile-menu-toggle .close-icon {
+        transform: rotate(-90deg) scale(0);
+        opacity: 0;
+      }
+
+      #mobile-menu-toggle.is-active .hamburger-icon {
+        transform: rotate(90deg) scale(0);
+        opacity: 0;
+      }
+      #mobile-menu-toggle.is-active .close-icon {
+        transform: rotate(0deg) scale(1);
+        opacity: 1;
+      }
+
       @media (prefers-reduced-motion: reduce) {
-        .nav-shell {
-          transition: none;
+        .nav-shell,
+        #mobile-menu-panel,
+        #mobile-menu-toggle .hamburger-icon,
+        #mobile-menu-toggle .close-icon {
+          transition: none !important;
         }
       }
     </style>
 
     <script>
       const header = document.getElementById('site-header');
-      const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
+      const navShell = document.getElementById('nav-shell');
+      const menuToggle = document.getElementById('mobile-menu-toggle');
+      const menuPanel = document.getElementById('mobile-menu-panel');
+      const pageIndicator = document.getElementById('mobile-page-indicator');
+
+      const onScroll = () => {
+        if (navShell && navShell.classList.contains('is-menu-open')) {
+          header?.classList.add('is-scrolled');
+        } else {
+          header?.classList.toggle('is-scrolled', window.scrollY > 24);
+        }
+      };
+
       onScroll();
       window.addEventListener('scroll', onScroll, { passive: true });
+
+      if (menuToggle && navShell && menuPanel) {
+        const toggleMenu = () => {
+          const isOpen = navShell.classList.contains('is-menu-open');
+          
+          if (isOpen) {
+            menuPanel.style.maxHeight = '0px';
+            navShell.classList.remove('is-menu-open');
+            menuToggle.classList.remove('is-active');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuPanel.classList.remove('show');
+            onScroll();
+          } else {
+            navShell.classList.add('is-menu-open');
+            menuToggle.classList.add('is-active');
+            menuToggle.setAttribute('aria-expanded', 'true');
+            menuPanel.classList.add('show');
+            menuPanel.style.maxHeight = menuPanel.scrollHeight + 'px';
+            header?.classList.add('is-scrolled');
+          }
+        };
+
+        menuToggle.addEventListener('click', toggleMenu);
+
+        if (pageIndicator) {
+          pageIndicator.addEventListener('click', toggleMenu);
+        }
+
+        // Close menu on link click (progressive enhancement fallback/clean state)
+        const mobileLinks = menuPanel.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+          link.addEventListener('click', () => {
+            menuPanel.style.maxHeight = '0px';
+            navShell.classList.remove('is-menu-open');
+            menuToggle.classList.remove('is-active');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuPanel.classList.remove('show');
+            onScroll();
+          });
+        });
+      }
     </script>
   </body>
 </html>

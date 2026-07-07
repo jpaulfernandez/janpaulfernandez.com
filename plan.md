@@ -89,6 +89,15 @@ Requested by Paul via Cowork session; supersedes parts of T03/T08/T12/T15 visual
 - [x] (2026-07-05) /thoughts filters: boxed 3-group panel → compact toolbar (type segmented control + topic chips; stage filter dropped, stage badge kept on rows)
 - [x] (2026-07-06) Article page redesign: screenshot-inspired header, centralized left-margin TOC with subtle hover states, mobile bottom pill TOC accordion, smooth scroll animations, solid terracotta/color callouts, generous prose line-height and kerning
 
+## Phase 6 — Photo Gallery & Visual Extensions (Paul's direct request, 2026-07-07)
+
+Requested by Paul via chat; adds photo gallery with tag filtering, licensing CTA, and dynamic Bento footer.
+
+- [x] [T17 — Photo Gallery (/gallery), Licensing CTA, & Bento Footer Integration](tasks/task-17-gallery.md)
+- [x] (2026-07-07) Now timeline end node: added a quirky "End of timeline" node to `/now` that displays at the bottom of the timeline or when the timeline is empty.
+- [x] (2026-07-07) Thoughts cleanup & zero states: removed seed/test articles in `src/content/thoughts/` and added quirky, cohesive zero states to both `/thoughts` and Home (`/`).
+
 ## Out of scope (v2 — do not build)
 
 Dark mode, Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.
+

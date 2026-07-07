@@ -232,7 +232,7 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
     <!-- Mobile TOC Bottom Pill -->
     {showToc && (
       <div class="xl:hidden fixed bottom-6 left-4 right-4 z-40 flex justify-center pointer-events-none">
-        <details id="mobile-toc-details" class="pointer-events-auto bg-moss-900 text-beige-50 rounded-full shadow-2xl border border-moss-700/60 max-w-md w-full overflow-hidden transition-all duration-300 group open:rounded-2xl">
+        <details id="mobile-toc-details" class="pointer-events-auto bg-moss-900 text-beige-50 rounded-full shadow-2xl border border-moss-700/60 max-w-md w-full overflow-hidden group open:rounded-2xl">
           <summary class="flex items-center justify-between px-5 py-3 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden font-display text-xs tracking-widest uppercase text-beige-50 gap-3">
             <div class="flex items-center gap-2.5 truncate">
               <span class="text-citrus-500 shrink-0">📑</span>
@@ -242,7 +242,7 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
-          <div class="max-h-[50vh] overflow-y-auto px-4 py-3 border-t border-moss-700/60 bg-moss-900/95 backdrop-blur-md">
+          <div class="toc-content max-h-[50vh] overflow-y-auto px-4 py-3 border-t border-moss-700/60 bg-moss-900/95 backdrop-blur-md">
             <div class="text-[11px] font-display uppercase tracking-widest text-moss-200/60 px-2 mb-2">
               Sections
             </div>
@@ -319,4 +319,20 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
       });
     </script>
   )}
+
+  <style>
+    /* Smooth fade and slide up for TOC content when mobile menu opens */
+    @media (prefers-reduced-motion: no-preference) {
+      .toc-content {
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      
+      details[open] .toc-content {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </BaseLayout>

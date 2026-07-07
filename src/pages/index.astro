@@ -67,7 +67,7 @@ const seoData = [
   <section class="py-16 md:py-24 max-w-[1140px] mx-auto px-6 border-t border-moss-200">
     <div class="max-w-[720px] mb-12">
       <span class="text-small font-bold uppercase tracking-wider text-moss-700">How we can work together</span>
-      <h2 class="text-h2 text-moss-900 mt-1 mb-4">I don't write your code. I make sure the right code gets written.</h2>
+      <h2 class="text-h2 text-moss-900 mt-1 mb-4">I don't build your product. I make sure the right one gets built.</h2>
       <p class="text-body text-ink leading-relaxed">
         Consultation, workshops, and hands-on product ownership — for teams that know where they want to go but need help translating it into something a dev team can build.
       </p>
@@ -86,44 +86,56 @@ const seoData = [
   <section class="py-16 md:py-24 max-w-[1140px] mx-auto px-6 border-t border-moss-200">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
       <div>
-        <span class="text-small font-bold uppercase tracking-wider text-moss-700">Writing & Musings</span>
+        <span class="text-small font-bold uppercase tracking-wider text-moss-700">Overthinkings and Brain dumps</span>
         <h2 class="text-h2 text-moss-900 mt-1">Latest thoughts</h2>
       </div>
-      <a
-        href="/thoughts"
-        class="inline-flex items-center text-body font-bold text-moss-700 hover:text-moss-500 hover:underline gap-1 focus:outline-none focus:ring-2 focus:ring-moss-900 rounded"
-      >
-        View all thoughts
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
+      {latestThoughts.length > 0 && (
+        <a
+          href="/thoughts"
+          class="inline-flex items-center text-body font-bold text-moss-700 hover:text-moss-500 hover:underline gap-1 focus:outline-none focus:ring-2 focus:ring-moss-900 rounded"
+        >
+          View all thoughts
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      )}
     </div>
 
-    <div class="divide-y divide-moss-200">
-      {latestThoughts.map((post) => {
-        const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
-        const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-        return (
-          <PostListItem
-            title={post.data.title}
-            type={post.data.type}
-            topics={post.data.topics || []}
-            date={post.data.publishedDate}
-            excerpt={post.data.excerpt}
-            url={`/thoughts/${post.id}`}
-            readingTime={readingTime}
-            stage={post.data.stage}
-            cover={post.data.cover}
-          />
-        );
-      })}
-    </div>
+    {latestThoughts.length > 0 ? (
+      <div class="divide-y divide-moss-200">
+        {latestThoughts.map((post) => {
+          const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
+          const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+          return (
+            <PostListItem
+              title={post.data.title}
+              type={post.data.type}
+              topics={post.data.topics || []}
+              date={post.data.publishedDate}
+              excerpt={post.data.excerpt}
+              url={`/thoughts/${post.id}`}
+              readingTime={readingTime}
+              stage={post.data.stage}
+              cover={post.data.cover}
+            />
+          );
+        })}
+      </div>
+    ) : (
+      <div class="py-12 px-6 rounded-2xl bg-beige-50 border border-moss-200 text-center flex flex-col items-center justify-center gap-3">
+        <span class="text-small font-bold uppercase tracking-wider text-moss-500">Quiet for now</span>
+        <h3 class="text-h3 text-moss-900 m-0">No thoughts published yet</h3>
+        <p class="text-body text-moss-700 max-w-[48ch] m-0">
+          My brain dumps and essays are currently undergoing maintenance (or I'm just overthinking what to publish first). Check back soon!
+        </p>
+      </div>
+    )}
   </section>
 
   {/* Section 4: Footer CTA */}
   <section class="py-20 md:py-28 max-w-[1140px] mx-auto px-6 text-center">
     <h2 class="text-h2 text-moss-900 mb-6">Got something brewing?</h2>
     <p class="text-body text-ink leading-relaxed max-w-[600px] mx-auto mb-8">
-      Whether it's a product idea that needs untangling, a team that needs a translator, or a room that needs a talk — let's figure it out over coffee.
+      A product idea that needs untangling, a team that needs a translator, or a room that needs a talk — let's figure it out over coffee.
     </p>
     <a
       href="/work-with-me#contact"

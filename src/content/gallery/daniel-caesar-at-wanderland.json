@@ -1,0 +1,25 @@
+{
+  "title": "Daniel Caesar at Wanderland",
+  "publishedDate": "2024-03-22",
+  "cover": "../../assets/gallery/daniel/daniel-01.webp",
+  "description": "Daniel Caesar's soulful set at Wanderland Music & Arts Festival. Smooth R&B, golden stage lighting, and an electric crowd energy.",
+  "tags": ["concert", "photography", "wanderland", "daniel"],
+  "featured": true,
+  "licensingAvailable": false,
+  "photos": [
+    { "image": "../../assets/gallery/daniel/daniel-01.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-02.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-03.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-04.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-05.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-06.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-07.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-08.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-09.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-10.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-11.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-12.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-13.webp", "caption": "" },
+    { "image": "../../assets/gallery/daniel/daniel-14.webp", "caption": "" }
+  ]
+}

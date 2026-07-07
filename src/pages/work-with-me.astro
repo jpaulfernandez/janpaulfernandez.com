@@ -33,7 +33,7 @@ const seoData = [
   breadcrumbsSchema,
 ];
 
-const description = "Work with Paul Fernandez: product consultation, talks and workshops, and fractional product ownership — a translator between your business and your dev team.";
+const description = "Work with Paul Fernandez: digital transformation consulting, talks and workshops, and fractional product ownership — a translator between your business and your dev team.";
 ---
 
 <BaseLayout title="Work with me" description={description}>
@@ -121,15 +121,18 @@ const description = "Work with Paul Fernandez: product consultation, talks and w
         </p>
       </div>
 
-      <!-- Contact form submitting to Formspree -->
+      <!-- Contact form submitting to Web3Forms -->
       <form
-        action="https://formspree.io/f/placeholder_id_pending_paul"
+        action="https://api.web3forms.com/submit"
         method="POST"
         class="flex flex-col gap-5"
       >
-        <!-- Formspree fallback config values -->
-        <input type="text" name="_gotcha" style="display:none" />
-        <input type="hidden" name="_next" value="https://janpaulfernandez.com/thanks" />
+        <!-- Web3Forms config values -->
+        <input type="hidden" name="access_key" value="3adf4959-3a04-4fc5-a990-e1159605181f" />
+        <input type="hidden" name="redirect" value="https://janpaulfernandez.com/thanks" />
+        <input type="hidden" name="subject" value="New Contact Form Submission from janpaulfernandez.com" />
+        <input type="hidden" name="from_name" value="Jan Paul Fernandez Website" />
+        <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
 
         <div>
           <label for="name" class="block text-small font-bold text-moss-900 mb-1">Your Name <span class="text-citrus-500" aria-hidden="true">*</span></label>

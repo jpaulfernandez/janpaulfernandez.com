@@ -107,4 +107,27 @@ const thoughts = defineCollection({
   }),
 });
 
-export const collections = { now, career, home, about, workWithMe, seo, thoughts, services };
+const gallery = defineCollection({
+  loader: glob({
+    pattern: '*.json',
+    base: 'src/content/gallery',
+  }),
+  schema: ({ image }) => z.object({
+    title: z.string(),
+    publishedDate: z.string(),
+    cover: image().optional(),
+    description: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    licensingAvailable: z.boolean().default(true),
+    photos: z.array(
+      z.object({
+        image: image(),
+        caption: z.string().optional(),
+      })
+    ).default([]),
+  }),
+});
+
+export const collections = { now, career, home, about, workWithMe, seo, thoughts, services, gallery };
+

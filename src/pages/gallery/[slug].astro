@@ -1,0 +1,367 @@
+---
+// [slug].astro (Individual gallery set / photo page)
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allItems = await getCollection('gallery');
+  return allItems.map((item) => ({
+    params: { slug: item.id },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+
+const dateFormatted = new Date(item.data.publishedDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Build the full photo list combining cover (if present) and additional photos
+const photoList: Array<{ image: any; caption: string }> = [];
+if (item.data.cover) {
+  photoList.push({
+    image: item.data.cover,
+    caption: item.data.description || item.data.title,
+  });
+}
+if (item.data.photos && item.data.photos.length > 0) {
+  item.data.photos.forEach((p) => {
+    // Avoid duplicate if the first photo is identical to cover
+    if (!photoList.some((existing) => existing.image === p.image)) {
+      photoList.push({
+        image: p.image,
+        caption: p.caption || item.data.title,
+      });
+    }
+  });
+}
+---
+
+<BaseLayout title={`${item.data.title} — Gallery`} description={item.data.description || item.data.title}>
+  <article class="max-w-[1140px] mx-auto px-6 py-12 md:py-16">
+    <!-- Back link -->
+    <div class="mb-8">
+      <a href="/gallery" class="inline-flex items-center gap-2 text-small font-bold text-moss-700 hover:text-citrus-500 transition-colors no-underline">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Gallery
+      </a>
+    </div>
+
+    <!-- Gallery Header -->
+    <header class="max-w-[720px] mb-12">
+      <div class="flex items-center gap-3 text-small text-moss-500 mb-3">
+        <time datetime={item.data.publishedDate}>{dateFormatted}</time>
+        <span>·</span>
+        <span class="font-bold">{photoList.length} photos</span>
+      </div>
+      
+      <h1 class="mb-4">{item.data.title}</h1>
+      
+      {item.data.description && (
+        <p class="text-body text-ink leading-relaxed mb-6">
+          {item.data.description}
+        </p>
+      )}
+
+      <!-- Tags -->
+      {item.data.tags && item.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 pt-4 border-t border-moss-200">
+          {item.data.tags.map((tag) => (
+            <a href={`/gallery`} class="text-small font-bold text-moss-700 bg-moss-200/40 hover:bg-moss-200 px-3 py-1 rounded-full no-underline transition-colors">
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <!-- Photo Grid — Masonry layout using CSS columns -->
+    <div class="gallery-masonry my-12">
+      {photoList.map((photo, idx) => (
+        <div class="gallery-masonry-item mb-4 break-inside-avoid group">
+          <button
+            type="button"
+            class="photo-trigger relative w-full rounded-2xl overflow-hidden border border-moss-200/60 bg-moss-900/5 cursor-zoom-in focus:outline-none focus:ring-4 focus:ring-citrus-500 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl block"
+            data-index={idx}
+            data-caption={photo.caption}
+            data-src={photo.image ? (typeof photo.image === 'string' ? photo.image : photo.image.src) : ''}
+            aria-label={`View larger: ${photo.caption || 'Photo ' + (idx + 1)}`}
+          >
+            {photo.image && (
+              <Image
+                src={photo.image}
+                alt={photo.caption || `${item.data.title} photo ${idx + 1}`}
+                class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                width={800}
+                height={600}
+              />
+            )}
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
+              <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60 text-beige-50 rounded-full px-4 py-2 text-small font-bold backdrop-blur-sm">
+                <svg class="w-4 h-4 inline-block mr-1 -mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                </svg>
+                View
+              </span>
+            </div>
+          </button>
+        </div>
+      ))}
+    </div>
+  </article>
+
+  <!-- Native HTML <dialog> Lightbox Modal -->
+  <dialog id="photo-modal" class="lightbox-dialog">
+    <div class="lightbox-inner">
+      <!-- Close button -->
+      <button
+        id="modal-close"
+        type="button"
+        class="lightbox-close"
+        aria-label="Close lightbox"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Image display -->
+      <div class="lightbox-image-wrap">
+        <img id="modal-img" src="" alt="" class="lightbox-img" />
+      </div>
+
+      <!-- Controls bar -->
+      <div class="lightbox-controls">
+        <button id="modal-prev" type="button" class="lightbox-btn">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <span id="modal-counter" class="lightbox-counter"></span>
+        <button id="modal-next" type="button" class="lightbox-btn">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </dialog>
+</BaseLayout>
+
+
+<style>
+  /* Masonry layout using CSS columns — no JS needed */
+  .gallery-masonry {
+    columns: 1;
+    column-gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .gallery-masonry {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gallery-masonry {
+      columns: 3;
+    }
+  }
+
+  .gallery-masonry-item {
+    break-inside: avoid;
+  }
+
+  /* ── Lightbox ── */
+  .lightbox-dialog {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+  }
+
+  .lightbox-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.95);
+  }
+
+  .lightbox-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    color: rgba(245, 241, 230, 0.7);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    backdrop-filter: blur(8px);
+  }
+
+  .lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #F4C566;
+  }
+
+  .lightbox-close:focus {
+    outline: 2px solid #F4C566;
+    outline-offset: 2px;
+  }
+
+  .lightbox-image-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    width: 100%;
+    max-height: calc(100vh - 6rem);
+  }
+
+  .lightbox-img {
+    max-width: 100%;
+    max-height: calc(100vh - 6rem);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0.5rem;
+  }
+
+  .lightbox-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding-top: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .lightbox-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(245, 241, 230, 0.8);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    backdrop-filter: blur(8px);
+  }
+
+  .lightbox-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #F4C566;
+  }
+
+  .lightbox-btn:focus {
+    outline: 2px solid #F4C566;
+    outline-offset: 2px;
+  }
+
+  .lightbox-counter {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: rgba(245, 241, 230, 0.5);
+    min-width: 4rem;
+    text-align: center;
+  }
+
+  /* Lightbox transitions */
+  .lightbox-dialog[open] {
+    animation: lightbox-in 0.2s ease-out;
+  }
+
+  @keyframes lightbox-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-dialog[open] {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const modal = document.getElementById('photo-modal') as HTMLDialogElement;
+  const modalImg = document.getElementById('modal-img') as HTMLImageElement;
+  const modalCounter = document.getElementById('modal-counter');
+  const modalClose = document.getElementById('modal-close');
+  const modalPrev = document.getElementById('modal-prev');
+  const modalNext = document.getElementById('modal-next');
+  const triggers = document.querySelectorAll('.photo-trigger') as NodeListOf<HTMLElement>;
+
+  let currentIndex = 0;
+  const totalPhotos = triggers.length;
+
+  function showPhoto(index: number) {
+    if (totalPhotos === 0) return;
+    currentIndex = (index + totalPhotos) % totalPhotos;
+    const trigger = triggers[currentIndex];
+    if (!trigger) return;
+
+    const src = trigger.getAttribute('data-src') || '';
+
+    if (modalImg) modalImg.src = src;
+    if (modalCounter) modalCounter.textContent = `${currentIndex + 1} / ${totalPhotos}`;
+  }
+
+  triggers.forEach((trigger, idx) => {
+    trigger.addEventListener('click', () => {
+      showPhoto(idx);
+      modal?.showModal();
+    });
+  });
+
+  modalClose?.addEventListener('click', () => {
+    modal?.close();
+  });
+
+  modalPrev?.addEventListener('click', () => showPhoto(currentIndex - 1));
+  modalNext?.addEventListener('click', () => showPhoto(currentIndex + 1));
+
+  // Close when clicking on backdrop
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.close();
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (!modal?.open) return;
+    if (e.key === 'ArrowLeft') showPhoto(currentIndex - 1);
+    if (e.key === 'ArrowRight') showPhoto(currentIndex + 1);
+  });
+</script>

@@ -51,7 +51,7 @@ const seoData = [
       <div class="lg:col-span-8 flex flex-col gap-10">
         <div>
           <span class="text-small font-bold uppercase tracking-wider text-moss-700">Biography</span>
-          <h1 class="text-h1 text-moss-900 mt-1">About me</h1>
+          <h1 class="text-h1 text-moss-900 mt-1">Let me tell you something about me</h1>
         </div>
 
         <div class="prose prose-ink max-w-[68ch] text-ink leading-relaxed">
@@ -59,7 +59,11 @@ const seoData = [
         </div>
 
         {/* Career Timeline directly continuing after About Me content */}
-        <div class="mt-8">
+        <div class="mt-12 flex flex-col gap-6">
+          <div>
+            <span class="text-small font-bold uppercase tracking-wider text-moss-700">Career</span>
+            <h2 class="text-h2 text-moss-900 mt-1">Experience</h2>
+          </div>
           <Timeline entries={careerEntries} variant="full" />
         </div>
       </div>
@@ -80,9 +84,9 @@ const seoData = [
 
     {/* End CTA & Social Links */}
     <div class="bg-beige-50 border border-moss-200 rounded-2xl p-8 md:p-12 text-center max-w-[800px] mx-auto">
-      <h3 class="text-h3 font-bold text-moss-900 mb-4">Let's build something together</h3>
+      <h3 class="text-h3 font-bold text-moss-900 mb-4">Have an idea? Want to connect? Let's talk.</h3>
       <p class="text-body text-ink leading-relaxed mb-6">
-        I'm available for strategic consulting, technical leadership Advisory, and custom application engineering.
+        I'm available for digital transformation consulting, talks and workshops, and fractional product ownership.
       </p>
       <div class="flex flex-wrap justify-center gap-4">
         <a 

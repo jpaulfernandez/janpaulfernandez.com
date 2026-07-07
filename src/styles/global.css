@@ -39,6 +39,8 @@
   --text-h3: clamp(1.375rem, 1.2525rem + 0.5229vw, 1.625rem); /* 22px -> 26px */
   --text-body: clamp(1.0625rem, 1.0319rem + 0.1307vw, 1.125rem); /* 17px -> 18px */
   --text-small: 0.875rem; /* 14px, fixed */
+  --text-hero-title: clamp(2rem, 0.7745rem + 5.2287vw, 4.5rem); /* 32px -> 72px */
+  --text-hero-intro: clamp(1.25rem, 1.0049rem + 1.0457vw, 1.75rem); /* 20px -> 28px */
 }
 
 /*

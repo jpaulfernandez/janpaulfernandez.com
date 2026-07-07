@@ -168,6 +168,43 @@ export default config({
         ),
       },
     }),
+    gallery: collection({
+      label: 'Gallery',
+      slugField: 'slug',
+      path: 'src/content/gallery/*',
+      format: { data: 'json' },
+      schema: {
+        slug: fields.slug({ name: { label: 'Slug', description: 'Used for filename' } }),
+        title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+        publishedDate: fields.date({ label: 'Published Date', validation: { isRequired: true } }),
+        cover: fields.image({
+          label: 'Cover Image',
+          directory: 'src/assets/gallery',
+          publicPath: '../../assets/gallery',
+        }),
+        description: fields.text({ label: 'Description', multiline: true }),
+        tags: fields.array(fields.text({ label: 'Tag' }), {
+          label: 'Tags',
+          itemLabel: (item) => item.value || 'Tag',
+        }),
+        featured: fields.checkbox({ label: 'Featured in Footer', defaultValue: false }),
+        licensingAvailable: fields.checkbox({ label: 'Licensing Available', defaultValue: true }),
+        photos: fields.array(
+          fields.object({
+            image: fields.image({
+              label: 'Image',
+              directory: 'src/assets/gallery',
+              publicPath: '../../assets/gallery',
+            }),
+            caption: fields.text({ label: 'Caption' }),
+          }),
+          {
+            label: 'Photos in this Collection',
+            itemLabel: (item) => item.fields.caption.value || 'Photo',
+          }
+        ),
+      },
+    }),
   },
   singletons: {
     home: singleton({

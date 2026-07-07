@@ -156,7 +156,7 @@ Ends with a soft CTA to /work-with-me and links to socials.
 3. **What I bring to the table** — proof points tied to history (scale, pressure, cross-industry: finance, media, education).
 4. **How it works** — simple 3-step engagement (Call → Proposal → Build), sets expectations.
 5. **FAQ** (5–6 questions) — doubles as FAQPage schema for GEO.
-6. **Contact** — since the site is fully static: a form via **Formspree free tier** (or Tally embed) posting to Paul's email, plus a plain `mailto:` and optional Cal.com booking link. No backend.
+6. **Contact** — since the site is fully static: a form via **Web3Forms free tier** (or Formspree/Tally) posting to Paul's email, plus a plain `mailto:` and optional Cal.com booking link. No backend.
 
 ---
 
@@ -222,7 +222,7 @@ Person entity is defined once (single `@id`, e.g. `https://janpaulfernandez.com/
 | Styling | **Tailwind CSS 4** | Design tokens from §4 as CSS variables/theme |
 | Content | MDX + Keystatic component blocks | Type-safe via Astro content collections + Keystatic reader |
 | Hosting | **Vercel** | Free tier, preview deploys per PR; Keystatic saves → commit → auto-rebuild |
-| Forms | Formspree (or Tally) | Keeps the site fully static |
+| Forms | Web3Forms (or Formspree) | Keeps the site fully static |
 | Analytics | Plausible or Umami | Privacy-friendly, no cookie banner |
 | Domain | janpaulfernandez.com → Vercel DNS/alias | Apex + www redirect |
 

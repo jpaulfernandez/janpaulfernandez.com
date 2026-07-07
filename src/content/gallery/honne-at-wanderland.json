@@ -1,0 +1,30 @@
+{
+  "title": "HONNE at Wanderland",
+  "publishedDate": "2024-03-23",
+  "cover": "../../assets/gallery/honne/honne-01.webp",
+  "description": "HONNE performing live at Wanderland Music & Arts Festival. Warm synths, intimate vocals, and dreamy stage lights captured from the crowd.",
+  "tags": ["concert", "photography", "wanderland", "honne"],
+  "featured": true,
+  "licensingAvailable": false,
+  "photos": [
+    { "image": "../../assets/gallery/honne/honne-01.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-02.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-03.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-04.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-05.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-06.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-07.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-08.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-09.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-10.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-11.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-12.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-13.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-14.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-15.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-16.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-17.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-18.webp", "caption": "" },
+    { "image": "../../assets/gallery/honne/honne-19.webp", "caption": "" }
+  ]
+}

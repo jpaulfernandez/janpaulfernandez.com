@@ -12,7 +12,7 @@ const sortedNow = [...nowEntries].sort((a, b) => b.data.date.localeCompare(a.dat
 const latestDate = sortedNow[0]?.data.date;
 const formattedLastUpdated = latestDate
   ? new Date(latestDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-  : 'Recently';
+  : 'July 5, 2026';
 
 const processedNow = await Promise.all(
   sortedNow.map(async (entry) => {
@@ -48,9 +48,12 @@ const seoData = [
     </div>
 
     {/* Intro Explaining the Page */}
-    <div class="prose prose-ink max-w-[68ch] text-ink leading-relaxed mb-16 border-b border-moss-200 pb-8">
-      <p class="text-body font-normal">
-        This is a <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer" class="underline hover:text-moss-500">now page</a>. It serves as a public dashboard of my current priorities, projects, and learning focus. If you're wondering what I am up to these days, this is where you'll find it.
+    <div class="prose prose-ink max-w-[68ch] text-ink leading-relaxed flex flex-col gap-4 mb-16 border-b border-moss-200 pb-8">
+      <p class="text-body font-normal m-0">
+        This is a now page — a public dashboard of what I'm focused on these days: current priorities, projects, and what I'm learning.
+      </p>
+      <p class="text-body font-normal m-0">
+        Maybe it's a little bit of oversharing. But I wanted a public journal of sorts — a record of where my head is at right now, kept honest by the fact that anyone can read it. If you're wondering what I'm up to, this is the place.
       </p>
     </div>
 
@@ -86,6 +89,24 @@ const seoData = [
           </div>
         ))
       }
+
+      {/* End of Timeline Node */}
+      <div class="relative group">
+        {/* Timeline Node dot */}
+        <div class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full border-2 border-moss-700 bg-beige-100 group-hover:bg-citrus-500 transition-colors duration-200 flex items-center justify-center">
+          <div class="w-1.5 h-1.5 rounded-full bg-moss-700 group-hover:bg-beige-100 transition-colors duration-200"></div>
+        </div>
+        
+        <div class="flex flex-col gap-2">
+          <span class="inline-block self-start px-2.5 py-0.5 rounded-full text-small font-bold bg-moss-200 text-moss-900">
+            End of timeline
+          </span>
+          
+          <p class="prose prose-ink max-w-[68ch] text-moss-700 text-body italic m-0">
+            You've reached the end of the timeline! Nothing here anymore... go touch some grass, build something cool, or <a href="/work-with-me#contact" class="text-moss-900 font-bold underline decoration-moss-300 hover:decoration-moss-900 transition-colors">invite me for coffee</a>.
+          </p>
+        </div>
+      </div>
     </div>
   </article>
 </BaseLayout>

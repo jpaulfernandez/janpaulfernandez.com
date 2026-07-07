@@ -12,6 +12,8 @@ const now = defineCollection({
     generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ''),
   }),
   schema: z.object({
+    title: z.string().optional(),
+    slug: z.string().optional(),
     date: dateSchema,
     link: z.string().optional(),
   }),

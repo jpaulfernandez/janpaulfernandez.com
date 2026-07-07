@@ -102,7 +102,7 @@ const activeLabel = getActiveLabel();
 
     <!-- Notch nav: sits flush at the top like a MacBook notch, detaches into a
          floating pill once you scroll, and re-docks at the top of the page. -->
-    <header id="site-header" class="fixed inset-x-0 top-0 z-50 flex justify-center px-3 sm:px-6 pointer-events-none">
+    <header id="site-header" class={`fixed inset-x-0 top-0 z-50 flex justify-center px-3 sm:px-6 pointer-events-none ${isHome ? 'is-home' : ''}`}>
       <nav
         id="nav-shell"
         class="nav-shell pointer-events-auto w-full bg-ink text-beige-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pl-4 pr-3 py-2.5 transition-all duration-300"
@@ -240,7 +240,7 @@ const activeLabel = getActiveLabel();
 
           <!-- Gallery Thumbnails Grid -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {recentGalleryItems.map((galleryItem, idx) => (
+            {recentGalleryItems.map((galleryItem) => (
               <a href={`/gallery/${galleryItem.id}`} class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-beige-100/10 hover:border-beige-100/25 transition-all duration-300 hover:scale-[1.02] block focus:outline-none focus:ring-2 focus:ring-citrus-300">
                 {galleryItem.data.cover && (
                   <Image src={galleryItem.data.cover} alt={galleryItem.data.title} class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={300} height={300} />
@@ -254,7 +254,7 @@ const activeLabel = getActiveLabel();
                   </svg>
                 </div>
                 <div class="absolute bottom-4 left-4 right-4">
-                  <span class={`block font-display text-small uppercase tracking-wide leading-snug ${idx % 2 === 0 ? 'text-citrus-300' : 'text-beige-50'}`}>{galleryItem.data.title}</span>
+                  <span class="block font-display text-small uppercase tracking-wide leading-snug text-white">{galleryItem.data.title}</span>
                 </div>
               </a>
             ))}
@@ -377,6 +377,14 @@ const activeLabel = getActiveLabel();
         background-color: color-mix(in srgb, var(--color-ink) 92%, transparent);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
+      }
+
+      @media (max-width: 767px) {
+        #site-header.is-home:not(.is-scrolled),
+        body.page-magenta #site-header:not(.is-scrolled) {
+          background-color: var(--color-magenta-900);
+          padding-bottom: 3.5rem;
+        }
       }
 
       /* Mobile menu open state overrides */

@@ -1,4 +1,5 @@
 ---
+title: Started Masters in Innovation and Business at AIM
 slug: Started Masters in Innovation and Business at AIM
 date: 2025-03-24
 ---

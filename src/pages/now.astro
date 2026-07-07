@@ -9,17 +9,42 @@ const nowEntries = await getCollection('now');
 // Sort reverse-chronologically (newest first)
 const sortedNow = [...nowEntries].sort((a, b) => b.data.date.localeCompare(a.data.date));
 
+function parseDateSafe(dateStr: string | Date) {
+  const str = typeof dateStr === 'string' ? dateStr : dateStr.toISOString().slice(0, 10);
+  return new Date(`${str}T12:00:00`);
+}
+
 const latestDate = sortedNow[0]?.data.date;
 const formattedLastUpdated = latestDate
-  ? new Date(latestDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  ? parseDateSafe(latestDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
   : 'July 5, 2026';
 
 const processedNow = await Promise.all(
   sortedNow.map(async (entry) => {
     const { Content } = await render(entry);
-    return { ...entry, Content };
+    const dateObj = parseDateSafe(entry.data.date);
+    const exactDateFormatted = dateObj.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+    const monthYear = dateObj.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    });
+    return { ...entry, Content, exactDateFormatted, monthYear };
   })
 );
+
+const groupedNow: { monthYear: string; items: typeof processedNow }[] = [];
+for (const item of processedNow) {
+  let group = groupedNow.find((g) => g.monthYear === item.monthYear);
+  if (!group) {
+    group = { monthYear: item.monthYear, items: [] };
+    groupedNow.push(group);
+  }
+  group.items.push(item);
+}
 
 // ProfilePage dateModified reflects the latest Now entry date for freshness signals
 const seoData = [
@@ -58,33 +83,51 @@ const seoData = [
     </div>
 
     {/* Now Timeline */}
-    <div class="relative border-l-2 border-moss-200 ml-4 md:ml-8 pl-6 md:pl-8 py-2 flex flex-col gap-12">
+    <div class="relative border-l-2 border-moss-200 ml-4 md:ml-8 pl-6 md:pl-8 py-2 flex flex-col gap-14 md:gap-16">
       {
-        processedNow.map(({ data, Content }) => (
+        groupedNow.map(({ monthYear, items }) => (
           <div class="relative group">
             {/* Timeline Node dot */}
-            <div class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full border-2 border-moss-700 bg-beige-100 group-hover:bg-citrus-500 transition-colors duration-200" />
+            <div class="absolute -left-[31px] md:-left-[39px] top-2 md:top-3 w-4 h-4 rounded-full border-2 border-moss-700 bg-beige-100 group-hover:bg-citrus-500 transition-colors duration-200" />
             
-            <div class="flex flex-col gap-3">
-              <time class="inline-block self-start px-2.5 py-0.5 rounded-full text-small font-bold bg-moss-200 text-moss-900" datetime={data.date}>
-                {new Date(data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
-              </time>
+            <div class="flex flex-col gap-8">
+              <h2 class="text-h2 font-display text-moss-900 m-0 leading-none">
+                {monthYear}
+              </h2>
               
-              <div class="prose prose-ink max-w-[68ch] text-ink leading-relaxed text-body">
-                <Content />
+              <div class="flex flex-col gap-10">
+                {items.map(({ data, Content, id, exactDateFormatted }) => {
+                  const displayTitle = data.title || data.slug || id;
+                  return (
+                    <div class="flex flex-col gap-3">
+                      <div class="flex flex-col gap-1">
+                        <h3 class="text-h3 font-bold text-moss-900 leading-snug m-0">
+                          {displayTitle}
+                        </h3>
+                        <time class="text-small font-bold text-moss-700 font-body" datetime={data.date}>
+                          {exactDateFormatted}
+                        </time>
+                      </div>
+                      
+                      <div class="prose prose-ink max-w-[68ch] text-ink leading-relaxed text-body">
+                        <Content />
+                      </div>
+                      
+                      {data.link && (
+                        <a 
+                          href={data.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          class="inline-flex items-center text-small font-bold text-moss-700 hover:text-moss-500 hover:underline gap-1 focus:outline-none focus:ring-2 focus:ring-moss-900 rounded self-start"
+                        >
+                          Reference link
+                          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              
-              {data.link && (
-                <a 
-                  href={data.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  class="inline-flex items-center text-small font-bold text-moss-700 hover:text-moss-500 hover:underline gap-1 focus:outline-none focus:ring-2 focus:ring-moss-900 rounded"
-                >
-                  Reference link
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-                </a>
-              )}
             </div>
           </div>
         ))

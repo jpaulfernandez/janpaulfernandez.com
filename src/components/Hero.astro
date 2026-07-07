@@ -11,10 +11,10 @@ interface Props {
 const { greeting, intro } = Astro.props;
 ---
 
-<section class="py-10 md:py-16 fade-rise">
-  <div class="max-w-[1140px] mx-auto px-6">
-    <div class="bg-magenta-900 text-beige-100 rounded-[2.5rem] p-8 sm:p-14 md:p-20 shadow-2xl relative overflow-hidden border border-magenta-800/40">
-      <div class="max-w-[980px] flex flex-col gap-8 md:gap-10 relative z-10">
+<section class="md:py-16 bg-magenta-900 md:bg-transparent">
+  <div class="max-w-[1140px] mx-auto px-0 md:px-6">
+    <div class="bg-magenta-900 text-beige-100 rounded-none md:rounded-[2.5rem] px-6 pt-16 pb-12 sm:px-10 sm:py-14 md:p-20 md:shadow-2xl relative overflow-hidden border-0 md:border md:border-magenta-800/40">
+      <div class="max-w-[980px] flex flex-col gap-8 md:gap-10 relative z-10 fade-rise">
         <h1 class="font-display text-hero-title text-beige-50 tracking-tight leading-none">
           {greeting}
         </h1>

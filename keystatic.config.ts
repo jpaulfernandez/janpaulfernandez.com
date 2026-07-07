@@ -13,7 +13,8 @@ export default config({
       path: 'src/content/now/*',
       format: { data: 'yaml', contentField: 'body' },
       schema: {
-        slug: fields.slug({ name: { label: 'Slug', description: 'Used for the filename only' } }),
+        slug: fields.slug({ name: { label: 'Slug / Title', description: 'Used for the entry title and filename' } }),
+        title: fields.text({ label: 'Title (optional override)', description: 'If left blank, the Slug / Title above will be used as the display title', validation: { isRequired: false } }),
         date: fields.date({ label: 'Date', validation: { isRequired: true } }),
         body: fields.document({
           label: 'Body',

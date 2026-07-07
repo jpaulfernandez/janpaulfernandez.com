@@ -85,6 +85,16 @@ const activeLabel = getActiveLabel();
     <link rel="preload" as="font" type="font/woff2" href={archivoBlackWoff2} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={latoWoff2} crossorigin />
 
+    <!-- Google tag (gtag.js) -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-KJX3LCC0SZ"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KJX3LCC0SZ');
+    </script>
+
     <slot name="head" />
   </head>
   <body class={bodyClass}>

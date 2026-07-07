@@ -18,6 +18,15 @@ const skipKeystatic = /** @type {any} */ (globalThis).process?.env?.SKIP_KEYSTAT
 export default defineConfig({
   site: 'https://janpaulfernandez.com',
   adapter: vercel(),
+  security: {
+    allowedDomains: [
+      { hostname: 'janpaulfernandez.com' },
+      { hostname: 'www.janpaulfernandez.com' },
+      { hostname: 'localhost' },
+      { hostname: '127.0.0.1' },
+      { hostname: '*.vercel.app' },
+    ],
+  },
   vite: {
     plugins: [tailwindcss()],
   },

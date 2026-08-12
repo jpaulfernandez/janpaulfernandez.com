@@ -1,22 +1,19 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
-import PostListItem from '../components/PostListItem.astro';
-import ServiceStack from '../components/ServiceStack.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { person, webSite, profilePage, breadcrumbs } from '../lib/schema';
-
 import { getPublishedThoughts } from '../lib/thoughts';
+import { getProjects } from '../lib/projects';
 
-// Fetch Keystatic Home singleton and collections
+// Fetch Keystatic Home singleton
 const homeEntry = await getEntry('home', 'home');
 if (!homeEntry) {
   throw new Error('Home page singleton is missing. Run the seed scripts first.');
 }
-const { heroGreeting, heroIntro, ctaPrimaryLabel, ctaSecondaryLabel } = homeEntry.data;
+const { heroGreeting, heroIntro } = homeEntry.data;
 
-// Latest Now entry -> one-liner inside the hero (no standalone section).
+// Latest Now entry -> one tight line under the intro.
 const nowEntries = await getCollection('now');
 const latestNow = nowEntries.sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
 const nowPlain = latestNow?.body
@@ -25,19 +22,16 @@ const nowPlain = latestNow?.body
   .replace(/\s+/g, ' ')
   .trim();
 const nowSnippet = nowPlain
-  ? nowPlain.length > 110
-    ? `${nowPlain.slice(0, 110).trimEnd()}…`
+  ? nowPlain.length > 92
+    ? `${nowPlain.slice(0, 92).trimEnd()}…`
     : nowPlain
   : undefined;
 
-// Fetch real published thoughts
-const allThoughts = await getPublishedThoughts();
-const latestThoughts = allThoughts.slice(0, 4);
+// Latest thoughts for the Writing index (5 rows).
+const latestThoughts = (await getPublishedThoughts()).slice(0, 5);
 
-// Fetch services collection
-const servicesCollection = await getCollection('services');
-const sortedServices = servicesCollection
-  .sort((a, b) => a.data.order - b.data.order);
+// Latest projects for the Projects index (3 rows).
+const latestProjects = (await getProjects()).slice(0, 3);
 
 const seoData = [
   webSite(),
@@ -49,99 +43,97 @@ const seoData = [
 
 <BaseLayout
   title="Paul Fernandez"
-  description="Technologist from the Philippines who has shipped under pressure — banking, election-night newsrooms, national-scale education — now offering product consultation, workshops, and fractional product ownership."
+  description="Technologist from the Philippines who ships under pressure — banking, election-night newsrooms, national-scale education — now helping teams adopt AI and ship the right thing."
   isHome
 >
   <JsonLd data={seoData} slot="head" />
 
-  {/* Section 1: Hero — personal intro + Now one-liner */}
-  <Hero
-    greeting={heroGreeting}
-    intro={heroIntro}
-    ctaPrimaryLabel={ctaPrimaryLabel}
-    ctaSecondaryLabel={ctaSecondaryLabel}
-    nowSnippet={nowSnippet}
-  />
+  <article>
+    {/* Identity: greeting → bio → optional now one-liner. */}
+    <header>
+      <h1 class="text-moss-900 m-0">{heroGreeting}</h1>
+      {heroIntro && (
+        <p class="mt-6 mb-0 text-moss-700 text-body leading-relaxed">{heroIntro}</p>
+      )}
+      {nowSnippet && (
+        <p class="mt-4 mb-0 text-moss-500 text-small">
+          now — {nowSnippet} <a href="/now" class="text-moss-700 hover:text-moss-900 underline underline-offset-4 decoration-moss-200 hover:decoration-moss-900">→</a>
+        </p>
+      )}
+    </header>
 
-  {/* Section 2: How we can work together — stacking cards */}
-  <section class="py-16 md:py-24 max-w-[1140px] mx-auto px-6 border-t border-moss-200">
-    <div class="max-w-[720px] mb-12">
-      <span class="text-small font-bold uppercase tracking-wider text-moss-700">How we can work together</span>
-      <h2 class="text-h2 text-moss-900 mt-1 mb-4">I don't build your product. I make sure the right one gets built.</h2>
-      <p class="text-body text-ink leading-relaxed">
-        Consultation, workshops, and hands-on product ownership — for teams that know where they want to go but need help translating it into something a dev team can build.
-      </p>
-    </div>
-
-    <ServiceStack
-      services={sortedServices.map((s) => ({
-        title: s.data.title,
-        description: s.data.description,
-        icon: s.data.icon,
-      }))}
-    />
-  </section>
-
-  {/* Section 3: Latest Thoughts — simple list, not cards */}
-  <section class="py-16 md:py-24 max-w-[1140px] mx-auto px-6 border-t border-moss-200">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-      <div>
-        <span class="text-small font-bold uppercase tracking-wider text-moss-700">Overthinkings and Brain dumps</span>
-        <h2 class="text-h2 text-moss-900 mt-1">Latest thoughts</h2>
-      </div>
-      {latestThoughts.length > 0 && (
+    {/* Writing index */}
+    {latestThoughts.length > 0 && (
+      <section class="mt-16 md:mt-20" aria-labelledby="writing-heading">
+        <h2 id="writing-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">writing</h2>
+        <ul class="list-none m-0 p-0 flex flex-col">
+          {latestThoughts.map((post) => (
+            <li class="py-2 flex items-baseline justify-between gap-4">
+              <a
+                href={`/thoughts/${post.id}`}
+                class="text-moss-900 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+              >
+                {post.data.title}
+              </a>
+              <time class="text-moss-500 text-small whitespace-nowrap tabular-nums" datetime={post.data.publishedDate}>
+                {post.data.publishedDate.slice(0, 4)}
+              </time>
+            </li>
+          ))}
+        </ul>
         <a
           href="/thoughts"
-          class="inline-flex items-center text-body font-bold text-moss-700 hover:text-moss-500 hover:underline gap-1 focus:outline-none focus:ring-2 focus:ring-moss-900 rounded"
+          class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
         >
-          View all thoughts
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          all thoughts →
         </a>
-      )}
-    </div>
-
-    {latestThoughts.length > 0 ? (
-      <div class="divide-y divide-moss-200">
-        {latestThoughts.map((post) => {
-          const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
-          const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-          return (
-            <PostListItem
-              title={post.data.title}
-              type={post.data.type}
-              topics={post.data.topics || []}
-              date={post.data.publishedDate}
-              excerpt={post.data.excerpt}
-              url={`/thoughts/${post.id}`}
-              readingTime={readingTime}
-              stage={post.data.stage}
-              cover={post.data.cover}
-            />
-          );
-        })}
-      </div>
-    ) : (
-      <div class="py-12 px-6 rounded-2xl bg-beige-50 border border-moss-200 text-center flex flex-col items-center justify-center gap-3">
-        <span class="text-small font-bold uppercase tracking-wider text-moss-500">Quiet for now</span>
-        <h3 class="text-h3 text-moss-900 m-0">No thoughts published yet</h3>
-        <p class="text-body text-moss-700 max-w-[48ch] m-0">
-          My brain dumps and essays are currently undergoing maintenance (or I'm just overthinking what to publish first). Check back soon!
-        </p>
-      </div>
+      </section>
     )}
-  </section>
 
-  {/* Section 4: Footer CTA */}
-  <section class="py-20 md:py-28 max-w-[1140px] mx-auto px-6 text-center">
-    <h2 class="text-h2 text-moss-900 mb-6">Got something brewing?</h2>
-    <p class="text-body text-ink leading-relaxed max-w-[600px] mx-auto mb-8">
-      A product idea that needs untangling, a team that needs a translator, or a room that needs a talk — let's figure it out over coffee.
-    </p>
-    <a
-      href="/work-with-me#contact"
-      class="bg-moss-900 hover:bg-moss-700 text-beige-100 font-bold px-8 py-4 rounded-full no-underline transition-colors duration-200 focus:outline-2 focus:outline-offset-2 focus:outline-moss-900 inline-block"
-    >
-      Invite me to coffee
-    </a>
-  </section>
+    {/* Projects index */}
+    {latestProjects.length > 0 && (
+      <section class="mt-14 md:mt-16" aria-labelledby="projects-heading">
+        <h2 id="projects-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">projects</h2>
+        <ul class="list-none m-0 p-0 flex flex-col">
+          {latestProjects.map((project) => (
+            <li class="py-2 flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
+              {project.data.link ? (
+                <a
+                  href={project.data.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-moss-900 hover:text-citrus-500 no-underline whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+                >
+                  {project.data.title}&nbsp;↗
+                </a>
+              ) : (
+                <span class="text-moss-900">{project.data.title}</span>
+              )}
+              <span class="text-moss-700 text-body">{project.data.description}</span>
+            </li>
+          ))}
+        </ul>
+        <a
+          href="/projects"
+          class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+        >
+          all projects →
+        </a>
+      </section>
+    )}
+
+    {/* Work */}
+    <section class="mt-14 md:mt-16" aria-labelledby="work-heading">
+      <h2 id="work-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">work</h2>
+      <p class="m-0 text-moss-700 text-body leading-relaxed">
+        Consultation, workshops, and fractional product ownership.
+      </p>
+      <a
+        href="/work-with-me"
+        class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+      >
+        work with me →
+      </a>
+    </section>
+  </article>
 </BaseLayout>

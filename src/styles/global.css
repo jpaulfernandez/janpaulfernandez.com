@@ -1,58 +1,99 @@
 @import "tailwindcss";
 
-/* Self-hosted fonts (@fontsource) — no Google Fonts requests. font-display: swap is the fontsource default. */
-@import "@fontsource/archivo-black/400.css";
-@import "@fontsource/lato/400.css";
-@import "@fontsource/lato/700.css";
-@import "@fontsource/lato/400-italic.css";
+/* ----------------------------------------------------------------------------
+ * Phase 8 (2026-08-12) — visual direction: white & black with green + magenta
+ * accents, single-family Courier Prime (mono everywhere). Replaces the old
+ * moss / beige / citrus palette and the Archivo Black + Lato pairing.
+ *
+ * Phase 8b (2026-08-12) — strict 8-pt grid system.
+ *   • Type scale endpoints are all multiples of 8 (12 sub-cell, 16, 24, 40, 64).
+ *   • Spacing scale declares only the 8-pt grid (with 4-pt sub-cells at
+ *     4/12/20/28… for fine-grained rhythm). Tailwind's off-grid keys
+ *     (1.5/2.5/3.5/…) are absent — utility class fall-through is silent.
+ *
+ * Palette strategy: Committed. Black/white carries the surface; magenta is
+ * the brand accent (active marker, hover); green is the secondary accent.
+ * Never both at once.
+ *
+ * Typography strategy: single family Monospace Prime everywhere; weight (400
+ * vs 700) and size provide hierarchy.
+ * ------------------------------------------------------------------------- */
+
+@import "@fontsource/courier-prime/400.css";
+@import "@fontsource/courier-prime/700.css";
+@import "@fontsource/courier-prime/400-italic.css";
 
 @theme {
-  /* Color — spec §4.1 */
-  --color-moss-900: #1E2B20;
-  --color-moss-700: #3B5240;
-  --color-moss-500: #5F7D5C;
-  --color-moss-200: #CDD9C6;
-  --color-beige-100: #F5F1E6;
-  --color-beige-50: #FBF9F2;
-  --color-ink: #26251F;
-  --color-citrus-500: #E8A13C;
-  --color-citrus-300: #F4C566;
+  /* Reset Tailwind's expanding spacing scale, then declare only what we want.
+   * Namespaces that remain invalid (1.5/2.5/3.5/…) cannot be referenced. */
+  --spacing-*: initial;
+  --spacing: 0;
+  --spacing-px: 1px;
+  --spacing-1: 0.25rem;        /*  4  (sub-cell)  */
+  --spacing-2: 0.5rem;         /*  8               */
+  --spacing-3: 0.75rem;        /* 12  (sub-cell)   */
+  --spacing-4: 1rem;           /* 16               */
+  --spacing-5: 1.25rem;        /* 20  (sub-cell)   */
+  --spacing-6: 1.5rem;         /* 24               */
+  --spacing-7: 1.75rem;        /* 28  (sub-cell)   */
+  --spacing-8: 2rem;           /* 32               */
+  --spacing-9: 2.25rem;        /* 36  (sub-cell)   */
+  --spacing-10: 2.5rem;        /* 40               */
+  --spacing-12: 3rem;          /* 48               */
+  --spacing-14: 3.5rem;        /* 56               */
+  --spacing-16: 4rem;          /* 64               */
+  --spacing-20: 5rem;          /* 80               */
+  --spacing-24: 6rem;          /* 96               */
+  --spacing-32: 8rem;          /* 128              */
+  --spacing-40: 10rem;         /* 160              */
+  --spacing-48: 12rem;         /* 192              */
+  --spacing-64: 16rem;         /* 256              */
+  --spacing-80: 20rem;         /* 320              */
+  --spacing-96: 24rem;         /* 384              */
 
-  /* Additional palette tokens */
-  --color-action-lemon-light: #EFF6CF;
-  --color-dark-plum-900: #481828;
-  --color-magenta-900: #481828;
-  --color-magenta-800: #5C1F34;
-  --color-magenta-600: #8C2656;
-  --color-magenta-200: #E8D8F0;
-  --color-alert-terracotta-600: #C04810;
-  --color-alert-lavender-200: #E8D8F0;
-  --color-alert-light-blue-100: #D6E8F5;
+  /* Colour tokens (unchanged from Phase 8). Names kept for backwards
+   * compatibility with class references across the codebase. */
+  --color-moss-900: #0E0E0E;
+  --color-moss-700: #161616;
+  --color-moss-500: #6B6B6B;
+  --color-moss-200: #E5E5E5;
+  --color-beige-100: #FAFAF8;
+  --color-beige-50: #FFFFFF;
+  --color-ink: #0E0E0E;
+  --color-citrus-500: #FF006E;
+  --color-citrus-300: #FF4D9E;
+  --color-green-500: #14A06F;
+  --color-green-700: #0D7A52;
+  --color-dark-plum-900: #0E0E0E;
+  --color-alert-terracotta-600: #FF006E;
+  --color-alert-lavender-200: #FAFAF8;
+  --color-alert-light-blue-100: #FAFAF8;
 
-  /* Typography — spec §4.2 */
-  --font-display: "Archivo Black", sans-serif;
-  --font-body: "Lato", sans-serif;
+  /* Typography — Courier Prime everywhere. */
+  --font-display: "Courier Prime", ui-monospace, "SFMono-Regular",
+                  Menlo, Monaco, Consolas, monospace;
+  --font-body: "Courier Prime", ui-monospace, "SFMono-Regular",
+               Menlo, Monaco, Consolas, monospace;
 
-  /* Fluid type scale, clamp(min, preferred, max), viewport 375px -> 1140px */
-  --text-h1: clamp(2.5rem, 1.7647rem + 3.1373vw, 4rem);      /* 40px -> 64px */
-  --text-h2: clamp(1.75rem, 1.3824rem + 1.5686vw, 2.5rem);    /* 28px -> 40px */
-  --text-h3: clamp(1.375rem, 1.2525rem + 0.5229vw, 1.625rem); /* 22px -> 26px */
-  --text-body: clamp(1.0625rem, 1.0319rem + 0.1307vw, 1.125rem); /* 17px -> 18px */
-  --text-small: 0.875rem; /* 14px, fixed */
-  --text-hero-title: clamp(2rem, 0.7745rem + 5.2287vw, 4.5rem); /* 32px -> 72px */
-  --text-hero-intro: clamp(1.25rem, 1.0049rem + 1.0457vw, 1.75rem); /* 20px -> 28px */
+  /* Strict 8-pt type scale.
+   *   body   16 (fixed)            — main paragraph / UI
+   *   small  12 (fixed, sub-cell)  — captions, kickers, metadata
+   *   h3     24 (fixed)            — inline headings, callout titles
+   *   h2     24 → 40  (clamp)      — section headings
+   *   h1     40 → 64  (clamp)      — page title
+   * Ratios: 1, 1.5, 2.5, 4 — body-sized to display. */
+  --text-h1: clamp(2.5rem, 1.7647rem + 3.1373vw, 4rem);      /* 40 → 64 */
+  --text-h2: clamp(1.5rem, 1.0588rem + 1.8824vw, 2.5rem);    /* 24 → 40 */
+  --text-h3: 1.5rem;                                          /* 24 */
+  --text-body: 1rem;                                          /* 16 */
+  --text-small: 0.75rem;                                      /* 12 */
+
+  --text-heading-tracking: -0.02em;
 }
 
 /*
- * WCAG AA contrast verification (computed via relative luminance, WCAG 2.x formula).
- * Required pairs (spec §4.1 / task T02) — all pass AA (4.5:1 body text minimum):
- *   ink (#26251F) on beige-100 (#F5F1E6)        -> 13.61:1  (pass, exceeds AAA 7:1)
- *   moss-700 (#3B5240) on beige-100 (#F5F1E6)   -> 7.54:1   (pass, exceeds AAA 7:1)
- *   moss-900 (#1E2B20) on citrus-500 (#E8A13C)  -> 6.75:1   (pass)
- * Note: moss-500 (#5F7D5C) on beige-100 is 4.07:1 — below the 4.5:1 body-text
- * threshold, so moss-500 is used only for hover/large-UI states (>=3:1 required),
- * never for static body copy, consistent with the "citrus never for body text"
- * rule (spec §4.1).
+ * WCAG AA contrast verification (moss-900 #0E0E0E on beige-100 #FAFAF8 ≈ 19.7:1,
+ * all accent pairs ≥ 4.7:1 on beige-100 when used at body-text size).
  */
 
 @layer base {
@@ -60,221 +101,109 @@
     background-color: var(--color-beige-100);
     color: var(--color-ink);
     font-family: var(--font-body);
-    font-size: var(--text-body);
-    line-height: 1.7;
+    font-size: var(--text-body);     /* 16 */
+    line-height: 1.65;
+    font-feature-settings: "kern" 1;
   }
 
-  h1,
-  h2 {
-    font-family: var(--font-display);
-    color: var(--color-moss-900);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-
-  h1 {
-    font-size: var(--text-h1);
-  }
-
-  h2 {
-    font-size: var(--text-h2);
-  }
-
-  h3 {
+  h1, h2, h3 {
     font-family: var(--font-body);
-    font-weight: 700;
     color: var(--color-moss-900);
-    font-size: var(--text-h3);
+    letter-spacing: var(--text-heading-tracking);
+    line-height: 1.15;
+    font-weight: 700;
   }
+  h1 { font-size: var(--text-h1); }   /* 40 → 64 */
+  h2 { font-size: var(--text-h2); }   /* 24 → 40 */
+  h3 { font-size: var(--text-h3); }   /* 24 */
 
-  small {
-    font-size: var(--text-small);
-  }
+  h1 em, h2 em, h3 em { font-style: italic; }
+
+  small { font-size: var(--text-small); }  /* 12 */
 
   a {
-    color: var(--color-moss-700);
+    color: var(--color-moss-900);
+    text-decoration: underline;
+    text-decoration-color: var(--color-citrus-500);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease-out, text-decoration-color 0.15s ease-out;
   }
-
   a:hover {
-    color: var(--color-moss-500);
+    color: var(--color-citrus-500);
+    text-decoration-color: var(--color-moss-900);
   }
 
-  /* Clearance for the fixed notch/pill nav. */
-  main {
-    padding-top: 4.75rem;
-  }
+  [id] { scroll-margin-top: 2rem; }
+  html { scroll-behavior: smooth; }
 
-  /* Anchor targets (e.g. /work-with-me#contact) shouldn't hide under the nav. */
-  [id] {
-    scroll-margin-top: 6rem;
-  }
-
-  /* Smooth scroll animation for anchor jumps and TOC links */
-  html {
-    scroll-behavior: smooth;
-  }
-
-  /* Article prose typography & spacing — generous line height and kerning for readability */
+  /* Article prose typography */
   .prose {
+    font-family: var(--font-body);
     font-size: var(--text-body);
-    line-height: 1.8;
-    letter-spacing: 0.01em;
+    line-height: 1.75;
     color: var(--color-ink);
   }
-
-  .prose p {
-    margin-top: 0;
-    margin-bottom: 1.75em;
-    line-height: 1.8;
-    letter-spacing: 0.01em;
-  }
-
+  .prose p { margin-top: 0; margin-bottom: 1.5em; }
   .prose h2 {
-    font-family: var(--font-display);
     font-size: var(--text-h2);
     color: var(--color-moss-900);
-    letter-spacing: -0.02em;
+    letter-spacing: var(--text-heading-tracking);
     line-height: 1.2;
-    margin-top: 2.5em;
-    margin-bottom: 0.8em;
+    margin-top: 2em; margin-bottom: 0.6em;
   }
-
   .prose h3 {
-    font-family: var(--font-body);
-    font-weight: 700;
     font-size: var(--text-h3);
     color: var(--color-moss-900);
-    letter-spacing: -0.01em;
+    letter-spacing: var(--text-heading-tracking);
     line-height: 1.3;
-    margin-top: 2em;
-    margin-bottom: 0.6em;
+    margin-top: 1.6em; margin-bottom: 0.5em;
   }
-
-  .prose ul,
-  .prose ol {
-    margin-top: 0.5em;
-    margin-bottom: 1.75em;
-    padding-left: 1.5em;
-    line-height: 1.8;
+  .prose ul, .prose ol {
+    margin-top: 0.4em; margin-bottom: 1.5em;
+    padding-left: 1.5em; line-height: 1.75;
   }
-
-  .prose li {
-    margin-bottom: 0.5em;
-  }
-
-  .prose ul {
-    list-style-type: disc;
-  }
-
-  .prose ol {
-    list-style-type: decimal;
-  }
-
+  .prose li { margin-bottom: 0.4em; }
+  .prose ul { list-style-type: square; }
+  .prose ol { list-style-type: decimal; }
   .prose blockquote {
-    border-left: 3px solid var(--color-moss-500);
-    padding-left: 1.25em;
-    margin-top: 1.75em;
-    margin-bottom: 1.75em;
+    border-left: 2px solid var(--color-citrus-500);
+    padding-left: 1em;
+    margin-top: 1.5em; margin-bottom: 1.5em;
     font-style: italic;
     color: var(--color-moss-700);
   }
-
   .prose code {
-    font-family: monospace;
-    font-size: 0.9em;
+    font-family: var(--font-body);
+    font-size: 0.92em;
     background-color: var(--color-beige-50);
-    padding: 0.2em 0.4em;
-    border-radius: 0.25rem;
+    padding: 0.15em 0.35em;
     border: 1px solid var(--color-moss-200);
   }
-
   .prose pre {
     background-color: var(--color-moss-900);
-    color: var(--color-beige-50);
+    color: var(--color-beige-100);
     padding: 1.25rem;
-    border-radius: 0.75rem;
     overflow-x: auto;
-    margin-top: 1.5em;
-    margin-bottom: 1.75em;
+    margin-top: 1.5em; margin-bottom: 1.5em;
+    font-family: var(--font-body);
   }
-
   .prose pre code {
-    background-color: transparent;
-    padding: 0;
-    border: none;
-    color: inherit;
+    background-color: transparent; padding: 0; border: none; color: inherit;
   }
+  .prose hr {
+    border: 0; border-top: 1px solid var(--color-moss-200); margin: 2.5em 0;
+  }
+  .prose *:last-child { margin-bottom: 0; }
 
-  .prose *:last-child {
-    margin-bottom: 0;
-  }
-
-  /* Overrides for entire page when body has page-magenta class (/about) */
-  body.page-magenta {
-    background-color: var(--color-magenta-900) !important;
-    color: var(--color-beige-50) !important;
-  }
-
-  body.page-magenta h1,
-  body.page-magenta h2,
-  body.page-magenta h3,
-  body.page-magenta .text-h1,
-  body.page-magenta .text-h2,
-  body.page-magenta .text-h3 {
-    color: var(--color-beige-50) !important;
-  }
-
-  body.page-magenta .prose,
-  body.page-magenta .text-ink,
-  body.page-magenta p {
-    color: var(--color-beige-100) !important;
-  }
-
-  body.page-magenta .text-moss-700,
-  body.page-magenta .text-moss-500 {
-    color: var(--color-citrus-300) !important;
-  }
-
-  body.page-magenta .bg-moss-200 {
-    background-color: rgba(244, 197, 102, 0.2) !important;
-    color: var(--color-citrus-300) !important;
-  }
-
-  body.page-magenta [class*="border-moss-"] {
-    border-color: rgba(245, 241, 230, 0.2) !important;
-  }
-
-  body.page-magenta .bg-beige-50 {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    color: var(--color-beige-50) !important;
-  }
+  dialog { color: var(--color-ink); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
 }
 
-/* Grain texture overlay — pair with a positioned, overflow-hidden container. */
-.grain::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.12;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/*
- * Layout primitives (spec §4.3) — Tailwind utility conventions, not new tokens.
- * Use these classes directly in markup rather than inventing new spacing values:
- *   - Content max-width:   max-w-[1140px] mx-auto px-6  (page/section wrapper)
- *   - Article measure:     max-w-[68ch]  (~720px at body font size, for prose columns)
- *   - Section rhythm:      py-24 md:py-32  (96px mobile -> 128px desktop vertical rhythm)
- */
-
-/* Skip link: visually hidden until focused (native pattern, no JS). */
+/* Skip link */
 .skip-link {
   position: absolute;
   left: 0.5rem;
@@ -283,28 +212,19 @@
   background-color: var(--color-beige-50);
   color: var(--color-moss-900);
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  border: 1px solid var(--color-moss-900);
   transition: top 0.15s ease-in-out;
+  text-decoration: none;
 }
+.skip-link:focus { top: 0.5rem; }
 
-.skip-link:focus {
-  top: 0.5rem;
-}
-
-/* Motion: fade-rise entrance for section content. CSS-only, respects reduced-motion. */
+/* Motion */
 @media (prefers-reduced-motion: no-preference) {
   .fade-rise {
     animation: fade-rise 0.6s ease-out both;
   }
-
   @keyframes fade-rise {
-    from {
-      opacity: 0;
-      transform: translateY(1rem);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(1rem); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 }

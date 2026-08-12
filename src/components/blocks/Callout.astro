@@ -1,43 +1,44 @@
 ---
-// Callout.astro
+// Callout.astro — three variants, all in mono+b/w with a single accent rule.
 interface Props {
   variant?: 'note' | 'idea' | 'warning';
 }
 
 const { variant = 'note' } = Astro.props;
 
-const variants = {
+const variants: Record<NonNullable<Props['variant']>, {
+  classes: string;
+  kickerColor: string; // tailwind utility color class
+  label: string;
+  icon: string;
+}> = {
   note: {
-    classes: 'bg-alert-light-blue-100 text-ink border border-ink/10 shadow-sm',
-    kickerClasses: 'text-alert-terracotta-600',
-    textClasses: 'text-ink [&>p]:text-ink',
+    classes: 'border-l-2 border-moss-200 bg-beige-50',
+    kickerColor: 'text-moss-700',
     label: 'Note',
-    icon: '📝',
+    icon: '·',
   },
   idea: {
-    classes: 'bg-alert-lavender-200 text-ink border border-ink/10 shadow-sm',
-    kickerClasses: 'text-dark-plum-900',
-    textClasses: 'text-ink [&>p]:text-ink',
+    classes: 'border-l-2 border-green-500 bg-beige-50',
+    kickerColor: 'text-green-700',
     label: 'Idea',
-    icon: '💡',
+    icon: '·',
   },
   warning: {
-    classes: 'bg-dark-plum-900 text-beige-50 shadow-md',
-    kickerClasses: 'text-citrus-300',
-    textClasses: 'text-beige-50 [&>p]:text-beige-50',
+    classes: 'border-l-2 border-citrus-500 bg-beige-50',
+    kickerColor: 'text-citrus-500',
     label: 'Warning',
-    icon: '⚠️',
+    icon: '·',
   },
 };
 
-const config = variants[variant] || variants.note;
+const config = variants[variant] ?? variants.note;
 ---
-<div class={`p-6 md:p-7 my-8 rounded-2xl ${config.classes}`}>
-  <div class={`flex items-center gap-2 font-display text-xs tracking-widest uppercase mb-3 ${config.kickerClasses}`}>
-    <span>{config.icon}</span>
-    <span>{config.label}</span>
-  </div>
-  <div class={`prose max-w-none font-medium leading-relaxed [&>p]:m-0 ${config.textClasses}`}>
+<aside class={`my-8 px-6 py-4 ${config.classes}`}>
+  <p class={`m-0 mb-4 font-mono uppercase text-xs tracking-widest ${config.kickerColor}`}>
+    {config.icon} {config.label}
+  </p>
+  <div class="prose max-w-none text-moss-900 [&>p]:text-moss-900 [&>p]:m-0 [&>p]:text-body">
     <slot />
   </div>
-</div>
+</aside>

@@ -6,43 +6,33 @@ import { getPublishedThoughts } from '../../lib/thoughts';
 
 export async function getStaticPaths() {
   const allPosts = await getPublishedThoughts();
-  
-  // Extract all unique topics
   const topics = Array.from(
     new Set(allPosts.flatMap((post) => post.data.topics || []))
   );
 
-  return topics.map((topic) => {
-    const matchingPosts = allPosts.filter((post) =>
-      post.data.topics?.includes(topic)
-    );
-    return {
-      params: { topic },
-      props: { posts: matchingPosts, topic },
-    };
-  });
+  return topics.map((topic) => ({
+    params: { topic },
+    props: { posts: allPosts.filter((post) => post.data.topics?.includes(topic)), topic },
+  }));
 }
 
 const { posts, topic } = Astro.props;
-const description = `Archive of thoughts published by Paul Fernandez on the topic of ${topic}.`;
+const description = `Posts tagged #${topic} by Paul Fernandez.`;
 ---
 
-<BaseLayout title={`Thoughts on ${topic}`} description={description}>
-  <div class="max-w-[1140px] mx-auto px-6 py-12 md:py-16">
-    <header class="max-w-[720px] mb-12">
-      <div class="mb-4">
-        <a href="/thoughts" class="text-xs uppercase tracking-wider font-semibold no-underline text-moss-700 hover:text-moss-900 hover:underline">
-          ← Back to all thoughts
-        </a>
-      </div>
-      <h1 class="mb-4 capitalize">Thoughts on {topic}</h1>
-      <p class="text-body text-ink leading-relaxed">
-        Showing {posts.length} published thought{posts.length === 1 ? '' : 's'} tagged with #{topic}.
+<BaseLayout title={`#${topic}`} description={description}>
+  <article>
+    <header>
+      <p class="m-0 text-small text-moss-500">
+        <a href="/thoughts" class="text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">← all thoughts</a>
+      </p>
+      <h1 class="text-moss-900 m-0 mt-3">#{topic}</h1>
+      <p class="mt-3 mb-0 text-moss-700 text-small tabular-nums">
+        {posts.length} {posts.length === 1 ? 'post' : 'posts'}
       </p>
     </header>
 
-    <!-- Posts list -->
-    <div class="divide-y divide-moss-200 border-t border-moss-200">
+    <div class="mt-12 divide-y divide-moss-200 border-t border-moss-200">
       {posts.map((post) => {
         const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
         const readingTime = Math.max(1, Math.ceil(wordCount / 200));
@@ -62,5 +52,5 @@ const description = `Archive of thoughts published by Paul Fernandez on the topi
         );
       })}
     </div>
-  </div>
+  </article>
 </BaseLayout>

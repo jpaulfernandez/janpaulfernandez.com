@@ -1,12 +1,11 @@
 ---
-// KeyTakeaway.astro
+// KeyTakeaway.astro — magenta panel, mono label, no shadow.
 ---
-<div class="bg-alert-terracotta-600 text-beige-50 p-6 md:p-8 my-8 rounded-2xl shadow-lg relative overflow-hidden">
-  <div class="flex items-center gap-2 font-display text-xs tracking-widest uppercase text-citrus-300 mb-3">
-    <span>★</span>
-    <span>Key Takeaway</span>
-  </div>
-  <div class="prose max-w-none text-beige-50 font-medium leading-relaxed [&>p]:text-beige-50 [&>p]:m-0">
+<aside class="my-10 border-l-2 border-citrus-500 bg-beige-50 px-6 md:px-8 py-5">
+  <p class="m-0 mb-4 font-mono uppercase text-xs tracking-widest text-citrus-500">
+    ★ key takeaway
+  </p>
+  <div class="prose max-w-none text-moss-900 [&>p]:text-moss-900 [&>p]:m-0 [&>p]:text-body">
     <slot />
   </div>
-</div>
+</aside>

@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { breadcrumbs } from '../../lib/schema';
+import { getProjects, groupProjectsByYear } from '../../lib/projects';
+
+const projects = await getProjects();
+const groups = groupProjectsByYear(projects);
+
+const seoData = [
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Projects', url: '/projects' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Projects"
+  description="Projects by Paul Fernandez — things he's built, shipped, and tinkered with, indexed by year."
+>
+  <JsonLd data={seoData} slot="head" />
+
+  <article>
+    <header>
+      <h1 class="text-moss-900 m-0">Projects</h1>
+      <p class="mt-4 mb-0 text-moss-700 text-body leading-relaxed">
+        Things I've built, shipped, and tinkered with — indexed by year.
+      </p>
+    </header>
+
+    {groups.length > 0 ? (
+      <section class="mt-12 md:mt-16" aria-label="Projects by year">
+        {groups.map((group) => (
+          <section class="py-6 border-t border-moss-200 first:border-t-0">
+            <h2 class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4 tabular-nums">
+              {group.year}
+            </h2>
+            <ul class="list-none m-0 p-0 flex flex-col">
+              {group.items.map((project) => (
+                <li class="py-2 flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
+                  {project.data.link ? (
+                    <a
+                      href={project.data.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-moss-900 hover:text-citrus-500 no-underline whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+                    >
+                      {project.data.title}&nbsp;↗
+                    </a>
+                  ) : (
+                    <span class="text-moss-900">{project.data.title}</span>
+                  )}
+                  <span class="text-moss-700 text-body">{project.data.description}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </section>
+    ) : (
+      <div class="mt-12 border-t border-moss-200 pt-6">
+        <p class="text-moss-700 m-0">
+          Nothing on the shelf… yet. <a href="/work-with-me#contact" class="text-moss-900 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">ask me what I'm building →</a>
+        </p>
+      </div>
+    )}
+  </article>
+</BaseLayout>

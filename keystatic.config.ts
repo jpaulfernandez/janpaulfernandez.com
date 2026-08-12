@@ -169,6 +169,19 @@ export default config({
         ),
       },
     }),
+    projects: collection({
+      label: 'Projects',
+      slugField: 'slug',
+      path: 'src/content/projects/*',
+      format: { data: 'json' },
+      schema: {
+        slug: fields.slug({ name: { label: 'Slug', description: 'Used for filename' } }),
+        title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+        year: fields.text({ label: 'Year', description: 'Display year, e.g. 2026', validation: { isRequired: true } }),
+        description: fields.text({ label: 'Description (one line)', validation: { isRequired: true } }),
+        link: fields.url({ label: 'Link (optional external URL)', validation: { isRequired: false } }),
+      },
+    }),
     gallery: collection({
       label: 'Gallery',
       slugField: 'slug',
@@ -215,8 +228,6 @@ export default config({
       schema: {
         heroGreeting: fields.text({ label: 'Hero Greeting (e.g. "Hi, I\'m Paul.")', validation: { isRequired: true } }),
         heroIntro: fields.text({ label: 'Hero Intro Statement', multiline: true, validation: { isRequired: true } }),
-        ctaPrimaryLabel: fields.text({ label: 'CTA Primary Label', validation: { isRequired: true } }),
-        ctaSecondaryLabel: fields.text({ label: 'CTA Secondary Label', validation: { isRequired: true } }),
       },
     }),
     about: singleton({

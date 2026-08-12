@@ -42,8 +42,6 @@ const home = defineCollection({
   schema: z.object({
     heroGreeting: z.string(),
     heroIntro: z.string(),
-    ctaPrimaryLabel: z.string(),
-    ctaSecondaryLabel: z.string(),
   }),
 });
 
@@ -80,6 +78,19 @@ const services = defineCollection({
         a: z.string(),
       })
     ).optional(),
+  }),
+});
+
+const projects = defineCollection({
+  loader: glob({
+    pattern: '*.json',
+    base: 'src/content/projects',
+  }),
+  schema: z.object({
+    title: z.string(),
+    year: z.string(),
+    description: z.string(),
+    link: z.string().optional(),
   }),
 });
 
@@ -135,5 +146,5 @@ const gallery = defineCollection({
   }),
 });
 
-export const collections = { now, career, home, about, workWithMe, seo, thoughts, services, gallery };
+export const collections = { now, career, home, about, workWithMe, seo, thoughts, services, projects, gallery };
 

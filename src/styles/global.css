@@ -194,6 +194,29 @@
   .prose hr {
     border: 0; border-top: 1px solid var(--color-moss-200); margin: 2.5em 0;
   }
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    font-size: var(--text-small);
+    line-height: 1.5;
+  }
+  .prose th, .prose td {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-moss-200);
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose th {
+    background-color: var(--color-beige-50);
+    font-weight: 700;
+    letter-spacing: var(--text-heading-tracking);
+    color: var(--color-moss-900);
+  }
+  .prose tr:nth-child(even) td {
+    background-color: var(--color-beige-50);
+  }
   .prose *:last-child { margin-bottom: 0; }
 
   dialog { color: var(--color-ink); }

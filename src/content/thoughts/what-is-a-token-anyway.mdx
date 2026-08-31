@@ -1,0 +1,140 @@
+---
+title: "What Is a Token, Anyway? A Personal Review of AI Models"
+type: essay
+topics:
+  - ai
+  - engineering
+  - workflows
+  - product
+stage: budding
+excerpt: >-
+  Why tokens are the wrong unit of measurement for AI productivity—and an honest review of the best models for research, frontend, and backend work.
+publishedDate: '2026-08-31'
+draft: false
+---
+
+<Callout variant="note">
+**Disclaimer:** As of the time of writing, these reviews reflect the currently available models. All observations are strictly anecdotal, based on my hands-on experience developing applications for work, client projects, and my Master's degree. Your mileage and specific use cases may vary.
+</Callout>
+
+I used to think tokens were a great way to measure how capable an AI model is. They aren't. In reality, token counts were sold to us to mask just how inefficient some models can be.
+
+To begin with, a "token" is not a standardized unit of measurement. Claude tokenizes words differently than GPT. GPT might consume significantly more tokens for the same English or multilingual prompt compared to newer Chinese foundation models with denser vocabularies. 
+
+At the end of the day, the only question that matters isn't how many tokens were processed—it's: **how much actual work did you accomplish?**
+
+<PullQuote>
+We shouldn't judge AI by tokens consumed or context window size. The only benchmark that matters is work accomplished per dollar and hour.
+</PullQuote>
+
+This personal review is built entirely on that premise: output, reliability, and real-world execution.
+
+---
+
+## The Evaluation Criteria & Model Lineup
+
+Over the past year and a half, I have integrated AI deeply across my personal knowledge management, professional software development, and academic research for my Master's degree. 
+
+Different tasks demand different cognitive strengths. To evaluate these models fairly, I judge them across five core dimensions:
+1. **Knowledge Work & Deep Research** (reasoning, synthesis, assumption-testing)
+2. **Frontend Coding** (design fidelity, cleanliness, adherence to design constraints)
+3. **Backend & Architecture** (system design, edge-case handling, bug rate)
+4. **Document Processing** (transforming raw content into decks, briefs, or PDFs)
+5. **Sound Decision-Making & Autonomy** (instruction-following in agent loops)
+
+### The Models in the Arena
+
+- **Anthropic:** Opus 5, Fable 5
+- **OpenAI:** GPT 5.6 Sol, GPT 5.6 Luna
+- **Google:** Gemini 3.7 Flash, Gemini 3.1 Pro
+- **Moonshot AI:** Kimi K3
+- **DeepSeek:** DeepSeek V4 Pro, DeepSeek V4 Flash
+- **Alibaba:** Qwen 3.8 Max, Qwen 3.6 Max
+- **Zhipu AI & MiniMax:** GLM-5.2, MiniMax M3
+
+---
+
+## 1. Knowledge Work & Deep Research
+
+When doing knowledge work, my process is heavily research-based. I run custom research scripts, skills, and agent workflows that crawl target sources, score evidence using the CRAAP framework, and prioritize specific URL hierarchies. I augment this stack with Tavily, Firecrawl, and dedicated web-search harnesses.
+
+- 🥇 **Best:** Opus 5 / Fable 5
+- 🥈 **Runner-Up:** GPT 5.6 Sol
+- 💡 **Best Value:** Gemini 3.7 Flash
+
+**Opus 5** consistently delivers the highest quality output for deep knowledge work. It is by far the best thought partner for bouncing around ideas, challenging initial assumptions, and sustaining multi-hour research sessions without losing the plot. **Fable 5** is undeniably more intelligent and sharper on raw reasoning, but its premium price-to-performance ratio makes it hard to justify for everyday drafting.
+
+**GPT 5.6 Sol** is my primary adversary. Once I finish a comprehensive research brief or thesis using Opus 5, I pass the output to GPT 5.6 Sol to stress-test the concept, red-team my assumptions, and tear apart weak arguments.
+
+**Gemini 3.7 Flash** is the fastest worker in the lineup. It blazes through initial passes, but I find it occasionally drops or skips instructions during extended, multi-turn research sessions. Its knowledge cutoff can also lag behind when dealing with fast-moving topics.
+
+---
+
+## 2. Frontend Engineering
+
+Generating frontend code requires visual restraint. A model must follow design inspiration faithfully without injecting unwanted design tropes.
+
+- 🥇 **Best:** Kimi K3
+- 🥈 **Runner-Up:** GPT 5.6 Sol
+- 💡 **Best Value:** Gemini 3.7 Flash
+
+**Kimi K3** produces noticeably more polished UI code than any other model I've tested. When fed visual or structural design inspiration, it translates the aesthetic faithfully. Crucially, it doesn't add hallucinated fluff that wasn't in the prompt—like unsolicited "© 2026 Company" footer widgets, random left-border accent lines, or tacky "eyebrow status" badges that plague other models' output.
+
+**GPT 5.6 Sol** is also very capable here, provided you feed it rich design references and write precise UI/UX prompts. If you are very specific about your layout and interaction details, Sol delivers solid results.
+
+**Gemini 3.7 Flash** is great for one-shot generation. When you just need a functional, good-looking interface quickly and don't want to spend time micro-managing every visual specification, Flash gets you 80% of the way there in seconds.
+
+---
+
+## 3. Backend Coding & Architecture
+
+Backend work requires architectural rigor, disciplined abstractions, and minimal regressions.
+
+- 🥇 **Best:** Opus 5
+- 🥈 **Runner-Up:** GPT 5.6 Sol
+- 💡 **Best Value:** GPT 5.6 Luna / DeepSeek V4 Flash
+
+Hands down, for architectural decisions and heavy backend logic, **Opus 5** reigns supreme. It occasionally leans toward over-engineering edge cases and adding extensive defensive logic, but a well-structured `CLAUDE.md` or repository skill easily reins that in. In practice, code written by Opus 5 produces significantly fewer runtime bugs than its competitors.
+
+**GPT 5.6 Sol** is nearly on par in terms of raw capability and is the single best model for "one-shotting" an entire application prototype—both frontend and backend—from a clean prompt. However, across larger codebases, I find Opus 5 to be cleaner and less prone to subtle logic defects.
+
+**DeepSeek V4 Flash** used to be my go-to execution engine for templating and lightweight logic. However, following recent pricing changes, **GPT 5.6 Luna** has become a much more cost-effective daily driver without any noticeable drop in code quality.
+
+---
+
+## 4. Document Processing & The 1M Context Fallacy
+
+Beyond core coding and research, several specialized models play important roles in my workflow:
+
+- **Document Transformation (GLM-5.2 & MiniMax M3):** When I already have structured content ready and simply need it converted into clean, presentation-ready PDFs or PowerPoint decks, GLM-5.2 and MiniMax M3 excel at layout formatting.
+- **Credit-Saver Fallbacks (DeepSeek V4 Pro & Qwen 3.8 Max):** When hitting rate limits or credit caps on Opus and Sol, DeepSeek V4 Pro and Qwen 3.8 Max are my reliable fallback coding executors.
+
+<Callout variant="warning">
+**The 1M Context Trap:** Many modern models advertise massive 1M+ token context windows. In practice, I find models like Qwen and DeepSeek begin to noticeably hallucinate once context utilization reaches 30% to 40%. A million-token window looks great on a spec sheet, but effective reasoning degrades long before you fill it.
+</Callout>
+
+---
+
+## The Workflow & Model Comparison Matrix
+
+Here is how the entire ecosystem stacks up across practical development workflows:
+
+| Category | Top Pick (Best) | Runner-Up | Best Value | Key Strengths / Nuance |
+| :--- | :--- | :--- | :--- | :--- |
+| **Knowledge Work & Research** | **Opus 5** | GPT 5.6 Sol | Gemini 3.7 Flash | Opus 5 leads deep reasoning; Sol excels at red-teaming. |
+| **Frontend Coding** | **Kimi K3** | GPT 5.6 Sol | Gemini 3.7 Flash | Kimi K3 generates clean UI without hallucinating styling tropes. |
+| **Backend & Architecture** | **Opus 5** | GPT 5.6 Sol | GPT 5.6 Luna | Opus 5 produces fewer bugs; Sol 5.6 is best for one-shot prototypes. |
+| **Document Processing** | **GLM-5.2** | MiniMax M3 | MiniMax M3 | Fast, structured generation of decks, reports, and formatted PDFs. |
+| **Budget Workhorse / Execution** | **GPT 5.6 Luna** | DeepSeek V4 Pro | DeepSeek V4 Flash | High-throughput daily driver for templating and light logic. |
+
+---
+
+## 18 Months of AI Evolution: The Immutable Rule
+
+It has been fascinating watching the rapid evolution of this technology over the last 18 months while completing my Master's degree. Starting from the early days of GPT-3, Claude 3 Opus (Opus 3), and Gemini 2.5, to today's multi-agent loops and harness engineering, the tooling has changed completely.
+
+Yet throughout that journey, one core principle has never changed for me:
+
+<KeyTakeaway>
+Never let the AI do the thinking for you. Use models for heavy cognitive synthesis, adversarial stress-testing, and rapid code execution—but keep the vision, architecture, and judgment strictly in your own hands.
+</KeyTakeaway>

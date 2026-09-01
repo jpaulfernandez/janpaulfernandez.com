@@ -156,6 +156,23 @@ grid).
 - **Prev/next on articles** — already shipped; `ArticleLayout.astro:115` renders it.
 - **Corner metadata chrome (MOUTHWASH-style `INDEX` / version stamps)** — decorative only, and the sidebar already carries identity + section state. Would have cost a11y noise for no information gain.
 
+## Phase 10 — /now as a real timeline, /gallery as one flat photo wall (Paul's direct request, 2026-09-01)
+
+Requested by Paul via chat after a second Mobbin pass. Two targeted redesigns:
+(a) /now should *read* as a timeline rather than a stack of posts, and
+(b) /gallery should show the photographs themselves — one masonry wall, not a
+grid of set covers.
+
+Mobbin references used: Plain + Slack API changelog (date gutter, quiet prose,
+one node per entry), Stripe changelog (period as a chapter marker), Campsite
+(terminal node closing the rail), Cosmos (dense ungrouped image wall).
+
+- [x] (2026-09-01) `/now`: entries grouped into year sections; each year is a solid wine milestone on the rail with a trailing hairline. Entry nodes are hollow; only the newest is filled + haloed and carries a "right now" badge. Heading order fixed to h1 → h2 (year) → h3 (entry) — entry titles were h2 before. Rail closes on a terminal node. Styles are scoped to the page; shared `.rail` is left to `Timeline.astro` (/about).
+- [x] (2026-09-01) `/gallery`: set covers replaced by every photograph in one CSS-columns masonry (95 shots, 2 cols → 3 at 640px). Sets are interleaved by a deterministic even-spread key so a 50-shot set and a 12-shot set both run the length of the wall instead of sitting as blocks. Set pages stay reachable from a hairline "Sets" index at the foot and from the lightbox.
+- [x] (2026-09-01) `Lightbox.astro` extracted (second use: gallery index + set pages). Binds to any `.photo-trigger`; shows caption, an optional "view set →" link, counter, arrows, Esc.
+- [x] (2026-09-01) `src/lib/gallery.ts` `lightboxWidth()` + vitest: lightbox now loads a 1600px-long-edge variant instead of the ~1.5 MB original (wanderland-41: 1165 kB → 61 kB). Grid images dropped their forced 800×600 crop, so photos show at their true aspect ratio.
+- [x] (2026-09-01) `npm run build` ✓ · `npx astro check` 0 errors · `npm test` 18/18 ✓ · verified in-browser at 375px and 1280px
+
 ## Out of scope (v2 — do not build)
 
 Dark mode, Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

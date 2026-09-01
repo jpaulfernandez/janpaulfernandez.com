@@ -54,6 +54,8 @@ Phases are vertical slices: each ends with a deployable, visibly-improved site �
 
 ## Blocked-on-Paul items (spec §10)
 
+- **Cloudflare Images migration for the gallery (not started — needs credentials).** `src/assets/gallery` is 68 MB across 100 files and `.git` is 310 MB; every future photo permanently inflates clone time. Recommended target is Cloudflare **Images** rather than plain R2, so the `/w=800,f=auto` transform pipeline replaces the build-time optimisation Astro currently does. Blocked on Paul supplying a Cloudflare account ID and an API token (`wrangler` is installed globally but not authenticated, and there are no Cloudflare keys in `.env`). Touches `keystatic.config.ts` and `src/content.config.ts` together — the gallery `image` field becomes an image ID — so both schemas must change in the same commit.
+
 Track here; tasks note where these are needed. Use placeholders until provided, never invent real data.
 
 - [x] Social profile URLs for `sameAs` (needed by T07)
@@ -120,6 +122,39 @@ Requested by Paul via chat. Direction: merge Madhurima Chatterjee's centered, te
 - [x] (2026-08-12) About / Now / Work / Projects / Thoughts index / Thoughts topic / Gallery index / Gallery slug / Article / Thanks / Timeline / PostListItem / KeyTakeaway / Callout / PullQuote all rewritten to mono + new palette + minimal text
 - [x] (2026-08-12) OG image generator (`src/pages/og/[...route].ts`) repointed to Courier Prime + new palette RGB values
 - [x] (2026-08-12) `npm run build` ✓ · `npx astro check` 0 errors / 0 warnings (4 pre-existing keystatic deprecation hints) · `npm test` 13/13 pass · favicon file confirmed `<rect fill="#FF006E">` · `<h1>` on every page renders with new tokens
+
+## Phase 9 — Wine palette, display type, Mobbin-informed page structure (Paul's direct request, 2026-09-01)
+
+Requested by Paul via chat after a Mobbin inspiration pass. Direction: keep the
+text-minimal spirit of Phase 8, but (a) repaint to a wine / red-wine shade,
+(b) introduce a genuinely huge + bold display step so hierarchy is a jump rather
+than a nudge, and (c) let the accent appear as sparse "flares" rather than
+uniform colour. Page structure follows specific Mobbin references, noted per
+task. Supersedes Phase 8 palette + type scale; sidebar IA preserved.
+
+Mobbin references used: MOUTHWASH Studio (mono chrome), Claude Type (centred
+prose), Gumroad + Intercom (hairline row index), Instrument + Aino Agency
+(service rows), Stripe + Notion (changelog rail), Studio Freight (dense photo
+grid).
+
+- [x] (2026-09-01) Token families renamed to match what they are: `moss-*`→`ink-*`, `beige-*`→`paper-*`, `citrus-*`→`wine-*`; legacy `dark-plum-*` / `alert-*` aliases dropped (nothing referenced them). 20 files, mechanical.
+- [x] (2026-09-01) `src/styles/global.css`: wine palette (paper `#FAF6F4`, ink `#1C0A10`, wine `#8E1B3F`); every colour used at or below body size verified ≥ 4.5:1 (measured values documented in the token block)
+- [x] (2026-09-01) Type scale gains `--text-display` (56 → 112) and h1 grows 40 → 72; both endpoints stay on the 8-pt grid
+- [x] (2026-09-01) Shared primitives extracted (each ≥ 4 uses): `.display`, `.flare`, `.kicker` (wine bullet + trailing rule), `.rows`/`.row-link`/`.row-meta` (hairline index), `.rail`/`.rail-item`/`.rail-date` (timeline gutter)
+- [x] (2026-09-01) Blanket `prefers-reduced-motion: reduce` guard neutralising all transitions/transforms (the gallery image scale and row nudge are decorative)
+- [x] (2026-09-01) Home: display hero with the greeting's last word as the flare (derived from the Keystatic value, not hardcoded); writing + projects as hairline rows; single wine CTA block
+- [x] (2026-09-01) Work: services as full-width Instrument-style rows — wine numeral, h2-scale name left, description right
+- [x] (2026-09-01) Now + About career history: shared `.rail` timeline; newest entry gets a wine halo
+- [x] (2026-09-01) Gallery: tag filter and its client script removed (4 collections don't earn a filter UI); dense 2/3-col square grid, captions cut to title + year
+- [x] (2026-09-01) Gallery promoted from the footer's secondary links into the primary nav — it was previously reachable on mobile only by scrolling to the page bottom
+- [x] (2026-09-01) New `/colophon` page (stack, rules, source); takes gallery's old slot in the secondary links
+- [x] (2026-09-01) Active nav marker changed from `●` to `■` to match the kicker bullet
+- [x] (2026-09-01) `npm run build` ✓ · `npx astro check` 0 errors · `npm test` 13/13 ✓ · all 11 routes return 200 with exactly one `<h1>` each · verified in-browser at 375px and 1280px
+
+### Considered and rejected
+
+- **Prev/next on articles** — already shipped; `ArticleLayout.astro:115` renders it.
+- **Corner metadata chrome (MOUTHWASH-style `INDEX` / version stamps)** — decorative only, and the sidebar already carries identity + section state. Would have cost a11y noise for no information gain.
 
 ## Out of scope (v2 — do not build)
 

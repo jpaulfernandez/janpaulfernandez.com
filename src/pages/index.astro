@@ -13,6 +13,12 @@ if (!homeEntry) {
 }
 const { heroGreeting, heroIntro } = homeEntry.data;
 
+// Display hero: the greeting's last word carries the wine flare, so the accent
+// tracks whatever Paul writes in Keystatic instead of being hardcoded here.
+const greetingWords = heroGreeting.trim().split(' ');
+const greetingHead = greetingWords.slice(0, -1).join(' ');
+const greetingFlare = greetingWords[greetingWords.length - 1];
+
 // Latest Now entry -> one tight line under the intro.
 const nowEntries = await getCollection('now');
 const latestNow = nowEntries.sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
@@ -49,41 +55,41 @@ const seoData = [
   <JsonLd data={seoData} slot="head" />
 
   <article>
-    {/* Identity: greeting → bio → optional now one-liner. */}
+    {/* Identity: display statement → bio → optional now one-liner. */}
     <header>
-      <h1 class="text-moss-900 m-0">{heroGreeting}</h1>
+      <h1 class="display m-0">
+        {greetingHead && <>{greetingHead}{' '}</>}<span class="flare">{greetingFlare}</span>
+      </h1>
       {heroIntro && (
-        <p class="mt-6 mb-0 text-moss-700 text-body leading-relaxed">{heroIntro}</p>
+        <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">{heroIntro}</p>
       )}
       {nowSnippet && (
-        <p class="mt-4 mb-0 text-moss-500 text-small">
-          now — {nowSnippet} <a href="/now" class="text-moss-700 hover:text-moss-900 underline underline-offset-4 decoration-moss-200 hover:decoration-moss-900">→</a>
+        <p class="mt-6 mb-0 text-ink-500 text-small">
+          <span class="text-wine-500">now</span> — {nowSnippet}{' '}
+          <a href="/now" class="text-ink-700 hover:text-wine-500 no-underline">→</a>
         </p>
       )}
     </header>
 
     {/* Writing index */}
     {latestThoughts.length > 0 && (
-      <section class="mt-16 md:mt-20" aria-labelledby="writing-heading">
-        <h2 id="writing-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">writing</h2>
-        <ul class="list-none m-0 p-0 flex flex-col">
+      <section class="mt-20 md:mt-24" aria-labelledby="writing-heading">
+        <h2 id="writing-heading" class="kicker">writing</h2>
+        <ul class="rows mt-6">
           {latestThoughts.map((post) => (
-            <li class="py-2 flex items-baseline justify-between gap-4">
-              <a
-                href={`/thoughts/${post.id}`}
-                class="text-moss-900 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
-              >
-                {post.data.title}
+            <li>
+              <a href={`/thoughts/${post.id}`} class="row-link">
+                <span class="font-bold">{post.data.title}</span>
+                <time class="row-meta" datetime={post.data.publishedDate}>
+                  {post.data.publishedDate.slice(0, 4)}
+                </time>
               </a>
-              <time class="text-moss-500 text-small whitespace-nowrap tabular-nums" datetime={post.data.publishedDate}>
-                {post.data.publishedDate.slice(0, 4)}
-              </time>
             </li>
           ))}
         </ul>
         <a
           href="/thoughts"
-          class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
         >
           all thoughts →
         </a>
@@ -92,45 +98,48 @@ const seoData = [
 
     {/* Projects index */}
     {latestProjects.length > 0 && (
-      <section class="mt-14 md:mt-16" aria-labelledby="projects-heading">
-        <h2 id="projects-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">projects</h2>
-        <ul class="list-none m-0 p-0 flex flex-col">
+      <section class="mt-16 md:mt-20" aria-labelledby="projects-heading">
+        <h2 id="projects-heading" class="kicker">projects</h2>
+        <ul class="rows mt-6">
           {latestProjects.map((project) => (
-            <li class="py-2 flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
+            <li>
               {project.data.link ? (
-                <a
-                  href={project.data.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-moss-900 hover:text-citrus-500 no-underline whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
-                >
-                  {project.data.title}&nbsp;↗
+                <a href={project.data.link} target="_blank" rel="noopener noreferrer" class="row-link">
+                  <span>
+                    <span class="font-bold">{project.data.title}</span>
+                    <span class="block mt-1 text-ink-500 text-small">{project.data.description}</span>
+                  </span>
+                  <span class="row-meta" aria-hidden="true">↗</span>
                 </a>
               ) : (
-                <span class="text-moss-900">{project.data.title}</span>
+                <div class="row-link">
+                  <span>
+                    <span class="font-bold">{project.data.title}</span>
+                    <span class="block mt-1 text-ink-500 text-small">{project.data.description}</span>
+                  </span>
+                </div>
               )}
-              <span class="text-moss-700 text-body">{project.data.description}</span>
             </li>
           ))}
         </ul>
         <a
           href="/projects"
-          class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
         >
           all projects →
         </a>
       </section>
     )}
 
-    {/* Work */}
-    <section class="mt-14 md:mt-16" aria-labelledby="work-heading">
-      <h2 id="work-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">work</h2>
-      <p class="m-0 text-moss-700 text-body leading-relaxed">
-        Consultation, workshops, and fractional product ownership.
+    {/* Work — the one CTA on the page, so it gets the wine block treatment. */}
+    <section class="mt-16 md:mt-20" aria-labelledby="work-heading">
+      <h2 id="work-heading" class="kicker">work</h2>
+      <p class="mt-6 mb-0 text-ink-900 text-h3 font-bold leading-snug max-w-prose">
+        Consultation, workshops, and <span class="flare">fractional product ownership</span>.
       </p>
       <a
         href="/work-with-me"
-        class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+        class="inline-block mt-6 px-6 py-3 bg-wine-500 text-paper-50 no-underline hover:bg-wine-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
       >
         work with me →
       </a>

@@ -24,10 +24,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const resolvedOgImage = new URL(ogImage ?? '/og-default.png', Astro.site);
 
 const navItems = [
-  { href: '/work-with-me', label: 'work' },
   { href: '/about', label: 'me' },
+  { href: '/work-with-me', label: 'work' },
   { href: '/projects', label: 'projects' },
   { href: '/thoughts', label: 'thoughts' },
+  { href: '/gallery', label: 'gallery' },
   { href: '/now', label: 'now' },
 ];
 
@@ -40,7 +41,7 @@ const isNavActive = (href: string) => {
 };
 
 const secondaryLinks = [
-  { href: '/gallery', label: 'gallery' },
+  { href: '/colophon', label: 'colophon' },
   { href: '/rss.xml', label: 'rss' },
   { href: 'mailto:jpaul.fernandez18@gmail.com', label: 'email' },
   { href: 'https://www.linkedin.com/in/jpaulfernandez/', label: 'linkedin', external: true },
@@ -105,12 +106,12 @@ const secondaryLinks = [
       <header class="pt-10 pb-8 lg:py-0 flex flex-col items-end text-right lg:sticky lg:top-0 lg:h-screen lg:justify-center lg:w-44 xl:w-48 shrink-0">
         <a
           href="/"
-          class="site-name block font-bold text-moss-900 no-underline tracking-tight leading-none text-body text-right focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm px-1"
+          class="site-name block font-bold text-ink-900 no-underline tracking-tight leading-none text-body text-right focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
         >
           Paul Fernandez
         </a>
 
-        <span class="site-meta mt-2 block text-moss-500 text-small tracking-wide text-right">
+        <span class="site-meta mt-2 block text-ink-500 text-small tracking-wide text-right">
           technologist · philippines
         </span>
 
@@ -122,8 +123,8 @@ const secondaryLinks = [
                   href={item.href}
                   aria-current={isNavActive(item.href) ? 'page' : undefined}
                   class:list={[
-                    'nav-link text-body no-underline text-moss-700 hover:text-moss-900',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm px-1',
+                    'nav-link text-body no-underline text-ink-700 hover:text-ink-900',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1',
                   ]}
                 >
                   {item.label}
@@ -134,13 +135,13 @@ const secondaryLinks = [
         </nav>
 
         {/* Secondary links — under the primary nav, right-aligned. */}
-        <ul class="mt-8 lg:mt-10 hidden lg:flex flex-col items-end gap-y-2 text-small text-moss-500 list-none m-0 p-0">
+        <ul class="mt-8 lg:mt-10 hidden lg:flex flex-col items-end gap-y-2 text-small text-ink-500 list-none m-0 p-0">
           {secondaryLinks.map((link) => (
             <li>
               <a
                 href={link.href}
                 {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                class="text-moss-500 hover:text-moss-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm px-1"
+                class="text-ink-500 hover:text-ink-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
               >
                 {link.label}
               </a>
@@ -156,9 +157,9 @@ const secondaryLinks = [
         </main>
 
         <!-- Footer — aligned with main content. -->
-        <footer class="py-8 border-t border-moss-200/60">
+        <footer class="py-8 border-t border-ink-200/60">
           <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
-            <p class="m-0 text-moss-500">&copy; {new Date().getFullYear()} Paul Fernandez</p>
+            <p class="m-0 text-ink-500">&copy; {new Date().getFullYear()} Paul Fernandez</p>
             {/* Mobile-only secondary links (< lg), since the lg+ sidebar owns them. */}
             <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 lg:hidden">
               {secondaryLinks.map((link) => (
@@ -166,7 +167,7 @@ const secondaryLinks = [
                   <a
                     href={link.href}
                     {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    class="text-moss-500 hover:text-moss-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm px-1"
+                    class="text-ink-500 hover:text-ink-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
                   >
                     {link.label}
                   </a>
@@ -183,12 +184,12 @@ const secondaryLinks = [
        * of the link's inline content, so right-alignment pulls label+marker
        * toward the right edge together. */
       .nav-link[aria-current='page'] {
-        color: var(--color-citrus-500);
+        color: var(--color-wine-500);
         font-weight: 700;
       }
       .nav-link[aria-current='page']::before {
-        content: '●';
-        color: var(--color-citrus-500);
+        content: '■';
+        color: var(--color-wine-500);
         margin-right: 0.4em;
         font-size: 0.7em;
         vertical-align: 0.25em;

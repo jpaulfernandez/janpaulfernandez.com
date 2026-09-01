@@ -27,49 +27,45 @@ const processedEntries = await Promise.all(
 );
 ---
 
-<div class="flex flex-col divide-y divide-moss-200">
+<div class="rail">
   {
     processedEntries.map(({ data, Content, id }) => (
-      <article class={`relative py-6 ${variant === 'full' ? '' : ''}`} id={variant === 'full' ? id : undefined}>
-        <div class="flex flex-col md:flex-row md:items-baseline md:gap-6">
-          <div class="md:w-32 shrink-0">
-            <span class="text-moss-500 text-small tabular-nums">{data.period}</span>
-          </div>
+      <article class="rail-item" id={variant === 'full' ? id : undefined}>
+        <span class="rail-date">{data.period}</span>
 
-          <div class="flex-grow min-w-0">
-            <h3 class="text-h3 font-bold text-moss-900 leading-snug m-0">
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <h3 class="text-h3 font-bold text-ink-900 leading-snug m-0">
               {data.role}
             </h3>
-            <p class="text-moss-700 mb-0 text-body">
+            <p class="text-wine-500 mb-0 mt-1 text-body">
               {data.org}
             </p>
-
-            {variant === 'full' ? (
-              <div class="prose mt-4 text-ink max-w-[68ch]">
-                <Content />
-              </div>
-            ) : (
-              <a
-                href={`/about#${id}`}
-                class="inline-block mt-2 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
-              >
-                read full story →
-              </a>
-            )}
           </div>
 
           {data.logo && (
-            <div class="flex-shrink-0 self-start mt-2 md:mt-0">
-              <Image
-                src={data.logo}
-                alt={`${data.org} logo`}
-                class="w-10 h-10 object-contain"
-                width={40}
-                height={40}
-              />
-            </div>
+            <Image
+              src={data.logo}
+              alt={`${data.org} logo`}
+              class="w-10 h-10 object-contain shrink-0 mt-1"
+              width={40}
+              height={40}
+            />
           )}
         </div>
+
+        {variant === 'full' ? (
+          <div class="prose mt-4 text-ink max-w-[68ch]">
+            <Content />
+          </div>
+        ) : (
+          <a
+            href={`/about#${id}`}
+            class="inline-block mt-3 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
+          >
+            read full story →
+          </a>
+        )}
       </article>
     ))
   }

@@ -6,6 +6,9 @@ import { person, webSite, profilePage, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects } from '../lib/projects';
 
+// Services double as the home "work" cards — same source as /work-with-me.
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+
 // Fetch Keystatic Home singleton
 const homeEntry = await getEntry('home', 'home');
 if (!homeEntry) {
@@ -131,18 +134,86 @@ const seoData = [
       </section>
     )}
 
-    {/* Work — the one CTA on the page, so it gets the wine block treatment. */}
-    <section class="mt-16 md:mt-20" aria-labelledby="work-heading">
-      <h2 id="work-heading" class="kicker">work</h2>
-      <p class="mt-6 mb-0 text-ink-900 text-h3 font-bold leading-snug max-w-prose">
-        Consultation, workshops, and <span class="flare">fractional product ownership</span>.
-      </p>
-      <a
-        href="/work-with-me"
-        class="inline-block mt-6 px-6 py-3 bg-wine-500 text-paper-50 no-underline hover:bg-wine-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
-      >
-        work with me →
-      </a>
-    </section>
+    {/* Work — services as cards. Mobile: native swipe carousel (CSS
+        scroll-snap, scrollbar hidden, the page itself never scrolls
+        horizontally); lg+: plain three-column grid. */}
+    {services.length > 0 && (
+      <section class="mt-16 md:mt-20" aria-labelledby="work-heading">
+        <h2 id="work-heading" class="kicker">work</h2>
+        <ul class="work-cards mt-6">
+          {services.map((service, i) => (
+            <li>
+              <a href="/work-with-me" class="work-card">
+                <span class="block text-small text-wine-500 tabular-nums">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="block mt-4 font-bold text-h3 leading-tight text-ink-900 text-balance">
+                  {service.data.title}
+                </span>
+                <span class="block mt-3 text-ink-700 text-body leading-relaxed">
+                  {service.data.description}
+                </span>
+                <span class="work-card-cta mt-auto pt-6 block text-small text-ink-500">
+                  details →
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a
+          href="/work-with-me"
+          class="inline-block mt-6 px-6 py-3 bg-wine-500 text-paper-50 no-underline hover:bg-wine-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
+        >
+          work with me →
+        </a>
+      </section>
+    )}
   </article>
 </BaseLayout>
+
+<style>
+  /* Swipe deck: one card per view (85% wide, next card peeking), snap
+   * mandatory, scrollbar suppressed. The scroller is contained, so the
+   * document never grows a horizontal scrollbar. */
+  .work-cards {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .work-cards::-webkit-scrollbar { display: none; }
+  .work-cards > li {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+    display: flex;
+  }
+
+  .work-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1.5rem;
+    border: 1px solid var(--color-ink-200);
+    background-color: var(--color-paper-50);
+    text-decoration: none;
+    transition: border-color 0.15s ease-out;
+  }
+  /* The global a:hover recolors link text wine; inside a card only the
+   * trailing CTA may take the accent. */
+  .work-card:hover { color: var(--color-ink-900); border-color: var(--color-wine-500); }
+  .work-card:hover .work-card-cta { color: var(--color-wine-500); }
+  .work-card:focus-visible {
+    outline: 2px solid var(--color-wine-500);
+    outline-offset: 2px;
+  }
+
+  @media (min-width: 1024px) {
+    .work-cards { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; }
+    .work-cards > li { flex: auto; }
+  }
+</style>

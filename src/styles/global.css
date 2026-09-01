@@ -32,6 +32,10 @@
 @import "@fontsource/courier-prime/700.css";
 @import "@fontsource/courier-prime/400-italic.css";
 
+/* Class-based dark variant (Phase 11): BaseLayout adds `.dark` to <body> on
+ * the colophon page, flipping the whole shell to pure black. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Reset Tailwind's expanding spacing scale, then declare only what we want.
    * Namespaces that remain invalid (1.5/2.5/3.5/…) cannot be referenced. */
@@ -412,4 +416,31 @@
     text-align: right;
     margin-bottom: 0;
   }
+}
+
+/* ----------------------------------------------------------------------------
+ * Phase 11 — dark shell. BaseLayout sets `.dark` on <body> for the colophon
+ * page: pure black canvas, paper type, wine-300 as the accent. Measured on
+ * #000: paper-100 #FAF6F4 ≈ 19:1, ink-200 #E6D8DC ≈ 15:1, wine-300 #C4536F
+ * 4.8:1 (AA). wine-500 only reaches 2.4:1 on black, so every accent shifts
+ * up one step. Unlayered on purpose — these override the base layer and any
+ * utility on the affected pages.
+ * ------------------------------------------------------------------------- */
+.dark {
+  background-color: #000000;
+  color: var(--color-paper-100);
+}
+.dark h1, .dark h2, .dark h3 { color: var(--color-paper-100); }
+.dark a { color: var(--color-paper-100); text-decoration-color: var(--color-wine-300); }
+.dark a:hover { color: var(--color-wine-300); text-decoration-color: var(--color-paper-100); }
+.dark .display { color: var(--color-paper-100); }
+.dark .flare { color: var(--color-wine-300); }
+.dark .kicker { color: var(--color-ink-200); }
+.dark .kicker::before { background-color: var(--color-wine-300); }
+.dark .kicker::after {
+  background-color: color-mix(in oklab, var(--color-ink-200) 25%, transparent);
+}
+body.dark .nav-link[aria-current='page'],
+body.dark .nav-link[aria-current='page']::before {
+  color: var(--color-wine-300);
 }

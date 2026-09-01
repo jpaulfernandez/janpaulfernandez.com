@@ -173,6 +173,17 @@ one node per entry), Stripe changelog (period as a chapter marker), Campsite
 - [x] (2026-09-01) `src/lib/gallery.ts` `lightboxWidth()` + vitest: lightbox now loads a 1600px-long-edge variant instead of the ~1.5 MB original (wanderland-41: 1165 kB → 61 kB). Grid images dropped their forced 800×600 crop, so photos show at their true aspect ratio.
 - [x] (2026-09-01) `npm run build` ✓ · `npx astro check` 0 errors · `npm test` 18/18 ✓ · verified in-browser at 375px and 1280px
 
+## Phase 11 — Swipeable work cards, black colophon, left-edge nav rail (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat. Four targeted changes to the home page, the
+colophon, and the site shell:
+
+- [x] (2026-09-02) Home "work" section: the single CTA block becomes three service cards pulled from the same `services` collection as `/work-with-me`. Mobile: native swipe carousel — CSS `scroll-snap` with the scrollbar suppressed, one 85%-wide card per view with the next card peeking, so the document never grows a horizontal scrollbar. `lg+`: plain three-column grid. Cards link to `/work-with-me`; the wine CTA button is kept below. Zero JS (rung 3).
+- [x] (2026-09-02) `/colophon` inverts to pure black: new `dark` prop on `BaseLayout` sets `.dark` on `<body>`; Tailwind 4 `@custom-variant dark` is class-based. Global overrides in `global.css` flip the shared primitives (headings, links, `.display`, `.flare`, `.kicker`, active nav marker). Wine accents step up to `wine-300` on black — `wine-500` only reaches 2.4:1 there; `wine-300` measures 4.8:1 (AA).
+- [x] (2026-09-02) Navigation shell: at `lg+` the header is now `fixed` to the left viewport edge (`w-52`, `xl:w-64`), vertically centered, left-aligned — no longer attached to the content column. Content column stays `max-w-3xl`, centered in the remaining width via `lg:pl-52 xl:pl-64`.
+- [x] (2026-09-02) Mobile nav redesign: name + meta left-aligned; the six primary links form a 3×2 grid with padded tap rows (~42px) instead of the old right-aligned wrapped rows. Secondary links stay in the mobile footer.
+- [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · built HTML verified: 3 work cards + snap CSS on `/`, `dark` body class + `#000`/wine-300 rules on `/colophon` only, `lg:fixed` rail in the shell.
+
 ## Out of scope (v2 — do not build)
 
 Dark mode, Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

@@ -32,13 +32,14 @@ const principles = [
 <BaseLayout
   title="Colophon"
   description="How janpaulfernandez.com is built — the stack, the type, and the rules it follows."
+  dark
 >
   <JsonLd data={seoData} slot="head" />
 
   <article>
     <header>
       <h1 class="display m-0">Colo<span class="flare">phon</span></h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
+      <p class="mt-8 mb-0 text-ink-700 dark:text-ink-200 text-body leading-relaxed max-w-prose">
         What this site is made of, and the rules it follows. Kept here so the
         next person who asks — usually me, a year from now — has an answer.
       </p>
@@ -48,11 +49,11 @@ const principles = [
       <h2 id="stack-heading" class="kicker">stack</h2>
       <dl class="mt-8 m-0">
         {stack.map((item) => (
-          <div class="grid md:grid-cols-[8rem_1fr] gap-x-8 gap-y-1 py-6 border-b border-ink-200">
-            <dt class="text-small text-ink-500 uppercase tracking-widest">{item.label}</dt>
+          <div class="grid md:grid-cols-[8rem_1fr] gap-x-8 gap-y-1 py-6 border-b border-ink-200 dark:border-paper-100/20">
+            <dt class="text-small text-ink-500 dark:text-paper-100/60 uppercase tracking-widest">{item.label}</dt>
             <dd class="m-0">
-              <span class="block font-bold text-h3 leading-tight text-ink-900">{item.value}</span>
-              <span class="block mt-2 text-ink-700 text-body max-w-prose">{item.note}</span>
+              <span class="block font-bold text-h3 leading-tight text-ink-900 dark:text-paper-50">{item.value}</span>
+              <span class="block mt-2 text-ink-700 dark:text-ink-200 text-body max-w-prose">{item.note}</span>
             </dd>
           </div>
         ))}
@@ -63,8 +64,8 @@ const principles = [
       <h2 id="rules-heading" class="kicker">rules</h2>
       <ul class="mt-8 m-0 p-0 list-none flex flex-col gap-4">
         {principles.map((line) => (
-          <li class="flex gap-4 text-ink-700 text-body leading-relaxed max-w-prose">
-            <span class="text-wine-500 shrink-0" aria-hidden="true">—</span>
+          <li class="flex gap-4 text-ink-700 dark:text-ink-200 text-body leading-relaxed max-w-prose">
+            <span class="text-wine-500 dark:text-wine-300 shrink-0" aria-hidden="true">—</span>
             <span>{line}</span>
           </li>
         ))}
@@ -73,7 +74,7 @@ const principles = [
 
     <section class="mt-20 md:mt-24" aria-labelledby="source-heading">
       <h2 id="source-heading" class="kicker">source</h2>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
+      <p class="mt-8 mb-0 text-ink-700 dark:text-ink-200 text-body leading-relaxed max-w-prose">
         Photography is mine. Words are mine. If something here is useful to you,
         take it — no attribution needed.
       </p>

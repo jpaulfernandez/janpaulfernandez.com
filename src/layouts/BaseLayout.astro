@@ -15,9 +15,19 @@ interface Props {
   /** Home page shows the plain title with no site-name suffix. */
   isHome?: boolean;
   bodyClass?: string;
+  /** Inverts the whole shell to pure black — used by the colophon page. */
+  dark?: boolean;
 }
 
-const { title, description, ogImage, type = 'website', isHome = false, bodyClass } = Astro.props;
+const {
+  title,
+  description,
+  ogImage,
+  type = 'website',
+  isHome = false,
+  bodyClass,
+  dark = false,
+} = Astro.props;
 
 const pageTitle = isHome ? title : `${title} — Paul Fernandez`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -92,82 +102,83 @@ const secondaryLinks = [
 
     <slot name="head" />
   </head>
-  <body class={`min-h-screen flex flex-col ${bodyClass ?? ''}`}>
+  <body class={`min-h-screen flex flex-col ${dark ? 'dark' : ''} ${bodyClass ?? ''}`}>
     <a href="#main" class="skip-link">Skip to content</a>
 
     {/*
-      Phase 8 shell — floating sidebar anchored next to main content.
-        • Mobile (< lg): site header sits inline at the top of the body, right-aligned.
-        • lg+: sidebar sits directly to the left of the main content column (tight gap),
-          vertically centered in the viewport, right-aligned toward the content.
-        • Main content has a generous reading width (max-w-3xl).
+      Phase 11 shell — nav rail pinned to the left edge of the viewport.
+        • Mobile (< lg): header sits inline at the top of the body, left-aligned;
+          the primary links form a 3×2 grid of full-width tap rows.
+        • lg+: header is fixed to the left viewport edge, vertically centered,
+          left-aligned; the content column is centered in the remaining width.
+        • Main content keeps the max-w-3xl reading width.
     */}
-    <div class="w-full max-w-5xl mx-auto flex-1 lg:flex lg:justify-center lg:items-start lg:gap-10 xl:gap-12 px-6">
-      <header class="pt-10 pb-8 lg:py-0 flex flex-col items-end text-right lg:sticky lg:top-0 lg:h-screen lg:justify-center lg:w-44 xl:w-48 shrink-0">
-        <a
-          href="/"
-          class="site-name block font-bold text-ink-900 no-underline tracking-tight leading-none text-body text-right focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
-        >
-          Paul Fernandez
-        </a>
+    <header class="px-6 pt-10 pb-8 lg:py-0 lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-52 xl:w-64 lg:px-8 flex flex-col items-start text-left lg:justify-center shrink-0">
+      <a
+        href="/"
+        class="site-name block font-bold text-ink-900 dark:text-paper-100 no-underline tracking-tight leading-none text-body focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 dark:focus-visible:ring-wine-300 rounded-sm px-1"
+      >
+        Paul Fernandez
+      </a>
 
-        <span class="site-meta mt-2 block text-ink-500 text-small tracking-wide text-right">
-          technologist · philippines
-        </span>
+      <span class="site-meta mt-2 block text-ink-500 dark:text-ink-200 text-small tracking-wide">
+        technologist · philippines
+      </span>
 
-        <nav aria-label="Main" class="mt-8 lg:mt-10">
-          <ul class="flex flex-wrap justify-end gap-x-6 gap-y-2 list-none m-0 p-0 lg:flex-col lg:items-end lg:gap-y-3">
-            {navItems.map((item) => (
-              <li>
-                <a
-                  href={item.href}
-                  aria-current={isNavActive(item.href) ? 'page' : undefined}
-                  class:list={[
-                    'nav-link text-body no-underline text-ink-700 hover:text-ink-900',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1',
-                  ]}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* Secondary links — under the primary nav, right-aligned. */}
-        <ul class="mt-8 lg:mt-10 hidden lg:flex flex-col items-end gap-y-2 text-small text-ink-500 list-none m-0 p-0">
-          {secondaryLinks.map((link) => (
+      <nav aria-label="Main" class="mt-8 lg:mt-10">
+        <ul class="grid grid-cols-3 gap-x-4 gap-y-1 list-none m-0 p-0 lg:flex lg:flex-col lg:items-start lg:gap-y-3">
+          {navItems.map((item) => (
             <li>
               <a
-                href={link.href}
-                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                class="text-ink-500 hover:text-ink-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
+                href={item.href}
+                aria-current={isNavActive(item.href) ? 'page' : undefined}
+                class:list={[
+                  'nav-link block py-2 lg:py-0 text-body no-underline text-ink-700 dark:text-ink-200 hover:text-ink-900 dark:hover:text-paper-50',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 dark:focus-visible:ring-wine-300 rounded-sm px-1',
+                ]}
               >
-                {link.label}
+                {item.label}
               </a>
             </li>
           ))}
         </ul>
-      </header>
+      </nav>
 
-      <div class="flex-1 min-w-0 max-w-3xl flex flex-col min-h-screen">
+      {/* Secondary links — lg+ only; on mobile they live in the footer. */}
+      <ul class="mt-8 lg:mt-10 hidden lg:flex flex-col items-start gap-y-2 text-small list-none m-0 p-0">
+        {secondaryLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              class="text-ink-500 dark:text-ink-200 hover:text-ink-900 dark:hover:text-paper-50 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 dark:focus-visible:ring-wine-300 rounded-sm px-1"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </header>
+
+    <div class="flex-1 flex flex-col min-h-screen lg:pl-52 xl:pl-64">
+      <div class="flex-1 w-full max-w-3xl mx-auto px-6 flex flex-col min-w-0">
         <!-- Main content — wider reading column (max-w-3xl). -->
         <main id="main" class="flex-1 py-12 md:py-20">
           <slot />
         </main>
 
         <!-- Footer — aligned with main content. -->
-        <footer class="py-8 border-t border-ink-200/60">
+        <footer class="py-8 border-t border-ink-200/60 dark:border-paper-100/20">
           <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
-            <p class="m-0 text-ink-500">&copy; {new Date().getFullYear()} Paul Fernandez</p>
-            {/* Mobile-only secondary links (< lg), since the lg+ sidebar owns them. */}
+            <p class="m-0 text-ink-500 dark:text-ink-200">&copy; {new Date().getFullYear()} Paul Fernandez</p>
+            {/* Mobile-only secondary links (< lg), since the lg+ rail owns them. */}
             <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 lg:hidden">
               {secondaryLinks.map((link) => (
                 <li>
                   <a
                     href={link.href}
                     {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    class="text-ink-500 hover:text-ink-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
+                    class="text-ink-500 dark:text-ink-200 hover:text-ink-900 dark:hover:text-paper-50 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 dark:focus-visible:ring-wine-300 rounded-sm px-1"
                   >
                     {link.label}
                   </a>

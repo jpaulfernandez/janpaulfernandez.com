@@ -14,10 +14,6 @@ const { Content: IntroContent } = await render(workWithMeEntry);
 const services = await getCollection('services');
 const sortedServices = services.sort((a, b) => a.data.order - b.data.order);
 
-// One accent per service row, cycled — same order as the home page so a row
-// keeps its colour across the two pages.
-const rowAccents = ['clay', 'ochre', 'olive', 'slate'];
-
 const faqItems = sortedServices.flatMap((s) => s.data.faq || []);
 
 const serviceSchemas = sortedServices.map((s) =>
@@ -59,7 +55,7 @@ const steps = [
 
   <article>
     <header>
-      <h1 class="display m-0">Work <span class="flare">with me</span></h1>
+      <h1 class="m-0">Work <span class="flare">with me</span></h1>
       <div class="prose mt-8 text-ink-700">
         <IntroContent />
       </div>
@@ -68,10 +64,13 @@ const steps = [
     {/* Services — numbered rows, identical to the home page. */}
     {sortedServices.length > 0 && (
       <section class="mt-24" aria-labelledby="services-heading">
-        <h2 id="services-heading" class="kicker">services</h2>
+        <h2 id="services-heading" class="kicker">
+          services
+          <span class="kicker-meta">{sortedServices.length} {sortedServices.length === 1 ? 'service' : 'services'}</span>
+        </h2>
         <ol class="num-rows mt-8">
           {sortedServices.map((s, i) => (
-            <li style={`--accent: var(--color-${rowAccents[i % rowAccents.length]}-500)`}>
+            <li>
               <div class="num-row">
                 <span class="num-row-index">{String(i + 1).padStart(2, '0')}</span>
                 <h3 class="num-row-title">{s.data.title}</h3>
@@ -87,6 +86,7 @@ const steps = [
     <section class="mt-24" aria-labelledby="process-heading" style="--accent: var(--color-olive-500)">
       <h2 id="process-heading" class="kicker">
         how it works
+        <span class="kicker-meta">{steps.length} steps</span>
       </h2>
       <ol class="m-0 mt-8 p-0 flex flex-col gap-4 list-none">
         {steps.map((step) => (
@@ -103,6 +103,7 @@ const steps = [
       <section class="mt-24" aria-labelledby="faq-heading" style="--accent: var(--color-slate-500)">
         <h2 id="faq-heading" class="kicker">
           faq
+          <span class="kicker-meta">{faqItems.length} {faqItems.length === 1 ? 'question' : 'questions'}</span>
         </h2>
         <div class="flex flex-col mt-8">
           {faqItems.map((item) => (

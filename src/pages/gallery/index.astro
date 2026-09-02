@@ -73,7 +73,7 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
 <BaseLayout title="Gallery" description={description}>
   <article>
     <header>
-      <h1 class="display m-0">Gallery</h1>
+      <h1 class="m-0">Gallery</h1>
       <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
         Photography — <span class="flare">concerts, festivals, places</span>.
       </p>
@@ -112,7 +112,10 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
         the lightbox, without grouping the wall itself. */}
     {sets.length > 0 && (
       <section class="mt-16 md:mt-20" aria-labelledby="sets-heading">
-        <h2 id="sets-heading" class="kicker">Sets</h2>
+        <h2 id="sets-heading" class="kicker">
+          Sets
+          <span class="kicker-meta">{sets.length} {sets.length === 1 ? 'set' : 'sets'}</span>
+        </h2>
         <ul class="rows mt-6">
           {sets.map((set) => (
             <li>

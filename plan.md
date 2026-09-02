@@ -200,6 +200,19 @@ number and a heavy title, no cards).
 - [x] (2026-09-02) Palette: wine stays primary; four muted complements join as section accents — clay `#A24A22` (5.5:1), ochre `#7E6220` (5.4:1), olive `#40563C` (7.5:1), slate `#2F4858` (8.9:1) on paper, each ≥4.5:1 under `paper-50` text when used as a fill. Driven by one `--accent` custom property that `.kicker`, `.flare`, `.row-link`, `.num-row`, `.btn` and `.more-link` all read, so a section sets its colour in one place. Wine is still never body text.
 - [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · verified in-browser at 390px and 1280px on `/`, `/now`, `/work-with-me`, `/about`, `/colophon` (dark shell) and an article page.
 
+## Phase 13 — Ruled ledger: wine + two, line-drawn, quiet type (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat: revise the entire UI/UX with wine + up to four complementary colours, minimalist text-based UI/UX, lines as the visualization, same pages. Confirmed direction: ruled-ledger line language, quieter type hierarchy, complement set trimmed. Supersedes Phase 12 visuals (fills → lines). Decisions path: brainstorming skill, bounded-classified (whole-site skin, no IA change), design approved in chat before implementation.
+
+- [x] (2026-09-02) Palette trimmed to wine + two complements: slate (writing), olive (projects); clay and ochre retired. Tokens rewritten in oklch(); paper-50 shifted off #FFF to #FCFAF9; dark shell shifted off #000 to a wine-tinted near-black (--color-night) with AA re-measured (wine-300 4.6, slate-300 9.1, olive-300 9.9). Contrast table in the token block updated.
+- [x] (2026-09-02) Quieter type: --text-display (48→96) and the .display class removed; h1 32→48, h2 24→32 clamps re-derived for a 375–1280 viewport. Three faces and their jobs unchanged (Archivo Black / Lato / Courier Prime).
+- [x] (2026-09-02) Lines carry every structural moment: solid NOW slab → ruled band (2px wine top rule + hairline bottom); num-row accent-flood hover → drawn title rule that wipes in from the left on hover; filled .btn → 1px outlined box; side-stripe callout/prose blockquote borders → full or top/bottom hairlines.
+- [x] (2026-09-02) Ledger header rule: new .kicker-meta element sits past the kicker's trailing rule carrying real metadata (service/thought/project counts, steps, questions, roles, sets). Applied on home, /work-with-me, /about, /projects, /gallery, article "related".
+- [x] (2026-09-02) Nav bar: backdrop blur removed (solid paper + hairline); NOW tab redrawn as a 1px wine outline with the pulsing dot; dark-shell variants re-tinted via --color-night and color-mix hairlines.
+- [x] (2026-09-02) PostListItem rows + /thoughts filter chips: active/pressed states are drawn (accent ink + 2px rule or accent underline), not filled. Writing/topic pages set --accent to slate via the existing --accent mechanism.
+- [x] (2026-09-02) Callout block: stale Phase-8 green classes replaced with olive (idea variant) / wine (warning) / ink (note), full-border boxes. KeyTakeaway full wine box, PullQuote framed with top/bottom hairlines.
+- [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · all 9 shell routes return 200 with exactly one `<h1>` · rendered-browser verification at 390px and 1280px on /, /work-with-me, /thoughts, /colophon (dark shell).
+
 ## Out of scope (v2 — do not build)
 
 Dark mode, Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

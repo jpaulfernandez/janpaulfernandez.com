@@ -37,7 +37,7 @@ Only after all six: add the minimum that works. Concrete house examples: reading
 
 - Fully static output. Zero client JS by default; vanilla JS before any island; React exists ONLY for the Keystatic admin and must never ship to the public site.
 - One `h1` per page. Semantic landmarks. WCAG AA contrast. `prefers-reduced-motion` respected.
-- Wine (`--color-wine-*`) never for body text — CTAs, NOW surfaces, kicker bullets, and hand-placed `.flare` words only. Palette tokens are `ink-*` (type), `paper-*` (surfaces), `wine-*` (primary accent) and `clay-*`/`ochre-*`/`olive-*`/`slate-*` (section accents, set via `--accent`).
+- Wine (`--color-wine-*`) never for body text — CTAs, NOW surfaces, kicker bullets, and hand-placed `.flare` words only. Palette tokens are `ink-*` (type), `paper-*` (surfaces), `wine-*` (primary accent) and `slate-*`/`olive-*` (section accents, set via `--accent`). Structural colour lives in drawn lines, never fills. Tokens are oklch; `paper-50` is a tinted white, the dark shell is `--color-night`, a wine-tinted near-black.
 - Three faces, three jobs: Archivo Black (display/headings), Lato (body/prose), Courier Prime (labels, metadata, numerals). Don't mix them up and don't add a fourth.
 - Keystatic and Astro content schemas must stay field-identical — check both files in any schema change.
 - Person JSON-LD `@id` is `https://janpaulfernandez.com/#person`, defined once, referenced everywhere.

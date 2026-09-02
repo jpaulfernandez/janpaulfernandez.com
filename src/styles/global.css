@@ -1,20 +1,22 @@
 @import "tailwindcss";
 
 /* ----------------------------------------------------------------------------
- * Phase 12 (2026-09-02) — visual direction: BOLD MINIMALIST.
+ * Phase 13 (2026-09-02) — visual direction: RULED LEDGER.
  *
- * What changed from Phase 9/11:
- *   • Type is no longer one monospace family. Three roles, three faces:
- *       display  Archivo Black  — h1/h2/h3 + .display. Heavy, tight, loud.
- *       body     Lato           — prose and UI. Readable at length.
- *       mono     Courier Prime  — labels, kickers, metadata, numerals.
- *     Hierarchy now comes from CONTRAST OF FORM, not size alone.
- *   • Wine is still the primary accent, but four muted complements join it as
- *     a *section* palette (clay, ochre, olive, slate). They colour numerals,
- *     kicker bullets and row hovers — never body text, never more than one per
- *     row. Every one clears WCAG AA on paper; every one takes paper-50 text at
- *     4.5:1+ when used as a fill.
- *   • The left nav rail is gone (see BaseLayout) — a sticky top bar replaces it.
+ * What changed from Phase 12:
+ *   • Lines are the visualization system. Every structural moment is a drawn
+ *     line — hairline rules, ruled rows, rails, tick marks. Colour never fills
+ *     a surface: it lives only in 1px lines, tiny square markers, and single
+ *     accent words. The solid NOW slab, the accent-flood row hovers, the
+ *     filled buttons and the side-stripe callouts are all gone.
+ *   • Palette is wine + two: wine leads (work, NOW, links), slate answers for
+ *     writing, olive for projects. Clay and ochre are retired. Tokens are
+ *     oklch(); paper-50 is no longer pure white and the dark shell is a
+ *     wine-tinted near-black instead of #000.
+ *   • Quieter type hierarchy. The 48 → 96 display step is removed; h1 is now
+ *     32 → 48. Three faces keep their three jobs (Archivo Black headings,
+ *     Lato body, Courier Prime labels) — the contrast of form stays, the
+ *     shouting stops.
  *
  * Still in force from Phase 8b: strict 8-pt grid; type-scale endpoints are all
  * multiples of 8; Tailwind's off-grid spacing keys are absent.
@@ -28,7 +30,7 @@
 @import "@fontsource/courier-prime/700.css";
 
 /* Class-based dark variant: BaseLayout adds `.dark` to <body> on the colophon
- * page, flipping the whole shell to pure black. */
+ * page, flipping the whole shell to a wine-tinted near-black. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -60,60 +62,55 @@
   --spacing-96: 24rem;         /* 384              */
 
   /* ---- Palette ---------------------------------------------------------
-   * Measured contrast on paper-100 (#FAF6F4) / as a fill under paper-50 text:
-   *   ink-900   #1C0A10   17.8:1        display + body type
-   *   ink-700   #2E1A20   15.2:1        secondary prose
-   *   ink-500   #6E5A60    5.9:1        metadata, kickers, captions   (AA)
-   *   wine-500  #8E1B3F    8.2:1 / 8.4  primary accent
-   *   clay-500  #A24A22    5.5:1 / 5.6  section accent
-   *   ochre-500 #7E6220    5.4:1 / 5.4  section accent
-   *   olive-500 #40563C    7.5:1 / 7.6  section accent
-   *   slate-500 #2F4858    8.9:1 / 9.1  section accent
-   * ink-200 and the -50 tints are surface/hairline only — never text. */
-  --color-ink-900: #1C0A10;
-  --color-ink-700: #2E1A20;
-  --color-ink-500: #6E5A60;
-  --color-ink-200: #E6D8DC;
+   * Wine leads; slate and olive answer. One accent per section, set via
+   * `--accent`. Measured contrast on paper-100 / as a fill under paper-50:
+   *   ink-900    17.8:1        display + body type
+   *   ink-700    15.2:1        secondary prose
+   *   ink-500     5.9:1        metadata, kickers, captions   (AA)
+   *   wine-500    8.2:1 / 8.5  primary accent
+   *   slate-500   8.9:1 / 9.2  writing accent
+   *   olive-500   7.5:1 / 7.7  projects accent
+   * ink-200 and wine-50 are hairline/halo only — never text.
+   * Dark shell (--color-night): wine-300 4.6, slate-300 9.1, olive-300 9.9. */
+  --color-ink-900: oklch(0.175 0.033 359.8);   /* #1C0A10 */
+  --color-ink-700: oklch(0.247 0.033 0.4);     /* #2E1A20 */
+  --color-ink-500: oklch(0.489 0.028 358.2);   /* #6E5A60 */
+  --color-ink-200: oklch(0.895 0.016 358.1);   /* #E6D8DC */
   --color-ink: #1C0A10;
 
-  --color-paper-100: #FAF6F4;
-  --color-paper-50: #FFFFFF;
+  --color-paper-100: oklch(0.976 0.005 48.7);  /* #FAF6F4 */
+  --color-paper-50: oklch(0.986 0.003 48.7);   /* #FCFAF9 — tinted, never #FFF */
 
-  --color-wine-900: #3D0E20;
-  --color-wine-500: #8E1B3F;
-  --color-wine-400: #B02A52;
-  --color-wine-300: #C4536F;
-  --color-wine-50: #F5E9EC;
+  --color-wine-900: oklch(0.251 0.076 0.7);    /* #3D0E20 */
+  --color-wine-500: oklch(0.429 0.150 8.4);    /* #8E1B3F */
+  --color-wine-300: oklch(0.594 0.146 7.3);    /* #C4536F */
+  --color-wine-50: oklch(0.944 0.014 0.3);     /* #F5E9EC */
 
-  --color-clay-500: #A24A22;
-  --color-clay-300: #D98A5F;
-  --color-ochre-500: #7E6220;
-  --color-ochre-300: #D9BE72;
-  --color-olive-500: #40563C;
-  --color-olive-300: #9FBF8A;
-  --color-slate-500: #2F4858;
-  --color-slate-300: #8FB3C9;
+  --color-slate-500: oklch(0.388 0.041 237.3); /* #2F4858 */
+  --color-slate-300: oklch(0.748 0.050 235.2); /* #8FB3C9 */
+  --color-olive-500: oklch(0.427 0.050 140.7); /* #40563C */
+  --color-olive-300: oklch(0.767 0.081 133.3); /* #9FBF8A */
+
+  /* Dark shell canvas — a wine-tinted near-black, never pure #000. */
+  --color-night: oklch(0.133 0.013 354.8);     /* #0C0608 */
 
   /* Typography — three faces, three jobs. */
   --font-display: "Archivo Black", "Arial Black", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Lato", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Courier Prime", ui-monospace, "SFMono-Regular", Menlo, Monaco, monospace;
 
-  /* Strict 8-pt type scale.
+  /* Strict 8-pt type scale — quiet hierarchy, no display step.
    *   small    12 (fixed, sub-cell)  — captions, kickers, metadata
    *   body     16 (fixed)            — main paragraph / UI
    *   h3       24 (fixed)            — inline headings, row titles
-   *   h2       24 →  40  (clamp)     — section headings
-   *   h1       40 →  64  (clamp)     — page title
-   *   display  48 →  96  (clamp)     — hero statements only, one per page
-   * Clamps interpolate across a 375px → 1280px viewport. Archivo Black is far
-   * wider than the old monospace, so the display top end drops 112 → 96. */
-  --text-display: clamp(3rem, 1.7373rem + 5.3872vw, 6rem);   /*  48 →  96 */
-  --text-h1: clamp(2.5rem, 1.8375rem + 2.8287vw, 4rem);      /*  40 →  64 */
-  --text-h2: clamp(1.5rem, 1.0588rem + 1.8824vw, 2.5rem);    /*  24 →  40 */
-  --text-h3: 1.5rem;                                          /*  24 */
-  --text-body: 1rem;                                          /*  16 */
-  --text-small: 0.75rem;                                      /*  12 */
+   *   h2       24 →  32  (clamp)     — section headings
+   *   h1       32 →  48  (clamp)     — page title, home greeting
+   * Clamps interpolate across a 375px → 1280px viewport. */
+  --text-h1: clamp(2rem, 1.5856rem + 1.7680vw, 3rem);   /*  32 →  48 */
+  --text-h2: clamp(1.5rem, 1.2928rem + 0.8840vw, 2rem); /*  24 →  32 */
+  --text-h3: 1.5rem;                                     /*  24 */
+  --text-body: 1rem;                                     /*  16 */
+  --text-small: 0.75rem;                                 /*  12 */
 
   --text-heading-tracking: -0.02em;
 }
@@ -134,9 +131,9 @@
     font-weight: 400;                /* Archivo Black ships one weight */
     color: var(--color-ink-900);
     letter-spacing: var(--text-heading-tracking);
-    line-height: 1.1;
+    line-height: 1.15;
   }
-  h1 { font-size: var(--text-h1); letter-spacing: -0.03em; }
+  h1 { font-size: var(--text-h1); letter-spacing: -0.03em; text-wrap: balance; }
   h2 { font-size: var(--text-h2); }
   h3 { font-size: var(--text-h3); }
 
@@ -185,9 +182,11 @@
   .prose li { margin-bottom: 0.4em; }
   .prose ul { list-style-type: square; }
   .prose ol { list-style-type: decimal; }
+  /* A quotation is set off by drawn rules, not a side stripe. */
   .prose blockquote {
-    border-left: 3px solid var(--color-wine-500);
-    padding-left: 1em;
+    border-top: 1px solid var(--color-ink-200);
+    border-bottom: 1px solid var(--color-ink-200);
+    padding: 1em 0;
     margin-top: 1.5em; margin-bottom: 1.5em;
     font-style: italic;
     color: var(--color-ink-700);
@@ -277,28 +276,17 @@
 }
 
 /* ----------------------------------------------------------------------------
- * Shared primitives.
+ * Shared primitives — the ledger's drawn lines.
  * ------------------------------------------------------------------------- */
 
-/* Hero statement. One per page, at most. Archivo Black at 96px is the loudest
- * thing on the site — tight leading and negative tracking keep it a block. */
-.display {
-  font-family: var(--font-display);
-  font-size: var(--text-display);
-  font-weight: 400;
-  line-height: 0.94;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-  color: var(--color-ink-900);
-  text-wrap: balance;
-}
-
-/* The flare: an accent word inside otherwise monochrome display type. Used by
- * hand, on one or two words per statement — never a whole line. */
+/* The flare: an accent word inside otherwise monochrome type. Used by hand,
+ * on one or two words per page — never a whole line. */
 .flare { color: var(--accent, var(--color-wine-500)); }
 
-/* Section label. Small mono uppercase; the bullet carries the section's accent
- * (set `--accent` on the section to shift it off wine). */
+/* Section label — the ledger header. Small mono uppercase; the square bullet
+ * carries the section's accent (set `--accent` on the section to shift it off
+ * wine) and a hairline rule runs to the right edge. Optional `.kicker-meta`
+ * sits past the rule carrying real data (counts, years) — the ledger entry. */
 .kicker {
   font-family: var(--font-mono);
   font-size: var(--text-small);
@@ -318,12 +306,22 @@
   background-color: var(--accent, var(--color-wine-500));
   flex-shrink: 0;
 }
-/* The rule runs from the label to the right edge — cheap structure, no boxes. */
+/* The rule runs from the label to the right edge — cheap structure, no boxes.
+ * order:1 puts it between the label (order 0) and the metadata (order 2). */
 .kicker::after {
   content: '';
   flex: 1;
+  order: 1;
   height: 1px;
   background-color: var(--color-ink-200);
+}
+.kicker-meta {
+  order: 2;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: var(--color-ink-500);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* Hairline row list — the index pattern used by writing, projects, thoughts. */
@@ -361,9 +359,8 @@
 
 /* ----------------------------------------------------------------------------
  * Numbered rows — the "work" pattern. A serial number, a heavy title, a line
- * of copy. Hovering floods the whole row with that row's accent colour: the
- * one big colour moment on the page, and the reason the complements exist.
- * Replaces the Phase 11 swipe-card deck (carousel + 45 lines of scroll-snap).
+ * of copy. Hover draws the row instead of flooding it: the title takes the
+ * accent and a 2px rule wipes in beneath it.
  * ------------------------------------------------------------------------- */
 .num-rows { list-style: none; margin: 0; padding: 0; }
 .num-rows > li { border-top: 1px solid var(--color-ink-200); }
@@ -374,17 +371,9 @@
   grid-template-columns: 3rem 1fr;
   grid-template-areas: 'idx title' '. desc';
   gap: 0.25rem 1rem;
-  padding: 1.5rem 1rem;
-  margin-inline: -1rem;
+  padding: 1.5rem 0;
   text-decoration: none;
   color: var(--color-ink-900);
-  transition: background-color 0.2s ease-out, color 0.2s ease-out;
-}
-a.num-row:hover,
-a.num-row:focus-visible {
-  background-color: var(--accent, var(--color-wine-500));
-  color: var(--color-paper-50);
-  outline: none;
 }
 
 .num-row-index {
@@ -398,16 +387,38 @@ a.num-row:focus-visible {
   padding-top: 0.5rem;
   transition: color 0.2s ease-out;
 }
-a.num-row:hover .num-row-index,
-a.num-row:focus-visible .num-row-index { color: var(--color-paper-50); }
 
 .num-row-title {
   grid-area: title;
+  position: relative;
+  width: fit-content;
   font-family: var(--font-display);
   font-size: var(--text-h3);
   line-height: 1.15;
   letter-spacing: -0.02em;
   text-wrap: balance;
+  transition: color 0.15s ease-out;
+}
+/* The wipe: a drawn rule under the title, in from the left. */
+.num-row-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.25rem;
+  height: 2px;
+  width: 100%;
+  background-color: var(--accent, var(--color-wine-500));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease-out;
+}
+a.num-row:hover .num-row-title,
+a.num-row:focus-visible .num-row-title { color: var(--accent, var(--color-wine-500)); }
+a.num-row:hover .num-row-title::after,
+a.num-row:focus-visible .num-row-title::after { transform: scaleX(1); }
+a.num-row:focus-visible {
+  outline: 2px solid var(--accent, var(--color-wine-500));
+  outline-offset: 2px;
 }
 
 .num-row-desc {
@@ -416,10 +427,7 @@ a.num-row:focus-visible .num-row-index { color: var(--color-paper-50); }
   line-height: 1.6;
   color: var(--color-ink-500);
   max-width: 56ch;
-  transition: color 0.2s ease-out;
 }
-a.num-row:hover .num-row-desc,
-a.num-row:focus-visible .num-row-desc { color: var(--color-paper-50); }
 
 @media (min-width: 768px) {
   .num-row {
@@ -427,35 +435,40 @@ a.num-row:focus-visible .num-row-desc { color: var(--color-paper-50); }
     grid-template-areas: 'idx title desc';
     align-items: start;
     gap: 1.5rem;
-    padding: 2rem 1.5rem;
-    margin-inline: -1.5rem;
+    padding: 2rem 0;
   }
   .num-row-desc { padding-top: 0.25rem; }
 }
 
-/* Solid accent button — the one call to action per page. */
+/* Outlined button — a drawn box, not a filled one. Hover takes the accent. */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
-  background-color: var(--accent, var(--color-wine-500));
-  color: var(--color-paper-50);
+  background-color: transparent;
+  border: 1px solid var(--color-ink-900);
+  color: var(--color-ink-900);
   font-family: var(--font-mono);
   font-size: var(--text-small);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   text-decoration: none;
-  border: none;
   cursor: pointer;
-  transition: background-color 0.15s ease-out, transform 0.15s ease-out;
+  transition: border-color 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out;
 }
-.btn:hover { background-color: var(--color-ink-900); color: var(--color-paper-50); }
+.btn:hover {
+  border-color: var(--accent, var(--color-wine-500));
+  color: var(--accent, var(--color-wine-500));
+}
 @media (prefers-reduced-motion: no-preference) {
   .btn:hover { transform: translateY(-2px); }
 }
-.btn:focus-visible { outline: 2px solid var(--color-ink-900); outline-offset: 3px; }
+.btn:focus-visible {
+  outline: 2px solid var(--accent, var(--color-wine-500));
+  outline-offset: 3px;
+}
 
 /* Quiet trailing link — "all thoughts →". Mono, small, no underline. */
 .more-link {
@@ -477,8 +490,8 @@ a.num-row:focus-visible .num-row-desc { color: var(--color-paper-50); }
 }
 
 /* ----------------------------------------------------------------------------
- * NOW — the site's live signal. Two surfaces share one language: the wine
- * block on the home page and the badge on /now, both led by a pulsing dot.
+ * NOW — the site's live signal. Two surfaces share one language: the ruled
+ * band on the home page and the badge on /now, both led by a pulsing dot.
  * ------------------------------------------------------------------------- */
 .live-dot {
   width: 0.5rem;
@@ -495,19 +508,17 @@ a.num-row:focus-visible .num-row-desc { color: var(--color-paper-50); }
   }
 }
 
-/* Home: a solid wine slab directly under the hero. Unmissable by design. */
+/* Home: a ruled band directly under the hero — a 2px wine rule on top, a
+ * hairline below. Prominent by structure, not by fill. */
 .now-block {
   display: grid;
   gap: 0.75rem;
-  padding: 2rem;
-  background-color: var(--color-wine-500);
-  color: var(--color-paper-50);
+  padding: 1.5rem 0;
+  border-top: 2px solid var(--color-wine-500);
+  border-bottom: 1px solid var(--color-ink-200);
+  color: var(--color-ink-900);
   text-decoration: none;
-  transition: background-color 0.2s ease-out;
 }
-.now-block:hover { background-color: var(--color-wine-900); color: var(--color-paper-50); }
-.now-block:focus-visible { outline: 3px solid var(--color-ink-900); outline-offset: 3px; }
-
 .now-block-label {
   display: flex;
   align-items: center;
@@ -517,14 +528,18 @@ a.num-row:focus-visible .num-row-desc { color: var(--color-paper-50); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.2em;
+  color: var(--color-wine-500);
 }
 .now-block-title {
   font-family: var(--font-display);
   font-size: var(--text-h2);
-  line-height: 1.05;
+  line-height: 1.15;
   letter-spacing: -0.03em;
   text-wrap: balance;
+  transition: color 0.15s ease-out;
 }
+.now-block:hover .now-block-title { color: var(--color-wine-500); }
+.now-block:focus-visible { outline: 2px solid var(--color-wine-500); outline-offset: 4px; }
 .now-block-meta {
   display: flex;
   align-items: center;
@@ -534,6 +549,7 @@ a.num-row:focus-visible .num-row-desc { color: var(--color-paper-50); }
   font-size: var(--text-small);
   letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
+  color: var(--color-ink-500);
 }
 .now-block-arrow { transition: transform 0.2s ease-out; }
 @media (prefers-reduced-motion: no-preference) {
@@ -541,17 +557,18 @@ a.num-row:focus-visible .num-row-desc { color: var(--color-paper-50); }
 }
 
 @media (min-width: 768px) {
-  .now-block { padding: 2.5rem; }
+  .now-block { padding: 2rem 0; }
 }
 
-/* /now: the live badge beside the page title. */
+/* /now: the live badge beside the page title — an outlined chip, wine on
+ * paper, not a filled lozenge. */
 .now-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: var(--color-wine-500);
-  color: var(--color-paper-50);
+  border: 1px solid var(--color-wine-500);
+  color: var(--color-wine-500);
   font-family: var(--font-mono);
   font-size: var(--text-small);
   font-weight: 700;
@@ -611,24 +628,32 @@ a.num-row:focus-visible .num-row-desc { color: var(--color-paper-50); }
 }
 
 /* ----------------------------------------------------------------------------
- * Dark shell. BaseLayout sets `.dark` on <body> for the colophon page: pure
- * black canvas, paper type, and every accent shifted one step lighter so it
- * still clears AA on #000 (wine-300 4.8, clay-300 7.8, ochre-300 11.6,
- * olive-300 10.3, slate-300 9.5). Unlayered on purpose — these must override
- * the base layer and any utility on the affected pages.
+ * Dark shell. BaseLayout sets `.dark` on <body> for the colophon page: a
+ * wine-tinted near-black canvas, paper type, and every accent shifted one
+ * step lighter so it still clears AA (measured: wine-300 4.6, slate-300 9.1,
+ * olive-300 9.9 on --color-night). Unlayered on purpose — these must
+ * override the base layer and any utility on the affected pages.
  * ------------------------------------------------------------------------- */
 .dark {
-  background-color: #000000;
+  background-color: var(--color-night);
   color: var(--color-paper-100);
 }
 .dark h1, .dark h2, .dark h3 { color: var(--color-paper-100); }
 .dark a { color: var(--color-paper-100); text-decoration-color: var(--color-wine-300); }
 .dark a:hover { color: var(--color-wine-300); text-decoration-color: var(--color-paper-100); }
-.dark .display { color: var(--color-paper-100); }
 .dark .flare { color: var(--accent, var(--color-wine-300)); }
 .dark .kicker { color: var(--color-ink-200); }
 .dark .kicker::before { background-color: var(--accent, var(--color-wine-300)); }
 .dark .kicker::after {
   background-color: color-mix(in oklab, var(--color-ink-200) 25%, transparent);
 }
-.dark .prose code { background-color: #111; border-color: rgba(230, 216, 220, 0.25); }
+.dark .kicker-meta { color: var(--color-ink-200); }
+.dark .btn { border-color: var(--color-paper-100); color: var(--color-paper-100); }
+.dark .btn:hover {
+  border-color: var(--accent, var(--color-wine-300));
+  color: var(--accent, var(--color-wine-300));
+}
+.dark .prose code {
+  background-color: color-mix(in oklab, var(--color-paper-100) 6%, var(--color-night));
+  border-color: color-mix(in oklab, var(--color-ink-200) 25%, transparent);
+}

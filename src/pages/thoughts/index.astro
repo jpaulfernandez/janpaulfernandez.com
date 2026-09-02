@@ -16,9 +16,9 @@ const description =
 ---
 
 <BaseLayout title="Thoughts" description={description}>
-  <article>
+  <article style="--accent: var(--color-slate-500)">
     <header>
-      <h1 class="display m-0">Thoughts</h1>
+      <h1 class="m-0">Thoughts</h1>
       <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
         Essays and half-formed notes. About things that <span class="flare">bother me</span>.
       </p>
@@ -30,9 +30,9 @@ const description =
         <div class="mt-12 md:mt-16 flex flex-col gap-4" role="group" aria-label="Filter thoughts">
           <div class="flex flex-wrap items-center gap-3">
             <div class="inline-flex border border-ink-200" data-filter-group="type">
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 aria-pressed:bg-wine-500 aria-pressed:text-paper-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="true" data-value="all">all</button>
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 aria-pressed:bg-wine-500 aria-pressed:text-paper-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value="essay">essays</button>
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 aria-pressed:bg-wine-500 aria-pressed:text-paper-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value="note">notes</button>
+              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="true" data-value="all">all</button>
+              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value="essay">essays</button>
+              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value="note">notes</button>
             </div>
 
             <span id="posts-counter" class="ml-auto text-small text-ink-500 tabular-nums">
@@ -45,9 +45,9 @@ const description =
 
           {allTopics.length > 0 && (
             <div class="flex flex-wrap gap-2" data-filter-group="topic">
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 underline underline-offset-4 decoration-ink-200 aria-pressed:decoration-ink-900 aria-pressed:text-ink-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="true" data-value="all">all topics</button>
+              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 underline underline-offset-4 decoration-ink-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="true" data-value="all">all topics</button>
               {allTopics.map((topic) => (
-                <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 underline underline-offset-4 decoration-ink-200 aria-pressed:decoration-ink-900 aria-pressed:text-ink-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value={topic}>
+                <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 underline underline-offset-4 decoration-ink-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value={topic}>
                   #{topic}
                 </button>
               ))}
@@ -94,6 +94,20 @@ const description =
     )}
   </article>
 </BaseLayout>
+
+<style>
+  /* Active filter state: drawn, not filled. The type segmented control marks
+   * the pressed chip with a 2px inset rule; topic chips take the accent on
+   * their existing underline. */
+  [data-filter-group='type'] .filter-chip[aria-pressed='true'] {
+    color: var(--color-slate-500);
+    box-shadow: inset 0 -2px 0 0 var(--color-slate-500);
+  }
+  [data-filter-group='topic'] .filter-chip[aria-pressed='true'] {
+    color: var(--color-slate-500);
+    text-decoration-color: var(--color-slate-500);
+  }
+</style>
 
 <!-- Native client-side DOM filter script (rung 4 progressive enhancement) -->
 <script>

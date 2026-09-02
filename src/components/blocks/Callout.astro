@@ -1,5 +1,6 @@
 ---
-// Callout.astro — three variants, all in mono+b/w with a single accent rule.
+// Callout.astro — three variants, all drawn as full-border boxes: no fills,
+// no side stripes. The label carries the variant's accent.
 interface Props {
   variant?: 'note' | 'idea' | 'warning';
 }
@@ -13,19 +14,19 @@ const variants: Record<NonNullable<Props['variant']>, {
   icon: string;
 }> = {
   note: {
-    classes: 'border-l-2 border-ink-200 bg-paper-50',
+    classes: 'border-ink-200',
     kickerColor: 'text-ink-700',
     label: 'Note',
     icon: '·',
   },
   idea: {
-    classes: 'border-l-2 border-green-500 bg-paper-50',
-    kickerColor: 'text-green-700',
+    classes: 'border-olive-500',
+    kickerColor: 'text-olive-500',
     label: 'Idea',
     icon: '·',
   },
   warning: {
-    classes: 'border-l-2 border-wine-500 bg-paper-50',
+    classes: 'border-wine-500',
     kickerColor: 'text-wine-500',
     label: 'Warning',
     icon: '·',
@@ -34,7 +35,7 @@ const variants: Record<NonNullable<Props['variant']>, {
 
 const config = variants[variant] ?? variants.note;
 ---
-<aside class={`my-8 px-6 py-4 ${config.classes}`}>
+<aside class={`my-8 border px-6 py-4 ${config.classes}`}>
   <p class={`m-0 mb-4 font-mono uppercase text-xs tracking-widest ${config.kickerColor}`}>
     {config.icon} {config.label}
   </p>

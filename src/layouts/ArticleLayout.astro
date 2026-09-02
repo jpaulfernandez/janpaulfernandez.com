@@ -134,8 +134,11 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
     )}
 
     {relatedPosts.length > 0 && (
-      <section class="mt-16 pt-6 border-t border-ink-200">
-        <h2 class="kicker mb-6">related</h2>
+      <section class="mt-16 pt-6 border-t border-ink-200" style="--accent: var(--color-slate-500)">
+        <h2 class="kicker mb-6">
+          related
+          <span class="kicker-meta">{relatedPosts.length} more</span>
+        </h2>
         <ul class="list-none m-0 p-0 flex flex-col">
           {relatedPosts.map((rp) => (
             <li class="py-2 border-t border-ink-200 first:border-t-0">

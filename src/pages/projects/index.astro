@@ -23,7 +23,7 @@ const seoData = [
 
   <article>
     <header>
-      <h1 class="display m-0">Projects</h1>
+      <h1 class="m-0">Projects</h1>
       <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
         Things I've built, shipped, and tinkered with — <span class="flare">indexed by year</span>.
       </p>
@@ -33,7 +33,10 @@ const seoData = [
       <section class="mt-16 md:mt-20" aria-label="Projects by year">
         {groups.map((group) => (
           <section class="mt-12 first:mt-0">
-            <h2 class="kicker tabular-nums">{group.year}</h2>
+            <h2 class="kicker tabular-nums">
+              {group.year}
+              <span class="kicker-meta">{group.items.length} {group.items.length === 1 ? 'project' : 'projects'}</span>
+            </h2>
             <ul class="rows mt-6">
               {group.items.map((project) => (
                 <li>

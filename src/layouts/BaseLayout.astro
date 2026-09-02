@@ -110,10 +110,10 @@ const secondaryLinks = [
     <a href="#main" class="skip-link">Skip to content</a>
 
     {/*
-      Phase 12 shell — one sticky bar across the top, on every breakpoint.
+      Shell — one sticky bar across the top, on every breakpoint.
         • Left: wordmark.
-        • Right (md+): the five section links, then the NOW block.
-        • Right (< md): the NOW block, then a <details> menu holding the links.
+        • Right (md+): the five section links, then the outlined NOW tab.
+        • Right (< md): the NOW tab, then a <details> menu holding the links.
           No JS: the panel closes on navigation because navigation reloads.
     */}
     <header class="site-header">
@@ -182,18 +182,19 @@ const secondaryLinks = [
     </div>
 
     <style>
-      /* --- Sticky bar ---------------------------------------------------- */
+      /* --- Sticky bar ----------------------------------------------------
+       * Solid paper over a hairline — the ledger's top rule. No blur, no
+       * translucency: the bar is drawn, not floated. */
       .site-header {
         position: sticky;
         top: 0;
         z-index: 50;
-        background-color: color-mix(in srgb, var(--color-paper-100) 88%, transparent);
-        backdrop-filter: blur(12px);
+        background-color: var(--color-paper-100);
         border-bottom: 1px solid var(--color-ink-200);
       }
       :global(body.dark) .site-header {
-        background-color: rgba(0, 0, 0, 0.85);
-        border-bottom-color: rgba(250, 246, 244, 0.2);
+        background-color: var(--color-night);
+        border-bottom-color: color-mix(in oklab, var(--color-paper-100) 20%, transparent);
       }
 
       .site-bar {
@@ -219,6 +220,7 @@ const secondaryLinks = [
       }
       .wordmark:hover { color: var(--color-wine-500); }
       :global(body.dark) .wordmark { color: var(--color-paper-100); }
+      :global(body.dark) .wordmark:hover { color: var(--color-wine-300); }
 
       /* --- Section links -------------------------------------------------- */
       .nav-desktop { display: none; align-items: center; gap: 1.5rem; }
@@ -266,15 +268,16 @@ const secondaryLinks = [
       }
 
       /* --- NOW ------------------------------------------------------------
-       * A solid wine block, not a link in the row: /now is the live page and
-       * the bar should say so at a glance. */
+       * An outlined wine tab, not a link in the row and not a filled block:
+       * /now is the live page and the bar should say so at a glance. */
       .now-tab {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem 0.75rem;
-        background-color: var(--color-wine-500);
-        color: var(--color-paper-50);
+        border: 1px solid var(--color-wine-500);
+        background-color: transparent;
+        color: var(--color-wine-500);
         font-family: var(--font-mono);
         font-size: var(--text-small);
         font-weight: 700;
@@ -282,15 +285,20 @@ const secondaryLinks = [
         letter-spacing: 0.2em;
         text-decoration: none;
         white-space: nowrap;
-        transition: background-color 0.15s ease-out;
+        transition: border-color 0.15s ease-out, color 0.15s ease-out;
       }
-      .now-tab:hover { background-color: var(--color-ink-900); color: var(--color-paper-50); }
-      .now-tab[aria-current='page'] { background-color: var(--color-ink-900); }
+      .now-tab:hover { border-color: var(--color-ink-900); color: var(--color-ink-900); }
+      .now-tab[aria-current='page'] { border-color: var(--color-ink-900); color: var(--color-ink-900); }
       .now-tab:focus-visible {
         outline: 2px solid var(--color-ink-900);
         outline-offset: 2px;
       }
-      :global(body.dark) .now-tab { background-color: var(--color-wine-300); color: #000; }
+      :global(body.dark) .now-tab { border-color: var(--color-wine-300); color: var(--color-wine-300); }
+      :global(body.dark) .now-tab:hover,
+      :global(body.dark) .now-tab[aria-current='page'] {
+        border-color: var(--color-paper-100);
+        color: var(--color-paper-100);
+      }
 
       /* --- Mobile menu (< md) --------------------------------------------- */
       .nav-menu { position: static; }
@@ -327,8 +335,8 @@ const secondaryLinks = [
         border-bottom: 1px solid var(--color-ink-200);
       }
       :global(body.dark) .nav-panel {
-        background-color: #000;
-        border-bottom-color: rgba(250, 246, 244, 0.2);
+        background-color: var(--color-night);
+        border-bottom-color: color-mix(in oklab, var(--color-paper-100) 20%, transparent);
       }
       .nav-panel .nav-link {
         padding-block: 0.75rem;

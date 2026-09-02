@@ -24,7 +24,8 @@ const stack = [
 const principles = [
   'Static HTML before an island. Vanilla JS before a framework. CSS before JS.',
   'Reading time is Math.ceil(words / 200), not a dependency.',
-  'Wine leads; four muted complements colour sections. Never body text.',
+  'Lines structure the page; colour only marks — a rule, a tick, a word.',
+  'Wine leads; slate and olive answer, one accent per section. Never body text.',
   'Every colour used at body size clears WCAG AA against the paper.',
 ];
 ---
@@ -38,14 +39,14 @@ const principles = [
 
   <article>
     <header>
-      <h1 class="display m-0">Colo<span class="flare">phon</span></h1>
+      <h1 class="m-0">Colo<span class="flare">phon</span></h1>
       <p class="mt-8 mb-0 text-ink-700 dark:text-ink-200 text-body leading-relaxed max-w-prose">
         What this site is made of, and the rules it follows. Kept here so the
         next person who asks — usually me, a year from now — has an answer.
       </p>
     </header>
 
-    <section class="mt-24" aria-labelledby="stack-heading" style="--accent: var(--color-clay-300)">
+    <section class="mt-24" aria-labelledby="stack-heading" style="--accent: var(--color-wine-300)">
       <h2 id="stack-heading" class="kicker">stack</h2>
       <dl class="mt-8 m-0">
         {stack.map((item) => (

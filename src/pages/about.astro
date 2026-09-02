@@ -44,7 +44,7 @@ const seoData = [
 
   <article>
     <header>
-      <h1 class="display m-0"><span class="flare">Me</span></h1>
+      <h1 class="m-0"><span class="flare">Me</span></h1>
       <div class="prose mt-8 text-ink-700">
         <AboutIntro />
       </div>
@@ -53,6 +53,7 @@ const seoData = [
     <section class="mt-20 md:mt-24" aria-labelledby="experience-heading">
       <h2 id="experience-heading" class="kicker mb-8">
         experience
+        <span class="kicker-meta">{careerEntries.length} {careerEntries.length === 1 ? 'role' : 'roles'}</span>
       </h2>
       <Timeline entries={careerEntries} variant="full" />
     </section>

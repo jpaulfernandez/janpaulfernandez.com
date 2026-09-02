@@ -3,11 +3,9 @@ import '../styles/global.css';
 
 // Import the exact critical font files as URL assets so the preload hrefs
 // always match the hashed filenames Astro/Vite emits at build time.
-// Phase 12: Archivo Black (display) + Lato 400/700 (body). Courier Prime is
-// labels only — it can arrive a beat late without shifting the page.
-import archivoBlackWoff2 from '@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2?url';
-import lato400Woff2 from '@fontsource/lato/files/lato-latin-400-normal.woff2?url';
-import lato700Woff2 from '@fontsource/lato/files/lato-latin-700-normal.woff2?url';
+// Phase 8: Courier Prime replaces Archivo Black + Lato; preload 400 + 700.
+import courierPrime400Woff2 from '@fontsource/courier-prime/files/courier-prime-latin-400-normal.woff2?url';
+import courierPrime700Woff2 from '@fontsource/courier-prime/files/courier-prime-latin-700-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -17,32 +15,20 @@ interface Props {
   /** Home page shows the plain title with no site-name suffix. */
   isHome?: boolean;
   bodyClass?: string;
-  /** Inverts the whole shell to pure black — used by the colophon page. */
-  dark?: boolean;
 }
 
-const {
-  title,
-  description,
-  ogImage,
-  type = 'website',
-  isHome = false,
-  bodyClass,
-  dark = false,
-} = Astro.props;
+const { title, description, ogImage, type = 'website', isHome = false, bodyClass } = Astro.props;
 
 const pageTitle = isHome ? title : `${title} — Paul Fernandez`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const resolvedOgImage = new URL(ogImage ?? '/og-default.png', Astro.site);
 
-// /now is deliberately not in this list — it gets its own accent block on the
-// right of the bar so it reads as the site's live signal, not a sixth tab.
 const navItems = [
-  { href: '/about', label: 'me' },
   { href: '/work-with-me', label: 'work' },
+  { href: '/about', label: 'me' },
   { href: '/projects', label: 'projects' },
   { href: '/thoughts', label: 'thoughts' },
-  { href: '/gallery', label: 'gallery' },
+  { href: '/now', label: 'now' },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -52,10 +38,9 @@ const isNavActive = (href: string) => {
   }
   return currentPath === href || currentPath.startsWith(`${href}/`);
 };
-const nowActive = currentPath === '/now';
 
 const secondaryLinks = [
-  { href: '/colophon', label: 'colophon' },
+  { href: '/gallery', label: 'gallery' },
   { href: '/rss.xml', label: 'rss' },
   { href: 'mailto:jpaul.fernandez18@gmail.com', label: 'email' },
   { href: 'https://www.linkedin.com/in/jpaulfernandez/', label: 'linkedin', external: true },
@@ -84,15 +69,15 @@ const secondaryLinks = [
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={resolvedOgImage} />
 
+    <!-- Favicon — magenta square (Phase 8). -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="Paul Fernandez" href="/rss.xml" />
 
-    <!-- Critical font preloads (self-hosted @fontsource). -->
-    <link rel="preload" as="font" type="font/woff2" href={archivoBlackWoff2} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={lato400Woff2} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={lato700Woff2} crossorigin />
+    <!-- Critical font preloads (Courier Prime 400 + 700, self-hosted @fontsource). -->
+    <link rel="preload" as="font" type="font/woff2" href={courierPrime400Woff2} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={courierPrime700Woff2} crossorigin />
 
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-KJX3LCC0SZ"></script>
@@ -106,246 +91,108 @@ const secondaryLinks = [
 
     <slot name="head" />
   </head>
-  <body class={`min-h-screen flex flex-col ${dark ? 'dark' : ''} ${bodyClass ?? ''}`}>
+  <body class={`min-h-screen flex flex-col ${bodyClass ?? ''}`}>
     <a href="#main" class="skip-link">Skip to content</a>
 
     {/*
-      Shell — one sticky bar across the top, on every breakpoint.
-        • Left: wordmark.
-        • Right (md+): the five section links, then the outlined NOW tab.
-        • Right (< md): the NOW tab, then a <details> menu holding the links.
-          No JS: the panel closes on navigation because navigation reloads.
+      Phase 8 shell — floating sidebar anchored next to main content.
+        • Mobile (< lg): site header sits inline at the top of the body, right-aligned.
+        • lg+: sidebar sits directly to the left of the main content column (tight gap),
+          vertically centered in the viewport, right-aligned toward the content.
+        • Main content has a generous reading width (max-w-3xl).
     */}
-    <header class="site-header">
-      <div class="site-bar">
-        <a href="/" class="wordmark">Paul Fernandez</a>
-
-        <nav aria-label="Main" class="nav-desktop">
-          {navItems.map((item) => (
-            <a
-              href={item.href}
-              aria-current={isNavActive(item.href) ? 'page' : undefined}
-              class="nav-link"
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        <a href="/now" aria-current={nowActive ? 'page' : undefined} class="now-tab">
-          <span class="live-dot" aria-hidden="true"></span>
-          now
+    <div class="w-full max-w-5xl mx-auto flex-1 lg:flex lg:justify-center lg:items-start lg:gap-10 xl:gap-12 px-6">
+      <header class="pt-10 pb-8 lg:py-0 flex flex-col items-end text-right lg:sticky lg:top-0 lg:h-screen lg:justify-center lg:w-44 xl:w-48 shrink-0">
+        <a
+          href="/"
+          class="site-name block font-bold text-moss-900 no-underline tracking-tight leading-none text-body text-right focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm px-1"
+        >
+          Paul Fernandez
         </a>
 
-        <details class="nav-menu">
-          <summary>menu</summary>
-          <nav aria-label="Sections" class="nav-panel">
+        <span class="site-meta mt-2 block text-moss-500 text-small tracking-wide text-right">
+          technologist · philippines
+        </span>
+
+        <nav aria-label="Main" class="mt-8 lg:mt-10">
+          <ul class="flex flex-wrap justify-end gap-x-6 gap-y-2 list-none m-0 p-0 lg:flex-col lg:items-end lg:gap-y-3">
             {navItems.map((item) => (
-              <a
-                href={item.href}
-                aria-current={isNavActive(item.href) ? 'page' : undefined}
-                class="nav-link"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </details>
-      </div>
-    </header>
-
-    <div class="flex-1 w-full max-w-4xl mx-auto px-6 flex flex-col min-w-0">
-      <main id="main" class="flex-1 py-16 md:py-24">
-        <slot />
-      </main>
-
-      <footer class="py-8 border-t border-ink-200/60 dark:border-paper-100/20">
-        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
-          <p class="m-0 font-mono text-ink-500 dark:text-ink-200 tabular-nums">
-            &copy; {new Date().getFullYear()} Paul Fernandez
-          </p>
-          <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 font-mono">
-            {secondaryLinks.map((link) => (
               <li>
                 <a
-                  href={link.href}
-                  {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  class="text-ink-500 dark:text-ink-200 hover:text-wine-500 dark:hover:text-wine-300 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
+                  href={item.href}
+                  aria-current={isNavActive(item.href) ? 'page' : undefined}
+                  class:list={[
+                    'nav-link text-body no-underline text-moss-700 hover:text-moss-900',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm px-1',
+                  ]}
                 >
-                  {link.label}
+                  {item.label}
                 </a>
               </li>
             ))}
           </ul>
-        </div>
-      </footer>
+        </nav>
+
+        {/* Secondary links — under the primary nav, right-aligned. */}
+        <ul class="mt-8 lg:mt-10 hidden lg:flex flex-col items-end gap-y-2 text-small text-moss-500 list-none m-0 p-0">
+          {secondaryLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                class="text-moss-500 hover:text-moss-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm px-1"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </header>
+
+      <div class="flex-1 min-w-0 max-w-3xl flex flex-col min-h-screen">
+        <!-- Main content — wider reading column (max-w-3xl). -->
+        <main id="main" class="flex-1 py-12 md:py-20">
+          <slot />
+        </main>
+
+        <!-- Footer — aligned with main content. -->
+        <footer class="py-8 border-t border-moss-200/60">
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
+            <p class="m-0 text-moss-500">&copy; {new Date().getFullYear()} Paul Fernandez</p>
+            {/* Mobile-only secondary links (< lg), since the lg+ sidebar owns them. */}
+            <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 lg:hidden">
+              {secondaryLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    class="text-moss-500 hover:text-moss-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm px-1"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </footer>
+      </div>
     </div>
 
     <style>
-      /* --- Sticky bar ----------------------------------------------------
-       * Solid paper over a hairline — the ledger's top rule. No blur, no
-       * translucency: the bar is drawn, not floated. */
-      .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        background-color: var(--color-paper-100);
-        border-bottom: 1px solid var(--color-ink-200);
-      }
-      :global(body.dark) .site-header {
-        background-color: var(--color-night);
-        border-bottom-color: color-mix(in oklab, var(--color-paper-100) 20%, transparent);
-      }
-
-      .site-bar {
-        position: relative;
-        max-width: 56rem;          /* matches the max-w-4xl content column */
-        margin-inline: auto;
-        padding-inline: 1.5rem;
-        height: 4rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      .wordmark {
-        margin-right: auto;
-        font-family: var(--font-display);
-        font-size: var(--text-body);
-        letter-spacing: -0.03em;
-        text-transform: uppercase;
-        color: var(--color-ink-900);
-        text-decoration: none;
-        white-space: nowrap;
-      }
-      .wordmark:hover { color: var(--color-wine-500); }
-      :global(body.dark) .wordmark { color: var(--color-paper-100); }
-      :global(body.dark) .wordmark:hover { color: var(--color-wine-300); }
-
-      /* --- Section links -------------------------------------------------- */
-      .nav-desktop { display: none; align-items: center; gap: 1.5rem; }
-      @media (min-width: 768px) { .nav-desktop { display: flex; } }
-
-      .nav-link {
-        position: relative;
-        font-family: var(--font-mono);
-        font-size: var(--text-small);
+      /* Magenta ● marks the active page — single accent. The marker is part
+       * of the link's inline content, so right-alignment pulls label+marker
+       * toward the right edge together. */
+      .nav-link[aria-current='page'] {
+        color: var(--color-citrus-500);
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        color: var(--color-ink-500);
-        text-decoration: none;
-        padding-block: 0.5rem;
-        transition: color 0.15s ease-out;
       }
-      .nav-link:hover { color: var(--color-ink-900); }
-      :global(body.dark) .nav-link { color: var(--color-ink-200); }
-      :global(body.dark) .nav-link:hover { color: var(--color-paper-50); }
-
-      /* Active page: a wine rule under the label. On hover the same rule
-       * wipes in from the left — the bar's only motion. */
-      .nav-link::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: 0.125rem;
-        height: 2px;
-        width: 100%;
-        background-color: var(--color-wine-500);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.2s ease-out;
+      .nav-link[aria-current='page']::before {
+        content: '●';
+        color: var(--color-citrus-500);
+        margin-right: 0.4em;
+        font-size: 0.7em;
+        vertical-align: 0.25em;
       }
-      .nav-link:hover::after,
-      .nav-link[aria-current='page']::after { transform: scaleX(1); }
-      .nav-link[aria-current='page'] { color: var(--color-ink-900); }
-      :global(body.dark) .nav-link[aria-current='page'] { color: var(--color-paper-50); }
-      :global(body.dark) .nav-link::after { background-color: var(--color-wine-300); }
-
-      .nav-link:focus-visible {
-        outline: 2px solid var(--color-wine-500);
-        outline-offset: 2px;
-      }
-
-      /* --- NOW ------------------------------------------------------------
-       * An outlined wine tab, not a link in the row and not a filled block:
-       * /now is the live page and the bar should say so at a glance. */
-      .now-tab {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid var(--color-wine-500);
-        background-color: transparent;
-        color: var(--color-wine-500);
-        font-family: var(--font-mono);
-        font-size: var(--text-small);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: border-color 0.15s ease-out, color 0.15s ease-out;
-      }
-      .now-tab:hover { border-color: var(--color-ink-900); color: var(--color-ink-900); }
-      .now-tab[aria-current='page'] { border-color: var(--color-ink-900); color: var(--color-ink-900); }
-      .now-tab:focus-visible {
-        outline: 2px solid var(--color-ink-900);
-        outline-offset: 2px;
-      }
-      :global(body.dark) .now-tab { border-color: var(--color-wine-300); color: var(--color-wine-300); }
-      :global(body.dark) .now-tab:hover,
-      :global(body.dark) .now-tab[aria-current='page'] {
-        border-color: var(--color-paper-100);
-        color: var(--color-paper-100);
-      }
-
-      /* --- Mobile menu (< md) --------------------------------------------- */
-      .nav-menu { position: static; }
-      @media (min-width: 768px) { .nav-menu { display: none; } }
-
-      .nav-menu > summary {
-        list-style: none;
-        cursor: pointer;
-        font-family: var(--font-mono);
-        font-size: var(--text-small);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        color: var(--color-ink-900);
-        padding: 0.5rem 0.25rem;
-      }
-      .nav-menu > summary::-webkit-details-marker { display: none; }
-      .nav-menu > summary:focus-visible {
-        outline: 2px solid var(--color-wine-500);
-        outline-offset: 2px;
-      }
-      .nav-menu[open] > summary { color: var(--color-wine-500); }
-      :global(body.dark) .nav-menu > summary { color: var(--color-paper-100); }
-
-      .nav-panel {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 100%;
-        display: flex;
-        flex-direction: column;
-        padding: 0.5rem 1.5rem 1.5rem;
-        background-color: var(--color-paper-100);
-        border-bottom: 1px solid var(--color-ink-200);
-      }
-      :global(body.dark) .nav-panel {
-        background-color: var(--color-night);
-        border-bottom-color: color-mix(in oklab, var(--color-paper-100) 20%, transparent);
-      }
-      .nav-panel .nav-link {
-        padding-block: 0.75rem;
-        border-bottom: 1px solid var(--color-ink-200);
-      }
-      :global(body.dark) .nav-panel .nav-link {
-        border-bottom-color: rgba(250, 246, 244, 0.15);
-      }
-      .nav-panel .nav-link::after { bottom: -1px; }
     </style>
   </body>
 </html>

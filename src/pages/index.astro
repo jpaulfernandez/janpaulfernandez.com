@@ -6,9 +6,6 @@ import { person, webSite, profilePage, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects } from '../lib/projects';
 
-// Services double as the home "work" rows — same source as /work-with-me.
-const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
-
 // Fetch Keystatic Home singleton
 const homeEntry = await getEntry('home', 'home');
 if (!homeEntry) {
@@ -16,30 +13,25 @@ if (!homeEntry) {
 }
 const { heroGreeting, heroIntro } = homeEntry.data;
 
-// Hero: the greeting's last word carries the wine flare, so the accent tracks
-// whatever Paul writes in Keystatic instead of being hardcoded here.
-const greetingWords = heroGreeting.trim().split(' ');
-const greetingHead = greetingWords.slice(0, -1).join(' ');
-const greetingFlare = greetingWords[greetingWords.length - 1];
-
-// Latest Now entry -> the ruled band under the hero.
+// Latest Now entry -> one tight line under the intro.
 const nowEntries = await getCollection('now');
-const latestNow = [...nowEntries].sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
-const nowDate = latestNow
-  ? new Date(`${latestNow.data.date}T12:00:00`).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+const latestNow = nowEntries.sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
+const nowPlain = latestNow?.body
+  ?.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1') // markdown links -> text
+  .replace(/[*_`>#]/g, '')
+  .replace(/\s+/g, ' ')
+  .trim();
+const nowSnippet = nowPlain
+  ? nowPlain.length > 92
+    ? `${nowPlain.slice(0, 92).trimEnd()}…`
+    : nowPlain
   : undefined;
 
-// Latest thoughts for the Writing index (5 rows; the kicker carries the total).
-const allThoughts = await getPublishedThoughts();
-const latestThoughts = allThoughts.slice(0, 5);
+// Latest thoughts for the Writing index (5 rows).
+const latestThoughts = (await getPublishedThoughts()).slice(0, 5);
 
-// Latest projects for the Projects index (3 rows; the kicker carries the total).
-const allProjects = await getProjects();
-const latestProjects = allProjects.slice(0, 3);
+// Latest projects for the Projects index (3 rows).
+const latestProjects = (await getProjects()).slice(0, 3);
 
 const seoData = [
   webSite(),
@@ -57,107 +49,91 @@ const seoData = [
   <JsonLd data={seoData} slot="head" />
 
   <article>
-    {/* Identity: statement → bio. */}
-    <header class="fade-rise">
-      <h1 class="m-0">
-        {greetingHead && <>{greetingHead}{' '}</>}<span class="flare">{greetingFlare}</span>
-      </h1>
+    {/* Identity: greeting → bio → optional now one-liner. */}
+    <header>
+      <h1 class="text-moss-900 m-0">{heroGreeting}</h1>
       {heroIntro && (
-        <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-[62ch]">{heroIntro}</p>
+        <p class="mt-6 mb-0 text-moss-700 text-body leading-relaxed">{heroIntro}</p>
+      )}
+      {nowSnippet && (
+        <p class="mt-4 mb-0 text-moss-500 text-small">
+          now — {nowSnippet} <a href="/now" class="text-moss-700 hover:text-moss-900 underline underline-offset-4 decoration-moss-200 hover:decoration-moss-900">→</a>
+        </p>
       )}
     </header>
 
-    {/* NOW — the live signal, a ruled band under the hero. */}
-    {latestNow && (
-      <a href="/now" class="now-block mt-12">
-        <span class="now-block-label">
-          <span class="live-dot" aria-hidden="true"></span>
-          right now
-        </span>
-        <span class="now-block-title">{latestNow.data.title || latestNow.id}</span>
-        <span class="now-block-meta">
-          <span>{nowDate}</span>
-          <span class="now-block-arrow" aria-hidden="true">→</span>
-        </span>
-      </a>
-    )}
-
-    {/* Work — numbered rows. Hover draws the title rule, never a fill. */}
-    {services.length > 0 && (
-      <section class="mt-24" aria-labelledby="work-heading">
-        <h2 id="work-heading" class="kicker">
-          work
-          <span class="kicker-meta">{services.length} {services.length === 1 ? 'service' : 'services'}</span>
-        </h2>
-        <ol class="num-rows mt-8">
-          {services.map((service, i) => (
-            <li>
-              <a href="/work-with-me" class="num-row">
-                <span class="num-row-index">{String(i + 1).padStart(2, '0')}</span>
-                <span class="num-row-title">{service.data.title}</span>
-                <span class="num-row-desc">{service.data.description}</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-        <a href="/work-with-me" class="btn mt-8">work with me →</a>
-      </section>
-    )}
-
     {/* Writing index */}
     {latestThoughts.length > 0 && (
-      <section class="mt-24" aria-labelledby="writing-heading" style="--accent: var(--color-slate-500)">
-        <h2 id="writing-heading" class="kicker">
-          writing
-          <span class="kicker-meta">{allThoughts.length} {allThoughts.length === 1 ? 'thought' : 'thoughts'}</span>
-        </h2>
-        <ul class="rows mt-8">
+      <section class="mt-16 md:mt-20" aria-labelledby="writing-heading">
+        <h2 id="writing-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">writing</h2>
+        <ul class="list-none m-0 p-0 flex flex-col">
           {latestThoughts.map((post) => (
-            <li>
-              <a href={`/thoughts/${post.id}`} class="row-link">
-                <span class="font-bold">{post.data.title}</span>
-                <time class="row-meta" datetime={post.data.publishedDate}>
-                  {post.data.publishedDate.slice(0, 4)}
-                </time>
+            <li class="py-2 flex items-baseline justify-between gap-4">
+              <a
+                href={`/thoughts/${post.id}`}
+                class="text-moss-900 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+              >
+                {post.data.title}
               </a>
+              <time class="text-moss-500 text-small whitespace-nowrap tabular-nums" datetime={post.data.publishedDate}>
+                {post.data.publishedDate.slice(0, 4)}
+              </time>
             </li>
           ))}
         </ul>
-        <a href="/thoughts" class="more-link">all thoughts →</a>
+        <a
+          href="/thoughts"
+          class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+        >
+          all thoughts →
+        </a>
       </section>
     )}
 
     {/* Projects index */}
     {latestProjects.length > 0 && (
-      <section class="mt-24" aria-labelledby="projects-heading" style="--accent: var(--color-olive-500)">
-        <h2 id="projects-heading" class="kicker">
-          projects
-          <span class="kicker-meta">{allProjects.length} {allProjects.length === 1 ? 'project' : 'projects'}</span>
-        </h2>
-        <ul class="rows mt-8">
+      <section class="mt-14 md:mt-16" aria-labelledby="projects-heading">
+        <h2 id="projects-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">projects</h2>
+        <ul class="list-none m-0 p-0 flex flex-col">
           {latestProjects.map((project) => (
-            <li>
+            <li class="py-2 flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
               {project.data.link ? (
-                <a href={project.data.link} target="_blank" rel="noopener noreferrer" class="row-link">
-                  <span>
-                    <span class="font-bold">{project.data.title}</span>
-                    <span class="block mt-1 text-ink-500 text-small">{project.data.description}</span>
-                  </span>
-                  <span class="row-meta" aria-hidden="true">↗</span>
+                <a
+                  href={project.data.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-moss-900 hover:text-citrus-500 no-underline whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+                >
+                  {project.data.title}&nbsp;↗
                 </a>
               ) : (
-                <div class="row-link">
-                  <span>
-                    <span class="font-bold">{project.data.title}</span>
-                    <span class="block mt-1 text-ink-500 text-small">{project.data.description}</span>
-                  </span>
-                </div>
+                <span class="text-moss-900">{project.data.title}</span>
               )}
+              <span class="text-moss-700 text-body">{project.data.description}</span>
             </li>
           ))}
         </ul>
-        <a href="/projects" class="more-link">all projects →</a>
+        <a
+          href="/projects"
+          class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+        >
+          all projects →
+        </a>
       </section>
     )}
+
+    {/* Work */}
+    <section class="mt-14 md:mt-16" aria-labelledby="work-heading">
+      <h2 id="work-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">work</h2>
+      <p class="m-0 text-moss-700 text-body leading-relaxed">
+        Consultation, workshops, and fractional product ownership.
+      </p>
+      <a
+        href="/work-with-me"
+        class="inline-block mt-3 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+      >
+        work with me →
+      </a>
+    </section>
   </article>
 </BaseLayout>

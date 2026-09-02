@@ -55,44 +55,39 @@ const steps = [
 
   <article>
     <header>
-      <h1 class="m-0">Work <span class="flare">with me</span></h1>
-      <div class="prose mt-8 text-ink-700">
+      <h1 class="text-moss-900 m-0">Work</h1>
+      <div class="prose mt-6 text-moss-700 max-w-none">
         <IntroContent />
       </div>
     </header>
 
-    {/* Services — numbered rows, identical to the home page. */}
+    {/* Services */}
     {sortedServices.length > 0 && (
-      <section class="mt-24" aria-labelledby="services-heading">
-        <h2 id="services-heading" class="kicker">
+      <section class="mt-16 md:mt-20 border-t border-moss-200 pt-6" aria-labelledby="services-heading">
+        <h2 id="services-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">
           services
-          <span class="kicker-meta">{sortedServices.length} {sortedServices.length === 1 ? 'service' : 'services'}</span>
         </h2>
-        <ol class="num-rows mt-8">
-          {sortedServices.map((s, i) => (
-            <li>
-              <div class="num-row">
-                <span class="num-row-index">{String(i + 1).padStart(2, '0')}</span>
-                <h3 class="num-row-title">{s.data.title}</h3>
-                <p class="num-row-desc m-0">{s.data.description}</p>
-              </div>
+        <ul class="list-none m-0 p-0 flex flex-col">
+          {sortedServices.map((s) => (
+            <li class="py-3 border-t border-moss-200 first:border-t-0">
+              <h3 class="font-bold text-moss-900 m-0">{s.data.title}</h3>
+              <p class="text-moss-700 m-0 mt-1 text-body">{s.data.description}</p>
             </li>
           ))}
-        </ol>
+        </ul>
       </section>
     )}
 
     {/* How it works */}
-    <section class="mt-24" aria-labelledby="process-heading" style="--accent: var(--color-olive-500)">
-      <h2 id="process-heading" class="kicker">
+    <section class="mt-16 md:mt-20 border-t border-moss-200 pt-6" aria-labelledby="process-heading">
+      <h2 id="process-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">
         how it works
-        <span class="kicker-meta">{steps.length} steps</span>
       </h2>
-      <ol class="m-0 mt-8 p-0 flex flex-col gap-4 list-none">
+      <ol class="m-0 p-0 flex flex-col gap-3 list-none">
         {steps.map((step) => (
           <li>
-            <span class="font-mono font-bold uppercase tracking-widest text-olive-500 text-small">{step.title}</span>
-            <span class="text-ink-700"> — {step.body}</span>
+            <span class="font-bold text-moss-900">{step.title}</span>
+            <span class="text-moss-700"> — {step.body}</span>
           </li>
         ))}
       </ol>
@@ -100,19 +95,18 @@ const steps = [
 
     {/* FAQ */}
     {faqItems.length > 0 && (
-      <section class="mt-24" aria-labelledby="faq-heading" style="--accent: var(--color-slate-500)">
-        <h2 id="faq-heading" class="kicker">
+      <section class="mt-16 md:mt-20 border-t border-moss-200 pt-6" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">
           faq
-          <span class="kicker-meta">{faqItems.length} {faqItems.length === 1 ? 'question' : 'questions'}</span>
         </h2>
-        <div class="flex flex-col mt-8">
+        <div class="flex flex-col">
           {faqItems.map((item) => (
-            <details class="group py-3 border-t border-ink-200 first:border-t-0 [&_summary::-webkit-details-marker]:hidden">
-              <summary class="flex justify-between items-baseline gap-4 font-bold text-body text-ink-900 cursor-pointer list-none focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
+            <details class="group py-3 border-t border-moss-200 first:border-t-0 [&_summary::-webkit-details-marker]:hidden">
+              <summary class="flex justify-between items-baseline gap-4 font-bold text-body text-moss-900 cursor-pointer list-none focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">
                 <span class="leading-snug">{item.q}</span>
-                <span class="transition-transform group-open:rotate-180 shrink-0 text-ink-500 text-small" aria-hidden="true">+</span>
+                <span class="transition-transform group-open:rotate-180 shrink-0 text-moss-500 text-small" aria-hidden="true">+</span>
               </summary>
-              <p class="mt-2 mb-0 text-body text-ink-700 leading-relaxed">{item.a}</p>
+              <p class="mt-2 mb-0 text-body text-moss-700 leading-relaxed">{item.a}</p>
             </details>
           ))}
         </div>
@@ -120,12 +114,12 @@ const steps = [
     )}
 
     {/* Contact */}
-    <section id="contact" class="mt-24" aria-labelledby="contact-heading">
-      <h2 id="contact-heading" class="kicker">
+    <section id="contact" class="mt-16 md:mt-20 border-t border-moss-200 pt-6" aria-labelledby="contact-heading">
+      <h2 id="contact-heading" class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">
         get in touch
       </h2>
-      <p class="text-body text-ink-700 mt-8 mb-6">
-        Form, or <a href="mailto:jpaul.fernandez18@gmail.com" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">jpaul.fernandez18@gmail.com</a>.
+      <p class="text-body text-moss-700 mb-6">
+        Form, or <a href="mailto:jpaul.fernandez18@gmail.com" class="text-moss-900 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">jpaul.fernandez18@gmail.com</a>.
       </p>
 
       <form
@@ -140,41 +134,41 @@ const steps = [
         <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
 
         <div>
-          <label for="name" class="block text-small text-ink-700 mb-1">name</label>
+          <label for="name" class="block text-small text-moss-700 mb-1">name</label>
           <input
             type="text"
             id="name"
             name="name"
             required
-            class="w-full bg-paper-50 border border-ink-200 px-3 py-3 text-body text-ink-900 focus:outline-none focus:border-ink-900 transition-colors"
+            class="w-full bg-beige-50 border border-moss-200 px-3 py-3 text-body text-moss-900 focus:outline-none focus:border-moss-900 transition-colors"
           />
         </div>
 
         <div>
-          <label for="email" class="block text-small text-ink-700 mb-1">email</label>
+          <label for="email" class="block text-small text-moss-700 mb-1">email</label>
           <input
             type="email"
             id="email"
             name="email"
             required
-            class="w-full bg-paper-50 border border-ink-200 px-3 py-3 text-body text-ink-900 focus:outline-none focus:border-ink-900 transition-colors"
+            class="w-full bg-beige-50 border border-moss-200 px-3 py-3 text-body text-moss-900 focus:outline-none focus:border-moss-900 transition-colors"
           />
         </div>
 
         <div>
-          <label for="message" class="block text-small text-ink-700 mb-1">message</label>
+          <label for="message" class="block text-small text-moss-700 mb-1">message</label>
           <textarea
             id="message"
             name="message"
             required
             rows="4"
-            class="w-full bg-paper-50 border border-ink-200 px-3 py-3 text-body text-ink-900 focus:outline-none focus:border-ink-900 transition-colors"
+            class="w-full bg-beige-50 border border-moss-200 px-3 py-3 text-body text-moss-900 focus:outline-none focus:border-moss-900 transition-colors"
           ></textarea>
         </div>
 
         <button
           type="submit"
-          class="btn self-start"
+          class="self-start bg-moss-900 hover:bg-citrus-500 text-beige-100 hover:text-moss-900 font-bold px-6 py-3 cursor-pointer transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500"
         >
           send →
         </button>

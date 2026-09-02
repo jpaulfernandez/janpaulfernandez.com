@@ -123,6 +123,20 @@ Requested by Paul via chat. Direction: merge Madhurima Chatterjee's centered, te
 - [x] (2026-08-12) OG image generator (`src/pages/og/[...route].ts`) repointed to Courier Prime + new palette RGB values
 - [x] (2026-08-12) `npm run build` ✓ · `npx astro check` 0 errors / 0 warnings (4 pre-existing keystatic deprecation hints) · `npm test` 13/13 pass · favicon file confirmed `<rect fill="#FF006E">` · `<h1>` on every page renders with new tokens
 
+## Phases 9–13 REVERTED (Paul's direct request, 2026-09-02)
+
+Paul asked to go back to the pre-Phase-9 look — the site as of commit `e76ec2a`
+("content: add unofficially finished Master's in Innovation and Business to
+Now"). The phase records below are kept as history, but their code was rolled
+back on 2026-09-02: all design files (pages, layouts, components,
+`src/styles/global.css`, OG generator, favicon) restored to `e76ec2a`, and
+files the phases introduced were deleted (`src/components/Lightbox.astro`,
+`src/lib/gallery.ts` + test, `src/pages/colophon.astro`). Content was
+untouched — every Now/thoughts/gallery entry survived. `CLAUDE.md` hard
+constraints restored to the citrus-era wording. The live design is now the
+Phase 8 (2026-08-12) skin. Do not treat the checked boxes below as the
+current design; to revive any of it, pull from git history `e76ec2a..899041a`.
+
 ## Phase 9 — Wine palette, display type, Mobbin-informed page structure (Paul's direct request, 2026-09-01)
 
 Requested by Paul via chat after a Mobbin inspiration pass. Direction: keep the

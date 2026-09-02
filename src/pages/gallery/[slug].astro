@@ -1,10 +1,8 @@
 ---
 // [slug].astro (Individual gallery set / photo page)
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Lightbox from '../../components/Lightbox.astro';
-import { Image, getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { lightboxWidth } from '../../lib/gallery';
 
 export async function getStaticPaths() {
   const allItems = await getCollection('gallery');
@@ -23,12 +21,11 @@ const dateFormatted = new Date(item.data.publishedDate).toLocaleDateString('en-U
 });
 
 // Build the full photo list combining cover (if present) and additional photos
-const photoList: Array<{ image: ImageMetadata; caption: string; fullSrc: string }> = [];
+const photoList: Array<{ image: any; caption: string }> = [];
 if (item.data.cover) {
   photoList.push({
     image: item.data.cover,
-    caption: '',
-    fullSrc: '',
+    caption: item.data.description || item.data.title,
   });
 }
 if (item.data.photos && item.data.photos.length > 0) {
@@ -36,71 +33,80 @@ if (item.data.photos && item.data.photos.length > 0) {
     if (!photoList.some((existing) => existing.image === p.image)) {
       photoList.push({
         image: p.image,
-        caption: p.caption || '',
-        fullSrc: '',
+        caption: p.caption || item.data.title,
       });
     }
   });
 }
-
-// Lightbox sources: 1600px on the long edge, not the multi-megabyte original.
-await Promise.all(
-  photoList.map(async (photo) => {
-    photo.fullSrc = (await getImage({ src: photo.image, width: lightboxWidth(photo.image) })).src;
-  })
-);
 ---
 
 <BaseLayout title={`${item.data.title} — Gallery`} description={item.data.description || item.data.title}>
   <article>
-    <p class="m-0 text-small text-ink-500">
-      <a href="/gallery" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← gallery</a>
+    <p class="m-0 text-small text-moss-500">
+      <a href="/gallery" class="text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">← gallery</a>
     </p>
 
     <header class="mt-3">
-      <p class="m-0 text-small text-ink-500 tabular-nums">
+      <p class="m-0 text-small text-moss-500 tabular-nums">
         <time datetime={item.data.publishedDate}>{dateFormatted}</time>
         <span class="mx-1" aria-hidden="true">·</span>
         <span>{photoList.length} photos</span>
       </p>
-      <h1 class="text-ink-900 m-0 mt-2">{item.data.title}</h1>
+      <h1 class="text-moss-900 m-0 mt-2">{item.data.title}</h1>
 
       {item.data.description && (
-        <p class="mt-3 mb-0 text-ink-700 text-body leading-relaxed">{item.data.description}</p>
+        <p class="mt-3 mb-0 text-moss-700 text-body leading-relaxed">{item.data.description}</p>
       )}
 
       {item.data.tags && item.data.tags.length > 0 && (
-        <p class="m-0 mt-4 text-small text-ink-500 flex flex-wrap gap-x-2">
+        <p class="m-0 mt-4 text-small text-moss-500 flex flex-wrap gap-x-2">
           {item.data.tags.map((tag) => <span>#{tag}</span>)}
         </p>
       )}
     </header>
 
-    {/* Photo grid — true aspect ratios, laid out by CSS columns. */}
+    {/* Photo grid */}
     <div class="gallery-masonry mt-10">
       {photoList.map((photo, idx) => (
-        <button
-          type="button"
-          class="photo-trigger gallery-masonry-item"
-          data-src={photo.fullSrc}
-          data-alt={photo.caption || `${item.data.title} photo ${idx + 1}`}
-          data-caption={photo.caption}
-          aria-label={`View larger: ${photo.caption || 'Photo ' + (idx + 1)}`}
-        >
-          <Image
-            src={photo.image}
-            alt={photo.caption || `${item.data.title} photo ${idx + 1}`}
-            class="gallery-masonry-img"
-            width={640}
-            loading={idx < 6 ? 'eager' : 'lazy'}
-            decoding="async"
-          />
-        </button>
+        <div class="gallery-masonry-item mb-4 break-inside-avoid group">
+          <button
+            type="button"
+            class="photo-trigger block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500"
+            data-index={idx}
+            data-caption={photo.caption}
+            data-src={photo.image ? (typeof photo.image === 'string' ? photo.image : photo.image.src) : ''}
+            aria-label={`View larger: ${photo.caption || 'Photo ' + (idx + 1)}`}
+          >
+            {photo.image && (
+              <Image
+                src={photo.image}
+                alt={photo.caption || `${item.data.title} photo ${idx + 1}`}
+                class="w-full h-auto object-cover"
+                width={800}
+                height={600}
+              />
+            )}
+          </button>
+        </div>
       ))}
     </div>
   </article>
 
-  <Lightbox />
+  <dialog id="photo-modal" class="lightbox-dialog">
+    <div class="lightbox-inner">
+      <button id="modal-close" type="button" class="lightbox-close" aria-label="Close lightbox">
+        ✕
+      </button>
+      <div class="lightbox-image-wrap">
+        <img id="modal-img" src="" alt="" class="lightbox-img" />
+      </div>
+      <div class="lightbox-controls">
+        <button id="modal-prev" type="button" class="lightbox-btn" aria-label="Previous">←</button>
+        <span id="modal-counter" class="lightbox-counter"></span>
+        <button id="modal-next" type="button" class="lightbox-btn" aria-label="Next">→</button>
+      </div>
+    </div>
+  </dialog>
 </BaseLayout>
 
 <style>
@@ -111,30 +117,144 @@ await Promise.all(
   @media (min-width: 640px) {
     .gallery-masonry { columns: 2; }
   }
-  .gallery-masonry-item {
-    display: block;
-    width: 100%;
-    margin: 0 0 1rem;
+  .gallery-masonry-item { break-inside: avoid; }
+
+  .lightbox-dialog {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
     padding: 0;
     border: 0;
-    background: var(--color-ink-200);
-    cursor: zoom-in;
-    overflow: hidden;
-    break-inside: avoid;
-    -webkit-column-break-inside: avoid;
+    background: rgba(14, 14, 14, 0.95);
+    color: #FAFAF8;
+    z-index: 9999;
   }
-  .gallery-masonry-item:focus-visible {
-    outline: 2px solid var(--color-wine-500);
-    outline-offset: 2px;
-  }
-  .gallery-masonry-img {
-    display: block;
+  .lightbox-dialog::backdrop { background: rgba(14, 14, 14, 0.95); }
+
+  .lightbox-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 100%;
+    height: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  .lightbox-close,
+  .lightbox-btn {
+    background: transparent;
+    border: 1px solid rgba(245, 241, 230, 0.4);
+    color: #FAFAF8;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .lightbox-close:hover,
+  .lightbox-btn:hover {
+    border-color: var(--color-citrus-500);
+    color: var(--color-citrus-500);
+    background: transparent;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .lightbox-image-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    width: 100%;
+    max-height: calc(100vh - 6rem);
+  }
+  .lightbox-img {
+    max-width: 100%;
+    max-height: calc(100vh - 6rem);
+    width: auto;
     height: auto;
+    object-fit: contain;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .gallery-masonry-img { transition: transform 0.5s ease-out, opacity 0.2s ease-out; }
-    .gallery-masonry-item:hover .gallery-masonry-img { transform: scale(1.04); }
+  .lightbox-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding-top: 0.75rem;
+    flex-shrink: 0;
   }
-  .gallery-masonry-item:hover .gallery-masonry-img { opacity: 0.85; }
+  .lightbox-counter {
+    color: rgba(245, 241, 230, 0.6);
+    min-width: 4rem;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  .lightbox-dialog[open] { animation: lightbox-in 0.2s ease-out; }
+  @keyframes lightbox-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-dialog[open] { animation: none; }
+  }
 </style>
+
+<script>
+  const modal = document.getElementById('photo-modal') as HTMLDialogElement;
+  const modalImg = document.getElementById('modal-img') as HTMLImageElement;
+  const modalCounter = document.getElementById('modal-counter');
+  const modalClose = document.getElementById('modal-close');
+  const modalPrev = document.getElementById('modal-prev');
+  const modalNext = document.getElementById('modal-next');
+  const triggers = document.querySelectorAll('.photo-trigger') as NodeListOf<HTMLElement>;
+
+  let currentIndex = 0;
+  const totalPhotos = triggers.length;
+
+  function showPhoto(index: number) {
+    if (totalPhotos === 0) return;
+    currentIndex = (index + totalPhotos) % totalPhotos;
+    const trigger = triggers[currentIndex];
+    if (!trigger) return;
+
+    const src = trigger.getAttribute('data-src') || '';
+
+    if (modalImg) modalImg.src = src;
+    if (modalCounter) modalCounter.textContent = `${currentIndex + 1} / ${totalPhotos}`;
+  }
+
+  triggers.forEach((trigger, idx) => {
+    trigger.addEventListener('click', () => {
+      showPhoto(idx);
+      modal?.showModal();
+    });
+  });
+
+  modalClose?.addEventListener('click', () => {
+    modal?.close();
+  });
+
+  modalPrev?.addEventListener('click', () => showPhoto(currentIndex - 1));
+  modalNext?.addEventListener('click', () => showPhoto(currentIndex + 1));
+
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.close();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!modal?.open) return;
+    if (e.key === 'ArrowLeft') showPhoto(currentIndex - 1);
+    if (e.key === 'ArrowRight') showPhoto(currentIndex + 1);
+  });
+</script>

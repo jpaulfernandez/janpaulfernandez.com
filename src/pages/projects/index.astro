@@ -23,39 +23,35 @@ const seoData = [
 
   <article>
     <header>
-      <h1 class="m-0">Projects</h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
-        Things I've built, shipped, and tinkered with — <span class="flare">indexed by year</span>.
+      <h1 class="text-moss-900 m-0">Projects</h1>
+      <p class="mt-4 mb-0 text-moss-700 text-body leading-relaxed">
+        Things I've built, shipped, and tinkered with — indexed by year.
       </p>
     </header>
 
     {groups.length > 0 ? (
-      <section class="mt-16 md:mt-20" aria-label="Projects by year">
+      <section class="mt-12 md:mt-16" aria-label="Projects by year">
         {groups.map((group) => (
-          <section class="mt-12 first:mt-0">
-            <h2 class="kicker tabular-nums">
+          <section class="py-6 border-t border-moss-200 first:border-t-0">
+            <h2 class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4 tabular-nums">
               {group.year}
-              <span class="kicker-meta">{group.items.length} {group.items.length === 1 ? 'project' : 'projects'}</span>
             </h2>
-            <ul class="rows mt-6">
+            <ul class="list-none m-0 p-0 flex flex-col">
               {group.items.map((project) => (
-                <li>
+                <li class="py-2 flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
                   {project.data.link ? (
-                    <a href={project.data.link} target="_blank" rel="noopener noreferrer" class="row-link">
-                      <span>
-                        <span class="font-bold text-h3 leading-tight block text-balance">{project.data.title}</span>
-                        <span class="block mt-2 text-ink-700 text-body max-w-prose">{project.data.description}</span>
-                      </span>
-                      <span class="row-meta" aria-hidden="true">↗</span>
+                    <a
+                      href={project.data.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-moss-900 hover:text-citrus-500 no-underline whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+                    >
+                      {project.data.title}&nbsp;↗
                     </a>
                   ) : (
-                    <div class="row-link">
-                      <span>
-                        <span class="font-bold text-h3 leading-tight block text-balance">{project.data.title}</span>
-                        <span class="block mt-2 text-ink-700 text-body max-w-prose">{project.data.description}</span>
-                      </span>
-                    </div>
+                    <span class="text-moss-900">{project.data.title}</span>
                   )}
+                  <span class="text-moss-700 text-body">{project.data.description}</span>
                 </li>
               ))}
             </ul>
@@ -63,9 +59,9 @@ const seoData = [
         ))}
       </section>
     ) : (
-      <div class="mt-12 border-t border-ink-200 pt-6">
-        <p class="text-ink-700 m-0">
-          Nothing on the shelf… yet. <a href="/work-with-me#contact" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">ask me what I'm building →</a>
+      <div class="mt-12 border-t border-moss-200 pt-6">
+        <p class="text-moss-700 m-0">
+          Nothing on the shelf… yet. <a href="/work-with-me#contact" class="text-moss-900 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">ask me what I'm building →</a>
         </p>
       </div>
     )}

@@ -16,11 +16,11 @@ const description =
 ---
 
 <BaseLayout title="Thoughts" description={description}>
-  <article style="--accent: var(--color-slate-500)">
+  <article>
     <header>
-      <h1 class="m-0">Thoughts</h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
-        Essays and half-formed notes. About things that <span class="flare">bother me</span>.
+      <h1 class="text-moss-900 m-0">Thoughts</h1>
+      <p class="mt-4 mb-0 text-moss-700 text-body leading-relaxed">
+        Essays and half-formed notes. About things that bother me.
       </p>
     </header>
 
@@ -29,13 +29,13 @@ const description =
         {/* Filter toolbar */}
         <div class="mt-12 md:mt-16 flex flex-col gap-4" role="group" aria-label="Filter thoughts">
           <div class="flex flex-wrap items-center gap-3">
-            <div class="inline-flex border border-ink-200" data-filter-group="type">
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="true" data-value="all">all</button>
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value="essay">essays</button>
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value="note">notes</button>
+            <div class="inline-flex border border-moss-200" data-filter-group="type">
+              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-moss-700 aria-pressed:bg-moss-900 aria-pressed:text-beige-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500" aria-pressed="true" data-value="all">all</button>
+              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-moss-700 aria-pressed:bg-moss-900 aria-pressed:text-beige-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500" aria-pressed="false" data-value="essay">essays</button>
+              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-moss-700 aria-pressed:bg-moss-900 aria-pressed:text-beige-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500" aria-pressed="false" data-value="note">notes</button>
             </div>
 
-            <span id="posts-counter" class="ml-auto text-small text-ink-500 tabular-nums">
+            <span id="posts-counter" class="ml-auto text-small text-moss-500 tabular-nums">
               {allPosts.length} {allPosts.length === 1 ? 'thought' : 'thoughts'}
             </span>
             <div id="filter-aria-announcer" aria-live="polite" class="sr-only">
@@ -45,9 +45,9 @@ const description =
 
           {allTopics.length > 0 && (
             <div class="flex flex-wrap gap-2" data-filter-group="topic">
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 underline underline-offset-4 decoration-ink-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="true" data-value="all">all topics</button>
+              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-moss-700 underline underline-offset-4 decoration-moss-200 aria-pressed:decoration-moss-900 aria-pressed:text-moss-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500" aria-pressed="true" data-value="all">all topics</button>
               {allTopics.map((topic) => (
-                <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 underline underline-offset-4 decoration-ink-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value={topic}>
+                <button class="filter-chip cursor-pointer px-3 py-1 text-small text-moss-700 underline underline-offset-4 decoration-moss-200 aria-pressed:decoration-moss-900 aria-pressed:text-moss-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500" aria-pressed="false" data-value={topic}>
                   #{topic}
                 </button>
               ))}
@@ -55,7 +55,7 @@ const description =
           )}
         </div>
 
-        <div id="posts-list" class="mt-8 divide-y divide-ink-200 border-t border-ink-200">
+        <div id="posts-list" class="mt-8 divide-y divide-moss-200 border-t border-moss-200">
           {allPosts.map((post) => {
             const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
             const readingTime = Math.max(1, Math.ceil(wordCount / 200));
@@ -82,32 +82,18 @@ const description =
           })}
         </div>
 
-        <div id="empty-state" class="hidden text-center py-12 border border-ink-200 mt-8">
-          <p class="text-ink-700 mb-2">No thoughts match this combo.</p>
-          <p class="text-small text-ink-500">Reset filters to "all".</p>
+        <div id="empty-state" class="hidden text-center py-12 border border-moss-200 mt-8">
+          <p class="text-moss-700 mb-2">No thoughts match this combo.</p>
+          <p class="text-small text-moss-500">Reset filters to "all".</p>
         </div>
       </>
     ) : (
-      <div class="mt-12 border-t border-ink-200 pt-6">
-        <p class="text-ink-700 m-0">No thoughts published yet.</p>
+      <div class="mt-12 border-t border-moss-200 pt-6">
+        <p class="text-moss-700 m-0">No thoughts published yet.</p>
       </div>
     )}
   </article>
 </BaseLayout>
-
-<style>
-  /* Active filter state: drawn, not filled. The type segmented control marks
-   * the pressed chip with a 2px inset rule; topic chips take the accent on
-   * their existing underline. */
-  [data-filter-group='type'] .filter-chip[aria-pressed='true'] {
-    color: var(--color-slate-500);
-    box-shadow: inset 0 -2px 0 0 var(--color-slate-500);
-  }
-  [data-filter-group='topic'] .filter-chip[aria-pressed='true'] {
-    color: var(--color-slate-500);
-    text-decoration-color: var(--color-slate-500);
-  }
-</style>
 
 <!-- Native client-side DOM filter script (rung 4 progressive enhancement) -->
 <script>

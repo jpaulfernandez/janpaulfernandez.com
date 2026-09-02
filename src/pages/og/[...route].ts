@@ -37,9 +37,9 @@ export const { getStaticPaths, GET } = await OGImageRoute({
     return {
       title: pageData.title,
       description: pageData.description,
-      bgGradient: [[250, 246, 244]],       // paper-100 is #FAF6F4
+      bgGradient: [[250, 250, 248]],       // beige-100 is #FAFAF8
       border: {
-        color: [142, 27, 63],              // wine-500 is #8E1B3F
+        color: [255, 0, 110],              // citrus-500 (magenta) is #FF006E
         width: 12,
         side: 'block-end'
       },
@@ -49,12 +49,12 @@ export const { getStaticPaths, GET } = await OGImageRoute({
           family: 'Courier Prime',
           size: 60,
           weight: 'Normal',
-          color: [28, 10, 16]              // ink-900 is #1C0A10
+          color: [14, 14, 14]              // moss-900 is #0E0E0E
         },
         description: {
           family: 'Courier Prime',
           size: 26,
-          color: [110, 90, 96]             // ink-500 is #6E5A60
+          color: [107, 107, 107]           // moss-500 is #6B6B6B
         }
       },
       fonts: [

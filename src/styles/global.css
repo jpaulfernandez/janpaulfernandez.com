@@ -1,37 +1,27 @@
 @import "tailwindcss";
 
 /* ----------------------------------------------------------------------------
- * Phase 13 (2026-09-02) — visual direction: RULED LEDGER.
+ * Phase 8 (2026-08-12) — visual direction: white & black with green + magenta
+ * accents, single-family Courier Prime (mono everywhere). Replaces the old
+ * moss / beige / citrus palette and the Archivo Black + Lato pairing.
  *
- * What changed from Phase 12:
- *   • Lines are the visualization system. Every structural moment is a drawn
- *     line — hairline rules, ruled rows, rails, tick marks. Colour never fills
- *     a surface: it lives only in 1px lines, tiny square markers, and single
- *     accent words. The solid NOW slab, the accent-flood row hovers, the
- *     filled buttons and the side-stripe callouts are all gone.
- *   • Palette is wine + two: wine leads (work, NOW, links), slate answers for
- *     writing, olive for projects. Clay and ochre are retired. Tokens are
- *     oklch(); paper-50 is no longer pure white and the dark shell is a
- *     wine-tinted near-black instead of #000.
- *   • Quieter type hierarchy. The 48 → 96 display step is removed; h1 is now
- *     32 → 48. Three faces keep their three jobs (Archivo Black headings,
- *     Lato body, Courier Prime labels) — the contrast of form stays, the
- *     shouting stops.
+ * Phase 8b (2026-08-12) — strict 8-pt grid system.
+ *   • Type scale endpoints are all multiples of 8 (12 sub-cell, 16, 24, 40, 64).
+ *   • Spacing scale declares only the 8-pt grid (with 4-pt sub-cells at
+ *     4/12/20/28… for fine-grained rhythm). Tailwind's off-grid keys
+ *     (1.5/2.5/3.5/…) are absent — utility class fall-through is silent.
  *
- * Still in force from Phase 8b: strict 8-pt grid; type-scale endpoints are all
- * multiples of 8; Tailwind's off-grid spacing keys are absent.
+ * Palette strategy: Committed. Black/white carries the surface; magenta is
+ * the brand accent (active marker, hover); green is the secondary accent.
+ * Never both at once.
+ *
+ * Typography strategy: single family Monospace Prime everywhere; weight (400
+ * vs 700) and size provide hierarchy.
  * ------------------------------------------------------------------------- */
 
-@import "@fontsource/archivo-black/400.css";
-@import "@fontsource/lato/400.css";
-@import "@fontsource/lato/700.css";
-@import "@fontsource/lato/400-italic.css";
 @import "@fontsource/courier-prime/400.css";
 @import "@fontsource/courier-prime/700.css";
-
-/* Class-based dark variant: BaseLayout adds `.dark` to <body> on the colophon
- * page, flipping the whole shell to a wine-tinted near-black. */
-@custom-variant dark (&:where(.dark, .dark *));
+@import "@fontsource/courier-prime/400-italic.css";
 
 @theme {
   /* Reset Tailwind's expanding spacing scale, then declare only what we want.
@@ -61,101 +51,90 @@
   --spacing-80: 20rem;         /* 320              */
   --spacing-96: 24rem;         /* 384              */
 
-  /* ---- Palette ---------------------------------------------------------
-   * Wine leads; slate and olive answer. One accent per section, set via
-   * `--accent`. Measured contrast on paper-100 / as a fill under paper-50:
-   *   ink-900    17.8:1        display + body type
-   *   ink-700    15.2:1        secondary prose
-   *   ink-500     5.9:1        metadata, kickers, captions   (AA)
-   *   wine-500    8.2:1 / 8.5  primary accent
-   *   slate-500   8.9:1 / 9.2  writing accent
-   *   olive-500   7.5:1 / 7.7  projects accent
-   * ink-200 and wine-50 are hairline/halo only — never text.
-   * Dark shell (--color-night): wine-300 4.6, slate-300 9.1, olive-300 9.9. */
-  --color-ink-900: oklch(0.175 0.033 359.8);   /* #1C0A10 */
-  --color-ink-700: oklch(0.247 0.033 0.4);     /* #2E1A20 */
-  --color-ink-500: oklch(0.489 0.028 358.2);   /* #6E5A60 */
-  --color-ink-200: oklch(0.895 0.016 358.1);   /* #E6D8DC */
-  --color-ink: #1C0A10;
+  /* Colour tokens (unchanged from Phase 8). Names kept for backwards
+   * compatibility with class references across the codebase. */
+  --color-moss-900: #0E0E0E;
+  --color-moss-700: #161616;
+  --color-moss-500: #6B6B6B;
+  --color-moss-200: #E5E5E5;
+  --color-beige-100: #FAFAF8;
+  --color-beige-50: #FFFFFF;
+  --color-ink: #0E0E0E;
+  --color-citrus-500: #FF006E;
+  --color-citrus-300: #FF4D9E;
+  --color-green-500: #14A06F;
+  --color-green-700: #0D7A52;
+  --color-dark-plum-900: #0E0E0E;
+  --color-alert-terracotta-600: #FF006E;
+  --color-alert-lavender-200: #FAFAF8;
+  --color-alert-light-blue-100: #FAFAF8;
 
-  --color-paper-100: oklch(0.976 0.005 48.7);  /* #FAF6F4 */
-  --color-paper-50: oklch(0.986 0.003 48.7);   /* #FCFAF9 — tinted, never #FFF */
+  /* Typography — Courier Prime everywhere. */
+  --font-display: "Courier Prime", ui-monospace, "SFMono-Regular",
+                  Menlo, Monaco, Consolas, monospace;
+  --font-body: "Courier Prime", ui-monospace, "SFMono-Regular",
+               Menlo, Monaco, Consolas, monospace;
 
-  --color-wine-900: oklch(0.251 0.076 0.7);    /* #3D0E20 */
-  --color-wine-500: oklch(0.429 0.150 8.4);    /* #8E1B3F */
-  --color-wine-300: oklch(0.594 0.146 7.3);    /* #C4536F */
-  --color-wine-50: oklch(0.944 0.014 0.3);     /* #F5E9EC */
-
-  --color-slate-500: oklch(0.388 0.041 237.3); /* #2F4858 */
-  --color-slate-300: oklch(0.748 0.050 235.2); /* #8FB3C9 */
-  --color-olive-500: oklch(0.427 0.050 140.7); /* #40563C */
-  --color-olive-300: oklch(0.767 0.081 133.3); /* #9FBF8A */
-
-  /* Dark shell canvas — a wine-tinted near-black, never pure #000. */
-  --color-night: oklch(0.133 0.013 354.8);     /* #0C0608 */
-
-  /* Typography — three faces, three jobs. */
-  --font-display: "Archivo Black", "Arial Black", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Lato", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "Courier Prime", ui-monospace, "SFMono-Regular", Menlo, Monaco, monospace;
-
-  /* Strict 8-pt type scale — quiet hierarchy, no display step.
-   *   small    12 (fixed, sub-cell)  — captions, kickers, metadata
-   *   body     16 (fixed)            — main paragraph / UI
-   *   h3       24 (fixed)            — inline headings, row titles
-   *   h2       24 →  32  (clamp)     — section headings
-   *   h1       32 →  48  (clamp)     — page title, home greeting
-   * Clamps interpolate across a 375px → 1280px viewport. */
-  --text-h1: clamp(2rem, 1.5856rem + 1.7680vw, 3rem);   /*  32 →  48 */
-  --text-h2: clamp(1.5rem, 1.2928rem + 0.8840vw, 2rem); /*  24 →  32 */
-  --text-h3: 1.5rem;                                     /*  24 */
-  --text-body: 1rem;                                     /*  16 */
-  --text-small: 0.75rem;                                 /*  12 */
+  /* Strict 8-pt type scale.
+   *   body   16 (fixed)            — main paragraph / UI
+   *   small  12 (fixed, sub-cell)  — captions, kickers, metadata
+   *   h3     24 (fixed)            — inline headings, callout titles
+   *   h2     24 → 40  (clamp)      — section headings
+   *   h1     40 → 64  (clamp)      — page title
+   * Ratios: 1, 1.5, 2.5, 4 — body-sized to display. */
+  --text-h1: clamp(2.5rem, 1.7647rem + 3.1373vw, 4rem);      /* 40 → 64 */
+  --text-h2: clamp(1.5rem, 1.0588rem + 1.8824vw, 2.5rem);    /* 24 → 40 */
+  --text-h3: 1.5rem;                                          /* 24 */
+  --text-body: 1rem;                                          /* 16 */
+  --text-small: 0.75rem;                                      /* 12 */
 
   --text-heading-tracking: -0.02em;
 }
 
+/*
+ * WCAG AA contrast verification (moss-900 #0E0E0E on beige-100 #FAFAF8 ≈ 19.7:1,
+ * all accent pairs ≥ 4.7:1 on beige-100 when used at body-text size).
+ */
+
 @layer base {
   body {
-    background-color: var(--color-paper-100);
+    background-color: var(--color-beige-100);
     color: var(--color-ink);
     font-family: var(--font-body);
     font-size: var(--text-body);     /* 16 */
-    line-height: 1.7;
-    font-synthesis: none;            /* Archivo Black must never be faux-bolded */
-    -webkit-font-smoothing: antialiased;
+    line-height: 1.65;
+    font-feature-settings: "kern" 1;
   }
 
   h1, h2, h3 {
-    font-family: var(--font-display);
-    font-weight: 400;                /* Archivo Black ships one weight */
-    color: var(--color-ink-900);
+    font-family: var(--font-body);
+    color: var(--color-moss-900);
     letter-spacing: var(--text-heading-tracking);
     line-height: 1.15;
+    font-weight: 700;
   }
-  h1 { font-size: var(--text-h1); letter-spacing: -0.03em; text-wrap: balance; }
-  h2 { font-size: var(--text-h2); }
-  h3 { font-size: var(--text-h3); }
+  h1 { font-size: var(--text-h1); }   /* 40 → 64 */
+  h2 { font-size: var(--text-h2); }   /* 24 → 40 */
+  h3 { font-size: var(--text-h3); }   /* 24 */
 
-  h1 em, h2 em, h3 em { font-style: normal; color: var(--color-wine-500); }
+  h1 em, h2 em, h3 em { font-style: italic; }
 
-  small { font-size: var(--text-small); }
+  small { font-size: var(--text-small); }  /* 12 */
 
   a {
-    color: var(--color-ink-900);
+    color: var(--color-moss-900);
     text-decoration: underline;
-    text-decoration-color: var(--color-wine-500);
+    text-decoration-color: var(--color-citrus-500);
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
     transition: color 0.15s ease-out, text-decoration-color 0.15s ease-out;
   }
   a:hover {
-    color: var(--color-wine-500);
-    text-decoration-color: var(--color-ink-900);
+    color: var(--color-citrus-500);
+    text-decoration-color: var(--color-moss-900);
   }
 
-  /* Sticky header is 64px tall — anchors must clear it. */
-  [id] { scroll-margin-top: 5rem; }
+  [id] { scroll-margin-top: 2rem; }
   html { scroll-behavior: smooth; }
 
   /* Article prose typography */
@@ -164,15 +143,20 @@
     font-size: var(--text-body);
     line-height: 1.75;
     color: var(--color-ink);
-    max-width: 68ch;
   }
   .prose p { margin-top: 0; margin-bottom: 1.5em; }
   .prose h2 {
     font-size: var(--text-h2);
+    color: var(--color-moss-900);
+    letter-spacing: var(--text-heading-tracking);
+    line-height: 1.2;
     margin-top: 2em; margin-bottom: 0.6em;
   }
   .prose h3 {
     font-size: var(--text-h3);
+    color: var(--color-moss-900);
+    letter-spacing: var(--text-heading-tracking);
+    line-height: 1.3;
     margin-top: 1.6em; margin-bottom: 0.5em;
   }
   .prose ul, .prose ol {
@@ -182,35 +166,33 @@
   .prose li { margin-bottom: 0.4em; }
   .prose ul { list-style-type: square; }
   .prose ol { list-style-type: decimal; }
-  /* A quotation is set off by drawn rules, not a side stripe. */
   .prose blockquote {
-    border-top: 1px solid var(--color-ink-200);
-    border-bottom: 1px solid var(--color-ink-200);
-    padding: 1em 0;
+    border-left: 2px solid var(--color-citrus-500);
+    padding-left: 1em;
     margin-top: 1.5em; margin-bottom: 1.5em;
     font-style: italic;
-    color: var(--color-ink-700);
+    color: var(--color-moss-700);
   }
   .prose code {
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
     font-size: 0.92em;
-    background-color: var(--color-paper-50);
+    background-color: var(--color-beige-50);
     padding: 0.15em 0.35em;
-    border: 1px solid var(--color-ink-200);
+    border: 1px solid var(--color-moss-200);
   }
   .prose pre {
-    background-color: var(--color-ink-900);
-    color: var(--color-paper-100);
+    background-color: var(--color-moss-900);
+    color: var(--color-beige-100);
     padding: 1.25rem;
     overflow-x: auto;
     margin-top: 1.5em; margin-bottom: 1.5em;
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
   }
   .prose pre code {
     background-color: transparent; padding: 0; border: none; color: inherit;
   }
   .prose hr {
-    border: 0; border-top: 1px solid var(--color-ink-200); margin: 2.5em 0;
+    border: 0; border-top: 1px solid var(--color-moss-200); margin: 2.5em 0;
   }
   .prose table {
     width: 100%;
@@ -222,19 +204,19 @@
   }
   .prose th, .prose td {
     padding: 0.75rem 1rem;
-    border: 1px solid var(--color-ink-200);
+    border: 1px solid var(--color-moss-200);
     text-align: left;
     vertical-align: top;
   }
   .prose th {
-    background-color: var(--color-paper-50);
-    font-family: var(--font-mono);
+    background-color: var(--color-beige-50);
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-ink-900);
+    letter-spacing: var(--text-heading-tracking);
+    color: var(--color-moss-900);
   }
-  .prose tr:nth-child(even) td { background-color: var(--color-paper-50); }
+  .prose tr:nth-child(even) td {
+    background-color: var(--color-beige-50);
+  }
   .prose *:last-child { margin-bottom: 0; }
 
   dialog { color: var(--color-ink); }
@@ -242,25 +224,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  /* Blanket guard: every transition/animation on the site is decorative. */
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    transform: none !important;
-  }
 }
 
 /* Skip link */
 .skip-link {
   position: absolute;
   left: 0.5rem;
-  top: -4rem;
-  z-index: 60;
-  background-color: var(--color-paper-50);
-  color: var(--color-ink-900);
+  top: -3rem;
+  z-index: 50;
+  background-color: var(--color-beige-50);
+  color: var(--color-moss-900);
   padding: 0.5rem 1rem;
-  border: 1px solid var(--color-ink-900);
+  border: 1px solid var(--color-moss-900);
   transition: top 0.15s ease-in-out;
   text-decoration: none;
 }
@@ -268,392 +243,11 @@
 
 /* Motion */
 @media (prefers-reduced-motion: no-preference) {
-  .fade-rise { animation: fade-rise 0.5s ease-out both; }
+  .fade-rise {
+    animation: fade-rise 0.6s ease-out both;
+  }
   @keyframes fade-rise {
-    from { opacity: 0; transform: translateY(0.75rem); }
+    from { opacity: 0; transform: translateY(1rem); }
     to   { opacity: 1; transform: translateY(0); }
   }
-}
-
-/* ----------------------------------------------------------------------------
- * Shared primitives — the ledger's drawn lines.
- * ------------------------------------------------------------------------- */
-
-/* The flare: an accent word inside otherwise monochrome type. Used by hand,
- * on one or two words per page — never a whole line. */
-.flare { color: var(--accent, var(--color-wine-500)); }
-
-/* Section label — the ledger header. Small mono uppercase; the square bullet
- * carries the section's accent (set `--accent` on the section to shift it off
- * wine) and a hairline rule runs to the right edge. Optional `.kicker-meta`
- * sits past the rule carrying real data (counts, years) — the ledger entry. */
-.kicker {
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--color-ink-500);
-  font-weight: 700;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-.kicker::before {
-  content: '';
-  width: 0.5rem;
-  height: 0.5rem;
-  background-color: var(--accent, var(--color-wine-500));
-  flex-shrink: 0;
-}
-/* The rule runs from the label to the right edge — cheap structure, no boxes.
- * order:1 puts it between the label (order 0) and the metadata (order 2). */
-.kicker::after {
-  content: '';
-  flex: 1;
-  order: 1;
-  height: 1px;
-  background-color: var(--color-ink-200);
-}
-.kicker-meta {
-  order: 2;
-  font-weight: 400;
-  letter-spacing: 0.14em;
-  color: var(--color-ink-500);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-/* Hairline row list — the index pattern used by writing, projects, thoughts. */
-.rows { list-style: none; margin: 0; padding: 0; }
-.rows > li { border-bottom: 1px solid var(--color-ink-200); }
-
-.row-link {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.25rem 0;
-  text-decoration: none;
-  color: var(--color-ink-900);
-  min-height: 3.5rem;
-  transition: color 0.15s ease-out, padding-left 0.15s ease-out;
-}
-.row-link:hover { color: var(--accent, var(--color-wine-500)); }
-@media (prefers-reduced-motion: no-preference) {
-  .row-link:hover { padding-left: 0.5rem; }
-}
-.row-link:focus-visible {
-  outline: 2px solid var(--accent, var(--color-wine-500));
-  outline-offset: 2px;
-}
-.row-meta {
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  color: var(--color-ink-500);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  transition: color 0.15s ease-out;
-}
-.row-link:hover .row-meta { color: var(--accent, var(--color-wine-500)); }
-
-/* ----------------------------------------------------------------------------
- * Numbered rows — the "work" pattern. A serial number, a heavy title, a line
- * of copy. Hover draws the row instead of flooding it: the title takes the
- * accent and a 2px rule wipes in beneath it.
- * ------------------------------------------------------------------------- */
-.num-rows { list-style: none; margin: 0; padding: 0; }
-.num-rows > li { border-top: 1px solid var(--color-ink-200); }
-.num-rows > li:last-child { border-bottom: 1px solid var(--color-ink-200); }
-
-.num-row {
-  display: grid;
-  grid-template-columns: 3rem 1fr;
-  grid-template-areas: 'idx title' '. desc';
-  gap: 0.25rem 1rem;
-  padding: 1.5rem 0;
-  text-decoration: none;
-  color: var(--color-ink-900);
-}
-
-.num-row-index {
-  grid-area: idx;
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  font-variant-numeric: tabular-nums;
-  color: var(--accent, var(--color-wine-500));
-  padding-top: 0.5rem;
-  transition: color 0.2s ease-out;
-}
-
-.num-row-title {
-  grid-area: title;
-  position: relative;
-  width: fit-content;
-  font-family: var(--font-display);
-  font-size: var(--text-h3);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-  transition: color 0.15s ease-out;
-}
-/* The wipe: a drawn rule under the title, in from the left. */
-.num-row-title::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -0.25rem;
-  height: 2px;
-  width: 100%;
-  background-color: var(--accent, var(--color-wine-500));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.2s ease-out;
-}
-a.num-row:hover .num-row-title,
-a.num-row:focus-visible .num-row-title { color: var(--accent, var(--color-wine-500)); }
-a.num-row:hover .num-row-title::after,
-a.num-row:focus-visible .num-row-title::after { transform: scaleX(1); }
-a.num-row:focus-visible {
-  outline: 2px solid var(--accent, var(--color-wine-500));
-  outline-offset: 2px;
-}
-
-.num-row-desc {
-  grid-area: desc;
-  font-size: var(--text-body);
-  line-height: 1.6;
-  color: var(--color-ink-500);
-  max-width: 56ch;
-}
-
-@media (min-width: 768px) {
-  .num-row {
-    grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 1.1fr);
-    grid-template-areas: 'idx title desc';
-    align-items: start;
-    gap: 1.5rem;
-    padding: 2rem 0;
-  }
-  .num-row-desc { padding-top: 0.25rem; }
-}
-
-/* Outlined button — a drawn box, not a filled one. Hover takes the accent. */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 1.5rem;
-  background-color: transparent;
-  border: 1px solid var(--color-ink-900);
-  color: var(--color-ink-900);
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  cursor: pointer;
-  transition: border-color 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out;
-}
-.btn:hover {
-  border-color: var(--accent, var(--color-wine-500));
-  color: var(--accent, var(--color-wine-500));
-}
-@media (prefers-reduced-motion: no-preference) {
-  .btn:hover { transform: translateY(-2px); }
-}
-.btn:focus-visible {
-  outline: 2px solid var(--accent, var(--color-wine-500));
-  outline-offset: 3px;
-}
-
-/* Quiet trailing link — "all thoughts →". Mono, small, no underline. */
-.more-link {
-  display: inline-block;
-  margin-top: 1.5rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--color-ink-500);
-  text-decoration: none;
-  transition: color 0.15s ease-out;
-}
-.more-link:hover { color: var(--accent, var(--color-wine-500)); }
-.more-link:focus-visible {
-  outline: 2px solid var(--accent, var(--color-wine-500));
-  outline-offset: 2px;
-}
-
-/* ----------------------------------------------------------------------------
- * NOW — the site's live signal. Two surfaces share one language: the ruled
- * band on the home page and the badge on /now, both led by a pulsing dot.
- * ------------------------------------------------------------------------- */
-.live-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  background-color: currentColor;
-  flex-shrink: 0;
-  display: inline-block;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .live-dot { animation: live-pulse 2s ease-in-out infinite; }
-  @keyframes live-pulse {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: 0.25; }
-  }
-}
-
-/* Home: a ruled band directly under the hero — a 2px wine rule on top, a
- * hairline below. Prominent by structure, not by fill. */
-.now-block {
-  display: grid;
-  gap: 0.75rem;
-  padding: 1.5rem 0;
-  border-top: 2px solid var(--color-wine-500);
-  border-bottom: 1px solid var(--color-ink-200);
-  color: var(--color-ink-900);
-  text-decoration: none;
-}
-.now-block-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--color-wine-500);
-}
-.now-block-title {
-  font-family: var(--font-display);
-  font-size: var(--text-h2);
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-  transition: color 0.15s ease-out;
-}
-.now-block:hover .now-block-title { color: var(--color-wine-500); }
-.now-block:focus-visible { outline: 2px solid var(--color-wine-500); outline-offset: 4px; }
-.now-block-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  letter-spacing: 0.08em;
-  font-variant-numeric: tabular-nums;
-  color: var(--color-ink-500);
-}
-.now-block-arrow { transition: transform 0.2s ease-out; }
-@media (prefers-reduced-motion: no-preference) {
-  .now-block:hover .now-block-arrow { transform: translateX(0.375rem); }
-}
-
-@media (min-width: 768px) {
-  .now-block { padding: 2rem 0; }
-}
-
-/* /now: the live badge beside the page title — an outlined chip, wine on
- * paper, not a filled lozenge. */
-.now-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-wine-500);
-  color: var(--color-wine-500);
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-}
-
-/* ----------------------------------------------------------------------------
- * Timeline rail — career history on /about (via Timeline.astro).
- * ------------------------------------------------------------------------- */
-.rail { position: relative; }
-.rail::before {
-  content: '';
-  position: absolute;
-  left: 0.1875rem;
-  top: 0.5rem;
-  bottom: 0.5rem;
-  width: 1px;
-  background-color: var(--color-ink-200);
-}
-.rail-item { position: relative; padding-left: 1.75rem; padding-bottom: 3rem; }
-.rail-item:last-child { padding-bottom: 0; }
-.rail-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.4375rem;
-  width: 0.375rem;
-  height: 0.375rem;
-  background-color: var(--accent, var(--color-wine-500));
-}
-.rail-item:first-child::before { box-shadow: 0 0 0 0.25rem var(--color-wine-50); }
-
-.rail-date {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  color: var(--color-ink-500);
-  font-variant-numeric: tabular-nums;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-bottom: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .rail::before { left: 7.5rem; }
-  .rail-item { padding-left: 9.25rem; }
-  .rail-item::before { left: 7.3125rem; }
-  .rail-date {
-    position: absolute;
-    left: 0;
-    top: 0.25rem;
-    width: 6.5rem;
-    text-align: right;
-    margin-bottom: 0;
-  }
-}
-
-/* ----------------------------------------------------------------------------
- * Dark shell. BaseLayout sets `.dark` on <body> for the colophon page: a
- * wine-tinted near-black canvas, paper type, and every accent shifted one
- * step lighter so it still clears AA (measured: wine-300 4.6, slate-300 9.1,
- * olive-300 9.9 on --color-night). Unlayered on purpose — these must
- * override the base layer and any utility on the affected pages.
- * ------------------------------------------------------------------------- */
-.dark {
-  background-color: var(--color-night);
-  color: var(--color-paper-100);
-}
-.dark h1, .dark h2, .dark h3 { color: var(--color-paper-100); }
-.dark a { color: var(--color-paper-100); text-decoration-color: var(--color-wine-300); }
-.dark a:hover { color: var(--color-wine-300); text-decoration-color: var(--color-paper-100); }
-.dark .flare { color: var(--accent, var(--color-wine-300)); }
-.dark .kicker { color: var(--color-ink-200); }
-.dark .kicker::before { background-color: var(--accent, var(--color-wine-300)); }
-.dark .kicker::after {
-  background-color: color-mix(in oklab, var(--color-ink-200) 25%, transparent);
-}
-.dark .kicker-meta { color: var(--color-ink-200); }
-.dark .btn { border-color: var(--color-paper-100); color: var(--color-paper-100); }
-.dark .btn:hover {
-  border-color: var(--accent, var(--color-wine-300));
-  color: var(--accent, var(--color-wine-300));
-}
-.dark .prose code {
-  background-color: color-mix(in oklab, var(--color-paper-100) 6%, var(--color-night));
-  border-color: color-mix(in oklab, var(--color-ink-200) 25%, transparent);
 }

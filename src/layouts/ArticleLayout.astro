@@ -50,17 +50,17 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
 
   <article>
     <header>
-      <div class="flex items-center gap-2 text-small text-ink-500 tabular-nums">
-        <a href="/thoughts" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← thoughts</a>
+      <div class="flex items-center gap-2 text-small text-moss-500 tabular-nums">
+        <a href="/thoughts" class="text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">← thoughts</a>
       </div>
 
-      <h1 class="text-ink-900 m-0 mt-4 text-balance">{title}</h1>
+      <h1 class="text-moss-900 m-0 mt-4">{title}</h1>
 
       {excerpt && (
-        <p class="mt-4 mb-0 text-ink-700 text-body leading-relaxed">{excerpt}</p>
+        <p class="mt-4 mb-0 text-moss-700 text-body leading-relaxed">{excerpt}</p>
       )}
 
-      <div class="mt-6 flex flex-wrap items-center gap-3 text-small text-ink-500 tabular-nums">
+      <div class="mt-6 flex flex-wrap items-center gap-3 text-small text-moss-500 tabular-nums">
         <span>{type}</span>
         <span aria-hidden="true">·</span>
         <time datetime={publishedDate}>{formatDate(publishedDate)}</time>
@@ -75,9 +75,9 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
       </div>
 
       {topics && topics.length > 0 && (
-        <p class="mt-3 mb-0 text-small text-ink-500 flex flex-wrap gap-x-2">
+        <p class="mt-3 mb-0 text-small text-moss-500 flex flex-wrap gap-x-2">
           {topics.map((topic) => (
-            <a href={`/topics/${topic}`} class="text-ink-700 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">#{topic}</a>
+            <a href={`/topics/${topic}`} class="text-moss-700 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">#{topic}</a>
           ))}
         </p>
       )}
@@ -91,15 +91,15 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
 
     {/* Table of contents — collapsible, sits above the body */}
     {showToc && (
-      <details class="mt-8 border-t border-ink-200 pt-4 group">
-        <summary class="cursor-pointer list-none text-small text-ink-700 hover:text-ink-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm [&::-webkit-details-marker]:hidden flex items-center justify-between">
-          <span class="font-mono uppercase tracking-widest font-bold">table of contents</span>
-          <span class="transition-transform group-open:rotate-180 text-ink-500" aria-hidden="true">+</span>
+      <details class="mt-8 border-t border-moss-200 pt-4 group">
+        <summary class="cursor-pointer list-none text-small text-moss-700 hover:text-moss-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm [&::-webkit-details-marker]:hidden flex items-center justify-between">
+          <span class="font-mono uppercase tracking-widest">table of contents</span>
+          <span class="transition-transform group-open:rotate-180 text-moss-500" aria-hidden="true">+</span>
         </summary>
         <ol class="mt-4 list-decimal pl-6 m-0 flex flex-col gap-2">
           {h2s.map((h) => (
             <li>
-              <a href={`#${h.slug}`} class="text-ink-700 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
+              <a href={`#${h.slug}`} class="text-moss-700 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">
                 {h.text}
               </a>
             </li>
@@ -108,25 +108,25 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
       </details>
     )}
 
-    <div class="prose mt-10 text-ink-900">
+    <div class="prose mt-10 text-moss-900 max-w-none">
       <slot />
     </div>
 
     {(prevPost || nextPost) && (
-      <nav aria-label="Pagination" class="mt-16 pt-6 border-t border-ink-200 flex flex-col sm:flex-row sm:justify-between gap-4">
+      <nav aria-label="Pagination" class="mt-16 pt-6 border-t border-moss-200 flex flex-col sm:flex-row sm:justify-between gap-4">
         <div class="flex-1">
           {prevPost && (
-            <a href={`/thoughts/${prevPost.id}`} class="block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
-              <span class="text-small text-ink-500">← previous</span>
-              <span class="block text-ink-900 font-bold text-body mt-1 hover:text-wine-500 transition-colors">{prevPost.data.title}</span>
+            <a href={`/thoughts/${prevPost.id}`} class="block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">
+              <span class="text-small text-moss-500">← previous</span>
+              <span class="block text-moss-900 font-bold text-body mt-1 hover:text-citrus-500 transition-colors">{prevPost.data.title}</span>
             </a>
           )}
         </div>
         <div class="flex-1 sm:text-right">
           {nextPost && (
-            <a href={`/thoughts/${nextPost.id}`} class="block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
-              <span class="text-small text-ink-500">next →</span>
-              <span class="block text-ink-900 font-bold text-body mt-1 hover:text-wine-500 transition-colors">{nextPost.data.title}</span>
+            <a href={`/thoughts/${nextPost.id}`} class="block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">
+              <span class="text-small text-moss-500">next →</span>
+              <span class="block text-moss-900 font-bold text-body mt-1 hover:text-citrus-500 transition-colors">{nextPost.data.title}</span>
             </a>
           )}
         </div>
@@ -134,16 +134,13 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
     )}
 
     {relatedPosts.length > 0 && (
-      <section class="mt-16 pt-6 border-t border-ink-200" style="--accent: var(--color-slate-500)">
-        <h2 class="kicker mb-6">
-          related
-          <span class="kicker-meta">{relatedPosts.length} more</span>
-        </h2>
+      <section class="mt-16 pt-6 border-t border-moss-200">
+        <h2 class="font-mono uppercase text-xs tracking-widest text-moss-500 m-0 mb-4">related</h2>
         <ul class="list-none m-0 p-0 flex flex-col">
           {relatedPosts.map((rp) => (
-            <li class="py-2 border-t border-ink-200 first:border-t-0">
-              <a href={`/thoughts/${rp.id}`} class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
-                <span class="text-small text-ink-500 mr-2 tabular-nums">{rp.data.publishedDate.slice(0, 4)}</span>
+            <li class="py-2 border-t border-moss-200 first:border-t-0">
+              <a href={`/thoughts/${rp.id}`} class="text-moss-900 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">
+                <span class="text-small text-moss-500 mr-2 tabular-nums">{rp.data.publishedDate.slice(0, 4)}</span>
                 {rp.data.title}
               </a>
             </li>

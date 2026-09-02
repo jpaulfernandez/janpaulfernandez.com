@@ -253,6 +253,19 @@ featured-entry block and a ruled band above the hero (too loud post-Phase-14).
 - [x] (2026-09-02) Deployed to prod: commit `5e5fa25` pushed to main, Vercel build live within ~1 min — new `now` rail section served on www with `see the full timeline →` link, all 8 main routes 200 (`/`, about, work-with-me, thoughts, projects, gallery, now, colophon), exactly one `<h1>` on `/`
 - [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
 
+## Phase 16 — /gallery wall: build-time packed masonry (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat: the wall read as "just a 3 col grid". Root cause
+found by measuring the source: **88 of 95 photos are the identical 2731×2048
+(4:3) crop** — equal-width columns can only tile into a grid, and no fill
+order fixes that. Fix: vary each photo's width and pack the columns **at
+build time** from image metadata — zero JS, zero cropping (Phase 10's true
+aspect ratios preserved).
+
+- [x] (2026-09-02) `src/lib/gallery.ts`: new `masonryLayout()` — each shot gets a deterministic pseudo-random width factor (0.75 / 1 / 1.25 of column width, FNV-1a hash of the shot id → stable across builds), then a shortest-column-first pass packs everything into 3 near-equal-height columns. Pure function, vitest-covered (`masonryLayout` + `widthFactor` describe blocks: determinism, coverage, balance, factor set, empty, clamp).
+- [x] (2026-09-02) `src/pages/gallery/index.astro`: the single CSS-columns wall becomes two trees at the 640px cutover — mobile keeps the original 2-col flow untouched (`sm:hidden`), desktop (`hidden sm:flex`) renders the packer's three columns as flex columns with per-shot `width: 75–125%` inline. Sets still interleave via the spread key; lightbox markup unchanged; `display` deliberately left to Tailwind so the scoped stylesheet can't leak the wall onto mobile.
+- [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
+
 ## Out of scope (v2 — do not build)
 
 Dark mode, Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

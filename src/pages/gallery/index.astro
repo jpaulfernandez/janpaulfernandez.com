@@ -4,13 +4,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { lightboxWidth } from '../../lib/gallery';
+import { lightboxWidth, masonryLayout } from '../../lib/gallery';
 
 const sets = (await getCollection('gallery')).sort(
   (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
 );
 
 type Shot = {
+  /** Stable per-photo key — `${set.id}:${src}` — seeds the width hash. */
+  key: string;
   image: ImageMetadata;
   /** Right-sized source for the lightbox — the originals are ~1.5 MB each. */
   fullSrc: string;
@@ -21,6 +23,9 @@ type Shot = {
   setId: string;
   /** Position in [0,1) used to spread each set evenly across the wall. */
   spread: number;
+  /** Column bucket and width chosen by the build-time masonry packer. */
+  column: number;
+  widthFactor: number;
 };
 
 // Flatten every set into a single list of photographs. The cover is usually
@@ -34,6 +39,7 @@ sets.forEach((set) => {
     if (!image || seen.has(image.src)) return;
     seen.add(image.src);
     own.push({
+      key: `${set.id}:${image.src}`,
       image,
       fullSrc: '',
       caption,
@@ -59,6 +65,20 @@ sets.forEach((set) => {
 // output is identical on every build.
 shots.sort((a, b) => a.spread - b.spread);
 
+// Build-time masonry: deterministic pseudo-random widths + shortest-column
+// packing, so the wall reads as a scatter of sizes, not a 3-col grid. (88 of
+// the 95 shots are the same 4:3 crop — equal-width columns can't break the
+// grid.) The browser just flexes the three columns that come out of here.
+const slots = masonryLayout(
+  shots.map((s) => ({ id: s.key, width: s.image.width, height: s.image.height })),
+  3
+);
+slots.forEach((slot, i) => {
+  shots[i].column = slot.column;
+  shots[i].widthFactor = slot.widthFactor;
+});
+const wallColumns = [0, 1, 2].map((c) => shots.filter((s) => s.column === c));
+
 // Lightbox sources: 1600px on the long edge, which is plenty for a full-screen
 // view and roughly a tenth of the original file.
 await Promise.all(
@@ -83,29 +103,64 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
     </header>
 
     {shots.length > 0 && (
-      <div class="wall mt-16 md:mt-20">
-        {shots.map((shot, idx) => (
-          <button
-            type="button"
-            class="photo-trigger wall-item"
-            data-src={shot.fullSrc}
-            data-alt={shot.caption || shot.setTitle}
-            data-caption={shot.caption}
-            data-href={`/gallery/${shot.setId}`}
-            data-href-label={`${shot.setTitle} →`}
-            aria-label={`View larger: ${shot.caption || shot.setTitle}`}
-          >
-            <Image
-              src={shot.image}
-              alt={shot.caption || shot.setTitle}
-              class="wall-img"
-              width={560}
-              loading={idx < 6 ? 'eager' : 'lazy'}
-              decoding="async"
-            />
-          </button>
-        ))}
-      </div>
+      <>
+        {/* Mobile: the original 2-column flow — at 375px the tidy grid reads
+            as intentional, and the packed wall is too fine below 640px. */}
+        <div class="wall wall-mobile sm:hidden mt-16 md:mt-20">
+          {shots.map((shot, idx) => (
+            <button
+              type="button"
+              class="photo-trigger wall-item"
+              data-src={shot.fullSrc}
+              data-alt={shot.caption || shot.setTitle}
+              data-caption={shot.caption}
+              data-href={`/gallery/${shot.setId}`}
+              data-href-label={`${shot.setTitle} →`}
+              aria-label={`View larger: ${shot.caption || shot.setTitle}`}
+            >
+              <Image
+                src={shot.image}
+                alt={shot.caption || shot.setTitle}
+                class="wall-img"
+                width={560}
+                loading={idx < 6 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop: the build-time masonry — width varies per shot, columns
+            are packed to similar height, so the wall reads as a scatter. */}
+        <div class="wall wall-masonry hidden sm:flex mt-16 md:mt-20">
+          {wallColumns.map((column) => (
+            <div class="wall-col">
+              {column.map((shot, idx) => (
+                <button
+                  type="button"
+                  class="photo-trigger wall-item"
+                  style={`width: ${shot.widthFactor * 100}%`}
+                  data-src={shot.fullSrc}
+                  data-alt={shot.caption || shot.setTitle}
+                  data-caption={shot.caption}
+                  data-href={`/gallery/${shot.setId}`}
+                  data-href-label={`${shot.setTitle} →`}
+                  aria-label={`View larger: ${shot.caption || shot.setTitle}`}
+                >
+                  <Image
+                    src={shot.image}
+                    alt={shot.caption || shot.setTitle}
+                    class="wall-img"
+                    width={560}
+                    loading={idx < 6 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      </>
     )}
 
     {/* The sets still exist as their own pages — reachable from here and from
@@ -131,14 +186,28 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
 </BaseLayout>
 
 <style>
-  /* One flat masonry wall. CSS columns keeps every photo at its true aspect
-   * ratio with zero JS — the layout is the browser's job here. */
-  .wall {
+  /* Mobile wall (hidden ≥640px): the original CSS-columns flow. 2-column at
+   * 375px reads as an intentional grid, and the packed masonry is too fine
+   * below 640px to matter. */
+  .wall-mobile {
     columns: 2;
     column-gap: 0.75rem;
   }
-  @media (min-width: 640px) {
-    .wall { columns: 3; }
+
+  /* Desktop wall (shown ≥640px): the three buckets produced by the build-time
+   * packer in masonryLayout(). Display must come from `hidden sm:flex` — an
+   * unlayered rule here would beat the Tailwind utility and leak the wall
+   * onto mobile. */
+  .wall-masonry {
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .wall-col {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 
   .wall-item {
@@ -154,6 +223,9 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
     /* Chromium still splits an unbroken block across columns without this. */
     -webkit-column-break-inside: avoid;
   }
+  /* In the flex layout the column gap owns the spacing; both rules for a
+     uniform margin-zero there. Width per shot is set inline by the packer. */
+  .wall-masonry .wall-item { margin: 0; }
   .wall-item:focus-visible {
     outline: 2px solid var(--color-wine-500);
     outline-offset: 2px;

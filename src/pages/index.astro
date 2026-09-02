@@ -6,8 +6,11 @@ import { person, webSite, profilePage, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects } from '../lib/projects';
 
-// Services double as the home "work" cards — same source as /work-with-me.
+// Services double as the home "work" rows — same source as /work-with-me.
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+
+// One accent per work row, cycled. Wine stays reserved for NOW and the CTA.
+const rowAccents = ['clay', 'ochre', 'olive', 'slate'];
 
 // Fetch Keystatic Home singleton
 const homeEntry = await getEntry('home', 'home');
@@ -22,18 +25,15 @@ const greetingWords = heroGreeting.trim().split(' ');
 const greetingHead = greetingWords.slice(0, -1).join(' ');
 const greetingFlare = greetingWords[greetingWords.length - 1];
 
-// Latest Now entry -> one tight line under the intro.
+// Latest Now entry -> the wine slab under the hero.
 const nowEntries = await getCollection('now');
-const latestNow = nowEntries.sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
-const nowPlain = latestNow?.body
-  ?.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1') // markdown links -> text
-  .replace(/[*_`>#]/g, '')
-  .replace(/\s+/g, ' ')
-  .trim();
-const nowSnippet = nowPlain
-  ? nowPlain.length > 92
-    ? `${nowPlain.slice(0, 92).trimEnd()}…`
-    : nowPlain
+const latestNow = [...nowEntries].sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
+const nowDate = latestNow
+  ? new Date(`${latestNow.data.date}T12:00:00`).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
   : undefined;
 
 // Latest thoughts for the Writing index (5 rows).
@@ -58,27 +58,55 @@ const seoData = [
   <JsonLd data={seoData} slot="head" />
 
   <article>
-    {/* Identity: display statement → bio → optional now one-liner. */}
-    <header>
+    {/* Identity: display statement → bio. */}
+    <header class="fade-rise">
       <h1 class="display m-0">
         {greetingHead && <>{greetingHead}{' '}</>}<span class="flare">{greetingFlare}</span>
       </h1>
       {heroIntro && (
-        <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">{heroIntro}</p>
-      )}
-      {nowSnippet && (
-        <p class="mt-6 mb-0 text-ink-500 text-small">
-          <span class="text-wine-500">now</span> — {nowSnippet}{' '}
-          <a href="/now" class="text-ink-700 hover:text-wine-500 no-underline">→</a>
-        </p>
+        <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-[62ch]">{heroIntro}</p>
       )}
     </header>
 
+    {/* NOW — the live signal, given the loudest surface on the page. */}
+    {latestNow && (
+      <a href="/now" class="now-block mt-12">
+        <span class="now-block-label">
+          <span class="live-dot" aria-hidden="true"></span>
+          right now
+        </span>
+        <span class="now-block-title">{latestNow.data.title || latestNow.id}</span>
+        <span class="now-block-meta">
+          <span>{nowDate}</span>
+          <span class="now-block-arrow" aria-hidden="true">→</span>
+        </span>
+      </a>
+    )}
+
+    {/* Work — numbered rows. Hover floods the row with its accent. */}
+    {services.length > 0 && (
+      <section class="mt-24" aria-labelledby="work-heading">
+        <h2 id="work-heading" class="kicker">work</h2>
+        <ol class="num-rows mt-8">
+          {services.map((service, i) => (
+            <li style={`--accent: var(--color-${rowAccents[i % rowAccents.length]}-500)`}>
+              <a href="/work-with-me" class="num-row">
+                <span class="num-row-index">{String(i + 1).padStart(2, '0')}</span>
+                <span class="num-row-title">{service.data.title}</span>
+                <span class="num-row-desc">{service.data.description}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+        <a href="/work-with-me" class="btn mt-8">work with me →</a>
+      </section>
+    )}
+
     {/* Writing index */}
     {latestThoughts.length > 0 && (
-      <section class="mt-20 md:mt-24" aria-labelledby="writing-heading">
+      <section class="mt-24" aria-labelledby="writing-heading" style="--accent: var(--color-slate-500)">
         <h2 id="writing-heading" class="kicker">writing</h2>
-        <ul class="rows mt-6">
+        <ul class="rows mt-8">
           {latestThoughts.map((post) => (
             <li>
               <a href={`/thoughts/${post.id}`} class="row-link">
@@ -90,20 +118,15 @@ const seoData = [
             </li>
           ))}
         </ul>
-        <a
-          href="/thoughts"
-          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-        >
-          all thoughts →
-        </a>
+        <a href="/thoughts" class="more-link">all thoughts →</a>
       </section>
     )}
 
     {/* Projects index */}
     {latestProjects.length > 0 && (
-      <section class="mt-16 md:mt-20" aria-labelledby="projects-heading">
+      <section class="mt-24" aria-labelledby="projects-heading" style="--accent: var(--color-olive-500)">
         <h2 id="projects-heading" class="kicker">projects</h2>
-        <ul class="rows mt-6">
+        <ul class="rows mt-8">
           {latestProjects.map((project) => (
             <li>
               {project.data.link ? (
@@ -125,95 +148,8 @@ const seoData = [
             </li>
           ))}
         </ul>
-        <a
-          href="/projects"
-          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-        >
-          all projects →
-        </a>
-      </section>
-    )}
-
-    {/* Work — services as cards. Mobile: native swipe carousel (CSS
-        scroll-snap, scrollbar hidden, the page itself never scrolls
-        horizontally); lg+: plain three-column grid. */}
-    {services.length > 0 && (
-      <section class="mt-16 md:mt-20" aria-labelledby="work-heading">
-        <h2 id="work-heading" class="kicker">work</h2>
-        <ul class="work-cards mt-6">
-          {services.map((service, i) => (
-            <li>
-              <a href="/work-with-me" class="work-card">
-                <span class="block text-small text-wine-500 tabular-nums">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <span class="block mt-4 font-bold text-h3 leading-tight text-ink-900 text-balance">
-                  {service.data.title}
-                </span>
-                <span class="block mt-3 text-ink-700 text-body leading-relaxed">
-                  {service.data.description}
-                </span>
-                <span class="work-card-cta mt-auto pt-6 block text-small text-ink-500">
-                  details →
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-        <a
-          href="/work-with-me"
-          class="inline-block mt-6 px-6 py-3 bg-wine-500 text-paper-50 no-underline hover:bg-wine-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
-        >
-          work with me →
-        </a>
+        <a href="/projects" class="more-link">all projects →</a>
       </section>
     )}
   </article>
 </BaseLayout>
-
-<style>
-  /* Swipe deck: one card per view (85% wide, next card peeking), snap
-   * mandatory, scrollbar suppressed. The scroller is contained, so the
-   * document never grows a horizontal scrollbar. */
-  .work-cards {
-    display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    -webkit-overflow-scrolling: touch;
-  }
-  .work-cards::-webkit-scrollbar { display: none; }
-  .work-cards > li {
-    flex: 0 0 85%;
-    scroll-snap-align: start;
-    display: flex;
-  }
-
-  .work-card {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 1.5rem;
-    border: 1px solid var(--color-ink-200);
-    background-color: var(--color-paper-50);
-    text-decoration: none;
-    transition: border-color 0.15s ease-out;
-  }
-  /* The global a:hover recolors link text wine; inside a card only the
-   * trailing CTA may take the accent. */
-  .work-card:hover { color: var(--color-ink-900); border-color: var(--color-wine-500); }
-  .work-card:hover .work-card-cta { color: var(--color-wine-500); }
-  .work-card:focus-visible {
-    outline: 2px solid var(--color-wine-500);
-    outline-offset: 2px;
-  }
-
-  @media (min-width: 1024px) {
-    .work-cards { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; }
-    .work-cards > li { flex: auto; }
-  }
-</style>

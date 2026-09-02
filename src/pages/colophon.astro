@@ -16,7 +16,7 @@ const stack = [
   { label: 'framework', value: 'Astro 5', note: 'Static output. Zero client JS on every page but the two filter scripts.' },
   { label: 'styles', value: 'Tailwind 4', note: 'CSS-first config. One 8-pt spacing scale, one type scale, no plugins.' },
   { label: 'content', value: 'Keystatic', note: 'Git-based CMS — edits are commits, so there is no database to lose.' },
-  { label: 'type', value: 'Courier Prime', note: 'Self-hosted, one family. Hierarchy comes from size and weight alone.' },
+  { label: 'type', value: 'Archivo Black · Lato · Courier Prime', note: 'Self-hosted. Display, body, labels — one face per job, no overlap.' },
   { label: 'hosting', value: 'Vercel', note: 'Static build, pushed from main.' },
   { label: 'forms', value: 'Web3Forms', note: 'The contact form posts straight to email. No backend of my own.' },
 ];
@@ -24,7 +24,7 @@ const stack = [
 const principles = [
   'Static HTML before an island. Vanilla JS before a framework. CSS before JS.',
   'Reading time is Math.ceil(words / 200), not a dependency.',
-  'One accent colour, used sparingly enough that it still means something.',
+  'Wine leads; four muted complements colour sections. Never body text.',
   'Every colour used at body size clears WCAG AA against the paper.',
 ];
 ---
@@ -45,7 +45,7 @@ const principles = [
       </p>
     </header>
 
-    <section class="mt-20 md:mt-24" aria-labelledby="stack-heading">
+    <section class="mt-24" aria-labelledby="stack-heading" style="--accent: var(--color-clay-300)">
       <h2 id="stack-heading" class="kicker">stack</h2>
       <dl class="mt-8 m-0">
         {stack.map((item) => (
@@ -60,7 +60,7 @@ const principles = [
       </dl>
     </section>
 
-    <section class="mt-20 md:mt-24" aria-labelledby="rules-heading">
+    <section class="mt-24" aria-labelledby="rules-heading" style="--accent: var(--color-olive-300)">
       <h2 id="rules-heading" class="kicker">rules</h2>
       <ul class="mt-8 m-0 p-0 list-none flex flex-col gap-4">
         {principles.map((line) => (
@@ -72,7 +72,7 @@ const principles = [
       </ul>
     </section>
 
-    <section class="mt-20 md:mt-24" aria-labelledby="source-heading">
+    <section class="mt-24" aria-labelledby="source-heading" style="--accent: var(--color-slate-300)">
       <h2 id="source-heading" class="kicker">source</h2>
       <p class="mt-8 mb-0 text-ink-700 dark:text-ink-200 text-body leading-relaxed max-w-prose">
         Photography is mine. Words are mine. If something here is useful to you,

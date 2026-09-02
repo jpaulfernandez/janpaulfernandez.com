@@ -184,6 +184,22 @@ colophon, and the site shell:
 - [x] (2026-09-02) Mobile nav redesign: name + meta left-aligned; the six primary links form a 3×2 grid with padded tap rows (~42px) instead of the old right-aligned wrapped rows. Secondary links stay in the mobile footer.
 - [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · built HTML verified: 3 work cards + snap CSS on `/`, `dark` body class + `#000`/wine-300 rules on `/colophon` only, `lg:fixed` rail in the shell.
 
+## Phase 12 — Bold minimalist skin: top nav bar, numbered work rows, prominent NOW (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat: fix the navigation and the work section, make NOW
+more prominent, and revamp the skin — bold but minimalist, wine-led with four
+complements over neutrals. Mobbin references used: Coda / Handshake / Bird /
+Affinity (slim sticky bar, wordmark left, small-caps links, one accented block
+right), OFF+BRAND / Koto / Vucko (numbered hairline service rows with a serial
+number and a heavy title, no cards).
+
+- [x] (2026-09-02) Navigation: the Phase 11 left-edge rail is replaced by a sticky top bar on every breakpoint — wordmark left, five small-caps mono links right, `/now` as a solid wine block at the end. Active page and hover both draw a wine rule that wipes in from the left. `< md`: wordmark + NOW + a zero-JS `<details>` menu whose panel spans the bar. Content column widens `max-w-3xl` → `max-w-4xl` now that the rail no longer eats 256px.
+- [x] (2026-09-02) NOW is promoted twice: a wine block in the nav bar with a pulsing square, and a full-width solid wine slab on the home page directly under the hero carrying the latest entry's title and date. `/now` gains a `live · <date>` badge above the h1. The old truncated grey one-liner (and its 12 lines of markdown-stripping) is gone.
+- [x] (2026-09-02) Work section: the Phase 11 swipe-card deck is replaced by `.num-rows` — serial number, heavy title, one line of copy, hovering floods the row with that row's accent. Drops the scroll-snap carousel and its ~45 lines of scoped CSS. `/work-with-me` services use the identical rows, so a service keeps its colour across both pages.
+- [x] (2026-09-02) Type: one monospace family becomes three faces, three jobs — Archivo Black (display/h1/h2/h3), Lato (body + prose), Courier Prime (kickers, labels, metadata, numerals). All three were already dependencies; no new packages. `font-synthesis: none` so Archivo Black is never faux-bolded. Display top end drops 112 → 96 because Archivo Black is far wider than Courier.
+- [x] (2026-09-02) Palette: wine stays primary; four muted complements join as section accents — clay `#A24A22` (5.5:1), ochre `#7E6220` (5.4:1), olive `#40563C` (7.5:1), slate `#2F4858` (8.9:1) on paper, each ≥4.5:1 under `paper-50` text when used as a fill. Driven by one `--accent` custom property that `.kicker`, `.flare`, `.row-link`, `.num-row`, `.btn` and `.more-link` all read, so a section sets its colour in one place. Wine is still never body text.
+- [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · verified in-browser at 390px and 1280px on `/`, `/now`, `/work-with-me`, `/about`, `/colophon` (dark shell) and an article page.
+
 ## Out of scope (v2 — do not build)
 
 Dark mode, Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

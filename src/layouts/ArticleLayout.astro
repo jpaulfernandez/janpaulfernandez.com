@@ -93,7 +93,7 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
     {showToc && (
       <details class="mt-8 border-t border-ink-200 pt-4 group">
         <summary class="cursor-pointer list-none text-small text-ink-700 hover:text-ink-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm [&::-webkit-details-marker]:hidden flex items-center justify-between">
-          <span class="font-mono uppercase tracking-widest">table of contents</span>
+          <span class="font-mono uppercase tracking-widest font-bold">table of contents</span>
           <span class="transition-transform group-open:rotate-180 text-ink-500" aria-hidden="true">+</span>
         </summary>
         <ol class="mt-4 list-decimal pl-6 m-0 flex flex-col gap-2">
@@ -108,7 +108,7 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
       </details>
     )}
 
-    <div class="prose mt-10 text-ink-900 max-w-none">
+    <div class="prose mt-10 text-ink-900">
       <slot />
     </div>
 

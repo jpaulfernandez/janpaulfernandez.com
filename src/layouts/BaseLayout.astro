@@ -3,9 +3,11 @@ import '../styles/global.css';
 
 // Import the exact critical font files as URL assets so the preload hrefs
 // always match the hashed filenames Astro/Vite emits at build time.
-// Phase 8: Courier Prime replaces Archivo Black + Lato; preload 400 + 700.
-import courierPrime400Woff2 from '@fontsource/courier-prime/files/courier-prime-latin-400-normal.woff2?url';
-import courierPrime700Woff2 from '@fontsource/courier-prime/files/courier-prime-latin-700-normal.woff2?url';
+// Phase 12: Archivo Black (display) + Lato 400/700 (body). Courier Prime is
+// labels only — it can arrive a beat late without shifting the page.
+import archivoBlackWoff2 from '@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2?url';
+import lato400Woff2 from '@fontsource/lato/files/lato-latin-400-normal.woff2?url';
+import lato700Woff2 from '@fontsource/lato/files/lato-latin-700-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -33,13 +35,14 @@ const pageTitle = isHome ? title : `${title} — Paul Fernandez`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const resolvedOgImage = new URL(ogImage ?? '/og-default.png', Astro.site);
 
+// /now is deliberately not in this list — it gets its own accent block on the
+// right of the bar so it reads as the site's live signal, not a sixth tab.
 const navItems = [
   { href: '/about', label: 'me' },
   { href: '/work-with-me', label: 'work' },
   { href: '/projects', label: 'projects' },
   { href: '/thoughts', label: 'thoughts' },
   { href: '/gallery', label: 'gallery' },
-  { href: '/now', label: 'now' },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -49,6 +52,7 @@ const isNavActive = (href: string) => {
   }
   return currentPath === href || currentPath.startsWith(`${href}/`);
 };
+const nowActive = currentPath === '/now';
 
 const secondaryLinks = [
   { href: '/colophon', label: 'colophon' },
@@ -80,15 +84,15 @@ const secondaryLinks = [
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={resolvedOgImage} />
 
-    <!-- Favicon — magenta square (Phase 8). -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="Paul Fernandez" href="/rss.xml" />
 
-    <!-- Critical font preloads (Courier Prime 400 + 700, self-hosted @fontsource). -->
-    <link rel="preload" as="font" type="font/woff2" href={courierPrime400Woff2} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={courierPrime700Woff2} crossorigin />
+    <!-- Critical font preloads (self-hosted @fontsource). -->
+    <link rel="preload" as="font" type="font/woff2" href={archivoBlackWoff2} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={lato400Woff2} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={lato700Woff2} crossorigin />
 
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-KJX3LCC0SZ"></script>
@@ -106,105 +110,234 @@ const secondaryLinks = [
     <a href="#main" class="skip-link">Skip to content</a>
 
     {/*
-      Phase 11 shell — nav rail pinned to the left edge of the viewport.
-        • Mobile (< lg): header sits inline at the top of the body, left-aligned;
-          the primary links form a 3×2 grid of full-width tap rows.
-        • lg+: header is fixed to the left viewport edge, vertically centered,
-          left-aligned; the content column is centered in the remaining width.
-        • Main content keeps the max-w-3xl reading width.
+      Phase 12 shell — one sticky bar across the top, on every breakpoint.
+        • Left: wordmark.
+        • Right (md+): the five section links, then the NOW block.
+        • Right (< md): the NOW block, then a <details> menu holding the links.
+          No JS: the panel closes on navigation because navigation reloads.
     */}
-    <header class="px-6 pt-10 pb-8 lg:py-0 lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-52 xl:w-64 lg:px-8 flex flex-col items-start text-left lg:justify-center shrink-0">
-      <a
-        href="/"
-        class="site-name block font-bold text-ink-900 dark:text-paper-100 no-underline tracking-tight leading-none text-body focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 dark:focus-visible:ring-wine-300 rounded-sm px-1"
-      >
-        Paul Fernandez
-      </a>
+    <header class="site-header">
+      <div class="site-bar">
+        <a href="/" class="wordmark">Paul Fernandez</a>
 
-      <span class="site-meta mt-2 block text-ink-500 dark:text-ink-200 text-small tracking-wide">
-        technologist · philippines
-      </span>
-
-      <nav aria-label="Main" class="mt-8 lg:mt-10">
-        <ul class="grid grid-cols-3 gap-x-4 gap-y-1 list-none m-0 p-0 lg:flex lg:flex-col lg:items-start lg:gap-y-3">
+        <nav aria-label="Main" class="nav-desktop">
           {navItems.map((item) => (
-            <li>
+            <a
+              href={item.href}
+              aria-current={isNavActive(item.href) ? 'page' : undefined}
+              class="nav-link"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <a href="/now" aria-current={nowActive ? 'page' : undefined} class="now-tab">
+          <span class="live-dot" aria-hidden="true"></span>
+          now
+        </a>
+
+        <details class="nav-menu">
+          <summary>menu</summary>
+          <nav aria-label="Sections" class="nav-panel">
+            {navItems.map((item) => (
               <a
                 href={item.href}
                 aria-current={isNavActive(item.href) ? 'page' : undefined}
-                class:list={[
-                  'nav-link block py-2 lg:py-0 text-body no-underline text-ink-700 dark:text-ink-200 hover:text-ink-900 dark:hover:text-paper-50',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 dark:focus-visible:ring-wine-300 rounded-sm px-1',
-                ]}
+                class="nav-link"
               >
                 {item.label}
               </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {/* Secondary links — lg+ only; on mobile they live in the footer. */}
-      <ul class="mt-8 lg:mt-10 hidden lg:flex flex-col items-start gap-y-2 text-small list-none m-0 p-0">
-        {secondaryLinks.map((link) => (
-          <li>
-            <a
-              href={link.href}
-              {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              class="text-ink-500 dark:text-ink-200 hover:text-ink-900 dark:hover:text-paper-50 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 dark:focus-visible:ring-wine-300 rounded-sm px-1"
-            >
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
+            ))}
+          </nav>
+        </details>
+      </div>
     </header>
 
-    <div class="flex-1 flex flex-col min-h-screen lg:pl-52 xl:pl-64">
-      <div class="flex-1 w-full max-w-3xl mx-auto px-6 flex flex-col min-w-0">
-        <!-- Main content — wider reading column (max-w-3xl). -->
-        <main id="main" class="flex-1 py-12 md:py-20">
-          <slot />
-        </main>
+    <div class="flex-1 w-full max-w-4xl mx-auto px-6 flex flex-col min-w-0">
+      <main id="main" class="flex-1 py-16 md:py-24">
+        <slot />
+      </main>
 
-        <!-- Footer — aligned with main content. -->
-        <footer class="py-8 border-t border-ink-200/60 dark:border-paper-100/20">
-          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
-            <p class="m-0 text-ink-500 dark:text-ink-200">&copy; {new Date().getFullYear()} Paul Fernandez</p>
-            {/* Mobile-only secondary links (< lg), since the lg+ rail owns them. */}
-            <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 lg:hidden">
-              {secondaryLinks.map((link) => (
-                <li>
-                  <a
-                    href={link.href}
-                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    class="text-ink-500 dark:text-ink-200 hover:text-ink-900 dark:hover:text-paper-50 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 dark:focus-visible:ring-wine-300 rounded-sm px-1"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </footer>
-      </div>
+      <footer class="py-8 border-t border-ink-200/60 dark:border-paper-100/20">
+        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
+          <p class="m-0 font-mono text-ink-500 dark:text-ink-200 tabular-nums">
+            &copy; {new Date().getFullYear()} Paul Fernandez
+          </p>
+          <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 font-mono">
+            {secondaryLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  class="text-ink-500 dark:text-ink-200 hover:text-wine-500 dark:hover:text-wine-300 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </footer>
     </div>
 
     <style>
-      /* Magenta ● marks the active page — single accent. The marker is part
-       * of the link's inline content, so right-alignment pulls label+marker
-       * toward the right edge together. */
-      .nav-link[aria-current='page'] {
-        color: var(--color-wine-500);
+      /* --- Sticky bar ---------------------------------------------------- */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: color-mix(in srgb, var(--color-paper-100) 88%, transparent);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--color-ink-200);
+      }
+      :global(body.dark) .site-header {
+        background-color: rgba(0, 0, 0, 0.85);
+        border-bottom-color: rgba(250, 246, 244, 0.2);
+      }
+
+      .site-bar {
+        position: relative;
+        max-width: 56rem;          /* matches the max-w-4xl content column */
+        margin-inline: auto;
+        padding-inline: 1.5rem;
+        height: 4rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .wordmark {
+        margin-right: auto;
+        font-family: var(--font-display);
+        font-size: var(--text-body);
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+        color: var(--color-ink-900);
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .wordmark:hover { color: var(--color-wine-500); }
+      :global(body.dark) .wordmark { color: var(--color-paper-100); }
+
+      /* --- Section links -------------------------------------------------- */
+      .nav-desktop { display: none; align-items: center; gap: 1.5rem; }
+      @media (min-width: 768px) { .nav-desktop { display: flex; } }
+
+      .nav-link {
+        position: relative;
+        font-family: var(--font-mono);
+        font-size: var(--text-small);
         font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--color-ink-500);
+        text-decoration: none;
+        padding-block: 0.5rem;
+        transition: color 0.15s ease-out;
       }
-      .nav-link[aria-current='page']::before {
-        content: '■';
-        color: var(--color-wine-500);
-        margin-right: 0.4em;
-        font-size: 0.7em;
-        vertical-align: 0.25em;
+      .nav-link:hover { color: var(--color-ink-900); }
+      :global(body.dark) .nav-link { color: var(--color-ink-200); }
+      :global(body.dark) .nav-link:hover { color: var(--color-paper-50); }
+
+      /* Active page: a wine rule under the label. On hover the same rule
+       * wipes in from the left — the bar's only motion. */
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0.125rem;
+        height: 2px;
+        width: 100%;
+        background-color: var(--color-wine-500);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.2s ease-out;
       }
+      .nav-link:hover::after,
+      .nav-link[aria-current='page']::after { transform: scaleX(1); }
+      .nav-link[aria-current='page'] { color: var(--color-ink-900); }
+      :global(body.dark) .nav-link[aria-current='page'] { color: var(--color-paper-50); }
+      :global(body.dark) .nav-link::after { background-color: var(--color-wine-300); }
+
+      .nav-link:focus-visible {
+        outline: 2px solid var(--color-wine-500);
+        outline-offset: 2px;
+      }
+
+      /* --- NOW ------------------------------------------------------------
+       * A solid wine block, not a link in the row: /now is the live page and
+       * the bar should say so at a glance. */
+      .now-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        background-color: var(--color-wine-500);
+        color: var(--color-paper-50);
+        font-family: var(--font-mono);
+        font-size: var(--text-small);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background-color 0.15s ease-out;
+      }
+      .now-tab:hover { background-color: var(--color-ink-900); color: var(--color-paper-50); }
+      .now-tab[aria-current='page'] { background-color: var(--color-ink-900); }
+      .now-tab:focus-visible {
+        outline: 2px solid var(--color-ink-900);
+        outline-offset: 2px;
+      }
+      :global(body.dark) .now-tab { background-color: var(--color-wine-300); color: #000; }
+
+      /* --- Mobile menu (< md) --------------------------------------------- */
+      .nav-menu { position: static; }
+      @media (min-width: 768px) { .nav-menu { display: none; } }
+
+      .nav-menu > summary {
+        list-style: none;
+        cursor: pointer;
+        font-family: var(--font-mono);
+        font-size: var(--text-small);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--color-ink-900);
+        padding: 0.5rem 0.25rem;
+      }
+      .nav-menu > summary::-webkit-details-marker { display: none; }
+      .nav-menu > summary:focus-visible {
+        outline: 2px solid var(--color-wine-500);
+        outline-offset: 2px;
+      }
+      .nav-menu[open] > summary { color: var(--color-wine-500); }
+      :global(body.dark) .nav-menu > summary { color: var(--color-paper-100); }
+
+      .nav-panel {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 0.5rem 1.5rem 1.5rem;
+        background-color: var(--color-paper-100);
+        border-bottom: 1px solid var(--color-ink-200);
+      }
+      :global(body.dark) .nav-panel {
+        background-color: #000;
+        border-bottom-color: rgba(250, 246, 244, 0.2);
+      }
+      .nav-panel .nav-link {
+        padding-block: 0.75rem;
+        border-bottom: 1px solid var(--color-ink-200);
+      }
+      :global(body.dark) .nav-panel .nav-link {
+        border-bottom-color: rgba(250, 246, 244, 0.15);
+      }
+      .nav-panel .nav-link::after { bottom: -1px; }
     </style>
   </body>
 </html>

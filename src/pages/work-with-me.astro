@@ -14,6 +14,10 @@ const { Content: IntroContent } = await render(workWithMeEntry);
 const services = await getCollection('services');
 const sortedServices = services.sort((a, b) => a.data.order - b.data.order);
 
+// One accent per service row, cycled — same order as the home page so a row
+// keeps its colour across the two pages.
+const rowAccents = ['clay', 'ochre', 'olive', 'slate'];
+
 const faqItems = sortedServices.flatMap((s) => s.data.faq || []);
 
 const serviceSchemas = sortedServices.map((s) =>
@@ -56,44 +60,38 @@ const steps = [
   <article>
     <header>
       <h1 class="display m-0">Work <span class="flare">with me</span></h1>
-      <div class="prose mt-8 text-ink-700 max-w-none">
+      <div class="prose mt-8 text-ink-700">
         <IntroContent />
       </div>
     </header>
 
-    {/* Services — full-width rows, name at h2 scale on the left. */}
+    {/* Services — numbered rows, identical to the home page. */}
     {sortedServices.length > 0 && (
-      <section class="mt-20 md:mt-24" aria-labelledby="services-heading">
+      <section class="mt-24" aria-labelledby="services-heading">
         <h2 id="services-heading" class="kicker">services</h2>
-        <ul class="rows mt-8">
+        <ol class="num-rows mt-8">
           {sortedServices.map((s, i) => (
-            <li class="grid md:grid-cols-[1fr_1.4fr] gap-x-10 gap-y-4 py-8">
-              <div>
-                <span class="block text-small text-wine-500 tabular-nums mb-2">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <h3 class="text-h2 font-bold text-ink-900 m-0 leading-tight text-balance">
-                  {s.data.title}
-                </h3>
+            <li style={`--accent: var(--color-${rowAccents[i % rowAccents.length]}-500)`}>
+              <div class="num-row">
+                <span class="num-row-index">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="num-row-title">{s.data.title}</h3>
+                <p class="num-row-desc m-0">{s.data.description}</p>
               </div>
-              <p class="text-ink-700 m-0 text-body leading-relaxed self-center">
-                {s.data.description}
-              </p>
             </li>
           ))}
-        </ul>
+        </ol>
       </section>
     )}
 
     {/* How it works */}
-    <section class="mt-20 md:mt-24" aria-labelledby="process-heading">
+    <section class="mt-24" aria-labelledby="process-heading" style="--accent: var(--color-olive-500)">
       <h2 id="process-heading" class="kicker">
         how it works
       </h2>
       <ol class="m-0 mt-8 p-0 flex flex-col gap-4 list-none">
         {steps.map((step) => (
           <li>
-            <span class="font-bold text-wine-500">{step.title}</span>
+            <span class="font-mono font-bold uppercase tracking-widest text-olive-500 text-small">{step.title}</span>
             <span class="text-ink-700"> — {step.body}</span>
           </li>
         ))}
@@ -102,7 +100,7 @@ const steps = [
 
     {/* FAQ */}
     {faqItems.length > 0 && (
-      <section class="mt-20 md:mt-24" aria-labelledby="faq-heading">
+      <section class="mt-24" aria-labelledby="faq-heading" style="--accent: var(--color-slate-500)">
         <h2 id="faq-heading" class="kicker">
           faq
         </h2>
@@ -121,7 +119,7 @@ const steps = [
     )}
 
     {/* Contact */}
-    <section id="contact" class="mt-20 md:mt-24" aria-labelledby="contact-heading">
+    <section id="contact" class="mt-24" aria-labelledby="contact-heading">
       <h2 id="contact-heading" class="kicker">
         get in touch
       </h2>
@@ -175,7 +173,7 @@ const steps = [
 
         <button
           type="submit"
-          class="self-start bg-wine-500 hover:bg-wine-400 text-paper-50 font-bold px-6 py-3 cursor-pointer transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
+          class="btn self-start"
         >
           send →
         </button>

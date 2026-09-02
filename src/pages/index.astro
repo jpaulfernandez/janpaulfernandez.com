@@ -19,19 +19,21 @@ const greetingWords = heroGreeting.trim().split(' ');
 const greetingHead = greetingWords.slice(0, -1).join(' ');
 const greetingFlare = greetingWords[greetingWords.length - 1];
 
-// Latest Now entry -> one tight line under the intro.
-const nowEntries = await getCollection('now');
-const latestNow = nowEntries.sort((a, b) => b.data.date.localeCompare(a.data.date))[0];
-const nowPlain = latestNow?.body
-  ?.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1') // markdown links -> text
-  .replace(/[*_`>#]/g, '')
-  .replace(/\s+/g, ' ')
-  .trim();
-const nowSnippet = nowPlain
-  ? nowPlain.length > 92
-    ? `${nowPlain.slice(0, 92).trimEnd()}…`
-    : nowPlain
-  : undefined;
+// Latest Now entries -> a rail slice on home that leads into the /now timeline.
+// Noon pins the date so timezone offsets can't shift it a day (same move as /now).
+function formatNowDate(date: string | Date) {
+  const str = typeof date === 'string' ? date : date.toISOString().slice(0, 10);
+  return new Date(`${str}T12:00:00`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+const latestNowEntries = [...(await getCollection('now'))]
+  .sort((a, b) => b.data.date.localeCompare(a.data.date))
+  .slice(0, 3)
+  .map((entry) => ({ ...entry, displayDate: formatNowDate(entry.data.date) }));
 
 // Latest thoughts for the Writing index (5 rows).
 const latestThoughts = (await getPublishedThoughts()).slice(0, 5);
@@ -55,7 +57,7 @@ const seoData = [
   <JsonLd data={seoData} slot="head" />
 
   <article>
-    {/* Identity: display statement → bio → optional now one-liner. */}
+    {/* Identity: display statement → bio. */}
     <header>
       <h1 class="display m-0">
         {greetingHead && <>{greetingHead}{' '}</>}<span class="flare">{greetingFlare}</span>
@@ -63,17 +65,39 @@ const seoData = [
       {heroIntro && (
         <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">{heroIntro}</p>
       )}
-      {nowSnippet && (
-        <p class="mt-6 mb-0 text-ink-500 text-small">
-          <span class="text-wine-500">now</span> — {nowSnippet}{' '}
-          <a href="/now" class="text-ink-700 hover:text-wine-500 no-underline">→</a>
-        </p>
-      )}
     </header>
+
+    {/* Now — a slice of the /now rail; the newest entry wears the wine halo. */}
+    {latestNowEntries.length > 0 && (
+      <section class="mt-20 md:mt-24" aria-labelledby="now-heading">
+        <h2 id="now-heading" class="kicker">now</h2>
+        <div class="rail mt-6">
+          {latestNowEntries.map((entry) => (
+            <article class="rail-item">
+              <time class="rail-date" datetime={entry.data.date}>{entry.displayDate}</time>
+              <h3 class="text-h3 font-bold text-ink-900 leading-snug m-0">
+                <a
+                  href="/now"
+                  class="text-ink-900 no-underline hover:text-wine-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
+                >
+                  {entry.data.title || entry.id}
+                </a>
+              </h3>
+            </article>
+          ))}
+        </div>
+        <a
+          href="/now"
+          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
+        >
+          see the full timeline →
+        </a>
+      </section>
+    )}
 
     {/* Writing index */}
     {latestThoughts.length > 0 && (
-      <section class="mt-20 md:mt-24" aria-labelledby="writing-heading">
+      <section class="mt-16 md:mt-20" aria-labelledby="writing-heading">
         <h2 id="writing-heading" class="kicker">writing</h2>
         <ul class="rows mt-6">
           {latestThoughts.map((post) => (

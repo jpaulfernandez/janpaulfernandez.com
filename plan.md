@@ -264,6 +264,7 @@ aspect ratios preserved).
 
 - [x] (2026-09-02) `src/lib/gallery.ts`: new `masonryLayout()` — each shot gets a deterministic pseudo-random width factor (0.75 / 1 / 1.25 of column width, FNV-1a hash of the shot id → stable across builds), then a shortest-column-first pass packs everything into 3 near-equal-height columns. Pure function, vitest-covered (`masonryLayout` + `widthFactor` describe blocks: determinism, coverage, balance, factor set, empty, clamp).
 - [x] (2026-09-02) `src/pages/gallery/index.astro`: the single CSS-columns wall becomes two trees at the 640px cutover — mobile keeps the original 2-col flow untouched (`sm:hidden`), desktop (`hidden sm:flex`) renders the packer's three columns as flex columns with per-shot `width: 75–125%` inline. Sets still interleave via the spread key; lightbox markup unchanged; `display` deliberately left to Tailwind so the scoped stylesheet can't leak the wall onto mobile.
+- [x] (2026-09-02) Deployed to prod: commit `cf6e221` pushed to main, Vercel build live within ~1 min — `/gallery` serves the packed wall (43 full / 26 wide / 26 narrow shots across 3 columns), all 8 main routes 200, exactly one `<h1>` on `/gallery`
 - [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
 
 ## Out of scope (v2 — do not build)

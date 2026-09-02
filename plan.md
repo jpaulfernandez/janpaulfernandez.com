@@ -239,7 +239,8 @@ down. Supersedes the Phase 9 type scale.
 
 - [x] (2026-09-02) Type scale compressed in `src/styles/global.css`, still on the 8-pt grid and ≥1.25 between steps: `--text-display` 56→112 becomes 40→56, `--text-h1` 40→72 becomes 32→40, `--text-h2` 24→40 becomes 24→32; h3/body/small untouched. Every `.display` h1 (all 11 pages) and every prose h2 quiets with the tokens. `.display` leading relaxes 1.02→1.1 and tracking -0.03em→-0.02em, retuned for the new size range.
 - [x] (2026-09-02) Decorative motion removed: the `.row-link` hover-nudge (padding-left shift), the gallery hover zoom (`scale(1.04)` on the `/gallery` wall and set pages), and the `.fade-rise` intro animation (deleted outright — nothing referenced it). Hover colour on rows/links and the gallery hover dim stay as the only feedback; the lightbox fade and disclosure-chevrons remain, still covered by the blanket `prefers-reduced-motion` guard.
-- [ ] Verification: Paul reviews manually in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
+- [x] (2026-09-02) Deployed to prod: commit `8345b77` pushed to main, Vercel build live within ~1 min — new stylesheet (compressed display clamp) served on www, all 8 main routes 200 (`/`, about, work-with-me, thoughts, projects, gallery, now, colophon)
+- [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
 
 ## Out of scope (v2 — do not build)
 

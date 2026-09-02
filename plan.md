@@ -250,6 +250,7 @@ Direction confirmed in chat: **mini timeline section** — chosen over a
 featured-entry block and a ruled band above the hero (too loud post-Phase-14).
 
 - [x] (2026-09-02) `src/pages/index.astro`: the hero one-liner (and its ~12 lines of markdown-stripping) is removed. In its place, a `now` kicker section directly under the hero: the 3 latest entries rendered on the existing `.rail` primitive — date gutter, wine node per entry, halo on the newest, same flare /now gives the live entry. Each title links to /now; the section closes with a "see the full timeline →" link. Zero new CSS, zero JS (rendering-ladder rung 1). Writing section spacing steps down to the standard `mt-16 md:mt-20` now that `now` takes the post-hero gap.
+- [x] (2026-09-02) Deployed to prod: commit `5e5fa25` pushed to main, Vercel build live within ~1 min — new `now` rail section served on www with `see the full timeline →` link, all 8 main routes 200 (`/`, about, work-with-me, thoughts, projects, gallery, now, colophon), exactly one `<h1>` on `/`
 - [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
 
 ## Out of scope (v2 — do not build)

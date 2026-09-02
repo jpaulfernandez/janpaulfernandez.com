@@ -1,17 +1,71 @@
 ---
-// index.astro (Gallery index — photobook list)
+// index.astro (Gallery index — one flat wall of photographs)
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { Image } from 'astro:assets';
+import Lightbox from '../../components/Lightbox.astro';
+import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import { lightboxWidth } from '../../lib/gallery';
 
-const allItems = (await getCollection('gallery')).sort(
+const sets = (await getCollection('gallery')).sort(
   (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
 );
 
-// Derive unique tags from actual items
-const allTags = Array.from(
-  new Set(allItems.flatMap((item) => item.data.tags || []))
-).sort();
+type Shot = {
+  image: ImageMetadata;
+  /** Right-sized source for the lightbox — the originals are ~1.5 MB each. */
+  fullSrc: string;
+  /** Empty unless the photo carries its own caption — the lightbox's set link
+   *  already says where it came from, so the set title is not repeated here. */
+  caption: string;
+  setTitle: string;
+  setId: string;
+  /** Position in [0,1) used to spread each set evenly across the wall. */
+  spread: number;
+};
+
+// Flatten every set into a single list of photographs. The cover is usually
+// also the first photo, so dedupe on the resolved asset path.
+const shots: Shot[] = [];
+sets.forEach((set) => {
+  const seen = new Set<string>();
+  const own: Shot[] = [];
+
+  const add = (image: ImageMetadata | undefined, caption: string) => {
+    if (!image || seen.has(image.src)) return;
+    seen.add(image.src);
+    own.push({
+      image,
+      fullSrc: '',
+      caption,
+      setTitle: set.data.title,
+      setId: set.id,
+      spread: 0,
+    });
+  };
+
+  add(set.data.cover, '');
+  set.data.photos.forEach((p) => add(p.image, p.caption || ''));
+
+  // Evenly distribute this set's photos across the full 0–1 range, so a
+  // 50-shot set and a 12-shot set both run the length of the wall instead of
+  // sitting as two solid blocks.
+  own.forEach((shot, i) => {
+    shot.spread = (i + 0.5) / own.length;
+  });
+  shots.push(...own);
+});
+
+// Stable interleave: sets stay in reverse-chronological order on ties, so the
+// output is identical on every build.
+shots.sort((a, b) => a.spread - b.spread);
+
+// Lightbox sources: 1600px on the long edge, which is plenty for a full-screen
+// view and roughly a tenth of the original file.
+await Promise.all(
+  shots.map(async (shot) => {
+    shot.fullSrc = (await getImage({ src: shot.image, width: lightboxWidth(shot.image) })).src;
+  })
+);
 
 const description = 'Photography by Paul Fernandez — concerts, festivals, places.';
 ---
@@ -19,129 +73,100 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
 <BaseLayout title="Gallery" description={description}>
   <article>
     <header>
-      <h1 class="text-moss-900 m-0">Gallery</h1>
-      <p class="mt-4 mb-0 text-moss-700 text-body leading-relaxed">
-        Photography — concerts, festivals, places.
+      <h1 class="display m-0">Gallery</h1>
+      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
+        Photography — <span class="flare">concerts, festivals, places</span>.
+      </p>
+      <p class="mt-2 mb-0 text-ink-500 text-small tabular-nums">
+        {shots.length} photographs · {sets.length} sets
       </p>
     </header>
 
-    {allItems.length > 0 && (
-      <>
-        {allTags.length > 0 && (
-          <div class="mt-10 flex flex-wrap gap-2" data-filter-group="tag">
-            <button class="filter-chip cursor-pointer px-3 py-1 text-small text-moss-700 underline underline-offset-4 decoration-moss-200 aria-pressed:decoration-moss-900 aria-pressed:text-moss-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500" aria-pressed="true" data-value="all">all</button>
-            {allTags.map((tag) => (
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-moss-700 underline underline-offset-4 decoration-moss-200 aria-pressed:decoration-moss-900 aria-pressed:text-moss-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500" aria-pressed="false" data-value={tag}>
-                #{tag}
-              </button>
-            ))}
-          </div>
-        )}
+    {shots.length > 0 && (
+      <div class="wall mt-16 md:mt-20">
+        {shots.map((shot, idx) => (
+          <button
+            type="button"
+            class="photo-trigger wall-item"
+            data-src={shot.fullSrc}
+            data-alt={shot.caption || shot.setTitle}
+            data-caption={shot.caption}
+            data-href={`/gallery/${shot.setId}`}
+            data-href-label={`${shot.setTitle} →`}
+            aria-label={`View larger: ${shot.caption || shot.setTitle}`}
+          >
+            <Image
+              src={shot.image}
+              alt={shot.caption || shot.setTitle}
+              class="wall-img"
+              width={560}
+              loading={idx < 6 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </button>
+        ))}
+      </div>
+    )}
 
-        <div class="mt-2 flex items-center justify-between text-small text-moss-500 tabular-nums">
-          <span id="gallery-counter">
-            {allItems.length} {allItems.length === 1 ? 'collection' : 'collections'}
-          </span>
-          <div id="filter-aria-announcer" aria-live="polite" class="sr-only">
-            Showing {allItems.length} collections
-          </div>
-        </div>
-
-        <div id="gallery-grid" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
-          {allItems.map((item) => {
-            const dateFormatted = new Date(item.data.publishedDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-            });
-
-            return (
-              <a
-                href={`/gallery/${item.id}`}
-                class="gallery-card group flex flex-col no-underline text-moss-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
-                data-tags={item.data.tags?.join(',')}
-              >
-                {item.data.cover && (
-                  <div class="aspect-[4/3] w-full overflow-hidden bg-moss-200">
-                    <Image
-                      src={item.data.cover}
-                      alt={item.data.title}
-                      class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                      width={800}
-                      height={600}
-                    />
-                  </div>
-                )}
-
-                <div class="mt-3 flex flex-col gap-1">
-                  <time datetime={item.data.publishedDate} class="text-small text-moss-500 tabular-nums">
-                    {dateFormatted}
-                  </time>
-                  <h2 class="font-bold text-moss-900 m-0 group-hover:text-citrus-500 transition-colors">
-                    {item.data.title}
-                  </h2>
-                  {item.data.tags && item.data.tags.length > 0 && (
-                    <p class="m-0 text-small text-moss-500 flex flex-wrap gap-x-2">
-                      {item.data.tags.slice(0, 4).map((tag) => (
-                        <span>#{tag}</span>
-                      ))}
-                    </p>
-                  )}
-                </div>
+    {/* The sets still exist as their own pages — reachable from here and from
+        the lightbox, without grouping the wall itself. */}
+    {sets.length > 0 && (
+      <section class="mt-16 md:mt-20" aria-labelledby="sets-heading">
+        <h2 id="sets-heading" class="kicker">Sets</h2>
+        <ul class="rows mt-6">
+          {sets.map((set) => (
+            <li>
+              <a href={`/gallery/${set.id}`} class="row-link">
+                <span>{set.data.title}</span>
+                <span class="row-meta">{set.data.publishedDate.slice(0, 4)} ↗</span>
               </a>
-            );
-          })}
-        </div>
-
-        <div id="empty-state" class="hidden text-center py-12 border border-moss-200 mt-8">
-          <p class="text-moss-700 mb-2">No gallery collections match this filter.</p>
-          <p class="text-small text-moss-500">Reset to "all".</p>
-        </div>
-      </>
+            </li>
+          ))}
+        </ul>
+      </section>
     )}
   </article>
+
+  <Lightbox />
 </BaseLayout>
 
-<!-- Native client-side DOM filter script (rung 4 progressive enhancement) -->
-<script>
-  const chips = document.querySelectorAll('.filter-chip');
-  const cards = document.querySelectorAll('.gallery-card') as NodeListOf<HTMLElement>;
-  const counter = document.getElementById('gallery-counter');
-  const announcer = document.getElementById('filter-aria-announcer');
-  const emptyState = document.getElementById('empty-state');
+<style>
+  /* One flat masonry wall. CSS columns keeps every photo at its true aspect
+   * ratio with zero JS — the layout is the browser's job here. */
+  .wall {
+    columns: 2;
+    column-gap: 0.75rem;
+  }
+  @media (min-width: 640px) {
+    .wall { columns: 3; }
+  }
 
-  let activeTag = 'all';
+  .wall-item {
+    display: block;
+    width: 100%;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    border: 0;
+    background: var(--color-ink-200);
+    cursor: zoom-in;
+    overflow: hidden;
+    break-inside: avoid;
+    /* Chromium still splits an unbroken block across columns without this. */
+    -webkit-column-break-inside: avoid;
+  }
+  .wall-item:focus-visible {
+    outline: 2px solid var(--color-wine-500);
+    outline-offset: 2px;
+  }
 
-  chips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const parentGroup = chip.closest('[data-filter-group]') as HTMLElement | null;
-      if (!parentGroup) return;
-
-      parentGroup.querySelectorAll('.filter-chip').forEach((c) => c.setAttribute('aria-pressed', 'false'));
-      chip.setAttribute('aria-pressed', 'true');
-      activeTag = chip.getAttribute('data-value') || 'all';
-
-      let visibleCount = 0;
-      cards.forEach((card) => {
-        const cardTags = card.getAttribute('data-tags')?.split(',') || [];
-        const matchesTag = activeTag === 'all' || cardTags.includes(activeTag);
-
-        if (matchesTag) {
-          card.classList.remove('hidden');
-          visibleCount++;
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-
-      const resultText = `${visibleCount} collection${visibleCount === 1 ? '' : 's'}`;
-      if (counter) counter.textContent = resultText;
-      if (announcer) announcer.textContent = `Showing ${resultText}`;
-
-      if (visibleCount === 0) {
-        emptyState?.classList.remove('hidden');
-      } else {
-        emptyState?.classList.add('hidden');
-      }
-    });
-  });
-</script>
+  .wall-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .wall-img { transition: transform 0.5s ease-out, opacity 0.2s ease-out; }
+    .wall-item:hover .wall-img { transform: scale(1.04); }
+  }
+  .wall-item:hover .wall-img { opacity: 0.85; }
+</style>

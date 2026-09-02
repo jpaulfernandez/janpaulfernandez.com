@@ -23,13 +23,21 @@ const processedNow = await Promise.all(
   sortedNow.map(async (entry) => {
     const { Content } = await render(entry);
     const dateObj = parseDateSafe(entry.data.date);
-    const monthYear = dateObj.toLocaleDateString('en-US', {
-      month: 'short',
-      year: 'numeric',
-    });
-    return { ...entry, Content, monthYear };
+    // Gutter label is day-level; the year is carried by the section marker.
+    const dayLabel = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return { ...entry, Content, dayLabel, year: String(dateObj.getFullYear()) };
   })
 );
+
+// Group into year sections. Entries are already newest-first, so a single pass
+// keeps the years in order without a second sort.
+type Entry = (typeof processedNow)[number];
+const years: { year: string; items: Entry[] }[] = [];
+for (const entry of processedNow) {
+  const last = years.at(-1);
+  if (last && last.year === entry.year) last.items.push(entry);
+  else years.push({ year: entry.year, items: [entry] });
+}
 
 // ProfilePage dateModified reflects the latest Now entry date for freshness signals
 const seoData = [
@@ -49,58 +57,228 @@ const seoData = [
 
   <article>
     <header>
-      <h1 class="text-moss-900 m-0">Now</h1>
-      <p class="mt-4 mb-0 text-moss-700 text-body leading-relaxed">
+      <h1 class="display m-0"><span class="flare">Now</span></h1>
+      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
         A public log of what I'm focused on — current projects, learning, and where my head is at.
       </p>
-      <p class="mt-2 mb-0 text-moss-500 text-small tabular-nums">
+      <p class="mt-2 mb-0 text-ink-500 text-small tabular-nums">
         last updated: {formattedLastUpdated}
       </p>
     </header>
 
     {processedNow.length > 0 ? (
-      <section class="mt-12 md:mt-16" aria-label="Now timeline">
-        <div class="flex flex-col">
-          {processedNow.map(({ data, Content, id, monthYear }) => {
-            const displayTitle = data.title || data.slug || id;
-            return (
-              <article class="py-6 border-t border-moss-200 first:border-t-0">
-                <div class="flex flex-col md:flex-row md:items-baseline md:gap-6">
-                  <span class="md:w-28 shrink-0 text-moss-500 text-small tabular-nums">
-                    {monthYear}
-                  </span>
-                  <div class="flex-grow min-w-0">
-                    <h2 class="font-bold text-moss-900 m-0">{displayTitle}</h2>
-                    <div class="prose mt-3 text-ink max-w-none">
+      <section class="tl mt-16 md:mt-20" aria-label="Now timeline">
+        {years.map(({ year, items }) => (
+          <>
+            <h2 class="tl-year">{year}</h2>
+
+            {items.map(({ data, Content, id, dayLabel, year: entryYear }) => {
+              const displayTitle = data.title || data.slug || id;
+              const isCurrent = data.date === latestDate;
+              return (
+                <article class:list={['tl-item', isCurrent && 'is-current']}>
+                  <time class="tl-date" datetime={data.date}>
+                    <span class="tl-date-day">{dayLabel}</span>
+                    <span class="tl-date-year">{entryYear}</span>
+                  </time>
+
+                  <div class="tl-content">
+                    {isCurrent && <p class="tl-badge">right now</p>}
+
+                    <h3 class="tl-title">{displayTitle}</h3>
+
+                    <div class="prose tl-prose">
                       <Content />
                     </div>
+
                     {data.link && (
                       <a
                         href={data.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="inline-block mt-2 text-small text-moss-500 hover:text-moss-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm"
+                        class="tl-link"
                       >
                         reference ↗
                       </a>
                     )}
                   </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                </article>
+              );
+            })}
+          </>
+        ))}
 
-        <div class="mt-12 border-t border-moss-200 pt-6 text-moss-500 text-small italic">
-          end of timeline — go build something cool.
-        </div>
+        <p class="tl-end">end of timeline — go build something cool.</p>
       </section>
     ) : (
-      <div class="mt-12 border-t border-moss-200 pt-6">
-        <p class="text-moss-700 m-0">
-          Nothing here yet — but my <a href="/work-with-me#contact" class="text-moss-900 hover:text-citrus-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-citrus-500 rounded-sm">inbox is open</a>.
+      <div class="mt-12 border-t border-ink-200 pt-6">
+        <p class="text-ink-700 m-0">
+          Nothing here yet — but my <a href="/work-with-me#contact" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">inbox is open</a>.
         </p>
       </div>
     )}
   </article>
 </BaseLayout>
+
+<style>
+  /* Timeline — /now only. One continuous hairline; year markers are the
+   * chapter breaks, entries hang off it as nodes. Mobile stacks the date
+   * above the entry; ≥768px moves it into a right-aligned gutter. */
+  .tl { position: relative; }
+  .tl::before {
+    content: '';
+    position: absolute;
+    left: 0.1875rem;
+    top: 0.5rem;
+    bottom: 0.6875rem;
+    width: 1px;
+    background-color: var(--color-ink-200);
+  }
+
+  /* Year: a solid wine milestone on the rail, with a rule running to the
+   * right edge — the same structural move as .kicker, one size up. */
+  .tl-year {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 2rem;
+    padding-left: 1.75rem;
+    font-size: var(--text-h3);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-900);
+  }
+  .tl-year:not(:first-child) { margin-top: 1rem; }
+  .tl-year::before {
+    content: '';
+    position: absolute;
+    left: -0.1875rem;
+    top: 50%;
+    margin-top: -0.375rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    background-color: var(--color-wine-500);
+  }
+  .tl-year::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-ink-200);
+  }
+
+  .tl-item {
+    position: relative;
+    padding-left: 1.75rem;
+    padding-bottom: 3rem;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.4375rem;
+    width: 0.375rem;
+    height: 0.375rem;
+    background-color: var(--color-paper-100);
+    box-shadow: inset 0 0 0 1px var(--color-ink-500);
+  }
+  /* The live entry is the only filled node — it is the flare on this page. */
+  .tl-item.is-current::before {
+    background-color: var(--color-wine-500);
+    box-shadow: 0 0 0 0.25rem var(--color-wine-50);
+  }
+
+  .tl-date {
+    display: block;
+    font-size: var(--text-small);
+    color: var(--color-ink-500);
+    font-variant-numeric: tabular-nums;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+  }
+  /* The year already labels the section; the gutter only repeats it on
+   * mobile, where the section marker can scroll far out of view. */
+  .tl-date-year::before { content: ' '; }
+
+  .tl-badge {
+    display: inline-block;
+    margin: 0 0 0.5rem;
+    padding: 0.125rem 0.5rem;
+    font-size: var(--text-small);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-wine-500);
+    background-color: var(--color-wine-50);
+  }
+
+  .tl-title {
+    margin: 0;
+    font-size: var(--text-h3);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-ink-900);
+    text-wrap: balance;
+  }
+
+  .tl-prose {
+    margin-top: 0.75rem;
+    color: var(--color-ink-700);
+    max-width: 62ch;
+  }
+
+  .tl-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: var(--text-small);
+    color: var(--color-ink-500);
+    text-decoration: none;
+  }
+  .tl-link:hover { color: var(--color-wine-500); }
+  .tl-link:focus-visible {
+    outline: 2px solid var(--color-wine-500);
+    outline-offset: 2px;
+  }
+
+  /* Terminal node — closes the rail so it doesn't just trail off. */
+  .tl-end {
+    position: relative;
+    margin: 0;
+    padding-left: 1.75rem;
+    font-size: var(--text-small);
+    font-style: italic;
+    color: var(--color-ink-500);
+  }
+  .tl-end::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 0.375rem;
+    height: 0.375rem;
+    background-color: var(--color-ink-200);
+  }
+
+  @media (min-width: 768px) {
+    .tl::before { left: 7.5rem; }
+    .tl-year { padding-left: 9.25rem; }
+    .tl-year::before { left: 7.125rem; }
+    .tl-item { padding-left: 9.25rem; }
+    .tl-item::before { left: 7.3125rem; }
+    .tl-end { padding-left: 9.25rem; }
+    .tl-end::before { left: 7.3125rem; }
+
+    .tl-date {
+      position: absolute;
+      left: 0;
+      top: 0.25rem;
+      width: 6.5rem;
+      text-align: right;
+      margin-bottom: 0;
+    }
+    /* In the gutter the year sits under the day, and the section marker is
+     * always in view — so it drops to a quieter second line. */
+    .tl-date-year { display: none; }
+  }
+</style>

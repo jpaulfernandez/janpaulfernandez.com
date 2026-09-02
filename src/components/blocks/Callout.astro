@@ -13,20 +13,20 @@ const variants: Record<NonNullable<Props['variant']>, {
   icon: string;
 }> = {
   note: {
-    classes: 'border-l-2 border-moss-200 bg-beige-50',
-    kickerColor: 'text-moss-700',
+    classes: 'border-l-2 border-ink-200 bg-paper-50',
+    kickerColor: 'text-ink-700',
     label: 'Note',
     icon: '·',
   },
   idea: {
-    classes: 'border-l-2 border-green-500 bg-beige-50',
+    classes: 'border-l-2 border-green-500 bg-paper-50',
     kickerColor: 'text-green-700',
     label: 'Idea',
     icon: '·',
   },
   warning: {
-    classes: 'border-l-2 border-citrus-500 bg-beige-50',
-    kickerColor: 'text-citrus-500',
+    classes: 'border-l-2 border-wine-500 bg-paper-50',
+    kickerColor: 'text-wine-500',
     label: 'Warning',
     icon: '·',
   },
@@ -38,7 +38,7 @@ const config = variants[variant] ?? variants.note;
   <p class={`m-0 mb-4 font-mono uppercase text-xs tracking-widest ${config.kickerColor}`}>
     {config.icon} {config.label}
   </p>
-  <div class="prose max-w-none text-moss-900 [&>p]:text-moss-900 [&>p]:m-0 [&>p]:text-body">
+  <div class="prose max-w-none text-ink-900 [&>p]:text-ink-900 [&>p]:m-0 [&>p]:text-body">
     <slot />
   </div>
 </aside>

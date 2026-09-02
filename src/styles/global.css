@@ -1,6 +1,17 @@
 @import "tailwindcss";
 
 /* ----------------------------------------------------------------------------
+ * Phase 14 (2026-09-02) — quieter pass on the live Phase 10 look. Paul's
+ * request: "less loud". Levers chosen: display type + motion. Wine density
+ * and solid fills are untouched.
+ *   • Type scale compressed: display 56→112 becomes 40→56, h1 40→72 becomes
+ *     32→40, h2 24→40 becomes 24→32. Every step still clears ≥1.25, so
+ *     hierarchy stays a jump — just no longer a shout.
+ *   • Decorative motion removed: the row hover-nudge, the gallery hover zoom,
+ *     and the fade-rise intro are gone. Hover colour/opacity feedback stays.
+ * ------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------
  * Phase 9 (2026-09-01) — visual direction: WINE. Warm off-white paper, a
  * near-black ink carrying wine warmth (so the greys never read blue), and a
  * single saturated wine accent used as a *flare* — small, deliberate bursts
@@ -15,17 +26,18 @@
  * them beyond the token block itself.
  *
  * Phase 8b (2026-08-12) — strict 8-pt grid system, still in force.
- *   • Type scale endpoints are all multiples of 8 (12 sub-cell, 16, 24, 40,
- *     72, 112). Spacing declares only the 8-pt grid with 4-pt sub-cells;
- *     Tailwind's off-grid keys (1.5/2.5/3.5/…) are absent.
+ *   • Type scale endpoints are all multiples of 8 (12 sub-cell, 16, 24, 32,
+ *     40, 56 — compressed from 40/72/112 in Phase 14). Spacing declares only
+ *     the 8-pt grid with 4-pt sub-cells; Tailwind's off-grid keys
+ *     (1.5/2.5/3.5/…) are absent.
  *
  * Palette strategy: Committed. Paper + ink carry every surface and all body
  * text. Wine is the ONLY accent — links, the active nav marker, hover, and
  * hand-placed .flare words inside display type. Wine is never body text.
  *
  * Typography strategy: single family Courier Prime everywhere. Hierarchy is
- * carried by SIZE and WEIGHT alone — the scale now runs 12 → 112 so that
- * "huge and bold" is a real step, not a nudge.
+ * carried by SIZE and WEIGHT alone — the scale runs 12 → 56 (compressed from
+ * 12 → 112 in Phase 14), still a real step, no longer a shout.
  * ------------------------------------------------------------------------- */
 
 @import "@fontsource/courier-prime/400.css";
@@ -89,17 +101,18 @@
   --font-body: "Courier Prime", ui-monospace, "SFMono-Regular",
                Menlo, Monaco, Consolas, monospace;
 
-  /* Strict 8-pt type scale.
+  /* Strict 8-pt type scale (Phase 14: compressed — the loud top end came
+   * down hard, the quiet bottom end is untouched).
    *   small    12 (fixed, sub-cell)  — captions, kickers, metadata
    *   body     16 (fixed)            — main paragraph / UI
    *   h3       24 (fixed)            — inline headings, callout titles
-   *   h2       24 →  40  (clamp)     — section headings
-   *   h1       40 →  72  (clamp)     — page title
-   *   display  56 → 112  (clamp)     — hero statements only, one per page
+   *   h2       24 →  32  (clamp)     — section headings
+   *   h1       32 →  40  (clamp)     — page title
+   *   display  40 →  56  (clamp)     — hero statements only, one per page
    * Clamps interpolate across a 375px → 1280px viewport. */
-  --text-display: clamp(3.5rem, 2.05rem + 6.1878vw, 7rem);   /*  56 → 112 */
-  --text-h1: clamp(2.5rem, 1.6713rem + 3.5359vw, 4.5rem);    /*  40 →  72 */
-  --text-h2: clamp(1.5rem, 1.0588rem + 1.8824vw, 2.5rem);    /*  24 →  40 */
+  --text-display: clamp(2.5rem, 2.0856rem + 1.768vw, 3.5rem); /*  40 →  56 */
+  --text-h1: clamp(2rem, 1.7928rem + 0.884vw, 2.5rem);        /*  32 →  40 */
+  --text-h2: clamp(1.5rem, 1.2928rem + 0.884vw, 2rem);        /*  24 →  32 */
   --text-h3: 1.5rem;                                          /*  24 */
   --text-body: 1rem;                                          /*  16 */
   --text-small: 0.75rem;                                      /*  12 */
@@ -127,8 +140,8 @@
     line-height: 1.15;
     font-weight: 700;
   }
-  h1 { font-size: var(--text-h1); }   /* 40 → 64 */
-  h2 { font-size: var(--text-h2); }   /* 24 → 40 */
+  h1 { font-size: var(--text-h1); }   /* 32 → 40 */
+  h2 { font-size: var(--text-h2); }   /* 24 → 32 */
   h3 { font-size: var(--text-h3); }   /* 24 */
 
   h1 em, h2 em, h3 em { font-style: italic; }
@@ -238,8 +251,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  /* Blanket guard: the gallery's image scale and the row nudge are decorative,
-   * so neutralise every transition/animation rather than listing each one. */
+  /* Blanket guard: what motion remains (lightbox fade, chevron rotation,
+   * colour transitions) is all decorative, so neutralise everything rather
+   * than listing each one. */
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -263,17 +277,6 @@
 }
 .skip-link:focus { top: 0.5rem; }
 
-/* Motion */
-@media (prefers-reduced-motion: no-preference) {
-  .fade-rise {
-    animation: fade-rise 0.6s ease-out both;
-  }
-  @keyframes fade-rise {
-    from { opacity: 0; transform: translateY(1rem); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-}
-
 /* ----------------------------------------------------------------------------
  * Phase 9 shared primitives.
  *
@@ -283,12 +286,13 @@
  * ------------------------------------------------------------------------- */
 
 /* Hero statement. One per page, at most — it is the only thing on the site
- * allowed above h1. Tight leading so 112px doesn't drift apart. */
+ * allowed above h1. Capped at 56px in Phase 14; it leads the page without
+ * shouting over it. */
 .display {
   font-size: var(--text-display);
   font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--color-ink-900);
   text-wrap: balance;
 }
@@ -341,13 +345,10 @@
   text-decoration: none;
   color: var(--color-ink-900);
   min-height: 3.5rem;
-  transition: color 0.15s ease-out, padding-left 0.15s ease-out;
+  transition: color 0.15s ease-out;
 }
+/* Phase 14: the hover-nudge right is gone — colour alone marks the hover. */
 .row-link:hover { color: var(--color-wine-500); }
-@media (prefers-reduced-motion: no-preference) {
-  /* Hovered rows nudge right — the only motion on an index page. */
-  .row-link:hover { padding-left: 0.5rem; }
-}
 .row-link:focus-visible {
   outline: 2px solid var(--color-wine-500);
   outline-offset: 2px;

@@ -129,8 +129,9 @@ Paul asked to go back from the Phase 13 look, initially to the pre-Phase-9 site
 (`e76ec2a`), then settled two commits forward: the live design is now the
 **Phase 10 state** — Phase 8 sidebar shell + wine palette / display type /
 Mobbin structure (Phase 9) + the `/now` timeline and flat `/gallery` photo
-wall (Phase 10), i.e. commit `31e2448`. The phase records below are kept as
-history. Phases 9–10 code was restored from `31e2448`; Phases 11–13 (swipeable
+wall (Phase 10), i.e. commit `31e2448`. Phase 14 (below) tunes that look —
+type scale and motion only — without changing its structure. The phase
+records below are kept as history. Phases 9–10 code was restored from `31e2448`; Phases 11–13 (swipeable
 work cards/left-edge rail, top-nav bold-minimalist skin, ruled-ledger skin)
 remain reverted — their code lives only in git history `31e2448..899041a`.
 Content was untouched throughout — every Now/thoughts/gallery entry survived.
@@ -226,6 +227,19 @@ Requested by Paul via chat: revise the entire UI/UX with wine + up to four compl
 - [x] (2026-09-02) PostListItem rows + /thoughts filter chips: active/pressed states are drawn (accent ink + 2px rule or accent underline), not filled. Writing/topic pages set --accent to slate via the existing --accent mechanism.
 - [x] (2026-09-02) Callout block: stale Phase-8 green classes replaced with olive (idea variant) / wine (warning) / ink (note), full-border boxes. KeyTakeaway full wine box, PullQuote framed with top/bottom hairlines.
 - [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · all 9 shell routes return 200 with exactly one `<h1>` · rendered-browser verification at 390px and 1280px on /, /work-with-me, /thoughts, /colophon (dark shell).
+
+## Phase 14 — Quieter pass: type compression, decorative motion removed (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat ("make it less loud"). Offered four levers —
+display type, wine density, solid fills, motion; Paul chose **display type +
+motion**, applied substantially. Wine density and solid fills are untouched
+on purpose. The Phase 10 structure (sidebar shell, hairline rows, rail
+timelines, gallery wall, flare words) is unchanged — only the volume came
+down. Supersedes the Phase 9 type scale.
+
+- [x] (2026-09-02) Type scale compressed in `src/styles/global.css`, still on the 8-pt grid and ≥1.25 between steps: `--text-display` 56→112 becomes 40→56, `--text-h1` 40→72 becomes 32→40, `--text-h2` 24→40 becomes 24→32; h3/body/small untouched. Every `.display` h1 (all 11 pages) and every prose h2 quiets with the tokens. `.display` leading relaxes 1.02→1.1 and tracking -0.03em→-0.02em, retuned for the new size range.
+- [x] (2026-09-02) Decorative motion removed: the `.row-link` hover-nudge (padding-left shift), the gallery hover zoom (`scale(1.04)` on the `/gallery` wall and set pages), and the `.fade-rise` intro animation (deleted outright — nothing referenced it). Hover colour on rows/links and the gallery hover dim stay as the only feedback; the lightbox fade and disclosure-chevrons remain, still covered by the blanket `prefers-reduced-motion` guard.
+- [ ] Verification: Paul reviews manually in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
 
 ## Out of scope (v2 — do not build)
 

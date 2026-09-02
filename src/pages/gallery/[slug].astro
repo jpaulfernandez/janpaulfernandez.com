@@ -131,10 +131,8 @@ await Promise.all(
     display: block;
     width: 100%;
     height: auto;
+    transition: opacity 0.2s ease-out;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .gallery-masonry-img { transition: transform 0.5s ease-out, opacity 0.2s ease-out; }
-    .gallery-masonry-item:hover .gallery-masonry-img { transform: scale(1.04); }
-  }
+  /* Phase 14: the hover zoom is gone — a gentle dim alone marks the hover. */
   .gallery-masonry-item:hover .gallery-masonry-img { opacity: 0.85; }
 </style>

@@ -332,8 +332,8 @@ and vitest all pass; a scripted re-audit of the new build reports zero issues.
 **Deferred:**
 - *`/projects` is an empty page that is indexable and in the sitemap* — 56 words including chrome, "Nothing on the shelf… yet.", in the primary nav: a textbook soft 404. Paul asked to leave it. The fix when wanted is `noindex` on the page plus `/projects` in the sitemap `filter`, reversed the moment the first project lands.
 
-- [ ] Paul's visual review in-browser
-- [ ] Deploy to prod + verify
+- [x] (2026-09-04) **Deployed to prod:** commit `2d9ee1c` pushed to main, Vercel build live in ~50s. Verified against production, not just the build: apex still 308s to www; the bare form of all nine section URLs now 308s to the canonical trailing-slash form, while `/rss.xml`, `/llms.txt`, `/sitemap-index.xml` and the OG PNGs are untouched by the rule; an unknown path costs one normalising redirect and then returns a real 404. `robots.txt` serves our file alone. Sitemap carries 19 `<lastmod>` entries across 25 URLs (the six dateless ones are the static pages, by design). A scripted sweep of all 25 live pages: 25 JSON-LD blocks, BreadcrumbList on every page, 306 images with zero boilerplate alt, no title over 60 chars, no description over 160, exactly one `h1` each, and no internal link pointing at a non-canonical URL.
+- [ ] Paul's visual review in-browser (deployed ahead of it at Paul's request — the two `h1` changes and the 95 drafted gallery captions are the parts most worth a look)
 
 ## Out of scope (v2 — do not build)
 

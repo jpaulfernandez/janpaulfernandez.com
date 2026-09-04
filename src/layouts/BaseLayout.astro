@@ -183,10 +183,11 @@ const secondaryLinks = [
           <slot />
         </main>
 
-        <!-- Footer — aligned with main content. -->
-        <footer class="py-8 border-t border-ink-200/60">
+        <!-- Footer — aligned with main content. Its only content is the
+             mobile-only secondary links, so the whole thing is hidden at lg+
+             rather than leaving an empty ruled band under the article. -->
+        <footer class="py-8 border-t border-ink-200/60 lg:hidden">
           <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
-            <p class="m-0 text-ink-500">&copy; {new Date().getFullYear()} Paul Fernandez</p>
             {/* Mobile-only secondary links (< lg), since the lg+ sidebar owns them. */}
             <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 lg:hidden">
               {secondaryLinks.map((link) => (

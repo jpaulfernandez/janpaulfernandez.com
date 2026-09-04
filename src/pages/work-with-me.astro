@@ -22,7 +22,7 @@ const serviceSchemas = sortedServices.map((s) =>
 const faqSchema = faqItems.length > 0 ? faqPage(faqItems) : null;
 const breadcrumbsSchema = breadcrumbs([
   { name: 'Home', url: '/' },
-  { name: 'Work with me', url: '/work-with-me' },
+  { name: 'Work with me', url: '/work-with-me/' },
 ]);
 
 const seoData = [
@@ -50,7 +50,7 @@ const steps = [
 ];
 ---
 
-<BaseLayout title="Work with me" description={description}>
+<BaseLayout title="Work with me" description={description} ogImage="/og/work-with-me.png">
   <JsonLd data={seoData} slot="head" />
 
   <article>
@@ -135,7 +135,7 @@ const steps = [
         class="flex flex-col gap-4"
       >
         <input type="hidden" name="access_key" value="3adf4959-3a04-4fc5-a990-e1159605181f" />
-        <input type="hidden" name="redirect" value="https://janpaulfernandez.com/thanks" />
+        <input type="hidden" name="redirect" value="https://www.janpaulfernandez.com/thanks/" />
         <input type="hidden" name="subject" value="New Contact Form Submission from janpaulfernandez.com" />
         <input type="hidden" name="from_name" value="Jan Paul Fernandez Website" />
         <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
@@ -146,6 +146,7 @@ const steps = [
             type="text"
             id="name"
             name="name"
+            autocomplete="name"
             required
             class="w-full bg-paper-50 border border-ink-200 px-3 py-3 text-body text-ink-900 focus:outline-none focus:border-ink-900 transition-colors"
           />
@@ -157,6 +158,7 @@ const steps = [
             type="email"
             id="email"
             name="email"
+            autocomplete="email"
             required
             class="w-full bg-paper-50 border border-ink-200 px-3 py-3 text-body text-ink-900 focus:outline-none focus:border-ink-900 transition-colors"
           />

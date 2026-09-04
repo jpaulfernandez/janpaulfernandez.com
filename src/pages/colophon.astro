@@ -8,12 +8,12 @@ import { breadcrumbs } from '../lib/schema';
 const seoData = [
   breadcrumbs([
     { name: 'Home', url: '/' },
-    { name: 'Colophon', url: '/colophon' },
+    { name: 'Colophon', url: '/colophon/' },
   ]),
 ];
 
 const stack = [
-  { label: 'framework', value: 'Astro 5', note: 'Static output. Zero client JS on every page but the two filter scripts.' },
+  { label: 'framework', value: 'Astro 5', note: 'Static output. The only client JS is two small vanilla enhancement scripts and the analytics tag.' },
   { label: 'styles', value: 'Tailwind 4', note: 'CSS-first config. One 8-pt spacing scale, one type scale, no plugins.' },
   { label: 'content', value: 'Keystatic', note: 'Git-based CMS — edits are commits, so there is no database to lose.' },
   { label: 'type', value: 'Courier Prime', note: 'Self-hosted, one family. Hierarchy comes from size and weight alone.' },

@@ -76,6 +76,37 @@ describe('JSON-LD schema library', () => {
     expect(() => JSON.stringify(bc)).not.toThrow();
   });
 
+  it('should emit url + mainEntityOfPage when a canonical path is given', () => {
+    const bp = blogPosting({
+      title: 'A Great Blog Post',
+      excerpt: 'Summary.',
+      url: '/thoughts/a-great-blog-post/',
+      publishedDate: '2026-07-01',
+    });
+    expect(bp.url).toBe(`${SITE_URL}/thoughts/a-great-blog-post/`);
+    expect(bp.mainEntityOfPage).toEqual({
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/thoughts/a-great-blog-post/`,
+    });
+  });
+
+  it('should omit url + mainEntityOfPage when no path is given', () => {
+    const bp = blogPosting({
+      title: 'A Great Blog Post',
+      excerpt: 'Summary.',
+      publishedDate: '2026-07-01',
+    });
+    expect(bp).not.toHaveProperty('url');
+    expect(bp).not.toHaveProperty('mainEntityOfPage');
+  });
+
+  it('should keep PERSON_ID on the apex host even though SITE_URL is www', () => {
+    // The @id is the entity key every knowledge graph consolidates on; it must
+    // not move when the canonical host changes. See CLAUDE.md.
+    expect(PERSON_ID).toBe('https://janpaulfernandez.com/#person');
+    expect(SITE_URL).toBe('https://www.janpaulfernandez.com');
+  });
+
   it('should generate BlogPosting referencing person ID as author and including dateModified', () => {
     const post = {
       title: 'A Great Blog Post',

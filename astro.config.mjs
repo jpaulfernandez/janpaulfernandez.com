@@ -16,7 +16,7 @@ const skipKeystatic = /** @type {any} */ (globalThis).process?.env?.SKIP_KEYSTAT
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://janpaulfernandez.com',
+  site: 'https://www.janpaulfernandez.com',
   adapter: vercel(),
   security: {
     allowedDomains: [
@@ -37,16 +37,19 @@ export default defineConfig({
         rehypeAutolinkHeadings,
         {
           behavior: 'append',
+          // The "#" glyph is drawn by CSS (.anchor-icon::after in global.css),
+          // not emitted as a text node — otherwise every crawler and LLM that
+          // extracts heading text reads "My Heading#".
           content: {
             type: 'element',
             tagName: 'span',
             properties: { className: ['anchor-icon'] },
-            children: [{ type: 'text', value: '#' }]
+            children: []
           },
           properties: {
             ariaHidden: true,
             tabIndex: -1,
-            className: ['anchor-link ml-2 text-moss-200 hover:text-moss-500 transition-colors'],
+            className: ['anchor-link'],
           },
         },
       ],
@@ -56,10 +59,11 @@ export default defineConfig({
     mdx(),
     ...(skipKeystatic ? [] : [react(), keystatic()]),
     sitemap({
-      // Exclude the internal styleguide and the Keystatic admin UI from
-      // the public sitemap — neither is a real content page.
+      // Exclude the Keystatic admin UI and /thanks from the public sitemap —
+      // neither is a real content page, and /thanks is explicitly noindexed
+      // (listing a noindexed URL is a contradictory signal to crawlers).
       filter: (page) =>
-        !page.includes('/styleguide') && !page.includes('/keystatic'),
+        !page.includes('/keystatic') && !page.includes('/thanks'),
     }),
   ],
 });

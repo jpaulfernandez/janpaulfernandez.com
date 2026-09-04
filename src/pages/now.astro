@@ -3,21 +3,15 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { profilePage, breadcrumbs } from '../lib/schema';
+import { parseDateSafe, formatDateLong } from '../lib/dates';
 
 const nowEntries = await getCollection('now');
 
 // Sort reverse-chronologically (newest first)
 const sortedNow = [...nowEntries].sort((a, b) => b.data.date.localeCompare(a.data.date));
 
-function parseDateSafe(dateStr: string | Date) {
-  const str = typeof dateStr === 'string' ? dateStr : dateStr.toISOString().slice(0, 10);
-  return new Date(`${str}T12:00:00`);
-}
-
 const latestDate = sortedNow[0]?.data.date;
-const formattedLastUpdated = latestDate
-  ? parseDateSafe(latestDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-  : '—';
+const formattedLastUpdated = latestDate ? formatDateLong(latestDate) : '—';
 
 const processedNow = await Promise.all(
   sortedNow.map(async (entry) => {
@@ -44,7 +38,7 @@ const seoData = [
   profilePage(latestDate ? new Date(latestDate).toISOString() : undefined),
   breadcrumbs([
     { name: 'Home', url: '/' },
-    { name: 'Now', url: '/now' },
+    { name: 'Now', url: '/now/' },
   ]),
 ];
 ---
@@ -52,6 +46,7 @@ const seoData = [
 <BaseLayout
   title="Now"
   description="What Paul Fernandez is focused on, building, and learning right now."
+  ogImage="/og/now.png"
 >
   <JsonLd data={seoData} slot="head" />
 

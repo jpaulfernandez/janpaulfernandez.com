@@ -11,17 +11,22 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  /** Alt text for the share image. Defaults to the page title. */
+  ogImageAlt?: string;
   type?: 'website' | 'article';
   /** Home page shows the plain title with no site-name suffix. */
   isHome?: boolean;
   bodyClass?: string;
 }
 
-const { title, description, ogImage, type = 'website', isHome = false, bodyClass } = Astro.props;
+const { title, description, ogImage, ogImageAlt, type = 'website', isHome = false, bodyClass } = Astro.props;
 
 const pageTitle = isHome ? title : `${title} — Paul Fernandez`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const resolvedOgImage = new URL(ogImage ?? '/og-default.png', Astro.site);
+// The /og/*.png route generates real 1200x630 cards at build time; /og/home.png
+// is the site-wide fallback for any page without its own card. (There is no
+// og-default.png in public/ — pointing at one shipped a 404 on every share.)
+const resolvedOgImage = new URL(ogImage ?? '/og/home.png', Astro.site);
 
 const navItems = [
   { href: '/about', label: 'me' },
@@ -63,18 +68,29 @@ const secondaryLinks = [
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content={type} />
     <meta property="og:image" content={resolvedOgImage} />
+    <meta property="og:image:alt" content={ogImageAlt ?? pageTitle} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Paul Fernandez" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={resolvedOgImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt ?? pageTitle} />
 
     <!-- Favicon — magenta square (Phase 8). -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#FAF6F4" />
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="Paul Fernandez" href="/rss.xml" />
+
+    <!-- llms.txt discovery: the plain-text site summary for LLM crawlers. -->
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+    <link rel="alternate" type="text/plain" href="/llms-full.txt" title="llms-full.txt" />
 
     <!-- Critical font preloads (Courier Prime 400 + 700, self-hosted @fontsource). -->
     <link rel="preload" as="font" type="font/woff2" href={courierPrime400Woff2} crossorigin />

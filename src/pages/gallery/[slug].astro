@@ -5,6 +5,7 @@ import Lightbox from '../../components/Lightbox.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { lightboxWidth } from '../../lib/gallery';
+import { formatDate } from '../../lib/dates';
 
 export async function getStaticPaths() {
   const allItems = await getCollection('gallery');
@@ -16,11 +17,7 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 
-const dateFormatted = new Date(item.data.publishedDate).toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-});
+const dateFormatted = formatDate(item.data.publishedDate);
 
 // Build the full photo list combining cover (if present) and additional photos
 const photoList: Array<{ image: ImageMetadata; caption: string; fullSrc: string }> = [];
@@ -51,7 +48,7 @@ await Promise.all(
 );
 ---
 
-<BaseLayout title={`${item.data.title} — Gallery`} description={item.data.description || item.data.title}>
+<BaseLayout title={item.data.title} description={item.data.description || item.data.title}>
   <article>
     <p class="m-0 text-small text-ink-500">
       <a href="/gallery" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← gallery</a>
@@ -79,8 +76,8 @@ await Promise.all(
     {/* Photo grid — true aspect ratios, laid out by CSS columns. */}
     <div class="gallery-masonry mt-10">
       {photoList.map((photo, idx) => (
-        <button
-          type="button"
+        <a
+          href={photo.fullSrc}
           class="photo-trigger gallery-masonry-item"
           data-src={photo.fullSrc}
           data-alt={photo.caption || `${item.data.title} photo ${idx + 1}`}
@@ -95,7 +92,7 @@ await Promise.all(
             loading={idx < 6 ? 'eager' : 'lazy'}
             decoding="async"
           />
-        </button>
+        </a>
       ))}
     </div>
   </article>
@@ -111,8 +108,12 @@ await Promise.all(
   @media (min-width: 640px) {
     .gallery-masonry { columns: 2; }
   }
+  /* An <a> now, not a <button>: the href is the full-size image, so the wall
+     still works with JS off. These reset the anchor back to a bare frame. */
   .gallery-masonry-item {
     display: block;
+    text-decoration: none;
+    color: inherit;
     width: 100%;
     margin: 0 0 1rem;
     padding: 0;

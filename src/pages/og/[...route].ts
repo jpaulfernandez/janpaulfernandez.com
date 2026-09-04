@@ -1,7 +1,9 @@
 import { OGImageRoute } from 'astro-og-canvas';
-import { getCollection } from 'astro:content';
+import { getPublishedThoughts } from '../../lib/thoughts';
 
-const thoughts = await getCollection('thoughts');
+// Published only — a raw getCollection() here would emit OG cards for drafts at
+// guessable /og/<slug>.png URLs, leaking unpublished titles and excerpts.
+const thoughts = await getPublishedThoughts();
 
 const pagesObj: Record<string, { title: string; description: string }> = {
   'home': {

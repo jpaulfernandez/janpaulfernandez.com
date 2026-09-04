@@ -1,0 +1,41 @@
+---
+// 404.astro — branded not-found page. Without this, Vercel serves its own bare
+// NOT_FOUND body (with an internal region ID) for every mistyped URL.
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const destinations = [
+  { href: '/', label: 'home' },
+  { href: '/about', label: 'about me' },
+  { href: '/thoughts', label: 'thoughts' },
+  { href: '/gallery', label: 'gallery' },
+  { href: '/work-with-me', label: 'work with me' },
+];
+---
+
+<BaseLayout title="Page not found" description="That page doesn't exist — here's the way back.">
+  <meta slot="head" name="robots" content="noindex" />
+
+  <article>
+    <header>
+      <h1 class="display m-0">4<span class="flare">0</span>4</h1>
+      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
+        That page doesn't exist. It may have moved, or the link may be wrong.
+      </p>
+    </header>
+
+    <nav aria-label="Suggested pages" class="mt-12 border-t border-ink-200 pt-6">
+      <ul class="flex flex-wrap gap-x-6 gap-y-2 list-none m-0 p-0">
+        {destinations.map((d) => (
+          <li>
+            <a
+              href={d.href}
+              class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm"
+            >
+              {d.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </article>
+</BaseLayout>

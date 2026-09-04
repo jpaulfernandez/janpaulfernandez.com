@@ -1,8 +1,10 @@
 ---
 // ArticleLayout.astro
+import { Image } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { blogPosting, breadcrumbs } from '../lib/schema';
+import { formatDate } from '../lib/dates';
 import type { ThoughtEntry } from '../lib/thoughts';
 
 interface Props {
@@ -19,18 +21,21 @@ const { title, excerpt, publishedDate, updatedDate, type, cover, topics } = post
 const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
 const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
-const formatDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-
 const h2s = headings.filter((h) => h.depth === 2);
 const showToc = h2s.length >= 2;
+
+// Article rich results require an image. The /og route generates a stable
+// 1200x630 card for every post, so use that rather than leaving `image` off
+// whenever a post has no cover (none currently do).
+const shareImage = `/og/${post.id}.png`;
 
 const blogPostSchema = blogPosting({
   title,
   excerpt,
+  url: `/thoughts/${post.id}/`,
   publishedDate,
   updatedDate,
-  cover: cover ? (typeof cover === 'string' ? cover : cover.src) : undefined,
+  cover: shareImage,
   topics,
   wordCount,
   type,
@@ -38,14 +43,12 @@ const blogPostSchema = blogPosting({
 
 const breadcrumbsSchema = breadcrumbs([
   { name: 'Home', url: '/' },
-  { name: 'Thoughts', url: '/thoughts' },
-  { name: title, url: `/thoughts/${post.id}` },
+  { name: 'Thoughts', url: '/thoughts/' },
+  { name: title, url: `/thoughts/${post.id}/` },
 ]);
-
-const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/og/${post.id}.png`;
 ---
 
-<BaseLayout title={title} description={excerpt} ogImage={ogImageUrl} type="article">
+<BaseLayout title={title} description={excerpt} ogImage={shareImage} type="article">
   <JsonLd slot="head" data={[blogPostSchema, breadcrumbsSchema]} />
 
   <article>
@@ -62,6 +65,8 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
 
       <div class="mt-6 flex flex-wrap items-center gap-3 text-small text-ink-500 tabular-nums">
         <span>{type}</span>
+        <span aria-hidden="true">·</span>
+        <span>by <a href="/about" rel="author" class="text-ink-700 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">Paul Fernandez</a></span>
         <span aria-hidden="true">·</span>
         <time datetime={publishedDate}>{formatDate(publishedDate)}</time>
         {updatedDate && (
@@ -82,9 +87,9 @@ const ogImageUrl = cover ? (typeof cover === 'string' ? cover : cover.src) : `/o
         </p>
       )}
 
-      {cover && (
+      {cover && typeof cover !== 'string' && (
         <figure class="mt-8">
-          <img src={(typeof cover === 'string' ? cover : cover.src)} alt="" class="w-full h-auto" />
+          <Image src={cover} alt="" width={1600} class="w-full h-auto" loading="eager" decoding="async" />
         </figure>
       )}
     </header>

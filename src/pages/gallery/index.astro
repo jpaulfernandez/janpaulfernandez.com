@@ -46,6 +46,8 @@ sets.forEach((set) => {
       setTitle: set.data.title,
       setId: set.id,
       spread: 0,
+      column: 0,
+      widthFactor: 1,
     });
   };
 
@@ -108,8 +110,8 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
             as intentional, and the packed wall is too fine below 640px. */}
         <div class="wall wall-mobile sm:hidden mt-16 md:mt-20">
           {shots.map((shot, idx) => (
-            <button
-              type="button"
+            <a
+              href={shot.fullSrc}
               class="photo-trigger wall-item"
               data-src={shot.fullSrc}
               data-alt={shot.caption || shot.setTitle}
@@ -126,7 +128,7 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
                 loading={idx < 6 ? 'eager' : 'lazy'}
                 decoding="async"
               />
-            </button>
+            </a>
           ))}
         </div>
 
@@ -136,8 +138,8 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
           {wallColumns.map((column) => (
             <div class="wall-col">
               {column.map((shot, idx) => (
-                <button
-                  type="button"
+                <a
+                  href={shot.fullSrc}
                   class="photo-trigger wall-item"
                   style={`width: ${shot.widthFactor * 100}%`}
                   data-src={shot.fullSrc}
@@ -155,7 +157,7 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
                     loading={idx < 6 ? 'eager' : 'lazy'}
                     decoding="async"
                   />
-                </button>
+                </a>
               ))}
             </div>
           ))}
@@ -210,8 +212,12 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
     gap: 0.75rem;
   }
 
+  /* An <a> now, not a <button>: the href is the full-size image, so the wall
+     still works with JS off. These reset the anchor back to a bare frame. */
   .wall-item {
     display: block;
+    text-decoration: none;
+    color: inherit;
     width: 100%;
     margin: 0 0 0.75rem;
     padding: 0;

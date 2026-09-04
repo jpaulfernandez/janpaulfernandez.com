@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
+import { getPublishedThoughts } from '../lib/thoughts';
 import { experimental_AstroContainer } from 'astro/container';
 import { loadRenderers } from 'astro:container';
 import { getContainerRenderer as getMDXRenderer } from '@astrojs/mdx';
@@ -16,10 +17,7 @@ const components = {
 };
 
 export async function GET(context: any) {
-  const posts = await getCollection('thoughts');
-  const published = posts
-    .filter((post) => !post.data.draft)
-    .sort((a, b) => b.data.publishedDate.localeCompare(a.data.publishedDate));
+  const published = await getPublishedThoughts();
 
   const htmlContent: Record<string, string> = {};
   
@@ -34,7 +32,7 @@ export async function GET(context: any) {
       });
       
       // Sanitize/rewrite relative links to absolute
-      const siteOrigin = context.site ? context.site.origin : 'https://janpaulfernandez.com';
+      const siteOrigin = context.site ? context.site.origin : 'https://www.janpaulfernandez.com';
       const absoluteHtml = html
         .replaceAll('src="/', `src="${siteOrigin}/`)
         .replaceAll('href="/', `href="${siteOrigin}/`);
@@ -48,12 +46,14 @@ export async function GET(context: any) {
   return rss({
     title: 'Paul Fernandez · Thoughts',
     description: 'Opinions, notes, and lessons from shipping national scale platforms.',
-    site: context.site || 'https://janpaulfernandez.com',
+    site: context.site || 'https://www.janpaulfernandez.com',
     items: published.map((post) => ({
       title: post.data.title,
       pubDate: new Date(post.data.publishedDate),
       description: post.data.excerpt,
-      link: `/thoughts/${post.id}`,
+      link: `/thoughts/${post.id}/`,
+      author: 'Paul Fernandez',
+      ...(post.data.topics?.length ? { categories: post.data.topics } : {}),
       ...(htmlContent[post.id] ? { content: htmlContent[post.id] } : {}),
     })),
   });

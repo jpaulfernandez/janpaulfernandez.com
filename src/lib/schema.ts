@@ -1,5 +1,10 @@
-export const SITE_URL = 'https://janpaulfernandez.com';
-export const PERSON_ID = `${SITE_URL}/#person`;
+// Production canonicalises to www (apex 308s), so every emitted URL uses www.
+export const SITE_URL = 'https://www.janpaulfernandez.com';
+
+// PERSON_ID is a stable identifier, NOT a fetchable URL, and it is pinned to the
+// apex literal on purpose: it is the one @id every knowledge graph keys Paul's
+// entity on, so it must never move with the canonical host. See CLAUDE.md.
+export const PERSON_ID = 'https://janpaulfernandez.com/#person';
 
 export interface PersonOverrides {
   name?: string;
@@ -20,7 +25,7 @@ export function person(overrides?: PersonOverrides) {
     name: overrides?.name ?? 'Paul Fernandez',
     alternateName: ['Jan Paul Fernandez', 'Jan Paul'],
     url: overrides?.url ?? SITE_URL,
-    image: overrides?.image ?? `${SITE_URL}/assets/paul.webp`,
+    image: overrides?.image ?? `${SITE_URL}/paul.jpg`,
     jobTitle: overrides?.jobTitle ?? 'Tech Leader',
     alumniOf: {
       '@type': 'EducationalOrganization',
@@ -90,6 +95,8 @@ export function breadcrumbs(items: BreadcrumbItem[]) {
 export interface BlogPostInput {
   title: string;
   excerpt: string;
+  /** Site-relative canonical path, e.g. `/thoughts/slug/`. */
+  url?: string;
   publishedDate: string;
   updatedDate?: string;
   cover?: string;
@@ -110,6 +117,12 @@ export function blogPosting(post: BlogPostInput) {
     author: {
       '@id': PERSON_ID,
     },
+    ...(post.url
+      ? {
+          url: `${SITE_URL}${post.url}`,
+          mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${post.url}` },
+        }
+      : {}),
     ...(post.cover ? { image: post.cover.startsWith('http') ? post.cover : `${SITE_URL}${post.cover}` } : {}),
     ...(post.topics ? { keywords: post.topics.join(', ') } : {}),
     ...(post.wordCount !== undefined ? { wordCount: post.wordCount } : {}),

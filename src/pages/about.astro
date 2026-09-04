@@ -31,7 +31,7 @@ const seoData = [
   detailedPerson,
   breadcrumbs([
     { name: 'Home', url: '/' },
-    { name: 'About', url: '/about' },
+    { name: 'About', url: '/about/' },
   ]),
 ];
 ---
@@ -39,6 +39,7 @@ const seoData = [
 <BaseLayout
   title="About"
   description="Learn about Paul Fernandez's technical background, work philosophy, and full career track record."
+  ogImage="/og/about.png"
 >
   <JsonLd data={seoData} slot="head" />
 

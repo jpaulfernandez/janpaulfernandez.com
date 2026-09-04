@@ -5,8 +5,16 @@
  * Second use (the flat /gallery masonry and the individual set pages), so it
  * lives here rather than inline in either page.
  *
- * It binds to every `button.photo-trigger` in the page, in DOM order. Each
- * trigger carries:
+ * It binds to every `a.photo-trigger` in the page. Triggers are anchors whose
+ * href is the full-resolution image, so with JS off the wall still works — the
+ * lightbox is an enhancement layered on top (preventDefault below).
+ *
+ * The list is rebuilt from the *visible* triggers on every open. /gallery
+ * renders two walls (a mobile flow and a desktop masonry) and hides one with
+ * CSS, so binding everything in DOM order would double the counter and make
+ * prev/next cycle each photo twice.
+ *
+ * Each trigger carries:
  *   data-src         full-resolution image URL          (required)
  *   data-alt         alt text for the enlarged image    (required)
  *   data-caption     caption line under the image       (optional)
@@ -170,14 +178,20 @@
   const modalClose = document.getElementById('modal-close');
   const modalPrev = document.getElementById('modal-prev');
   const modalNext = document.getElementById('modal-next');
-  const triggers = Array.from(
+  const allTriggers = Array.from(
     document.querySelectorAll<HTMLElement>('.photo-trigger')
   );
 
+  // Only the wall the viewport is actually showing. `offsetParent` is null for
+  // anything inside a `display: none` ancestor, which is how the walls hide.
+  const visibleTriggers = () =>
+    allTriggers.filter((t) => t.offsetParent !== null);
+
+  let triggers: HTMLElement[] = allTriggers;
   let currentIndex = 0;
-  const total = triggers.length;
 
   function showPhoto(index: number) {
+    const total = triggers.length;
     if (total === 0) return;
     currentIndex = (index + total) % total;
     const trigger = triggers[currentIndex];
@@ -199,12 +213,18 @@
         modalLink.hidden = true;
       }
     }
-    if (modalCounter) modalCounter.textContent = `${currentIndex + 1} / ${total}`;
+    if (modalCounter) modalCounter.textContent = `${currentIndex + 1} / ${triggers.length}`;
   }
 
-  triggers.forEach((trigger, idx) => {
-    trigger.addEventListener('click', () => {
-      showPhoto(idx);
+  allTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', (e) => {
+      // Without JS the anchor just opens the full-size image; with JS we take
+      // over and show it in the lightbox instead.
+      e.preventDefault();
+      const list = visibleTriggers();
+      triggers = list.length > 0 ? list : allTriggers;
+      const idx = triggers.indexOf(trigger);
+      showPhoto(idx === -1 ? 0 : idx);
       modal?.showModal();
     });
   });

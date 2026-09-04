@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { formatDate } from '../lib/dates';
 
 interface Props {
   title: string;
@@ -21,9 +22,7 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
     <p class="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-small text-ink-500 tabular-nums">
       <span class="text-wine-500">{type}</span>
       <span aria-hidden="true">·</span>
-      <time datetime={date}>
-        {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-      </time>
+      <time datetime={date}>{formatDate(date)}</time>
       {readingTime !== undefined && (
         <>
           <span aria-hidden="true">·</span>
@@ -32,11 +31,13 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
       )}
     </p>
 
-    <h3 class="font-bold text-ink-900 leading-tight m-0 text-h3 text-balance">
+    {/* h2, not h3: both callers (/thoughts, /topics/[topic]) render this
+        directly under the page h1, and h1 -> h3 is a heading-level skip. */}
+    <h2 class="font-bold text-ink-900 leading-tight m-0 text-h3 text-balance">
       <a href={url} class="post-link no-underline text-ink-900 group-hover:text-wine-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
         {title}
       </a>
-    </h3>
+    </h2>
 
     {excerpt && (
       <p class="text-ink-700 text-body leading-relaxed line-clamp-2 m-0 max-w-prose">

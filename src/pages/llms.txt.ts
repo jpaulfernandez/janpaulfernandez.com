@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import { getPublishedThoughts } from '../lib/thoughts';
 
 export const GET: APIRoute = async ({ site }) => {
-  const siteUrl = site ? site.origin : 'https://janpaulfernandez.com';
+  const siteUrl = site ? site.origin : 'https://www.janpaulfernandez.com';
 
   // Fetch collections
   const services = await getCollection('services');
@@ -27,14 +27,14 @@ ${sortedServices.map(s => `- **${s.data.title}**: ${s.data.description}`).join('
 
 ## Site Navigation & Main Pages
 - [Home](${siteUrl}/): Overview, services, and recent writings.
-- [About](${siteUrl}/about): Comprehensive background, philosophy, and career history.
-- [Thoughts](${siteUrl}/thoughts): Blog and notes on product leadership, engineering, and technology.
-- [Now](${siteUrl}/now): Public journal and status board of what Paul is currently focused on, building, and learning.
-- [Gallery](${siteUrl}/gallery): Visual log of projects, workspace setups, and life moments.
-- [Work With Me](${siteUrl}/work-with-me): Booking information, consultation packages, and direct contact form.
+- [About](${siteUrl}/about/): Comprehensive background, philosophy, and career history.
+- [Thoughts](${siteUrl}/thoughts/): Blog and notes on product leadership, engineering, and technology.
+- [Now](${siteUrl}/now/): Public journal and status board of what Paul is currently focused on, building, and learning.
+- [Gallery](${siteUrl}/gallery/): Visual log of projects, workspace setups, and life moments.
+- [Work With Me](${siteUrl}/work-with-me/): Booking information, consultation packages, and direct contact form.
 
 ## Recent Thoughts & Articles
-${recentThoughts.map(t => `- [${t.data.title}](${siteUrl}/thoughts/${t.id}): ${t.data.excerpt || ''}`).join('\n')}
+${recentThoughts.map(t => `- [${t.data.title}](${siteUrl}/thoughts/${t.id}/): ${t.data.excerpt || ''}`).join('\n')}
 
 ## What Paul is Doing Now (Recent Highlights)
 ${sortedNow.map(n => {
@@ -48,6 +48,9 @@ ${sortedNow.map(n => {
 - **LinkedIn**: https://www.linkedin.com/in/jpaulfernandez/
 - **Instagram**: https://www.instagram.com/goofffball/
 - **RSS Feed**: ${siteUrl}/rss.xml
+
+## Full Text
+- [llms-full.txt](${siteUrl}/llms-full.txt): The complete text of every published essay and note, inline, in one fetch.
 `;
 
   return new Response(content, {

@@ -301,6 +301,28 @@
  * hand, on one or two words per statement — never a whole line. */
 .flare { color: var(--color-wine-500); }
 
+/* Heading anchor links (rehype-autolink-headings, appended). The "#" is drawn
+ * here rather than emitted as a text node so that crawlers and LLMs reading
+ * heading text get "My Heading", not "My Heading#". Kept near-invisible until
+ * the heading is hovered — this is a convenience, not a decoration. */
+.anchor-link {
+  margin-left: 0.5rem;
+  color: var(--color-ink-200);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+.anchor-icon::after { content: "#"; }
+h2:hover .anchor-link,
+h3:hover .anchor-link,
+h4:hover .anchor-link,
+.anchor-link:focus-visible { opacity: 1; }
+.anchor-link:hover { color: var(--color-wine-500); }
+
+@media (prefers-reduced-motion: reduce) {
+  .anchor-link { transition: none; }
+}
+
 /* Section label. Small mono uppercase, with a wine bullet that carries the
  * accent down the page at a whisper. */
 .kicker {

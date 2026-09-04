@@ -1,9 +1,11 @@
 import { OGImageRoute } from 'astro-og-canvas';
+import { getCollection } from 'astro:content';
 import { getPublishedThoughts } from '../../lib/thoughts';
 
 // Published only — a raw getCollection() here would emit OG cards for drafts at
 // guessable /og/<slug>.png URLs, leaking unpublished titles and excerpts.
 const thoughts = await getPublishedThoughts();
+const gallerySets = await getCollection('gallery');
 
 const pagesObj: Record<string, { title: string; description: string }> = {
   'home': {
@@ -21,6 +23,22 @@ const pagesObj: Record<string, { title: string; description: string }> = {
   'work-with-me': {
     title: 'Work With Me',
     description: 'Consultation, workshops, and fractional product ownership.'
+  },
+  'thoughts': {
+    title: 'Thoughts',
+    description: 'Essays and half-formed notes — on technology, economy, and psychology.'
+  },
+  'gallery': {
+    title: 'Gallery',
+    description: 'Photography — concerts, festivals, places.'
+  },
+  'projects': {
+    title: 'Projects',
+    description: "Things I've built, shipped, and tinkered with, indexed by year."
+  },
+  'colophon': {
+    title: 'Colophon',
+    description: 'How this site is built — the stack, the type, and the rules it follows.'
   }
 };
 
@@ -28,6 +46,15 @@ thoughts.forEach((post) => {
   pagesObj[post.id] = {
     title: post.data.title,
     description: post.data.excerpt
+  };
+});
+
+// Each photo set gets its own card. Without these, four pages of photography
+// shared as the generic site card, which named none of them.
+gallerySets.forEach((set) => {
+  pagesObj[`gallery-${set.id}`] = {
+    title: set.data.title,
+    description: set.data.description ?? 'Photography by Paul Fernandez.'
   };
 });
 

@@ -86,6 +86,11 @@ export default config({
           directory: 'src/assets/thoughts',
           publicPath: '../../assets/thoughts',
         }),
+        coverAlt: fields.text({
+          label: 'Cover Alt Text',
+          description:
+            'Describes the cover image for screen readers and image search. Leave empty only if the image is purely decorative.',
+        }),
         publishedDate: fields.date({ label: 'Published Date', validation: { isRequired: true } }),
         updatedDate: fields.date({ label: 'Updated Date (Optional)' }),
         draft: fields.checkbox({ label: 'Draft', defaultValue: false }),

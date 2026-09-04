@@ -54,6 +54,10 @@ Phases are vertical slices: each ends with a deployable, visibly-improved site �
 
 ## Blocked-on-Paul items (spec §10)
 
+- **Cloudflare is blocking the AI crawlers the spec targets (Critical, 2026-09-04 review, not fixable in this repo).** `public/robots.txt` correctly allows GPTBot / ClaudeBot / PerplexityBot / Google-Extended, but Cloudflare (which now fronts Vercel) injects a managed block **above** those rules that disallows `GPTBot`, `ClaudeBot`, `CCBot`, `Google-Extended`, `meta-externalagent`, `Amazonbot`, `Applebot-Extended`, `Bytespider`, plus `Content-Signal: ai-train=no`. Verified live 2026-09-04 by fetching the served robots.txt. The duplicate `Allow` groups below do not reliably win — merged-group behaviour is crawler-defined. This directly contradicts spec §1 ("ranking/cited in ChatGPT, Perplexity, AI Overviews") and §7.1. **Paul must fix this in the Cloudflare dashboard (AI Audit / managed robots.txt settings)** — no repo change can override it. Once cleared, optionally name the additional crawlers explicitly in `public/robots.txt`.
+- **GA4 vs. spec §8 (decision needed, not a bug).** `BaseLayout` ships the gtag script on every page. Added deliberately in Phase 6, but spec §8 calls for Plausible/Umami with "no cookie banner", it conflicts with the zero-client-JS stance, and GA4 technically wants consent under ePrivacy/GDPR. Left in place pending Paul's call; the colophon copy was corrected to describe what actually ships.
+- **Unconsumed CMS fields (content-model decision, not a bug).** `services.icon`, `gallery.featured`, `gallery.licensingAvailable`, and `thoughts.stage` (passed to `PostListItem`, then ignored) are authored but never rendered, and the `seo` singleton is read by nothing. Each should be either rendered or deleted from `keystatic.config.ts` and `src/content.config.ts` **together** — schema parity is a hard constraint.
+
 - **Cloudflare Images migration for the gallery (not started — needs credentials).** `src/assets/gallery` is 68 MB across 100 files and `.git` is 310 MB; every future photo permanently inflates clone time. Recommended target is Cloudflare **Images** rather than plain R2, so the `/w=800,f=auto` transform pipeline replaces the build-time optimisation Astro currently does. Blocked on Paul supplying a Cloudflare account ID and an API token (`wrangler` is installed globally but not authenticated, and there are no Cloudflare keys in `.env`). Touches `keystatic.config.ts` and `src/content.config.ts` together — the gallery `image` field becomes an image ID — so both schemas must change in the same commit.
 
 Track here; tasks note where these are needed. Use placeholders until provided, never invent real data.
@@ -266,6 +270,70 @@ aspect ratios preserved).
 - [x] (2026-09-02) `src/pages/gallery/index.astro`: the single CSS-columns wall becomes two trees at the 640px cutover — mobile keeps the original 2-col flow untouched (`sm:hidden`), desktop (`hidden sm:flex`) renders the packer's three columns as flex columns with per-shot `width: 75–125%` inline. Sets still interleave via the spread key; lightbox markup unchanged; `display` deliberately left to Tailwind so the scoped stylesheet can't leak the wall onto mobile.
 - [x] (2026-09-02) Deployed to prod: commit `cf6e221` pushed to main, Vercel build live within ~1 min — `/gallery` serves the packed wall (43 full / 26 wide / 26 narrow shots across 3 columns), all 8 main routes 200, exactly one `<h1>` on `/gallery`
 - [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
+
+## Phase 17 — SEO / GEO / a11y remediation from the 2026-09-04 review
+
+Source: `code-review-2026-09-04.md` (full-site review + SEO/GEO audit). Each
+finding was re-verified against the source and live production before being
+actioned; three were rejected as incorrect or not worth the churn (noted at the
+bottom). Build, `astro check`, and vitest all pass.
+
+- [x] (2026-09-04) **Canonical host → www.** Prod 308s apex → www, so `site`, `SITE_URL`, the sitemap, `og:url`, all `llms.txt` links, the Web3Forms redirect, and the RSS fallback pointed at the host that redirects. All now emit www. `PERSON_ID` is deliberately **pinned to the apex literal** (`https://janpaulfernandez.com/#person`) and decoupled from `SITE_URL` — it is the entity key knowledge graphs consolidate on, and CLAUDE.md makes it a hard constraint. Covered by a new schema test.
+- [x] (2026-09-04) **`og:image` 404 on 10 of 14 routes.** `BaseLayout` fell back to `/og-default.png`, which does not exist. Fallback is now `/og/home.png` (real, build-generated, 1200×630); `/about`, `/now`, `/work-with-me` wired to their own already-generated cards; articles use `/og/<slug>.png`.
+- [x] (2026-09-04) **Person JSON-LD `image` was a dead URL.** `/assets/paul.webp` 404s (the file lives in `src/assets/` and nothing imported it). Added `public/paul.jpg` — the source 4128×6192 downscaled to 800×1200, 157 KB — at a stable URL that will not move with content hashes.
+- [x] (2026-09-04) **`/thanks/` removed from the sitemap** — it is `noindex`, so listing it was a contradictory signal. The `/styleguide` filter was dropped at the same time; that page does not exist.
+- [x] (2026-09-04) **Article JSON-LD gained `image`, `url`, and `mainEntityOfPage`** — Google Article rich results require an image, and no post has a cover, so the per-post OG card is used. Two new schema tests cover present/absent `url`.
+- [x] (2026-09-04) **Branded `src/pages/404.astro`** — prod was serving Vercel's bare `NOT_FOUND` body with an internal region ID.
+- [x] (2026-09-04) **`/gallery` lightbox double-binding fixed.** The page renders both walls (mobile flow + desktop masonry) and hides one with CSS, so binding every `.photo-trigger` in DOM order gave **190 triggers for 95 photos** — counter read 2×, prev/next cycled each image twice. Verified live before the fix. The list is now rebuilt from visible triggers (`offsetParent !== null`) on each open; verified in-browser at both breakpoints — reads `4 / 95` on desktop, `1 / 95` on mobile.
+- [x] (2026-09-04) **Draft leakage in the OG route.** `src/pages/og/[...route].ts` used raw `getCollection('thoughts')`, publishing OG cards for drafts at guessable URLs. Now uses `getPublishedThoughts()`; `rss.xml.ts` had the same rule violation filtered inline and now shares the helper.
+- [x] (2026-09-04) **Gallery photos work with JS off.** Triggers were `<button>`s, so nothing on the wall opened without JS. They are now `<a href={fullSrc}>` with `preventDefault()` in the lightbox — progressive enhancement, rung 2 → 4.
+- [x] (2026-09-04) **Article covers use `<Image>`** rather than a raw `<img>` with no dimensions, and `og:image` no longer derives from `cover.src` (arbitrary ratio). Latent today — no post has a cover.
+- [x] (2026-09-04) **Heading anchors.** Classes were `text-moss-200 hover:text-moss-500`, dead since the Phase 9 token rename, so the anchors were completely unstyled; and the literal `#` was a text node, so anything extracting heading text read "My Heading#". The glyph moved to `.anchor-icon::after` in CSS and real `.anchor-link` styles were added (ink-200, hidden until hover/focus, reduced-motion respected).
+- [x] (2026-09-04) **`h1 → h3` heading skip** on `/thoughts` and `/topics/[topic]` — `PostListItem` hardcoded `<h3>` with no `<h2>` between. Now `<h2>`; verified in-browser that the level sequence has no skip and there is still exactly one `h1`.
+- [x] (2026-09-04) **Trailing-slash consistency.** Breadcrumb JSON-LD, RSS item links, and `llms.txt` links now carry the slash that canonicals and the sitemap use.
+- [x] (2026-09-04) **OG/meta gaps filled:** `og:site_name`, `og:locale`, `og:image:alt`, `og:image:width/height`, `twitter:image:alt`, `theme-color`.
+- [x] (2026-09-04) **RSS items gained `categories` (from topics) and `author`.**
+- [x] (2026-09-04) **Timezone-fragile dates.** `new Date('2026-09-04')` parses as UTC midnight, so west of UTC every content date rendered one day early. New `src/lib/dates.ts` (`parseDateSafe` / `formatDate` / `formatDateLong`, vitest-covered, 6 tests) generalises the noon pin `/now` already used; adopted in `ArticleLayout`, `PostListItem`, `gallery/[slug]`, and `now`.
+- [x] (2026-09-04) **Contact form `autocomplete`** on name/email (WCAG 1.3.5 Identify Input Purpose, AA).
+- [x] (2026-09-04) **GEO: `llms-full.txt`** — the whole corpus (28 KB) inline in one fetch, linked from `llms.txt`, discoverable via `<link rel="alternate">` and a robots.txt comment. Also a **visible byline** on articles (`rel="author"` → `/about`), which previously existed only in JSON-LD.
+- [x] (2026-09-04) **Cleanup:** off-palette `green-*` in the Callout "idea" variant → ink; gallery set titles no longer double the suffix ("BINI: Asiya — Gallery — Paul Fernandez"); colophon's "zero client JS" claim corrected (GA4 ships on every page); deleted `src/assets/gallery/bini/bini-01.webp.tmp.jpg`; removed the unused `@fontsource/archivo-black` and `@fontsource/lato` deps (dead since the Phase 11–13 revert to Courier Prime only).
+
+**Rejected findings** (verified as incorrect or not worth the churn):
+- *"Honeypot is `display:none` but keyboard-focusable"* — false. `display: none` removes an element from the tab order entirely; `tabindex="-1"` would add nothing. Only the `autocomplete` half of that finding was valid.
+- *"`cover.src` isn't a public URL"* — imprecise. `image()` fields resolve to `/_astro/…` in the build and would serve fine. The real defects (unoptimised raw `<img>`, arbitrary-ratio OG image) were fixed instead.
+- *"Both inline scripts exceed the ~40-line budget"* — the review itself calls this "a budget breach, not a ladder break". Rewriting working enhancement code to hit a line count is churn.
+
+- [ ] Paul's visual review in-browser
+- [ ] Deploy to prod + verify
+
+## Phase 18 — SEO audit remediation (2026-09-04, second pass)
+
+Source: a fresh technical SEO audit run against the live site and a clean build
+(27 pages parsed for title/description/canonical/robots/OG/heading structure/
+alt coverage/JSON-LD, cross-checked against production redirects and headers).
+14 findings; 13 actioned here, one deliberately deferred. Build, `astro check`
+and vitest all pass; a scripted re-audit of the new build reports zero issues.
+
+- [x] (2026-09-04) **Cloudflare's managed robots.txt was blocking the AI crawlers the repo welcomes.** Production served a Cloudflare-injected block (`Content-Signal: ai-train=no` plus `Disallow: /` for GPTBot, ClaudeBot, CCBot, Google-Extended, Amazonbot, Applebot-Extended, Bytespider, meta-externalagent) *above* `public/robots.txt`, which then allowed those same agents — two contradictory groups per user-agent, and the pessimistic reading is the one a first-match parser takes. It also silently defeated the `llms.txt` work. **Fixed by Paul in the Cloudflare dashboard**; production now serves the repo's file only. Not a code change — nothing in this repo could have overridden it.
+- [x] (2026-09-04) **Every internal link pointed at a non-canonical URL.** Canonicals declared `/about/`; every nav and post link used `/about`, and both served 200 with no redirect between them — so the entire link graph landed one hop short of the indexed URL. `trailingSlash: 'always'` in `astro.config.mjs` (the Vercel adapter now emits 308s for the bare form, leaving file extensions alone) and every internal href updated to the slash form. `isNavActive()` rewritten as a prefix match now that each href ends in `/`.
+- [x] (2026-09-04) **Gallery structured data.** Five pages and ~95 photographs carried no JSON-LD at all — not even the BreadcrumbList every other section had. New `imageGallery()` builder emits `ImageGallery` + per-frame `ImageObject` (contentUrl, caption, dimensions, `creator`/`creditText` → `PERSON_ID`) on each set; `collectionPage()` indexes the sets on `/gallery`. Both TDD'd in `schema.test.ts`.
+- [x] (2026-09-04) **Blog-index and topic structured data.** `/thoughts` — the hub every post's breadcrumb points back to — declared nothing; nor did the nine `/topics/*` archives. New `blog()` and `collectionPage()` builders, plus BreadcrumbList on both. Site-wide JSON-LD blocks went 13 → 25.
+- [x] (2026-09-04) **All 95 gallery photos had generated boilerplate alt text** (`"HONNE at Wanderland photo 14"`) because every caption in the content files was empty. Real per-frame captions written for all 95 across the four sets; they feed the `alt`, the lightbox label, and the `ImageObject` markup from one `altFor()` helper. **These are drafted captions, not Paul's own words — worth a read-through in Keystatic.**
+- [x] (2026-09-04) **Bug found while captioning: photo 1 of every set silently lost its caption.** The cover is pushed into `photoList` with a hardcoded `caption: ''`, and the matching `photos[0]` entry is then dropped by the dedupe — so the first frame could never show a caption. The cover now inherits its own photo entry's caption, in both `gallery/[slug].astro` and `gallery/index.astro`.
+- [x] (2026-09-04) **OG cards for the 15 pages sharing the site-wide fallback.** `/og/[...route].ts` now generates cards for the four gallery sets, `/gallery`, `/thoughts`, `/projects` and `/colophon`, all wired through. (Photo-backed cards for the sets were considered and skipped — a legibility problem for another day.)
+- [x] (2026-09-04) **Thin, near-duplicate topic archives.** All nine shipped the same templated "Posts tagged #x by Paul Fernandez." Each now carries a hand-written one-line intro, used as both the meta description and a visible lead. **Chosen over `noindex`-ing the five single-post topics deliberately:** the noindex route needs the sitemap filter to know post counts, and `astro.config.mjs` cannot reach `astro:content` — the coupling was worse than the problem. Revisit if the archives stay thin.
+- [x] (2026-09-04) **Sitemap `lastmod`.** All 25 URLs were bare `<loc>`s. A `serialize` hook now attaches content-derived dates to posts, gallery sets, the two hubs and the topic archives (newest tagged post). Static pages get none on purpose — a build timestamp on every URL is a worse signal than none.
+- [x] (2026-09-04) **Titles over the ~60-char SERP cut.** Two posts truncated mid-headline. `BaseLayout` now drops the ` — Paul Fernandez` suffix when it is what pushes a title past 60, keeping the headline — which is what earns the click — intact.
+- [x] (2026-09-04) **Descriptions over the ~160-char snippet limit** on `/` (175) and the Wanderland set (168), both cut mid-clause. Rewritten to 147 and 133.
+- [x] (2026-09-04) **The two most important `h1`s did not carry the name.** Home was "Hi, I'm Paul." and `/about` was "Me" — both competing for "Jan Paul Fernandez" with neither containing it. Home is now "Hi, I'm Paul Fernandez." (greeting rhythm and the trailing wine flare both preserved); `/about` is "Jan Paul Fernandez", which is the site's only on-page use of the full name. **A taste call as much as an SEO one — easy to revert if Paul prefers the old voice.**
+- [x] (2026-09-04) **404 declared a canonical URL** (`/404/`). Harmless while noindexed, but an error page should not nominate itself as the canonical version of anything. New `noCanonical` prop on `BaseLayout`.
+- [x] (2026-09-04) **Essay cover images were unconditionally decorative** (`alt=""`), so each post's lead image contributed nothing to image search. New optional `coverAlt` field — added to **both** `content.config.ts` and `keystatic.config.ts` (field-identical, per CLAUDE.md) — falling back to `alt=""` when absent, so an undescribed cover stays decorative rather than repeating the `h1` to a screen reader. Written for the one post that currently has a cover.
+
+**Deferred:**
+- *`/projects` is an empty page that is indexable and in the sitemap* — 56 words including chrome, "Nothing on the shelf… yet.", in the primary nav: a textbook soft 404. Paul asked to leave it. The fix when wanted is `noindex` on the page plus `/projects` in the sitemap `filter`, reversed the moment the first project lands.
+
+- [ ] Paul's visual review in-browser
+- [ ] Deploy to prod + verify
 
 ## Out of scope (v2 — do not build)
 

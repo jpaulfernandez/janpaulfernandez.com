@@ -16,37 +16,48 @@ interface Props {
   type?: 'website' | 'article';
   /** Home page shows the plain title with no site-name suffix. */
   isHome?: boolean;
+  /** Error pages: nothing should nominate a 404 as the canonical version of anything. */
+  noCanonical?: boolean;
   bodyClass?: string;
 }
 
-const { title, description, ogImage, ogImageAlt, type = 'website', isHome = false, bodyClass } = Astro.props;
+const { title, description, ogImage, ogImageAlt, type = 'website', isHome = false, noCanonical = false, bodyClass } = Astro.props;
 
-const pageTitle = isHome ? title : `${title} — Paul Fernandez`;
+// Google cuts titles around 60 characters. When the " — Paul Fernandez" suffix
+// is what pushes a title past that, drop the suffix rather than let the suffix
+// survive and the headline get truncated — the headline is what earns the click.
+const suffixed = `${title} — Paul Fernandez`;
+const pageTitle = isHome || suffixed.length > 60 ? title : suffixed;
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 // The /og/*.png route generates real 1200x630 cards at build time; /og/home.png
 // is the site-wide fallback for any page without its own card. (There is no
 // og-default.png in public/ — pointing at one shipped a 404 on every share.)
 const resolvedOgImage = new URL(ogImage ?? '/og/home.png', Astro.site);
 
+// Hrefs carry the trailing slash so every internal link points at the same URL
+// the page declares as canonical — otherwise the whole link graph lands one
+// redirect short of the indexed URL.
 const navItems = [
-  { href: '/about', label: 'me' },
-  { href: '/work-with-me', label: 'work' },
-  { href: '/projects', label: 'projects' },
-  { href: '/thoughts', label: 'thoughts' },
-  { href: '/gallery', label: 'gallery' },
-  { href: '/now', label: 'now' },
+  { href: '/about/', label: 'me' },
+  { href: '/work-with-me/', label: 'work' },
+  { href: '/projects/', label: 'projects' },
+  { href: '/thoughts/', label: 'thoughts' },
+  { href: '/gallery/', label: 'gallery' },
+  { href: '/now/', label: 'now' },
 ];
 
 const currentPath = Astro.url.pathname;
 const isNavActive = (href: string) => {
-  if (href === '/thoughts') {
-    return currentPath.startsWith('/thoughts') || currentPath.startsWith('/topics');
+  if (href === '/thoughts/') {
+    return currentPath.startsWith('/thoughts/') || currentPath.startsWith('/topics/');
   }
-  return currentPath === href || currentPath.startsWith(`${href}/`);
+  // Every href ends in "/", so a prefix match covers the section's children too.
+  return currentPath.startsWith(href);
 };
 
 const secondaryLinks = [
-  { href: '/colophon', label: 'colophon' },
+  { href: '/colophon/', label: 'colophon' },
   { href: '/rss.xml', label: 'rss' },
   { href: 'mailto:jpaul.fernandez18@gmail.com', label: 'email' },
   { href: 'https://www.linkedin.com/in/jpaulfernandez/', label: 'linkedin', external: true },
@@ -60,7 +71,7 @@ const secondaryLinks = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalURL} />
+    {!noCanonical && <link rel="canonical" href={canonicalURL} />}
 
     <!-- Open Graph -->
     <meta property="og:title" content={pageTitle} />

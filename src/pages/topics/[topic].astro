@@ -2,7 +2,9 @@
 // [topic].astro (Topic archive pages)
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostListItem from '../../components/PostListItem.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import { getPublishedThoughts } from '../../lib/thoughts';
+import { collectionPage, breadcrumbs } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const allPosts = await getPublishedThoughts();
@@ -16,18 +18,59 @@ export async function getStaticPaths() {
   }));
 }
 
+// A line per topic, in Paul's voice. These are the page's meta description and
+// its visible intro — without them every archive shipped the same templated
+// "Posts tagged #x" sentence, which reads as duplicate content across nine
+// near-identical pages. Add a line here when a new topic appears; the fallback
+// below keeps an unlisted topic from breaking the build.
+const TOPIC_INTROS: Record<string, string> = {
+  ai: 'What AI actually changes — the unit economics of tokens, agentic workflows, and what human work is for once the machines can do it.',
+  culture: 'On predigested culture, snack-sized media, and what gets lost when a story is optimised for the scroll.',
+  engineering: 'The practical craft of shipping — tools, models, and the decisions that only show up once you build the thing.',
+  media: 'Media diets, recommendation engines, and the shape attention takes when something else is choosing for you.',
+  philosophy: 'The bigger questions underneath the tooling — meaning, boredom, and why we do anything at all.',
+  product: 'How things actually get built — briefs, scope, red-teaming your own ideas, and knowing what is worth shipping.',
+  psychology: 'Why we behave the way we do — attention, satisfaction, and the psychology sitting under the product.',
+  technology: 'Technology as it lands on real people — the systems, the incentives, and the second-order effects.',
+  workflows: 'How the work gets done — AI-assisted workflows, research agents, and the process behind the output.',
+};
+
 const { posts, topic } = Astro.props;
-const description = `Posts tagged #${topic} by Paul Fernandez.`;
+
+const intro = TOPIC_INTROS[topic] ?? `Essays and notes tagged #${topic}.`;
+const description = `${intro} ${posts.length} ${posts.length === 1 ? 'post' : 'posts'} by Paul Fernandez.`;
+
+const seoData = [
+  collectionPage({
+    title: `#${topic}`,
+    description,
+    url: `/topics/${topic}/`,
+    items: posts.map((post) => ({
+      name: post.data.title,
+      url: `/thoughts/${post.id}/`,
+    })),
+  }),
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Thoughts', url: '/thoughts/' },
+    { name: `#${topic}`, url: `/topics/${topic}/` },
+  ]),
+];
 ---
 
 <BaseLayout title={`#${topic}`} description={description}>
+  <JsonLd slot="head" data={seoData} />
+
   <article>
     <header>
       <p class="m-0 text-small text-ink-500">
-        <a href="/thoughts" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← all thoughts</a>
+        <a href="/thoughts/" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← all thoughts</a>
       </p>
       <h1 class="display m-0 mt-3"><span class="flare">#</span>{topic}</h1>
-      <p class="mt-3 mb-0 text-ink-700 text-small tabular-nums">
+      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
+        {intro}
+      </p>
+      <p class="mt-3 mb-0 text-ink-500 text-small tabular-nums">
         {posts.length} {posts.length === 1 ? 'post' : 'posts'}
       </p>
     </header>
@@ -44,7 +87,7 @@ const description = `Posts tagged #${topic} by Paul Fernandez.`;
             topics={post.data.topics || []}
             date={post.data.publishedDate}
             excerpt={post.data.excerpt}
-            url={`/thoughts/${post.id}`}
+            url={`/thoughts/${post.id}/`}
             readingTime={readingTime}
             stage={post.data.stage}
             cover={post.data.cover}

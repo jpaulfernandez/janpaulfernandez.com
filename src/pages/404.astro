@@ -5,14 +5,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const destinations = [
   { href: '/', label: 'home' },
-  { href: '/about', label: 'about me' },
-  { href: '/thoughts', label: 'thoughts' },
-  { href: '/gallery', label: 'gallery' },
-  { href: '/work-with-me', label: 'work with me' },
+  { href: '/about/', label: 'about me' },
+  { href: '/thoughts/', label: 'thoughts' },
+  { href: '/gallery/', label: 'gallery' },
+  { href: '/work-with-me/', label: 'work with me' },
 ];
 ---
 
-<BaseLayout title="Page not found" description="That page doesn't exist — here's the way back.">
+<BaseLayout title="Page not found" description="That page doesn't exist — here's the way back." noCanonical>
   <meta slot="head" name="robots" content="noindex" />
 
   <article>

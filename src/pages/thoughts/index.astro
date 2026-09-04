@@ -2,7 +2,9 @@
 // index.astro (Thoughts index)
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostListItem from '../../components/PostListItem.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import { getPublishedThoughts } from '../../lib/thoughts';
+import { blog, breadcrumbs } from '../../lib/schema';
 
 const allPosts = await getPublishedThoughts();
 
@@ -13,9 +15,30 @@ const allTopics = Array.from(
 
 const description =
   'Essays and notes from Paul Fernandez — on technology, economy, and psychology.';
+
+const seoData = [
+  blog({
+    title: 'Thoughts',
+    description,
+    url: '/thoughts/',
+    posts: allPosts.map((post) => ({
+      title: post.data.title,
+      excerpt: post.data.excerpt,
+      url: `/thoughts/${post.id}/`,
+      publishedDate: post.data.publishedDate,
+      updatedDate: post.data.updatedDate,
+    })),
+  }),
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Thoughts', url: '/thoughts/' },
+  ]),
+];
 ---
 
-<BaseLayout title="Thoughts" description={description}>
+<BaseLayout title="Thoughts" description={description} ogImage="/og/thoughts.png">
+  <JsonLd slot="head" data={seoData} />
+
   <article>
     <header>
       <h1 class="display m-0">Thoughts</h1>
@@ -72,7 +95,7 @@ const description =
                   topics={post.data.topics || []}
                   date={post.data.publishedDate}
                   excerpt={post.data.excerpt}
-                  url={`/thoughts/${post.id}`}
+                  url={`/thoughts/${post.id}/`}
                   readingTime={readingTime}
                   stage={post.data.stage}
                   cover={post.data.cover}

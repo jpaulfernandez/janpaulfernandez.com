@@ -18,6 +18,7 @@ const seoData = [
 <BaseLayout
   title="Projects"
   description="Projects by Paul Fernandez — things he's built, shipped, and tinkered with, indexed by year."
+  ogImage="/og/projects.png"
 >
   <JsonLd data={seoData} slot="head" />
 
@@ -62,7 +63,7 @@ const seoData = [
     ) : (
       <div class="mt-12 border-t border-ink-200 pt-6">
         <p class="text-ink-700 m-0">
-          Nothing on the shelf… yet. <a href="/work-with-me#contact" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">ask me what I'm building →</a>
+          Nothing on the shelf… yet. <a href="/work-with-me/#contact" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">ask me what I'm building →</a>
         </p>
       </div>
     )}

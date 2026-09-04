@@ -118,6 +118,7 @@ const thoughts = defineCollection({
     stage: z.enum(['seedling', 'budding', 'evergreen', 'none']).optional().transform((v) => v === 'none' ? undefined : v),
     excerpt: z.string().max(160),
     cover: image().optional(),
+    coverAlt: z.string().optional(),
     publishedDate: dateSchema,
     updatedDate: dateSchema.optional(),
     draft: z.boolean().default(false),

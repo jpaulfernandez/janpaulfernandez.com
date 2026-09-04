@@ -2,10 +2,12 @@
 // [slug].astro (Individual gallery set / photo page)
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { lightboxWidth } from '../../lib/gallery';
 import { formatDate } from '../../lib/dates';
+import { imageGallery, breadcrumbs } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const allItems = await getCollection('gallery');
@@ -19,13 +21,30 @@ const { item } = Astro.props;
 
 const dateFormatted = formatDate(item.data.publishedDate);
 
-// Build the full photo list combining cover (if present) and additional photos
-const photoList: Array<{ image: ImageMetadata; caption: string; fullSrc: string }> = [];
+// Build the full photo list combining cover (if present) and additional photos.
+// The cover is normally also photos[0]; the dedupe below then drops that entry,
+// so the cover has to inherit its caption here or the first frame of every set
+// silently loses the one it was given.
+const captionFor = (image: ImageMetadata) =>
+  item.data.photos.find((p) => p.image === image)?.caption || '';
+
+type Photo = {
+  image: ImageMetadata;
+  caption: string;
+  /** Resolved lightbox source and its real dimensions — not the original's. */
+  fullSrc: string;
+  fullWidth: number;
+  fullHeight: number;
+};
+
+const photoList: Photo[] = [];
 if (item.data.cover) {
   photoList.push({
     image: item.data.cover,
-    caption: '',
+    caption: captionFor(item.data.cover),
     fullSrc: '',
+    fullWidth: 0,
+    fullHeight: 0,
   });
 }
 if (item.data.photos && item.data.photos.length > 0) {
@@ -35,6 +54,8 @@ if (item.data.photos && item.data.photos.length > 0) {
         image: p.image,
         caption: p.caption || '',
         fullSrc: '',
+        fullWidth: 0,
+        fullHeight: 0,
       });
     }
   });
@@ -43,15 +64,51 @@ if (item.data.photos && item.data.photos.length > 0) {
 // Lightbox sources: 1600px on the long edge, not the multi-megabyte original.
 await Promise.all(
   photoList.map(async (photo) => {
-    photo.fullSrc = (await getImage({ src: photo.image, width: lightboxWidth(photo.image) })).src;
+    const rendered = await getImage({ src: photo.image, width: lightboxWidth(photo.image) });
+    photo.fullSrc = rendered.src;
+    // The ImageObject below points at this render, so it must declare this
+    // render's dimensions rather than the (much larger) original's.
+    photo.fullWidth = Number(rendered.attributes.width ?? rendered.options.width);
+    photo.fullHeight = Number(rendered.attributes.height ?? rendered.options.height);
   })
 );
+
+// One alt string per photo, shared by the <img>, the lightbox and the
+// ImageObject markup — so a caption written in Keystatic improves all three.
+const altFor = (photo: Photo, idx: number) =>
+  photo.caption || `${item.data.title} — photo ${idx + 1} of ${photoList.length}`;
+
+const seoData = [
+  imageGallery({
+    title: item.data.title,
+    description: item.data.description,
+    url: `/gallery/${item.id}/`,
+    datePublished: item.data.publishedDate,
+    images: photoList.map((photo, idx) => ({
+      url: photo.fullSrc,
+      caption: altFor(photo, idx),
+      width: photo.fullWidth,
+      height: photo.fullHeight,
+    })),
+  }),
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Gallery', url: '/gallery/' },
+    { name: item.data.title, url: `/gallery/${item.id}/` },
+  ]),
+];
 ---
 
-<BaseLayout title={item.data.title} description={item.data.description || item.data.title}>
+<BaseLayout
+  title={item.data.title}
+  description={item.data.description || item.data.title}
+  ogImage={`/og/gallery-${item.id}.png`}
+>
+  <JsonLd slot="head" data={seoData} />
+
   <article>
     <p class="m-0 text-small text-ink-500">
-      <a href="/gallery" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← gallery</a>
+      <a href="/gallery/" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← gallery</a>
     </p>
 
     <header class="mt-3">
@@ -80,13 +137,13 @@ await Promise.all(
           href={photo.fullSrc}
           class="photo-trigger gallery-masonry-item"
           data-src={photo.fullSrc}
-          data-alt={photo.caption || `${item.data.title} photo ${idx + 1}`}
+          data-alt={altFor(photo, idx)}
           data-caption={photo.caption}
-          aria-label={`View larger: ${photo.caption || 'Photo ' + (idx + 1)}`}
+          aria-label={`View larger: ${altFor(photo, idx)}`}
         >
           <Image
             src={photo.image}
-            alt={photo.caption || `${item.data.title} photo ${idx + 1}`}
+            alt={altFor(photo, idx)}
             class="gallery-masonry-img"
             width={640}
             loading={idx < 6 ? 'eager' : 'lazy'}

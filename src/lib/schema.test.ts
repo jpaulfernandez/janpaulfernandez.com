@@ -9,6 +9,9 @@ import {
   blogPosting,
   faqPage,
   service,
+  imageGallery,
+  blog,
+  collectionPage,
 } from './schema';
 
 describe('JSON-LD schema library', () => {
@@ -168,5 +171,122 @@ describe('JSON-LD schema library', () => {
     expect(sv.provider['@id']).toBe(PERSON_ID);
 
     expect(() => JSON.stringify(sv)).not.toThrow();
+  });
+
+  it('should generate ImageGallery with ImageObject entries and absolute URLs', () => {
+    const g = imageGallery({
+      title: 'HONNE at Wanderland',
+      description: 'Warm synths, intimate vocals.',
+      url: '/gallery/honne-at-wanderland/',
+      datePublished: '2024-03-09',
+      images: [
+        { url: '/_astro/honne-01.webp', caption: 'HONNE mid-set under blue wash', width: 1600, height: 1200 },
+        { url: 'https://cdn.example.com/honne-02.webp' },
+      ],
+    });
+
+    expect(g['@context']).toBe('https://schema.org');
+    expect(g['@type']).toBe('ImageGallery');
+    expect(g.name).toBe('HONNE at Wanderland');
+    expect(g.description).toBe('Warm synths, intimate vocals.');
+    expect(g.url).toBe(`${SITE_URL}/gallery/honne-at-wanderland/`);
+    expect(g.datePublished).toBe('2024-03-09');
+    expect(g.author['@id']).toBe(PERSON_ID);
+
+    expect(g.image).toHaveLength(2);
+    expect(g.image[0]['@type']).toBe('ImageObject');
+    expect(g.image[0].contentUrl).toBe(`${SITE_URL}/_astro/honne-01.webp`);
+    expect(g.image[0].caption).toBe('HONNE mid-set under blue wash');
+    expect(g.image[0].width).toBe(1600);
+    expect(g.image[0].height).toBe(1200);
+    expect(g.image[0].creditText).toBe('Paul Fernandez');
+    expect(g.image[0].creator['@id']).toBe(PERSON_ID);
+
+    // Already-absolute URLs pass through untouched; absent fields are omitted
+    // rather than emitted as undefined (which JSON.stringify would drop, but
+    // which reads as a bug in the object).
+    expect(g.image[1].contentUrl).toBe('https://cdn.example.com/honne-02.webp');
+    expect(g.image[1]).not.toHaveProperty('caption');
+    expect(g.image[1]).not.toHaveProperty('width');
+
+    expect(() => JSON.stringify(g)).not.toThrow();
+  });
+
+  it('should omit optional ImageGallery fields when not supplied', () => {
+    const g = imageGallery({ title: 'Untitled Set', url: '/gallery/untitled/', images: [] });
+    expect(g).not.toHaveProperty('description');
+    expect(g).not.toHaveProperty('datePublished');
+    expect(g.image).toEqual([]);
+  });
+
+  it('should generate Blog with blogPost entries authored by PERSON_ID', () => {
+    const b = blog({
+      title: 'Thoughts',
+      description: 'Essays and notes.',
+      url: '/thoughts/',
+      posts: [
+        {
+          title: 'What Is a Token, Anyway?',
+          excerpt: 'On the wrong unit of measurement.',
+          url: '/thoughts/what-is-a-token-anyway/',
+          publishedDate: '2026-08-01',
+          updatedDate: '2026-08-14',
+        },
+        {
+          title: 'Jack and the Snack Culture',
+          url: '/thoughts/jack-and-the-snack-culture/',
+          publishedDate: '2026-07-02',
+        },
+      ],
+    });
+
+    expect(b['@context']).toBe('https://schema.org');
+    expect(b['@type']).toBe('Blog');
+    expect(b.name).toBe('Thoughts');
+    expect(b.url).toBe(`${SITE_URL}/thoughts/`);
+    expect(b.author['@id']).toBe(PERSON_ID);
+
+    expect(b.blogPost).toHaveLength(2);
+    expect(b.blogPost[0]['@type']).toBe('BlogPosting');
+    expect(b.blogPost[0].headline).toBe('What Is a Token, Anyway?');
+    expect(b.blogPost[0].url).toBe(`${SITE_URL}/thoughts/what-is-a-token-anyway/`);
+    expect(b.blogPost[0].datePublished).toBe('2026-08-01');
+    expect(b.blogPost[0].dateModified).toBe('2026-08-14');
+    expect(b.blogPost[0].author['@id']).toBe(PERSON_ID);
+
+    // dateModified falls back to datePublished, matching blogPosting().
+    expect(b.blogPost[1].dateModified).toBe('2026-07-02');
+    expect(b.blogPost[1]).not.toHaveProperty('description');
+
+    expect(() => JSON.stringify(b)).not.toThrow();
+  });
+
+  it('should generate CollectionPage wrapping an ItemList', () => {
+    const c = collectionPage({
+      title: '#ai',
+      description: 'Posts tagged #ai.',
+      url: '/topics/ai/',
+      items: [
+        { name: 'What Is a Token, Anyway?', url: '/thoughts/what-is-a-token-anyway/' },
+        { name: 'Day 1', url: '/thoughts/day-1-building-our-capstone-product/' },
+      ],
+    });
+
+    expect(c['@context']).toBe('https://schema.org');
+    expect(c['@type']).toBe('CollectionPage');
+    expect(c.name).toBe('#ai');
+    expect(c.url).toBe(`${SITE_URL}/topics/ai/`);
+
+    expect(c.mainEntity['@type']).toBe('ItemList');
+    expect(c.mainEntity.numberOfItems).toBe(2);
+    expect(c.mainEntity.itemListElement[0]).toEqual({
+      '@type': 'ListItem',
+      position: 1,
+      name: 'What Is a Token, Anyway?',
+      url: `${SITE_URL}/thoughts/what-is-a-token-anyway/`,
+    });
+    expect(c.mainEntity.itemListElement[1].position).toBe(2);
+
+    expect(() => JSON.stringify(c)).not.toThrow();
   });
 });

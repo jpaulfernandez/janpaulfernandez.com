@@ -2,9 +2,11 @@
 // index.astro (Gallery index — one flat wall of photographs)
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { lightboxWidth, masonryLayout } from '../../lib/gallery';
+import { collectionPage, breadcrumbs } from '../../lib/schema';
 
 const sets = (await getCollection('gallery')).sort(
   (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
@@ -51,7 +53,12 @@ sets.forEach((set) => {
     });
   };
 
-  add(set.data.cover, '');
+  // The cover is normally also photos[0], which add() then dedupes away — so it
+  // has to inherit that entry's caption rather than come through blank.
+  const captionFor = (image: ImageMetadata) =>
+    set.data.photos.find((p) => p.image === image)?.caption || '';
+
+  if (set.data.cover) add(set.data.cover, captionFor(set.data.cover));
   set.data.photos.forEach((p) => add(p.image, p.caption || ''));
 
   // Evenly distribute this set's photos across the full 0–1 range, so a
@@ -90,9 +97,26 @@ await Promise.all(
 );
 
 const description = 'Photography by Paul Fernandez — concerts, festivals, places.';
+
+// The wall itself is 95 loose frames; the sets are what a crawler can name and
+// link to, so the ItemList indexes the sets rather than every photograph.
+const seoData = [
+  collectionPage({
+    title: 'Gallery',
+    description,
+    url: '/gallery/',
+    items: sets.map((set) => ({ name: set.data.title, url: `/gallery/${set.id}/` })),
+  }),
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Gallery', url: '/gallery/' },
+  ]),
+];
 ---
 
-<BaseLayout title="Gallery" description={description}>
+<BaseLayout title="Gallery" description={description} ogImage="/og/gallery.png">
+  <JsonLd slot="head" data={seoData} />
+
   <article>
     <header>
       <h1 class="display m-0">Gallery</h1>
@@ -116,7 +140,7 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
               data-src={shot.fullSrc}
               data-alt={shot.caption || shot.setTitle}
               data-caption={shot.caption}
-              data-href={`/gallery/${shot.setId}`}
+              data-href={`/gallery/${shot.setId}/`}
               data-href-label={`${shot.setTitle} →`}
               aria-label={`View larger: ${shot.caption || shot.setTitle}`}
             >
@@ -145,7 +169,7 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
                   data-src={shot.fullSrc}
                   data-alt={shot.caption || shot.setTitle}
                   data-caption={shot.caption}
-                  data-href={`/gallery/${shot.setId}`}
+                  data-href={`/gallery/${shot.setId}/`}
                   data-href-label={`${shot.setTitle} →`}
                   aria-label={`View larger: ${shot.caption || shot.setTitle}`}
                 >
@@ -173,7 +197,7 @@ const description = 'Photography by Paul Fernandez — concerts, festivals, plac
         <ul class="rows mt-6">
           {sets.map((set) => (
             <li>
-              <a href={`/gallery/${set.id}`} class="row-link">
+              <a href={`/gallery/${set.id}/`} class="row-link">
                 <span>{set.data.title}</span>
                 <span class="row-meta">{set.data.publishedDate.slice(0, 4)} ↗</span>
               </a>

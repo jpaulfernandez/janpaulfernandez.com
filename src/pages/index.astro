@@ -51,7 +51,7 @@ const seoData = [
 
 <BaseLayout
   title="Paul Fernandez"
-  description="Technologist from the Philippines who ships under pressure — banking, election-night newsrooms, national-scale education — now helping teams adopt AI and ship the right thing."
+  description="Technologist from the Philippines — banking systems, election-night newsrooms, national-scale education. Now helping teams adopt AI and ship right."
   isHome
 >
   <JsonLd data={seoData} slot="head" />
@@ -77,7 +77,7 @@ const seoData = [
               <time class="rail-date" datetime={entry.data.date}>{entry.displayDate}</time>
               <h3 class="text-h3 font-bold text-ink-900 leading-snug m-0">
                 <a
-                  href="/now"
+                  href="/now/"
                   class="text-ink-900 no-underline hover:text-wine-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
                 >
                   {entry.data.title || entry.id}
@@ -87,7 +87,7 @@ const seoData = [
           ))}
         </div>
         <a
-          href="/now"
+          href="/now/"
           class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
         >
           see the full timeline →
@@ -102,7 +102,7 @@ const seoData = [
         <ul class="rows mt-6">
           {latestThoughts.map((post) => (
             <li>
-              <a href={`/thoughts/${post.id}`} class="row-link">
+              <a href={`/thoughts/${post.id}/`} class="row-link">
                 <span class="font-bold">{post.data.title}</span>
                 <time class="row-meta" datetime={post.data.publishedDate}>
                   {post.data.publishedDate.slice(0, 4)}
@@ -112,7 +112,7 @@ const seoData = [
           ))}
         </ul>
         <a
-          href="/thoughts"
+          href="/thoughts/"
           class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
         >
           all thoughts →
@@ -147,7 +147,7 @@ const seoData = [
           ))}
         </ul>
         <a
-          href="/projects"
+          href="/projects/"
           class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
         >
           all projects →
@@ -162,7 +162,7 @@ const seoData = [
         Consultation, workshops, and <span class="flare">fractional product ownership</span>.
       </p>
       <a
-        href="/work-with-me"
+        href="/work-with-me/"
         class="inline-block mt-6 px-6 py-3 bg-wine-500 text-paper-50 no-underline hover:bg-wine-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
       >
         work with me →

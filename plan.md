@@ -335,6 +335,18 @@ and vitest all pass; a scripted re-audit of the new build reports zero issues.
 - [x] (2026-09-04) **Deployed to prod:** commit `2d9ee1c` pushed to main, Vercel build live in ~50s. Verified against production, not just the build: apex still 308s to www; the bare form of all nine section URLs now 308s to the canonical trailing-slash form, while `/rss.xml`, `/llms.txt`, `/sitemap-index.xml` and the OG PNGs are untouched by the rule; an unknown path costs one normalising redirect and then returns a real 404. `robots.txt` serves our file alone. Sitemap carries 19 `<lastmod>` entries across 25 URLs (the six dateless ones are the static pages, by design). A scripted sweep of all 25 live pages: 25 JSON-LD blocks, BreadcrumbList on every page, 306 images with zero boilerplate alt, no title over 60 chars, no description over 160, exactly one `h1` each, and no internal link pointing at a non-canonical URL.
 - [ ] Paul's visual review in-browser (deployed ahead of it at Paul's request — the two `h1` changes and the 95 drafted gallery captions are the parts most worth a look)
 
+## Phase 19 — no AI-generated imagery on the site (2026-09-04)
+
+Paul's call, applied to the one post that had it. Not a build phase; logged
+here so the tracker stays truthful about what is live.
+
+- [x] (2026-09-04) **The nine illustrations on "If AI Takes All the Jobs" were AI-generated** — shipped with `b374ea3` and given away by the batch fingerprint: nine files, all exactly 1376x768 at 300 DPI. Replaced with nine Unsplash photographs, each opened and checked individually (no AI-generated flag; real EXIF camera data on seven of nine), selection biased toward pre-2023 uploads since Unsplash's recent intake carries generated work of its own. Alt text rewritten against the frame that actually shipped. Body images normalised to 3:2 so the column keeps one rhythm. Source set 7.9MB -> 2.3MB.
+- [x] (2026-09-04) **The Maslow pyramid is gone rather than replaced.** It was a diagram, and no stock photograph can be one. The slot moved down one paragraph to a station-platform shot, which sits against "our identity is now welded to our work… What do you do?" — the claim that passage is actually making. **If a Maslow pyramid is wanted back it needs a hand-drawn SVG, not a photo.**
+- [x] (2026-09-04) **New "Photographs" credit section** naming all nine photographers. Unsplash does not require attribution; the essay already cites its sources, and on this subject the "none of these are AI-generated" line earns its place. **Easy to cut if Paul disagrees.**
+- [x] (2026-09-04) **Footer copyright line removed** at Paul's request. It was the footer's only content at lg+ (the secondary links beside it are `lg:hidden`, the sidebar owns them there), so removing it alone would have left an empty ruled band with 32px of padding under every desktop page. The footer is now `lg:hidden` too and survives below lg, where it still carries the links.
+
+- [ ] Paul's visual review in-browser — the nine photographs and the dropped Maslow diagram are the parts worth a look
+
 ## Out of scope (v2 — do not build)
 
 Dark mode, Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

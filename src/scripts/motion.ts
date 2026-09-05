@@ -161,7 +161,12 @@ function initSplits() {
   const targets = document.querySelectorAll<HTMLElement>('[data-split]');
   if (!targets.length) return;
 
-  document.fonts.ready.then(() => {
+  // These elements are `visibility: hidden` until this callback runs, and the
+  // copy inside them is real (the footer statement, every section opener). So
+  // fonts.ready cannot be the only thing that can un-hide them: race it
+  // against a timeout, because a font request that hangs must cost us a
+  // slightly mismeasured line break, never a blank section.
+  fontsReadyOrTimeout(2000).then(() => {
     targets.forEach((el) => {
       const mode = el.dataset.split;
       el.style.visibility = 'visible';
@@ -206,6 +211,19 @@ function initSplits() {
   });
 }
 
+/**
+ * Resolves when webfonts are ready, or after `ms`, whichever comes first.
+ * Never rejects — a caller that gates visible content on this must not be able
+ * to lose that race.
+ */
+function fontsReadyOrTimeout(ms: number): Promise<void> {
+  const ready = document.fonts?.ready ?? Promise.resolve();
+  return Promise.race([
+    ready.then(() => undefined),
+    new Promise<void>((resolve) => setTimeout(resolve, ms)),
+  ]).catch(() => undefined);
+}
+
 /* ---------------------------------------------------------------------------
  * Parallax. Fractional — data-parallax="-0.2" moves the element up by 20% of
  * the distance it travels through the viewport.
@@ -237,7 +255,7 @@ function initHero() {
   const items = hero.querySelectorAll<HTMLElement>('[data-reveal]');
   if (!items.length) return;
 
-  document.fonts.ready.then(() => {
+  fontsReadyOrTimeout(2000).then(() => {
     gsap.to(items, {
       opacity: 1,
       y: 0,

@@ -4,38 +4,42 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const destinations = [
-  { href: '/', label: 'home' },
-  { href: '/about/', label: 'about me' },
-  { href: '/thoughts/', label: 'thoughts' },
-  { href: '/gallery/', label: 'gallery' },
-  { href: '/work-with-me/', label: 'work with me' },
+  { href: '/', label: 'Home' },
+  { href: '/about/', label: 'About' },
+  { href: '/thoughts/', label: 'Writing' },
+  { href: '/gallery/', label: 'Gallery' },
+  { href: '/work-with-me/', label: 'Work with me' },
 ];
 ---
 
 <BaseLayout title="Page not found" description="That page doesn't exist — here's the way back." noCanonical>
   <meta slot="head" name="robots" content="noindex" />
 
-  <article>
-    <header>
-      <h1 class="display m-0">4<span class="flare">0</span>4</h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
+  <section class="page-404" data-hero>
+    <div class="shell">
+      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
+        404
+      </h1>
+      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
         That page doesn't exist. It may have moved, or the link may be wrong.
       </p>
-    </header>
 
-    <nav aria-label="Suggested pages" class="mt-12 border-t border-ink-200 pt-6">
-      <ul class="flex flex-wrap gap-x-6 gap-y-2 list-none m-0 p-0">
-        {destinations.map((d) => (
-          <li>
-            <a
-              href={d.href}
-              class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm"
-            >
-              {d.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  </article>
+      <nav aria-label="Suggested pages" class="mt-12" data-reveal="up" data-reveal-delay="0.16">
+        <ul class="flex flex-wrap gap-3 list-none m-0 p-0">
+          {destinations.map((d) => (
+            <li><a href={d.href} class="tag">{d.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .page-404 {
+    display: flex;
+    align-items: center;
+    min-height: 70svh;
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) 6rem;
+  }
+</style>

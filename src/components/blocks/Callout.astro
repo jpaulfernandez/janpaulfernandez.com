@@ -1,44 +1,48 @@
 ---
-// Callout.astro — three variants, all in mono+b/w with a single accent rule.
+// Callout.astro — three variants. Only `warning` spends the accent; the other
+// two are carried by the hairline alone, so a page of callouts stays quiet.
 interface Props {
   variant?: 'note' | 'idea' | 'warning';
 }
 
 const { variant = 'note' } = Astro.props;
 
-const variants: Record<NonNullable<Props['variant']>, {
-  classes: string;
-  kickerColor: string; // tailwind utility color class
-  label: string;
-  icon: string;
-}> = {
-  note: {
-    classes: 'border-l-2 border-ink-200 bg-paper-50',
-    kickerColor: 'text-ink-700',
-    label: 'Note',
-    icon: '·',
-  },
-  idea: {
-    classes: 'border-l-2 border-ink-900 bg-paper-50',
-    kickerColor: 'text-ink-900',
-    label: 'Idea',
-    icon: '·',
-  },
-  warning: {
-    classes: 'border-l-2 border-wine-500 bg-paper-50',
-    kickerColor: 'text-wine-500',
-    label: 'Warning',
-    icon: '·',
-  },
+const labels: Record<NonNullable<Props['variant']>, string> = {
+  note: 'Note',
+  idea: 'Idea',
+  warning: 'Warning',
 };
 
-const config = variants[variant] ?? variants.note;
+const label = labels[variant] ?? labels.note;
 ---
-<aside class={`my-8 px-6 py-4 ${config.classes}`}>
-  <p class={`m-0 mb-4 font-mono uppercase text-xs tracking-widest ${config.kickerColor}`}>
-    {config.icon} {config.label}
-  </p>
-  <div class="prose max-w-none text-ink-900 [&>p]:text-ink-900 [&>p]:m-0 [&>p]:text-body">
-    <slot />
-  </div>
+<aside class="callout" data-variant={variant}>
+  <p class="label">{label}</p>
+  <div class="body"><slot /></div>
 </aside>
+
+<style>
+  .callout {
+    margin-block: 2.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-left-width: 2px;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-1);
+  }
+  .callout[data-variant='idea'] { border-left-color: var(--color-paper-100); }
+  .callout[data-variant='warning'] { border-left-color: var(--color-wine-400); }
+
+  .label {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-paper-400);
+  }
+  .callout[data-variant='warning'] .label { color: var(--color-wine-300); }
+  .callout[data-variant='idea'] .label { color: var(--color-paper-50); }
+
+  .body :global(> p) { margin: 0; }
+  .body :global(> * + *) { margin-top: 1rem; }
+</style>

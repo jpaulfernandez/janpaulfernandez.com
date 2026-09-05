@@ -52,108 +52,178 @@ const breadcrumbsSchema = breadcrumbs([
   <JsonLd slot="head" data={[blogPostSchema, breadcrumbsSchema]} />
 
   <article>
-    <header>
-      <div class="flex items-center gap-2 text-small text-ink-500 tabular-nums">
-        <a href="/thoughts/" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← thoughts</a>
-      </div>
+    {/* The masthead runs at page width; everything below it drops into the
+        reading column, so the title can breathe without the body doing the
+        same. */}
+    <header class="page-head" data-hero>
+      <div class="shell-narrow">
+        <a href="/thoughts/" class="mono-micro hover:text-paper-50" data-reveal="fade">
+          ← Thoughts
+        </a>
 
-      <h1 class="text-ink-900 m-0 mt-4 text-balance">{title}</h1>
+        <h1 class="mt-6 text-h1" data-reveal="up" data-reveal-delay="0.05">{title}</h1>
 
-      {excerpt && (
-        <p class="mt-4 mb-0 text-ink-700 text-body leading-relaxed">{excerpt}</p>
-      )}
-
-      <div class="mt-6 flex flex-wrap items-center gap-3 text-small text-ink-500 tabular-nums">
-        <span>{type}</span>
-        <span aria-hidden="true">·</span>
-        <span>by <a href="/about/" rel="author" class="text-ink-700 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">Paul Fernandez</a></span>
-        <span aria-hidden="true">·</span>
-        <time datetime={publishedDate}>{formatDate(publishedDate)}</time>
-        {updatedDate && (
-          <>
-            <span aria-hidden="true">·</span>
-            <span class="italic">updated {formatDate(updatedDate)}</span>
-          </>
+        {excerpt && (
+          <p class="lead mt-6 max-w-none" data-reveal="up" data-reveal-delay="0.1">
+            {excerpt}
+          </p>
         )}
-        <span aria-hidden="true">·</span>
-        <span>{readingTime} min</span>
+
+        <div
+          class="mt-8 pt-6 border-t border-[var(--line)] flex flex-wrap items-center gap-x-4 gap-y-2 mono-micro"
+          data-reveal="fade"
+          data-reveal-delay="0.16"
+        >
+          <span class="text-paper-400">{type}</span>
+          <span aria-hidden="true" class="text-paper-600">/</span>
+          <span>
+            By <a href="/about/" rel="author" class="hover:text-paper-50">Paul Fernandez</a>
+          </span>
+          <span aria-hidden="true" class="text-paper-600">/</span>
+          <time datetime={publishedDate}>{formatDate(publishedDate)}</time>
+          {updatedDate && (
+            <>
+              <span aria-hidden="true" class="text-paper-600">/</span>
+              <span>Updated {formatDate(updatedDate)}</span>
+            </>
+          )}
+          <span aria-hidden="true" class="text-paper-600">/</span>
+          <span>{readingTime} min</span>
+        </div>
+
+        {topics && topics.length > 0 && (
+          <ul class="mt-6 list-none m-0 p-0 flex flex-wrap gap-2" data-reveal="fade" data-reveal-delay="0.2">
+            {topics.map((topic) => (
+              <li>
+                <a href={`/topics/${topic}/`} class="tag">{topic}</a>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-
-      {topics && topics.length > 0 && (
-        <p class="mt-3 mb-0 text-small text-ink-500 flex flex-wrap gap-x-2">
-          {topics.map((topic) => (
-            <a href={`/topics/${topic}/`} class="text-ink-700 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">#{topic}</a>
-          ))}
-        </p>
-      )}
-
-      {/* A described cover is a real image-search entry; an undescribed one stays
-          decorative (alt="") rather than repeating the h1 to a screen reader. */}
-      {cover && typeof cover !== 'string' && (
-        <figure class="mt-8">
-          <Image src={cover} alt={coverAlt ?? ''} width={1600} class="w-full h-auto" loading="eager" decoding="async" />
-        </figure>
-      )}
     </header>
 
-    {/* Table of contents — collapsible, sits above the body */}
-    {showToc && (
-      <details class="mt-8 border-t border-ink-200 pt-4 group">
-        <summary class="cursor-pointer list-none text-small text-ink-700 hover:text-ink-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm [&::-webkit-details-marker]:hidden flex items-center justify-between">
-          <span class="font-mono uppercase tracking-widest">table of contents</span>
-          <span class="transition-transform group-open:rotate-180 text-ink-500" aria-hidden="true">+</span>
-        </summary>
-        <ol class="mt-4 list-decimal pl-6 m-0 flex flex-col gap-2">
-          {h2s.map((h) => (
-            <li>
-              <a href={`#${h.slug}`} class="text-ink-700 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
-                {h.text}
-              </a>
-            </li>
-          ))}
-        </ol>
-      </details>
+    {/* A described cover is a real image-search entry; an undescribed one stays
+        decorative (alt="") rather than repeating the h1 to a screen reader. */}
+    {cover && typeof cover !== 'string' && (
+      <figure class="shell m-0 mb-16" data-reveal="scale">
+        <Image
+          src={cover}
+          alt={coverAlt ?? ''}
+          width={1600}
+          class="w-full h-auto rounded-[var(--radius-lg)] border border-[var(--line)]"
+          loading="eager"
+          decoding="async"
+        />
+      </figure>
     )}
 
-    <div class="prose mt-10 text-ink-900 max-w-none">
-      <slot />
-    </div>
+    <div class="shell-narrow pb-24 md:pb-32">
+      {showToc && (
+        <details class="toc group">
+          <summary>
+            <span class="mono-micro">Table of contents</span>
+            <span class="toc-mark" aria-hidden="true">+</span>
+          </summary>
+          <ol class="toc-list">
+            {h2s.map((h) => (
+              <li><a href={`#${h.slug}`}>{h.text}</a></li>
+            ))}
+          </ol>
+        </details>
+      )}
 
-    {(prevPost || nextPost) && (
-      <nav aria-label="Pagination" class="mt-16 pt-6 border-t border-ink-200 flex flex-col sm:flex-row sm:justify-between gap-4">
-        <div class="flex-1">
-          {prevPost && (
-            <a href={`/thoughts/${prevPost.id}/`} class="block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
-              <span class="text-small text-ink-500">← previous</span>
-              <span class="block text-ink-900 font-bold text-body mt-1 hover:text-wine-500 transition-colors">{prevPost.data.title}</span>
+      <div class="prose mt-12">
+        <slot />
+      </div>
+
+      {(prevPost || nextPost) && (
+        <nav aria-label="Pagination" class="mt-20 grid gap-4 sm:grid-cols-2">
+          {prevPost ? (
+            <a href={`/thoughts/${prevPost.id}/`} class="card card-interactive pt-5 pb-2">
+              <span class="mono-micro">← Previous</span>
+              <span class="block mt-3 text-paper-50 font-medium leading-snug">
+                {prevPost.data.title}
+              </span>
             </a>
+          ) : (
+            <span></span>
           )}
-        </div>
-        <div class="flex-1 sm:text-right">
           {nextPost && (
-            <a href={`/thoughts/${nextPost.id}/`} class="block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
-              <span class="text-small text-ink-500">next →</span>
-              <span class="block text-ink-900 font-bold text-body mt-1 hover:text-wine-500 transition-colors">{nextPost.data.title}</span>
+            <a href={`/thoughts/${nextPost.id}/`} class="card card-interactive pt-5 pb-2 sm:text-right">
+              <span class="mono-micro">Next →</span>
+              <span class="block mt-3 text-paper-50 font-medium leading-snug">
+                {nextPost.data.title}
+              </span>
             </a>
           )}
-        </div>
-      </nav>
-    )}
+        </nav>
+      )}
 
-    {relatedPosts.length > 0 && (
-      <section class="mt-16 pt-6 border-t border-ink-200">
-        <h2 class="kicker mb-6">related</h2>
-        <ul class="list-none m-0 p-0 flex flex-col">
-          {relatedPosts.map((rp) => (
-            <li class="py-2 border-t border-ink-200 first:border-t-0">
-              <a href={`/thoughts/${rp.id}/`} class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
-                <span class="text-small text-ink-500 mr-2 tabular-nums">{rp.data.publishedDate.slice(0, 4)}</span>
-                {rp.data.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
+      {relatedPosts.length > 0 && (
+        <section class="mt-20">
+          <h2 class="kicker">Related</h2>
+          <ul class="rows mt-6">
+            {relatedPosts.map((rp) => (
+              <li>
+                <a href={`/thoughts/${rp.id}/`} class="row-link">
+                  <span class="row-title text-h3">{rp.data.title}</span>
+                  <time class="row-meta" datetime={rp.data.publishedDate}>
+                    {rp.data.publishedDate.slice(0, 4)}
+                  </time>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
   </article>
 </BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: clamp(7rem, 5rem + 8vw, 10rem) clamp(2.5rem, 2rem + 3vw, 4rem);
+  }
+
+  /* Table of contents. A <details>, not a scroll-spy sidebar — the reading
+   * column is 46rem and a rail beside it would either crowd the text or push
+   * it off-centre, and native <details> costs nothing. */
+  .toc {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background-color: var(--surface-1);
+    padding: 1rem 1.25rem;
+  }
+  .toc summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+  }
+  .toc summary::-webkit-details-marker { display: none; }
+  .toc-mark {
+    color: var(--color-paper-400);
+    transition: transform 0.3s var(--ease-out-quint);
+    font-size: 1.125rem;
+    line-height: 1;
+  }
+  .toc[open] .toc-mark { transform: rotate(45deg); }
+
+  .toc-list {
+    margin: 1.25rem 0 0.25rem;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    list-style: decimal;
+    font-size: var(--text-small);
+  }
+  .toc-list li::marker {
+    color: var(--color-paper-600);
+    font-family: var(--font-mono);
+  }
+  .toc-list a { color: var(--color-paper-400); }
+  .toc-list a:hover { color: var(--color-wine-300); }
+</style>

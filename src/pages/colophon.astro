@@ -12,20 +12,54 @@ const seoData = [
   ]),
 ];
 
+// Phase 20 rewrote most of these entries. The old page claimed one typeface and
+// "two small vanilla scripts" of client JS; both stopped being true the moment
+// the redesign brought in Switzer and GSAP, and a colophon that lies
+// about its own stack is worse than no colophon.
 const stack = [
-  { label: 'framework', value: 'Astro 5', note: 'Static output. The only client JS is two small vanilla enhancement scripts and the analytics tag.' },
-  { label: 'styles', value: 'Tailwind 4', note: 'CSS-first config. One 8-pt spacing scale, one type scale, no plugins.' },
-  { label: 'content', value: 'Keystatic', note: 'Git-based CMS — edits are commits, so there is no database to lose.' },
-  { label: 'type', value: 'Courier Prime', note: 'Self-hosted, one family. Hierarchy comes from size and weight alone.' },
-  { label: 'hosting', value: 'Vercel', note: 'Static build, pushed from main.' },
-  { label: 'forms', value: 'Web3Forms', note: 'The contact form posts straight to email. No backend of my own.' },
+  {
+    label: 'Framework',
+    value: 'Astro 5',
+    note: 'Static output — every public page is pre-rendered HTML. The Vercel adapter exists only for the Keystatic admin.',
+  },
+  {
+    label: 'Styles',
+    value: 'Tailwind 4',
+    note: 'CSS-first config. One 8-pt spacing scale, one type scale, no plugins.',
+  },
+  {
+    label: 'Content',
+    value: 'Keystatic',
+    note: 'Git-based CMS — edits are commits, so there is no database to lose.',
+  },
+  {
+    label: 'Type',
+    value: 'Switzer + Courier Prime',
+    note: 'Switzer (Fontshare) draws the display and the prose; Courier Prime survives from the previous design for labels, dates and code. Both self-hosted, five faces total.',
+  },
+  {
+    label: 'Motion',
+    value: 'GSAP + ScrollTrigger',
+    note: 'Short fades as sections come into view, and nothing else. The word-by-word scroll effects, the split-text statements and the smooth-scroll layer were all cut — they made the page harder to read to prove it had been designed. What is left is decorative too: the hidden resting states are applied only once JavaScript has run, and prefers-reduced-motion turns the whole system off.',
+  },
+  {
+    label: 'Hosting',
+    value: 'Vercel',
+    note: 'Static build, pushed from main.',
+  },
+  {
+    label: 'Forms',
+    value: 'Web3Forms',
+    note: 'The contact form posts straight to email. No backend of my own.',
+  },
 ];
 
 const principles = [
-  'Static HTML before an island. Vanilla JS before a framework. CSS before JS.',
+  'Static HTML before an island. Vanilla JS before a framework. CSS before JS. The motion layer is the one deliberate exception, and it is one file.',
+  'Nothing on the page depends on JavaScript to be readable — turn it off and every word is still there.',
   'Reading time is Math.ceil(words / 200), not a dependency.',
   'One accent colour, used sparingly enough that it still means something.',
-  'Every colour used at body size clears WCAG AA against the paper.',
+  'Every colour used at body size clears WCAG AA against the near-black ground.',
 ];
 ---
 
@@ -36,48 +70,63 @@ const principles = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  <article>
-    <header>
-      <h1 class="display m-0">Colo<span class="flare">phon</span></h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
+  <section class="page-head" data-hero>
+    <div class="shell">
+      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
+        Colophon
+      </h1>
+      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
         What this site is made of, and the rules it follows. Kept here so the
         next person who asks — usually me, a year from now — has an answer.
       </p>
-    </header>
+    </div>
+  </section>
 
-    <section class="mt-20 md:mt-24" aria-labelledby="stack-heading">
-      <h2 id="stack-heading" class="kicker">stack</h2>
-      <dl class="mt-8 m-0">
+  <div class="shell pb-24 md:pb-32">
+    <section aria-labelledby="stack-heading">
+      <h2 id="stack-heading" class="kicker">Stack</h2>
+      <dl class="mt-8 m-0" data-reveal-stagger>
         {stack.map((item) => (
-          <div class="grid md:grid-cols-[8rem_1fr] gap-x-8 gap-y-1 py-6 border-b border-ink-200">
-            <dt class="text-small text-ink-500 uppercase tracking-widest">{item.label}</dt>
+          <div
+            class="grid md:grid-cols-[10rem_1fr] gap-x-10 gap-y-2 py-8 border-b border-[var(--line)]"
+            data-reveal="up"
+          >
+            <dt class="mono-micro">{item.label}</dt>
             <dd class="m-0">
-              <span class="block font-bold text-h3 leading-tight text-ink-900">{item.value}</span>
-              <span class="block mt-2 text-ink-700 text-body max-w-prose">{item.note}</span>
+              <span class="block text-h3 text-paper-50 leading-tight">{item.value}</span>
+              <span class="block mt-3 text-paper-400 text-small leading-relaxed max-w-[62ch]">
+                {item.note}
+              </span>
             </dd>
           </div>
         ))}
       </dl>
     </section>
 
-    <section class="mt-20 md:mt-24" aria-labelledby="rules-heading">
-      <h2 id="rules-heading" class="kicker">rules</h2>
-      <ul class="mt-8 m-0 p-0 list-none flex flex-col gap-4">
+    <section class="section" aria-labelledby="rules-heading">
+      <h2 id="rules-heading" class="kicker">Rules</h2>
+      <ul class="mt-10 m-0 p-0 list-none flex flex-col gap-6" data-reveal-stagger>
         {principles.map((line) => (
-          <li class="flex gap-4 text-ink-700 text-body leading-relaxed max-w-prose">
-            <span class="text-wine-500 shrink-0" aria-hidden="true">—</span>
+          <li class="flex gap-5 text-paper-400 leading-relaxed max-w-[68ch]" data-reveal="up">
+            <span class="text-paper-600 shrink-0 mono" aria-hidden="true">—</span>
             <span>{line}</span>
           </li>
         ))}
       </ul>
     </section>
 
-    <section class="mt-20 md:mt-24" aria-labelledby="source-heading">
-      <h2 id="source-heading" class="kicker">source</h2>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
+    <section aria-labelledby="source-heading">
+      <h2 id="source-heading" class="kicker">Source</h2>
+      <p class="mt-10 mb-0 text-paper-400 leading-relaxed max-w-[62ch]" data-reveal="up">
         Photography is mine. Words are mine. If something here is useful to you,
         take it — no attribution needed.
       </p>
     </section>
-  </article>
+  </div>
 </BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  }
+</style>

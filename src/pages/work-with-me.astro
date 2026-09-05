@@ -36,15 +36,15 @@ const description =
 
 const steps = [
   {
-    title: '1. discovery call',
+    title: 'Discovery call',
     body: '30 minutes, free. Map the problem, weigh options, and define success.',
   },
   {
-    title: '2. proposal',
+    title: 'Proposal',
     body: 'A clear scope — deliverables, milestones, cadence, and a fixed cost. No vague retainers.',
   },
   {
-    title: '3. hands-on',
+    title: 'Hands-on',
     body: 'Advisory sessions, workshops, or embedded product ownership, with transparent checkpoints.',
   },
 ];
@@ -53,32 +53,39 @@ const steps = [
 <BaseLayout title="Work with me" description={description} ogImage="/og/work-with-me.png">
   <JsonLd data={seoData} slot="head" />
 
-  <article>
-    <header>
-      <h1 class="display m-0">Work <span class="flare">with me</span></h1>
-      <div class="prose mt-8 text-ink-700 max-w-none">
+  <section class="page-head" data-hero>
+    <div class="shell">
+      <h1 class="display max-w-[14ch]" data-reveal="up" data-reveal-delay="0.05">
+        Work with me
+      </h1>
+      <div class="prose mt-8 max-w-[54ch]" data-reveal="up" data-reveal-delay="0.1">
         <IntroContent />
       </div>
-    </header>
+      <div class="mt-10 flex flex-wrap gap-3" data-reveal="up" data-reveal-delay="0.16">
+        <a href="#contact" class="btn btn-primary">Start a conversation</a>
+      </div>
+    </div>
+  </section>
 
-    {/* Services — full-width rows, name at h2 scale on the left. */}
+  <div class="shell pb-24 md:pb-32">
+    {/* Services — number on the left, name at h2 scale, copy on the right. */}
     {sortedServices.length > 0 && (
-      <section class="mt-20 md:mt-24" aria-labelledby="services-heading">
-        <h2 id="services-heading" class="kicker">services</h2>
-        <ul class="rows mt-8">
+      <section aria-labelledby="services-heading">
+        <h2 id="services-heading" class="kicker">What I offer</h2>
+        <ul class="rows mt-8" data-reveal-stagger>
           {sortedServices.map((s, i) => (
-            <li class="grid md:grid-cols-[1fr_1.4fr] gap-x-10 gap-y-4 py-8">
-              <div>
-                <span class="block text-small text-wine-500 tabular-nums mb-2">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <h3 class="text-h2 font-bold text-ink-900 m-0 leading-tight text-balance">
-                  {s.data.title}
-                </h3>
+            <li data-reveal="up">
+              <div class="grid md:grid-cols-[1fr_1.3fr] gap-x-12 gap-y-5 py-10">
+                <div>
+                  <span class="mono-micro block mb-4">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 class="m-0 text-h2 leading-[1.05]">{s.data.title}</h3>
+                </div>
+                <p class="m-0 text-paper-400 leading-relaxed self-center">
+                  {s.data.description}
+                </p>
               </div>
-              <p class="text-ink-700 m-0 text-body leading-relaxed self-center">
-                {s.data.description}
-              </p>
             </li>
           ))}
         </ul>
@@ -86,15 +93,17 @@ const steps = [
     )}
 
     {/* How it works */}
-    <section class="mt-20 md:mt-24" aria-labelledby="process-heading">
-      <h2 id="process-heading" class="kicker">
-        how it works
-      </h2>
-      <ol class="m-0 mt-8 p-0 flex flex-col gap-4 list-none">
-        {steps.map((step) => (
-          <li>
-            <span class="font-bold text-wine-500">{step.title}</span>
-            <span class="text-ink-700"> — {step.body}</span>
+    <section class="section" aria-labelledby="process-heading">
+      <h2 id="process-heading" class="kicker">How it works</h2>
+      {/* Phase 21: still three columns, but .card is now a hairline above the
+          block rather than a glass box around it — a ruled three-column spread
+          instead of a feature grid. */}
+      <ol class="mt-12 grid gap-x-8 gap-y-10 md:grid-cols-3 list-none m-0 p-0" data-reveal-stagger>
+        {steps.map((step, i) => (
+          <li class="card pt-5" data-reveal="up">
+            <span class="mono-micro">Step {String(i + 1).padStart(2, '0')}</span>
+            <h3 class="mt-5">{step.title}</h3>
+            <p class="mt-4 mb-0 text-small text-paper-400 leading-relaxed">{step.body}</p>
           </li>
         ))}
       </ol>
@@ -102,18 +111,16 @@ const steps = [
 
     {/* FAQ */}
     {faqItems.length > 0 && (
-      <section class="mt-20 md:mt-24" aria-labelledby="faq-heading">
-        <h2 id="faq-heading" class="kicker">
-          faq
-        </h2>
-        <div class="flex flex-col mt-8">
+      <section class="section-tight" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" class="kicker">Questions</h2>
+        <div class="mt-8" data-reveal-stagger>
           {faqItems.map((item) => (
-            <details class="group py-3 border-t border-ink-200 first:border-t-0 [&_summary::-webkit-details-marker]:hidden">
-              <summary class="flex justify-between items-baseline gap-4 font-bold text-body text-ink-900 cursor-pointer list-none focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
-                <span class="leading-snug">{item.q}</span>
-                <span class="transition-transform group-open:rotate-180 shrink-0 text-ink-500 text-small" aria-hidden="true">+</span>
+            <details class="faq" data-reveal="fade">
+              <summary>
+                <span>{item.q}</span>
+                <span class="faq-mark" aria-hidden="true">+</span>
               </summary>
-              <p class="mt-2 mb-0 text-body text-ink-700 leading-relaxed">{item.a}</p>
+              <p>{item.a}</p>
             </details>
           ))}
         </div>
@@ -121,67 +128,133 @@ const steps = [
     )}
 
     {/* Contact */}
-    <section id="contact" class="mt-20 md:mt-24" aria-labelledby="contact-heading">
-      <h2 id="contact-heading" class="kicker">
-        get in touch
-      </h2>
-      <p class="text-body text-ink-700 mt-8 mb-6">
-        Form, or <a href="mailto:jpaul.fernandez18@gmail.com" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">jpaul.fernandez18@gmail.com</a>.
-      </p>
+    <section id="contact" class="section-tight" aria-labelledby="contact-heading">
+      <h2 id="contact-heading" class="kicker">Get in touch</h2>
 
-      <form
-        action="https://api.web3forms.com/submit"
-        method="POST"
-        class="flex flex-col gap-4"
-      >
-        <input type="hidden" name="access_key" value="3adf4959-3a04-4fc5-a990-e1159605181f" />
-        <input type="hidden" name="redirect" value="https://www.janpaulfernandez.com/thanks/" />
-        <input type="hidden" name="subject" value="New Contact Form Submission from janpaulfernandez.com" />
-        <input type="hidden" name="from_name" value="Jan Paul Fernandez Website" />
-        <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
-
+      <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
-          <label for="name" class="block text-small text-ink-700 mb-1">name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            autocomplete="name"
-            required
-            class="w-full bg-paper-50 border border-ink-200 px-3 py-3 text-body text-ink-900 focus:outline-none focus:border-ink-900 transition-colors"
-          />
+          <p class="statement-sm max-w-[16ch]" data-reveal="up">
+            Tell me what you're trying to build.
+          </p>
+          <p class="mt-8 mb-0 text-paper-400 text-small">
+            Or skip the form —
+            <a href="mailto:jpaul.fernandez18@gmail.com" class="link">
+              jpaul.fernandez18@gmail.com
+            </a>
+          </p>
         </div>
 
-        <div>
-          <label for="email" class="block text-small text-ink-700 mb-1">email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            autocomplete="email"
-            required
-            class="w-full bg-paper-50 border border-ink-200 px-3 py-3 text-body text-ink-900 focus:outline-none focus:border-ink-900 transition-colors"
-          />
-        </div>
-
-        <div>
-          <label for="message" class="block text-small text-ink-700 mb-1">message</label>
-          <textarea
-            id="message"
-            name="message"
-            required
-            rows="4"
-            class="w-full bg-paper-50 border border-ink-200 px-3 py-3 text-body text-ink-900 focus:outline-none focus:border-ink-900 transition-colors"
-          ></textarea>
-        </div>
-
-        <button
-          type="submit"
-          class="self-start bg-wine-500 hover:bg-wine-400 text-paper-50 font-bold px-6 py-3 cursor-pointer transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
+        <form
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          class="panel p-6 md:p-8 flex flex-col gap-5"
+          data-reveal="up"
         >
-          send →
-        </button>
-      </form>
+          <input type="hidden" name="access_key" value="3adf4959-3a04-4fc5-a990-e1159605181f" />
+          <input type="hidden" name="redirect" value="https://www.janpaulfernandez.com/thanks/" />
+          <input type="hidden" name="subject" value="New Contact Form Submission from janpaulfernandez.com" />
+          <input type="hidden" name="from_name" value="Jan Paul Fernandez Website" />
+          <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
+
+          <div>
+            <label for="name" class="field-label">Name</label>
+            <input type="text" id="name" name="name" autocomplete="name" required class="field" />
+          </div>
+
+          <div>
+            <label for="email" class="field-label">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required class="field" />
+          </div>
+
+          <div>
+            <label for="message" class="field-label">Message</label>
+            <textarea id="message" name="message" required rows="5" class="field"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary self-start">Send it →</button>
+        </form>
+      </div>
     </section>
-  </article>
+  </div>
 </BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
+  .statement-sm {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-paper-50);
+    margin: 0;
+  }
+
+  /* ---- FAQ ------------------------------------------------------------- */
+  .faq { border-bottom: 1px solid var(--line); }
+  .faq summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: var(--text-body);
+    font-weight: 500;
+    color: var(--color-paper-100);
+    transition: color 0.22s var(--ease-out-quint);
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary:hover { color: var(--color-paper-50); }
+  .faq-mark {
+    flex-shrink: 0;
+    color: var(--color-paper-400);
+    font-size: 1.125rem;
+    line-height: 1;
+    transition: transform 0.3s var(--ease-out-quint);
+  }
+  .faq[open] .faq-mark { transform: rotate(45deg); }
+  .faq[open] summary { color: var(--color-paper-50); }
+  .faq p {
+    margin: 0 0 1.5rem;
+    max-width: 68ch;
+    color: var(--color-paper-400);
+    line-height: 1.7;
+  }
+
+  /* ---- Form ------------------------------------------------------------ */
+  .field-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-paper-400);
+  }
+  .field {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background-color: var(--color-ink-700);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--color-paper-50);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    transition: border-color 0.22s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint);
+  }
+  .field::placeholder { color: var(--color-paper-600); }
+  .field:hover { border-color: var(--line-strong); }
+  /* The focus ring is one of the three places wine survives Phase 21 — it is
+   * the accent doing its actual job, telling you where the keyboard is. */
+  .field:focus {
+    border-color: var(--color-wine-400);
+    background-color: var(--color-ink-800);
+  }
+  textarea.field { resize: vertical; min-height: 8rem; }
+</style>

@@ -57,11 +57,13 @@
     margin: 0;
     padding: 0;
     border: 0;
-    background: rgba(28, 10, 16, 0.96);
+    background: rgba(5, 5, 5, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: var(--color-paper-100);
     z-index: 9999;
   }
-  .lightbox-dialog::backdrop { background: rgba(28, 10, 16, 0.96); }
+  .lightbox-dialog::backdrop { background: rgba(5, 5, 5, 0.94); }
 
   .lightbox-inner {
     display: flex;
@@ -76,18 +78,24 @@
 
   .lightbox-close,
   .lightbox-btn {
-    background: transparent;
-    border: 1px solid rgba(250, 246, 244, 0.4);
+    display: grid;
+    place-items: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    background: var(--surface-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
     color: var(--color-paper-100);
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.875rem;
     cursor: pointer;
     font-family: var(--font-body);
+    transition: background-color 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint), color 0.22s var(--ease-out-quint);
   }
   .lightbox-close:hover,
   .lightbox-btn:hover {
-    border-color: var(--color-wine-300);
-    color: var(--color-wine-300);
-    background: transparent;
+    border-color: var(--line-strong);
+    background: var(--surface-2);
+    color: var(--color-paper-50);
   }
   .lightbox-close:focus-visible,
   .lightbox-btn:focus-visible,
@@ -111,6 +119,7 @@
     max-height: calc(100vh - 8rem);
   }
   .lightbox-img {
+    border-radius: var(--radius-sm);
     max-width: 100%;
     max-height: calc(100vh - 8rem);
     width: auto;
@@ -131,11 +140,11 @@
     text-align: center;
     flex-shrink: 0;
   }
-  .lightbox-caption { color: rgba(250, 246, 244, 0.6); }
+  .lightbox-caption { color: var(--color-paper-400); }
   .lightbox-link {
     color: var(--color-paper-100);
     text-decoration: none;
-    border-bottom: 1px solid rgba(250, 246, 244, 0.4);
+    border-bottom: 1px solid var(--line-strong);
   }
   .lightbox-link:hover {
     color: var(--color-wine-300);
@@ -152,7 +161,8 @@
     flex-shrink: 0;
   }
   .lightbox-counter {
-    color: rgba(250, 246, 244, 0.6);
+    color: var(--color-paper-400);
+    font-family: var(--font-mono);
     min-width: 5rem;
     text-align: center;
     font-size: var(--text-small);

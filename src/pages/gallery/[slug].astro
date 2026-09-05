@@ -107,50 +107,59 @@ const seoData = [
   <JsonLd slot="head" data={seoData} />
 
   <article>
-    <p class="m-0 text-small text-ink-500">
-      <a href="/gallery/" class="text-ink-500 hover:text-ink-900 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← gallery</a>
-    </p>
+    <header class="page-head" data-hero>
+      <div class="shell">
+        <a href="/gallery/" class="mono-micro hover:text-paper-50" data-reveal="fade">
+          ← Gallery
+        </a>
 
-    <header class="mt-3">
-      <p class="m-0 text-small text-ink-500 tabular-nums">
-        <time datetime={item.data.publishedDate}>{dateFormatted}</time>
-        <span class="mx-1" aria-hidden="true">·</span>
-        <span>{photoList.length} photos</span>
-      </p>
-      <h1 class="text-ink-900 m-0 mt-2">{item.data.title}</h1>
+        <h1 class="display mt-6 max-w-[16ch]" data-reveal="up" data-reveal-delay="0.05">
+          {item.data.title}
+        </h1>
 
-      {item.data.description && (
-        <p class="mt-3 mb-0 text-ink-700 text-body leading-relaxed">{item.data.description}</p>
-      )}
+        {item.data.description && (
+          <p class="lead mt-8 max-w-[52ch]" data-reveal="up" data-reveal-delay="0.1">
+            {item.data.description}
+          </p>
+        )}
 
-      {item.data.tags && item.data.tags.length > 0 && (
-        <p class="m-0 mt-4 text-small text-ink-500 flex flex-wrap gap-x-2">
-          {item.data.tags.map((tag) => <span>#{tag}</span>)}
+        <p class="mono-micro mt-8" data-reveal="fade" data-reveal-delay="0.16">
+          <time datetime={item.data.publishedDate}>{dateFormatted}</time>
+          <span class="mx-2 text-paper-600" aria-hidden="true">/</span>
+          <span>{photoList.length} photos</span>
         </p>
-      )}
+
+        {item.data.tags && item.data.tags.length > 0 && (
+          <ul class="mt-6 list-none m-0 p-0 flex flex-wrap gap-2" data-reveal="fade" data-reveal-delay="0.2">
+            {item.data.tags.map((tag) => <li class="tag">{tag}</li>)}
+          </ul>
+        )}
+      </div>
     </header>
 
     {/* Photo grid — true aspect ratios, laid out by CSS columns. */}
-    <div class="gallery-masonry mt-10">
-      {photoList.map((photo, idx) => (
-        <a
-          href={photo.fullSrc}
-          class="photo-trigger gallery-masonry-item"
-          data-src={photo.fullSrc}
-          data-alt={altFor(photo, idx)}
-          data-caption={photo.caption}
-          aria-label={`View larger: ${altFor(photo, idx)}`}
-        >
-          <Image
-            src={photo.image}
-            alt={altFor(photo, idx)}
-            class="gallery-masonry-img"
-            width={640}
-            loading={idx < 6 ? 'eager' : 'lazy'}
-            decoding="async"
-          />
-        </a>
-      ))}
+    <div class="shell pb-24 md:pb-32">
+      <div class="gallery-masonry">
+        {photoList.map((photo, idx) => (
+          <a
+            href={photo.fullSrc}
+            class="photo-trigger gallery-masonry-item"
+            data-src={photo.fullSrc}
+            data-alt={altFor(photo, idx)}
+            data-caption={photo.caption}
+            aria-label={`View larger: ${altFor(photo, idx)}`}
+          >
+            <Image
+              src={photo.image}
+              alt={altFor(photo, idx)}
+              class="gallery-masonry-img"
+              width={640}
+              loading={idx < 6 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </a>
+        ))}
+      </div>
     </div>
   </article>
 
@@ -158,12 +167,19 @@ const seoData = [
 </BaseLayout>
 
 <style>
+  .page-head {
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(2.5rem, 2rem + 3vw, 4rem);
+  }
+
   .gallery-masonry {
     columns: 1;
     column-gap: 1rem;
   }
   @media (min-width: 640px) {
     .gallery-masonry { columns: 2; }
+  }
+  @media (min-width: 1024px) {
+    .gallery-masonry { columns: 3; }
   }
   /* An <a> now, not a <button>: the href is the full-size image, so the wall
      still works with JS off. These reset the anchor back to a bare frame. */
@@ -175,22 +191,28 @@ const seoData = [
     margin: 0 0 1rem;
     padding: 0;
     border: 0;
-    background: var(--color-ink-200);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
     cursor: zoom-in;
     overflow: hidden;
     break-inside: avoid;
     -webkit-column-break-inside: avoid;
   }
-  .gallery-masonry-item:focus-visible {
-    outline: 2px solid var(--color-wine-500);
-    outline-offset: 2px;
-  }
   .gallery-masonry-img {
     display: block;
     width: 100%;
     height: auto;
-    transition: opacity 0.2s ease-out;
+    /* Matches the wall on /gallery: held back until hovered, so one frame at
+     * a time carries the stage colour instead of all of them at once. */
+    filter: grayscale(0.7) brightness(0.85);
+    transition: filter 0.4s var(--ease-out-quint);
   }
-  /* Phase 14: the hover zoom is gone — a gentle dim alone marks the hover. */
-  .gallery-masonry-item:hover .gallery-masonry-img { opacity: 0.85; }
+  .gallery-masonry-item:hover .gallery-masonry-img,
+  .gallery-masonry-item:focus-visible .gallery-masonry-img {
+    filter: grayscale(0) brightness(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-masonry-img { filter: none; }
+  }
 </style>

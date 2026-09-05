@@ -17,15 +17,15 @@ interface Props {
 const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.props;
 ---
 
-<article class="group relative py-8">
-  <div class="flex-1 min-w-0 flex flex-col gap-2">
-    <p class="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-small text-ink-500 tabular-nums">
-      <span class="text-wine-500">{type}</span>
-      <span aria-hidden="true">·</span>
+<article class="post-row-inner group">
+  <div class="min-w-0 flex flex-col gap-3">
+    <p class="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 mono-micro">
+      <span class="text-paper-400">{type}</span>
+      <span aria-hidden="true" class="text-paper-600">/</span>
       <time datetime={date}>{formatDate(date)}</time>
       {readingTime !== undefined && (
         <>
-          <span aria-hidden="true">·</span>
+          <span aria-hidden="true" class="text-paper-600">/</span>
           <span>{readingTime} min</span>
         </>
       )}
@@ -33,24 +33,22 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
 
     {/* h2, not h3: both callers (/thoughts, /topics/[topic]) render this
         directly under the page h1, and h1 -> h3 is a heading-level skip. */}
-    <h2 class="font-bold text-ink-900 leading-tight m-0 text-h3 text-balance">
-      <a href={url} class="post-link no-underline text-ink-900 group-hover:text-wine-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">
+    <h2 class="m-0 text-h3 leading-tight">
+      <a href={url} class="post-link group-hover:text-wine-300 transition-colors">
         {title}
       </a>
     </h2>
 
     {excerpt && (
-      <p class="text-ink-700 text-body leading-relaxed line-clamp-2 m-0 max-w-prose">
-        {excerpt}
-      </p>
+      <p class="m-0 text-paper-400 leading-relaxed max-w-[62ch]">{excerpt}</p>
     )}
 
     {topics.length > 0 && (
-      <p class="m-0 flex flex-wrap gap-x-2 text-small text-ink-500">
+      <ul class="m-0 p-0 mt-1 list-none flex flex-wrap gap-2">
         {topics.map((topic) => (
-          <span>#{topic}</span>
+          <li class="tag">{topic}</li>
         ))}
-      </p>
+      </ul>
     )}
   </div>
 
@@ -58,18 +56,50 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
     <Image
       src={cover}
       alt=""
-      width={120}
-      height={80}
-      class="hidden sm:block w-20 h-14 shrink-0 object-cover absolute right-0 top-8"
+      width={320}
+      height={224}
+      class="post-cover"
     />
   )}
 </article>
 
 <style>
-  /* Stretch the title link over the whole row (topics aren't links, so nothing is lost). */
+  .post-row-inner {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-block: clamp(1.75rem, 1.25rem + 1.6vw, 2.5rem);
+  }
+
+  /* Stretch the title link over the whole row. The topic chips are plain
+   * <li>s here rather than links, so nothing is swallowed by the overlay. */
   .post-link::after {
     content: "";
     position: absolute;
     inset: 0;
+  }
+
+  .post-cover {
+    display: none;
+    width: 10rem;
+    height: 7rem;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+    /* Only lightly held back: several covers are night shots that vanish
+     * entirely against the ground at a heavier dim. */
+    filter: grayscale(0.85) brightness(1.05);
+    transition: filter 0.4s var(--ease-out-quint);
+  }
+  .group:hover .post-cover { filter: grayscale(0) brightness(1); }
+
+  @media (min-width: 40rem) {
+    .post-cover { display: block; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .post-cover { filter: none; }
   }
 </style>

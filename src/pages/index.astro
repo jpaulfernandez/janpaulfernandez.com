@@ -1,45 +1,48 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { person, webSite, profilePage, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects } from '../lib/projects';
+import { formatDate } from '../lib/dates';
 
-// Fetch Keystatic Home singleton
 const homeEntry = await getEntry('home', 'home');
 if (!homeEntry) {
   throw new Error('Home page singleton is missing. Run the seed scripts first.');
 }
 const { heroGreeting, heroIntro } = homeEntry.data;
 
-// Display hero: the greeting's last word carries the wine flare, so the accent
-// tracks whatever Paul writes in Keystatic instead of being hardcoded here.
-const greetingWords = heroGreeting.trim().split(' ');
-const greetingHead = greetingWords.slice(0, -1).join(' ');
-const greetingFlare = greetingWords[greetingWords.length - 1];
-
-// Latest Now entries -> a rail slice on home that leads into the /now timeline.
-// Noon pins the date so timezone offsets can't shift it a day (same move as /now).
-function formatNowDate(date: string | Date) {
-  const str = typeof date === 'string' ? date : date.toISOString().slice(0, 10);
-  return new Date(`${str}T12:00:00`).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
 const latestNowEntries = [...(await getCollection('now'))]
   .sort((a, b) => b.data.date.localeCompare(a.data.date))
-  .slice(0, 3)
-  .map((entry) => ({ ...entry, displayDate: formatNowDate(entry.data.date) }));
+  .slice(0, 3);
 
-// Latest thoughts for the Writing index (5 rows).
-const latestThoughts = (await getPublishedThoughts()).slice(0, 5);
-
-// Latest projects for the Projects index (3 rows).
+const latestThoughts = (await getPublishedThoughts()).slice(0, 4);
 const latestProjects = (await getProjects()).slice(0, 3);
+
+const services = (await getCollection('services')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// A contact sheet for the gallery teaser. Frames are interleaved across sets
+// so the row never shows the same concert twice in a row.
+const gallerySets = (await getCollection('gallery')).sort(
+  (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
+);
+const stripShots = gallerySets
+  .flatMap((set, setIndex) =>
+    set.data.photos.slice(1, 4).map((photo, i) => ({
+      image: photo.image as unknown as ImageMetadata,
+      caption: photo.caption || set.data.title,
+      setTitle: set.data.title,
+      // Interleave: order by frame position first, set second.
+      order: i * 10 + setIndex,
+    }))
+  )
+  .sort((a, b) => a.order - b.order);
+
+const photoCount = gallerySets.reduce((n, set) => n + set.data.photos.length, 0);
 
 const seoData = [
   webSite(),
@@ -56,54 +59,75 @@ const seoData = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  <article>
-    {/* Identity: display statement → bio. */}
-    <header>
-      <h1 class="display m-0">
-        {greetingHead && <>{greetingHead}{' '}</>}<span class="flare">{greetingFlare}</span>
+  {/* ---------------------------------------------------------------------
+      HERO. The only [data-hero] on the site: its children animate on load
+      rather than on scroll, because they are already in view.
+     --------------------------------------------------------------------- */}
+  <section class="hero" data-hero>
+    <div class="shell">
+      <p class="mono-micro flex items-center gap-3" data-reveal="fade">
+        <span class="h-px w-8 bg-[var(--line-strong)]"></span>
+        Technologist · Philippines
+      </p>
+
+      <h1 class="display mt-8 max-w-[16ch]" data-reveal="up" data-reveal-delay="0.05">
+        {heroGreeting}
       </h1>
-      {heroIntro && (
-        <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">{heroIntro}</p>
-      )}
-    </header>
 
-    {/* Now — a slice of the /now rail; the newest entry wears the wine halo. */}
-    {latestNowEntries.length > 0 && (
-      <section class="mt-20 md:mt-24" aria-labelledby="now-heading">
-        <h2 id="now-heading" class="kicker">now</h2>
-        <div class="rail mt-6">
-          {latestNowEntries.map((entry) => (
-            <article class="rail-item">
-              <time class="rail-date" datetime={entry.data.date}>{entry.displayDate}</time>
-              <h3 class="text-h3 font-bold text-ink-900 leading-snug m-0">
-                <a
-                  href="/now/"
-                  class="text-ink-900 no-underline hover:text-wine-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-                >
-                  {entry.data.title || entry.id}
-                </a>
-              </h3>
-            </article>
-          ))}
+      <p class="lead mt-8 max-w-[46ch]" data-reveal="up" data-reveal-delay="0.12">
+        I help teams figure out what to build. Most of that work turns out to be
+        getting everyone to agree on what the words mean.
+      </p>
+
+      {/* Phase 21: the white pill + ghost pill pair is gone. A personal site
+          does not have a primary and a secondary conversion action; it has
+          places to go next. These are the same two destinations as links. */}
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3" data-reveal="up" data-reveal-delay="0.18">
+        <a href="/thoughts/" class="link-arrow">Read the writing</a>
+        <a href="/work-with-me/" class="link-arrow">Work with me</a>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------------------------------------------------------------------
+      MANIFESTO. The bio, set as a statement.
+
+      Phase 21 cut the word-by-word scroll brightening that used to run here.
+      It was Linear's "Designed in California" section almost line for line,
+      and the effect also meant a reader who stopped scrolling was left with a
+      half-lit sentence — decoration that made the copy harder to read.
+     --------------------------------------------------------------------- */}
+  {heroIntro && (
+    <section class="section" aria-labelledby="intro-heading">
+      <div class="shell">
+        <h2 id="intro-heading" class="kicker">Who I am</h2>
+        <p class="statement mt-10" data-reveal="up">{heroIntro}</p>
+        <a href="/about/" class="link-arrow mt-10">The longer version</a>
+      </div>
+    </section>
+  )}
+
+  {/* ---------------------------------------------------------------------
+      WRITING
+     --------------------------------------------------------------------- */}
+  {latestThoughts.length > 0 && (
+    <section class="section-tight" aria-labelledby="writing-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="writing-heading" class="kicker flex-1">Writing</h2>
+          <a href="/thoughts/" class="link-arrow shrink-0">All writing</a>
         </div>
-        <a
-          href="/now/"
-          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-        >
-          see the full timeline →
-        </a>
-      </section>
-    )}
 
-    {/* Writing index */}
-    {latestThoughts.length > 0 && (
-      <section class="mt-16 md:mt-20" aria-labelledby="writing-heading">
-        <h2 id="writing-heading" class="kicker">writing</h2>
-        <ul class="rows mt-6">
+        <ul class="rows mt-8" data-reveal-stagger>
           {latestThoughts.map((post) => (
-            <li>
+            <li data-reveal="up">
               <a href={`/thoughts/${post.id}/`} class="row-link">
-                <span class="font-bold">{post.data.title}</span>
+                <span class="min-w-0">
+                  <span class="row-title block">{post.data.title}</span>
+                  <span class="block mt-2 text-small text-paper-400 max-w-[60ch]">
+                    {post.data.excerpt}
+                  </span>
+                </span>
                 <time class="row-meta" datetime={post.data.publishedDate}>
                   {post.data.publishedDate.slice(0, 4)}
                 </time>
@@ -111,62 +135,209 @@ const seoData = [
             </li>
           ))}
         </ul>
-        <a
-          href="/thoughts/"
-          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-        >
-          all thoughts →
-        </a>
-      </section>
-    )}
+      </div>
+    </section>
+  )}
 
-    {/* Projects index */}
-    {latestProjects.length > 0 && (
-      <section class="mt-16 md:mt-20" aria-labelledby="projects-heading">
-        <h2 id="projects-heading" class="kicker">projects</h2>
-        <ul class="rows mt-6">
-          {latestProjects.map((project) => (
-            <li>
-              {project.data.link ? (
-                <a href={project.data.link} target="_blank" rel="noopener noreferrer" class="row-link">
-                  <span>
-                    <span class="font-bold">{project.data.title}</span>
-                    <span class="block mt-1 text-ink-500 text-small">{project.data.description}</span>
-                  </span>
-                  <span class="row-meta" aria-hidden="true">↗</span>
-                </a>
-              ) : (
-                <div class="row-link">
-                  <span>
-                    <span class="font-bold">{project.data.title}</span>
-                    <span class="block mt-1 text-ink-500 text-small">{project.data.description}</span>
-                  </span>
-                </div>
-              )}
+  {/* ---------------------------------------------------------------------
+      WHAT I DO.
+
+      Phase 21: this was three numbered glass cards in a 3-up grid, which is
+      the shape of a pricing table no matter what the cards say. It is now the
+      same ruled list the writing and the projects use — three things I do,
+      in one column, in the site's own index pattern.
+     --------------------------------------------------------------------- */}
+  {services.length > 0 && (
+    <section class="section" aria-labelledby="services-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="services-heading" class="kicker flex-1">What I do</h2>
+          <a href="/work-with-me/" class="link-arrow shrink-0">How we'd work together</a>
+        </div>
+
+        <ul class="rows mt-8" data-reveal-stagger>
+          {services.map((service) => (
+            <li data-reveal="up">
+              <div class="py-6 md:py-8">
+                <h3 class="m-0">{service.data.title}</h3>
+                <p class="mt-3 mb-0 text-small text-paper-400 leading-relaxed max-w-[60ch]">
+                  {service.data.description}
+                </p>
+              </div>
             </li>
           ))}
         </ul>
-        <a
-          href="/projects/"
-          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-        >
-          all projects →
-        </a>
-      </section>
-    )}
-
-    {/* Work — the one CTA on the page, so it gets the wine block treatment. */}
-    <section class="mt-16 md:mt-20" aria-labelledby="work-heading">
-      <h2 id="work-heading" class="kicker">work</h2>
-      <p class="mt-6 mb-0 text-ink-900 text-h3 font-bold leading-snug max-w-prose">
-        Consultation, workshops, and <span class="flare">fractional product ownership</span>.
-      </p>
-      <a
-        href="/work-with-me/"
-        class="inline-block mt-6 px-6 py-3 bg-wine-500 text-paper-50 no-underline hover:bg-wine-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
-      >
-        work with me →
-      </a>
+      </div>
     </section>
-  </article>
+  )}
+
+  {/* ---------------------------------------------------------------------
+      NOW
+     --------------------------------------------------------------------- */}
+  {latestNowEntries.length > 0 && (
+    <section class="section-tight" aria-labelledby="now-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="now-heading" class="kicker flex-1">Now</h2>
+          <a href="/now/" class="link-arrow shrink-0">Full timeline</a>
+        </div>
+
+        <div class="rail mt-10" data-reveal-stagger>
+          {latestNowEntries.map((entry) => (
+            <article class="rail-item" data-reveal="up">
+              <time class="rail-date" datetime={entry.data.date}>
+                {formatDate(entry.data.date)}
+              </time>
+              <h3 class="m-0">
+                <a href="/now/" class="hover:text-wine-300 transition-colors">
+                  {entry.data.title || entry.id}
+                </a>
+              </h3>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* ---------------------------------------------------------------------
+      PROJECTS. Hidden entirely when the shelf is empty — an empty section
+      with a "nothing here yet" is worse than no section.
+     --------------------------------------------------------------------- */}
+  {latestProjects.length > 0 && (
+    <section class="section-tight" aria-labelledby="projects-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="projects-heading" class="kicker flex-1">Projects</h2>
+          <a href="/projects/" class="link-arrow shrink-0">All projects</a>
+        </div>
+
+        <ul class="rows mt-8" data-reveal-stagger>
+          {latestProjects.map((project) => {
+            const body = (
+              <span class="min-w-0">
+                <span class="row-title block">{project.data.title}</span>
+                <span class="block mt-2 text-small text-paper-400 max-w-[60ch]">
+                  {project.data.description}
+                </span>
+              </span>
+            );
+            return (
+              <li data-reveal="up">
+                {project.data.link ? (
+                  <a
+                    href={project.data.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="row-link"
+                  >
+                    {body}
+                    <span class="row-meta" aria-hidden="true">↗</span>
+                  </a>
+                ) : (
+                  <div class="row-link">{body}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {/* ---------------------------------------------------------------------
+      GALLERY.
+
+      Phase 21: this was a full-bleed infinite marquee — which is the logo-wall
+      pattern, borrowed and pointed at concert photographs. It is now a static
+      contact sheet inside the page's own column: six frames, in colour, that
+      hold still long enough to be looked at.
+     --------------------------------------------------------------------- */}
+  {stripShots.length > 0 && (
+    <section class="section" aria-labelledby="gallery-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="gallery-heading" class="kicker flex-1">Gallery</h2>
+          <a href="/gallery/" class="link-arrow shrink-0">
+            All {photoCount} photographs
+          </a>
+        </div>
+        <p class="statement-sm mt-10 max-w-[20ch]" data-reveal="up">
+          Concerts, mostly. Shot from the pit.
+        </p>
+
+        <a
+          href="/gallery/"
+          class="mt-12 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6"
+          aria-label="Browse the gallery"
+          data-reveal-stagger
+        >
+          {stripShots.slice(0, 6).map((shot) => (
+            <Image
+              src={shot.image}
+              alt={shot.caption}
+              widths={[440]}
+              sizes="(min-width: 64rem) 14rem, (min-width: 40rem) 30vw, 45vw"
+              loading="lazy"
+              class="photo-sheet__frame"
+              data-reveal="fade"
+            />
+          ))}
+        </a>
+      </div>
+    </section>
+  )}
 </BaseLayout>
+
+<style>
+  /* ---- Hero ------------------------------------------------------------ */
+  /* Phase 21 dropped two things here.
+   *
+   * The 88svh min-height: a hero sized to the viewport is a landing page
+   * holding the fold. Without it the page opens as a document — the name, the
+   * sentence, and the start of the next section, all at once.
+   *
+   * .hero__glow: a pink radial bloom behind the headline. An ambient coloured
+   * gradient is the most legible "AI-generated" tell on a page, and it was
+   * doing nothing a reader would miss. */
+  .hero {
+    padding-block: clamp(3rem, 2rem + 6vw, 6rem) clamp(3rem, 2rem + 4vw, 5rem);
+  }
+  /* ---- Statements ------------------------------------------------------ */
+  /* The scroll-brightened paragraph. Bigger than prose, smaller than display —
+   * it has to hold 60+ words without turning into a wall. */
+  .statement {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.05rem + 1.9vw, 2.5rem);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.03em;
+    max-width: 30ch;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  /* The section-opening line. Short, so it can run at heading scale. */
+  .statement-sm {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-paper-50);
+    margin: 0;
+  }
+
+  /* ---- Contact sheet ---------------------------------------------------
+   * Square-cropped, square-cornered, and in colour at rest. The old strip
+   * desaturated every frame and gave the colour back on hover, which is a
+   * gallery holding its own content hostage to an interaction. */
+  .photo-sheet__frame {
+    aspect-ratio: 1;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    opacity: 0.85;
+    transition: opacity 0.3s var(--ease-out-quint);
+  }
+  .photo-sheet__frame:hover { opacity: 1; }
+</style>

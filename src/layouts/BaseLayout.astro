@@ -1,12 +1,6 @@
 ---
 import '../styles/global.css';
 
-// Import the exact critical font files as URL assets so the preload hrefs
-// always match the hashed filenames Astro/Vite emits at build time.
-// Phase 8: Courier Prime replaces Archivo Black + Lato; preload 400 + 700.
-import courierPrime400Woff2 from '@fontsource/courier-prime/files/courier-prime-latin-400-normal.woff2?url';
-import courierPrime700Woff2 from '@fontsource/courier-prime/files/courier-prime-latin-700-normal.woff2?url';
-
 interface Props {
   title: string;
   description: string;
@@ -21,7 +15,16 @@ interface Props {
   bodyClass?: string;
 }
 
-const { title, description, ogImage, ogImageAlt, type = 'website', isHome = false, noCanonical = false, bodyClass } = Astro.props;
+const {
+  title,
+  description,
+  ogImage,
+  ogImageAlt,
+  type = 'website',
+  isHome = false,
+  noCanonical = false,
+  bodyClass,
+} = Astro.props;
 
 // Google cuts titles around 60 characters. When the " — Paul Fernandez" suffix
 // is what pushes a title past that, drop the suffix rather than let the suffix
@@ -30,21 +33,28 @@ const suffixed = `${title} — Paul Fernandez`;
 const pageTitle = isHome || suffixed.length > 60 ? title : suffixed;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-// The /og/*.png route generates real 1200x630 cards at build time; /og/home.png
-// is the site-wide fallback for any page without its own card. (There is no
-// og-default.png in public/ — pointing at one shipped a 404 on every share.)
 const resolvedOgImage = new URL(ogImage ?? '/og/home.png', Astro.site);
 
 // Hrefs carry the trailing slash so every internal link points at the same URL
 // the page declares as canonical — otherwise the whole link graph lands one
 // redirect short of the indexed URL.
 const navItems = [
-  { href: '/about/', label: 'me' },
-  { href: '/work-with-me/', label: 'work' },
-  { href: '/projects/', label: 'projects' },
-  { href: '/thoughts/', label: 'thoughts' },
-  { href: '/gallery/', label: 'gallery' },
-  { href: '/now/', label: 'now' },
+  { href: '/about/', label: 'About' },
+  { href: '/thoughts/', label: 'Writing' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/gallery/', label: 'Gallery' },
+  { href: '/now/', label: 'Now' },
+  // Phase 21: "Work with me" was a filled button pinned to the top-right of a
+  // floating pill nav — the most recognisable SaaS chrome there is. It is a
+  // page like any other, so it is now a link like any other.
+  { href: '/work-with-me/', label: 'Work with me' },
+];
+
+const elsewhere = [
+  { href: 'https://www.linkedin.com/in/jpaulfernandez/', label: 'LinkedIn' },
+  { href: 'https://www.instagram.com/goofffball/', label: 'Instagram' },
+  { href: 'mailto:jpaul.fernandez18@gmail.com', label: 'Email' },
+  { href: '/rss.xml', label: 'RSS' },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -55,20 +65,21 @@ const isNavActive = (href: string) => {
   // Every href ends in "/", so a prefix match covers the section's children too.
   return currentPath.startsWith(href);
 };
-
-const secondaryLinks = [
-  { href: '/colophon/', label: 'colophon' },
-  { href: '/rss.xml', label: 'rss' },
-  { href: 'mailto:jpaul.fernandez18@gmail.com', label: 'email' },
-  { href: 'https://www.linkedin.com/in/jpaulfernandez/', label: 'linkedin', external: true },
-  { href: 'https://www.instagram.com/goofffball/', label: 'instagram', external: true },
-];
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/*
+      Must run before first paint. global.css hides every [data-reveal] behind
+      a `.js` ancestor selector, so this class is what arms the animations —
+      and its absence is what guarantees the page is legible when the motion
+      bundle fails to load, is blocked, or throws.
+    */}
+    <script is:inline>document.documentElement.classList.add('js');</script>
+
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {!noCanonical && <link rel="canonical" href={canonicalURL} />}
@@ -92,9 +103,9 @@ const secondaryLinks = [
     <meta name="twitter:image" content={resolvedOgImage} />
     <meta name="twitter:image:alt" content={ogImageAlt ?? pageTitle} />
 
-    <!-- Favicon — magenta square (Phase 8). -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#FAF6F4" />
+    <meta name="theme-color" content="#050505" />
+    <meta name="color-scheme" content="dark" />
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="Paul Fernandez" href="/rss.xml" />
@@ -103,9 +114,10 @@ const secondaryLinks = [
     <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
     <link rel="alternate" type="text/plain" href="/llms-full.txt" title="llms-full.txt" />
 
-    <!-- Critical font preloads (Courier Prime 400 + 700, self-hosted @fontsource). -->
-    <link rel="preload" as="font" type="font/woff2" href={courierPrime400Woff2} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={courierPrime700Woff2} crossorigin />
+    <!-- Critical font preloads. Switzer 500 draws every heading above the fold;
+         400 draws the body under it. The other three faces load on demand. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/switzer-500.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/switzer-400.woff2" crossorigin />
 
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-KJX3LCC0SZ"></script>
@@ -119,40 +131,33 @@ const secondaryLinks = [
 
     <slot name="head" />
   </head>
+
   <body class={`min-h-screen flex flex-col ${bodyClass ?? ''}`}>
     <a href="#main" class="skip-link">Skip to content</a>
 
     {/*
-      Phase 8 shell — floating sidebar anchored next to main content.
-        • Mobile (< lg): site header sits inline at the top of the body, right-aligned.
-        • lg+: sidebar sits directly to the left of the main content column (tight gap),
-          vertically centered in the viewport, right-aligned toward the content.
-        • Main content has a generous reading width (max-w-3xl).
+      Phase 21 shell. The Phase 20 nav was a floating, blurred, glass pill that
+      solidified on scroll and hid itself on the way down, with a filled CTA
+      pinned beside it. That is the chrome of a product landing page, and it was
+      the loudest single thing making this site read as one.
+
+      What replaces it is a masthead: it sits at the top of the document, in
+      normal flow, and scrolls away with everything else. A rule underneath, a
+      name on the left, the sections on the right. No blur, no fill, no pill,
+      no scroll behaviour to write — which is also why initNav() is gone.
     */}
-    <div class="w-full max-w-5xl mx-auto flex-1 lg:flex lg:justify-center lg:items-start lg:gap-10 xl:gap-12 px-6">
-      <header class="pt-10 pb-8 lg:py-0 flex flex-col items-end text-right lg:sticky lg:top-0 lg:h-screen lg:justify-center lg:w-44 xl:w-48 shrink-0">
-        <a
-          href="/"
-          class="site-name block font-bold text-ink-900 no-underline tracking-tight leading-none text-body text-right focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
-        >
-          Paul Fernandez
-        </a>
+    <header class="site-header">
+      <div class="shell flex items-baseline justify-between gap-6 py-6">
+        <a href="/" class="wordmark" aria-label="Paul Fernandez — home">Paul Fernandez</a>
 
-        <span class="site-meta mt-2 block text-ink-500 text-small tracking-wide text-right">
-          technologist · philippines
-        </span>
-
-        <nav aria-label="Main" class="mt-8 lg:mt-10">
-          <ul class="flex flex-wrap justify-end gap-x-6 gap-y-2 list-none m-0 p-0 lg:flex-col lg:items-end lg:gap-y-3">
+        <nav aria-label="Main" class="hidden lg:block">
+          <ul class="flex items-baseline gap-6 list-none m-0 p-0">
             {navItems.map((item) => (
               <li>
                 <a
                   href={item.href}
                   aria-current={isNavActive(item.href) ? 'page' : undefined}
-                  class:list={[
-                    'nav-link text-body no-underline text-ink-700 hover:text-ink-900',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1',
-                  ]}
+                  class="nav-link"
                 >
                   {item.label}
                 </a>
@@ -161,41 +166,107 @@ const secondaryLinks = [
           </ul>
         </nav>
 
-        {/* Secondary links — under the primary nav, right-aligned. */}
-        <ul class="mt-8 lg:mt-10 hidden lg:flex flex-col items-end gap-y-2 text-small text-ink-500 list-none m-0 p-0">
-          {secondaryLinks.map((link) => (
+        <button
+          type="button"
+          class="menu-toggle mono-micro"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-menu-toggle
+        >
+          Menu
+        </button>
+      </div>
+    </header>
+
+    {/*
+      Mobile menu. Phase 21 moved it from a fixed full-screen overlay into
+      normal flow, directly under the masthead it belongs to. That removes the
+      body scroll lock, the opacity fade, and with it the forced-reflow hack
+      that the fade needed in order not to strand a transparent panel full of
+      focusable links — the panel is now either in the document or not.
+    */}
+    <div id="mobile-menu" class="mobile-menu" data-menu hidden>
+      <nav aria-label="Mobile" class="shell pb-10">
+        <ul class="list-none m-0 p-0 flex flex-col">
+          {navItems.map((item) => (
+            <li class="border-t border-[var(--line)]">
+              <a
+                href={item.href}
+                aria-current={isNavActive(item.href) ? 'page' : undefined}
+                class="mobile-link"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <ul class="list-none m-0 p-0 mt-8 flex flex-wrap gap-x-6 gap-y-2">
+          {elsewhere.map((link) => (
             <li>
               <a
                 href={link.href}
-                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                class="text-ink-500 hover:text-ink-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
+                {...(link.href.startsWith('http')
+                  ? { target: '_blank', rel: 'noopener noreferrer' }
+                  : {})}
+                class="mono-micro hover:text-paper-50"
               >
                 {link.label}
               </a>
             </li>
           ))}
         </ul>
-      </header>
+      </nav>
+    </div>
 
-      <div class="flex-1 min-w-0 max-w-3xl flex flex-col min-h-screen">
-        <!-- Main content — wider reading column (max-w-3xl). -->
-        <main id="main" class="flex-1 py-12 md:py-20">
-          <slot />
-        </main>
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
 
-        <!-- Footer — aligned with main content. Its only content is the
-             mobile-only secondary links, so the whole thing is hidden at lg+
-             rather than leaving an empty ruled band under the article. -->
-        <footer class="py-8 border-t border-ink-200/60 lg:hidden">
-          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
-            {/* Mobile-only secondary links (< lg), since the lg+ sidebar owns them. */}
-            <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 lg:hidden">
-              {secondaryLinks.map((link) => (
+    <footer class="site-footer">
+      <div class="shell">
+        <!-- The statement. One per site, and the last thing anyone reads.
+             Phase 21: the wine on "have to build it" is gone, and so is the
+             line-by-line mask reveal — it is a plain reveal now. -->
+        <p class="footer-statement" data-reveal="up">
+          Figuring out what to build,<br />
+          with the people who have to build it.
+        </p>
+
+        <!-- Phase 21: two buttons under a statement is a conversion block. One
+             outlined control, one plain address. -->
+        <div class="mt-10 md:mt-12 flex flex-wrap items-center gap-6">
+          <a href="/work-with-me/" class="btn btn-primary">Work with me</a>
+          <a href="mailto:jpaul.fernandez18@gmail.com" class="footer-link">
+            jpaul.fernandez18@gmail.com
+          </a>
+        </div>
+
+        <div
+          class="mt-16 md:mt-24 pt-10 border-t border-[var(--line)] grid gap-10 sm:grid-cols-3"
+        >
+          <div>
+            <h2 class="mono-micro">Explore</h2>
+            <ul class="mt-4 list-none m-0 p-0 flex flex-col gap-2">
+              {navItems.map((item) => (
+                <li>
+                  <a href={item.href} class="footer-link">{item.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="mono-micro">Elsewhere</h2>
+            <ul class="mt-4 list-none m-0 p-0 flex flex-col gap-2">
+              {elsewhere.map((link) => (
                 <li>
                   <a
                     href={link.href}
-                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    class="text-ink-500 hover:text-ink-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
+                    {...(link.href.startsWith('http')
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                    class="footer-link"
                   >
                     {link.label}
                   </a>
@@ -203,25 +274,136 @@ const secondaryLinks = [
               ))}
             </ul>
           </div>
-        </footer>
+
+          <div>
+            <h2 class="mono-micro">This site</h2>
+            <ul class="mt-4 list-none m-0 p-0 flex flex-col gap-2">
+              <li><a href="/colophon/" class="footer-link">Colophon</a></li>
+              <li><a href="/llms.txt" class="footer-link">llms.txt</a></li>
+            </ul>
+          </div>
+
+        </div>
       </div>
-    </div>
+    </footer>
 
     <style>
-      /* Magenta ● marks the active page — single accent. The marker is part
-       * of the link's inline content, so right-alignment pulls label+marker
-       * toward the right edge together. */
-      .nav-link[aria-current='page'] {
-        color: var(--color-wine-500);
-        font-weight: 700;
+      /* ---- Masthead ----------------------------------------------------- */
+      .site-header { border-bottom: 1px solid var(--line); }
+
+      .wordmark {
+        font-family: var(--font-display);
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        color: var(--color-paper-50);
       }
-      .nav-link[aria-current='page']::before {
-        content: '■';
-        color: var(--color-wine-500);
-        margin-right: 0.4em;
-        font-size: 0.7em;
-        vertical-align: 0.25em;
+
+      .nav-link {
+        font-size: var(--text-small);
+        color: var(--color-paper-400);
+      }
+      .nav-link:hover { color: var(--color-paper-50); }
+      /* The current section is marked by an underline rather than a filled
+       * chip. A chip is a tab in an app; an underline is a marked-up word. */
+      .nav-link[aria-current='page'] {
+        color: var(--color-paper-50);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.4em;
+      }
+
+      /* Phase 21: the two-bar hamburger is gone — an icon that has to animate
+       * into an X to explain itself, when the word fits in the same space. */
+      .menu-toggle { color: var(--color-paper-400); }
+      .menu-toggle:hover { color: var(--color-paper-50); }
+      .menu-toggle[aria-expanded='true']::after { content: ' ×'; }
+
+      /* Not `lg:hidden`: Astro scopes this block's selectors with an attribute,
+       * which outranks a single Tailwind class, so the utility would lose. */
+      @media (min-width: 64rem) {
+        .menu-toggle { display: none; }
+        .mobile-menu { display: none; }
+      }
+
+      .mobile-link {
+        display: block;
+        padding: 1rem 0;
+        font-family: var(--font-display);
+        font-size: var(--text-h3);
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        color: var(--color-paper-100);
+      }
+      .mobile-link[aria-current='page'] { color: var(--color-paper-50); }
+
+      /* ---- Footer ------------------------------------------------------- */
+      /* Phase 21: the wine radial gradient bleeding down from the top edge is
+       * deleted. An ambient coloured glow behind a section is the single most
+       * legible "AI-generated landing page" tell there is. Flat ground. */
+      .site-footer {
+        padding-block: clamp(4rem, 2rem + 8vw, 8rem) 3rem;
+        border-top: 1px solid var(--line);
+      }
+      .footer-statement {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 1.1rem + 3.8vw, 4rem);
+        font-weight: 500;
+        line-height: 1.05;
+        letter-spacing: -0.035em;
+        color: var(--color-paper-50);
+        margin: 0;
+        max-width: 20ch;
+      }
+      .footer-link {
+        font-size: var(--text-small);
+        color: var(--color-paper-400);
+      }
+      .footer-link:hover { color: var(--color-paper-50); }
+
+      .sr-only {
+        position: absolute;
+        width: 1px; height: 1px;
+        padding: 0; margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
       }
     </style>
+
+    {/*
+      Mobile menu. Vanilla, no island — rung 4 of the YAGNI ladder.
+
+      Phase 21 shrank this by half. The panel is in normal flow now rather than
+      a fixed overlay, so there is no body scroll to lock and no fade to time,
+      which retires the forced-reflow hack the fade needed: [hidden] is the
+      entire state, and a hidden element holds nothing in the tab order.
+    */}
+    <script is:inline>
+      (() => {
+        const toggle = document.querySelector('[data-menu-toggle]');
+        const menu = document.querySelector('[data-menu]');
+        if (!toggle || !menu) return;
+
+        const setOpen = (open) => {
+          toggle.setAttribute('aria-expanded', String(open));
+          menu.hidden = !open;
+        };
+
+        toggle.addEventListener('click', () =>
+          setOpen(toggle.getAttribute('aria-expanded') !== 'true')
+        );
+        menu.addEventListener('click', (e) => {
+          if (e.target.closest('a')) setOpen(false);
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') setOpen(false);
+        });
+      })();
+    </script>
+
+    <script>
+      import '../scripts/motion.ts';
+    </script>
   </body>
 </html>

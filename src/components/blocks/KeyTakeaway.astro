@@ -1,11 +1,33 @@
 ---
-// KeyTakeaway.astro — magenta panel, mono label, no shadow.
+// KeyTakeaway.astro — after Phase 21, the ONLY place on the site where wine
+// appears as a field rather than as a link. It survived the de-SaaS pass on
+// purpose: it is a semantic block inside long-form prose, not page chrome.
 ---
-<aside class="my-10 border-l-2 border-wine-500 bg-paper-50 px-6 md:px-8 py-5">
-  <p class="m-0 mb-4 font-mono uppercase text-xs tracking-widest text-wine-500">
-    ★ key takeaway
-  </p>
-  <div class="prose max-w-none text-ink-900 [&>p]:text-ink-900 [&>p]:m-0 [&>p]:text-body">
-    <slot />
-  </div>
+<aside class="key-takeaway">
+  <p class="label">★ Key takeaway</p>
+  <div class="body"><slot /></div>
 </aside>
+
+<style>
+  .key-takeaway {
+    margin-block: 3rem;
+    padding: 1.75rem;
+    border: 1px solid var(--color-wine-600);
+    border-radius: var(--radius-md);
+    /* Literal rgba: --wine-glow was a global token used mostly by decoration
+     * (the kicker dot's halo, the timeline's live node), so Phase 21 deleted
+     * it. This is the one legitimate user, so it carries its own value. */
+    background: linear-gradient(180deg, rgba(224, 68, 111, 0.18), transparent 70%);
+  }
+  .label {
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-wine-300);
+  }
+  .body { color: var(--color-paper-50); }
+  .body :global(> p) { margin: 0; }
+  .body :global(> * + *) { margin-top: 1rem; }
+</style>

@@ -399,6 +399,17 @@ would have shipped silently):
 - **The colophon was rewritten because the old one had become false** — it claimed one typeface and "two small vanilla enhancement scripts" of client JS. It now names Switzer + Courier Prime and the GSAP/Lenis layer honestly.
 - Nav labels went from lowercase (`me`, `work`, `thoughts`) to sentence case (`About`, `Writing`, `Projects`). URLs are unchanged. Easy to revert if the lowercase voice mattered.
 
+**Follow-up pass (2026-09-05), on Paul's note — "remove the Manila time and
+other unnecessary text, smoothen and fasten the animation":**
+
+- [x] (2026-09-05) **Clock removed** from the nav and the footer; the footer's "Local time" column went with it (four columns -> three). The pulsing status dot beside the wordmark went too — it read as a "live" signal paired with the clock and announced nothing without it. The dot survives as a mark, the pulse does not.
+- [x] (2026-09-05) **"Scroll to explore" marquee cut.** It labelled a gesture the page already invites and was the only thing above the fold that said nothing.
+- [x] (2026-09-05) **All nine page-head kickers cut** — each restated the h1 directly beneath it ("Writing" over "Thoughts", "Photography" over "Gallery", "Dead end" over "404"). Section kickers further down each page are untouched: those label content that is otherwise unlabelled, which is what the class is for. **This one was my judgement call on "other unnecessary text" — easy to restore individually.**
+- [x] (2026-09-05) **Motion retuned.** Reveals 0.9s -> 0.55s on power2.out instead of power3.out (power3 decelerates hard and long, so it reads sluggish even at a short duration); travel 2rem -> 1.25rem; stagger 0.08 -> 0.045; hero 1.1s -> 0.7s; line splits 1s -> 0.7s; triggers at 92% rather than 85–88%. The word scrub now finishes at 70% of the viewport instead of 55%, so a sentence is fully lit while you are reading it rather than as it leaves.
+- [x] (2026-09-05) **Lenis switched from `duration` + easing to `lerp: 0.14`.** A timed tween restarts on every wheel event, so a burst of scrolling stacked eases and felt rubbery; lerp chases the target continuously — smoother under fast scrolling and tighter overall.
+- [x] (2026-09-05) **Hover transitions retuned per property** rather than by one blanket number: 0.22s for colour/border/background, 0.3s for transforms, 0.4s for the image grayscale-to-colour filters, which cover a far larger perceptual change and look abrupt any faster. (First attempt at this was a bug — a dict-based find/replace chained its own substitutions, 0.5s -> 0.3s -> 0.2s -> 0.15s, collapsing every duration to near-nothing. Redone as a single pass that picks the duration from the property being transitioned.)
+- Re-audited after the cuts: 27 pages, 25 JSON-LD blocks, one h1 each, 331 images with zero missing alt, no over-length titles or descriptions.
+
 - [ ] Paul's visual review in-browser
 - [ ] Decide: keep the 54KB motion bundle, or trim Lenis/SplitText
 - [ ] Merge to main + deploy

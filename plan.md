@@ -412,7 +412,7 @@ other unnecessary text, smoothen and fasten the animation":**
 
 - [x] (2026-09-05) Paul's visual review in-browser — verdict: "too SaaS, too AI". See Phase 21.
 - [x] (2026-09-05) Decide: keep the 54KB motion bundle, or trim Lenis/SplitText — trimmed in Phase 21.
-- [ ] Merge to main + deploy
+- [x] (2026-09-05) Merge to main + deploy
 
 ## Phase 21 — de-SaaS pass (Paul's direct request, 2026-09-05)
 
@@ -452,7 +452,7 @@ keep quiet reveals**.
 - **`.claude/launch.json` gained `"autoPort": true`** so a second session can start a dev server while port 4321 is taken. Unrelated to the design; revert freely.
 - **Section spacing was left alone.** With the cards and glass gone, the Phase 20 vertical rhythm now reads as more empty space than it used to. That may want tightening once Paul has seen it — it is a one-token change (`.section` / `.section-tight`).
 
-- [ ] Paul's visual review of the de-SaaS pass
+- [x] (2026-09-05) Paul's visual review of the de-SaaS pass — approved via chat; merged to main and deployed.
 
 ## Out of scope (v2 — do not build)
 

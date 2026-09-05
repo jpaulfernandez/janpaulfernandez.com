@@ -117,22 +117,26 @@ const seoData = [
 <BaseLayout title="Gallery" description={description} ogImage="/og/gallery.png">
   <JsonLd slot="head" data={seoData} />
 
-  <article>
-    <header>
-      <h1 class="display m-0">Gallery</h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
-        Photography — <span class="flare">concerts, festivals, places</span>.
+  <section class="page-head" data-hero>
+    <div class="shell">
+      <p class="kicker" data-reveal="fade">Photography</p>
+      <h1 class="display mt-8" data-reveal="up" data-reveal-delay="0.05">Gallery</h1>
+      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+        <span class="flare">Concerts, festivals, places</span> — shot from
+        wherever I could get.
       </p>
-      <p class="mt-2 mb-0 text-ink-500 text-small tabular-nums">
+      <p class="mono-micro mt-6" data-reveal="fade" data-reveal-delay="0.16">
         {shots.length} photographs · {sets.length} sets
       </p>
-    </header>
+    </div>
+  </section>
 
+  <div class="shell pb-24 md:pb-32">
     {shots.length > 0 && (
       <>
         {/* Mobile: the original 2-column flow — at 375px the tidy grid reads
             as intentional, and the packed wall is too fine below 640px. */}
-        <div class="wall wall-mobile sm:hidden mt-16 md:mt-20">
+        <div class="wall wall-mobile sm:hidden">
           {shots.map((shot, idx) => (
             <a
               href={shot.fullSrc}
@@ -158,7 +162,7 @@ const seoData = [
 
         {/* Desktop: the build-time masonry — width varies per shot, columns
             are packed to similar height, so the wall reads as a scatter. */}
-        <div class="wall wall-masonry hidden sm:flex mt-16 md:mt-20">
+        <div class="wall wall-masonry hidden sm:flex">
           {wallColumns.map((column) => (
             <div class="wall-col">
               {column.map((shot, idx) => (
@@ -192,13 +196,18 @@ const seoData = [
     {/* The sets still exist as their own pages — reachable from here and from
         the lightbox, without grouping the wall itself. */}
     {sets.length > 0 && (
-      <section class="mt-16 md:mt-20" aria-labelledby="sets-heading">
+      <section class="section-tight" aria-labelledby="sets-heading">
         <h2 id="sets-heading" class="kicker">Sets</h2>
-        <ul class="rows mt-6">
+        <ul class="rows mt-8" data-reveal-stagger>
           {sets.map((set) => (
-            <li>
+            <li data-reveal="up">
               <a href={`/gallery/${set.id}/`} class="row-link">
-                <span>{set.data.title}</span>
+                <span class="min-w-0">
+                  <span class="row-title block">{set.data.title}</span>
+                  <span class="block mt-2 text-small text-paper-400 max-w-[60ch]">
+                    {set.data.description}
+                  </span>
+                </span>
                 <span class="row-meta">{set.data.publishedDate.slice(0, 4)} ↗</span>
               </a>
             </li>
@@ -206,12 +215,16 @@ const seoData = [
         </ul>
       </section>
     )}
-  </article>
+  </div>
 
   <Lightbox />
 </BaseLayout>
 
 <style>
+  .page-head {
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
   /* Mobile wall (hidden ≥640px): the original CSS-columns flow. 2-column at
    * 375px reads as an intentional grid, and the packed masonry is too fine
    * below 640px to matter. */
@@ -246,7 +259,8 @@ const seoData = [
     margin: 0 0 0.75rem;
     padding: 0;
     border: 0;
-    background: var(--color-ink-200);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
     cursor: zoom-in;
     overflow: hidden;
     break-inside: avoid;
@@ -256,17 +270,23 @@ const seoData = [
   /* In the flex layout the column gap owns the spacing; both rules for a
      uniform margin-zero there. Width per shot is set inline by the packer. */
   .wall-masonry .wall-item { margin: 0; }
-  .wall-item:focus-visible {
-    outline: 2px solid var(--color-wine-500);
-    outline-offset: 2px;
-  }
 
   .wall-img {
     display: block;
     width: 100%;
     height: auto;
-    transition: opacity 0.2s ease-out;
+    /* The wall is 95 concert frames — every one of them saturated stage
+     * lighting. Held at 70% they read as one surface; the hovered frame is
+     * the only one at full colour, which is what points the cursor. */
+    filter: grayscale(0.7) brightness(0.85);
+    transition: filter 0.5s var(--ease-out-quint);
   }
-  /* Phase 14: the hover zoom is gone — a gentle dim alone marks the hover. */
-  .wall-item:hover .wall-img { opacity: 0.85; }
+  .wall-item:hover .wall-img,
+  .wall-item:focus-visible .wall-img {
+    filter: grayscale(0) brightness(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wall-img { filter: none; }
+  }
 </style>

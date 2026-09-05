@@ -1,45 +1,54 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { person, webSite, profilePage, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects } from '../lib/projects';
+import { formatDate } from '../lib/dates';
 
-// Fetch Keystatic Home singleton
 const homeEntry = await getEntry('home', 'home');
 if (!homeEntry) {
   throw new Error('Home page singleton is missing. Run the seed scripts first.');
 }
 const { heroGreeting, heroIntro } = homeEntry.data;
 
-// Display hero: the greeting's last word carries the wine flare, so the accent
-// tracks whatever Paul writes in Keystatic instead of being hardcoded here.
+// The greeting's last word carries the wine flare, so the accent tracks
+// whatever Paul writes in Keystatic instead of being hardcoded here.
 const greetingWords = heroGreeting.trim().split(' ');
 const greetingHead = greetingWords.slice(0, -1).join(' ');
 const greetingFlare = greetingWords[greetingWords.length - 1];
 
-// Latest Now entries -> a rail slice on home that leads into the /now timeline.
-// Noon pins the date so timezone offsets can't shift it a day (same move as /now).
-function formatNowDate(date: string | Date) {
-  const str = typeof date === 'string' ? date : date.toISOString().slice(0, 10);
-  return new Date(`${str}T12:00:00`).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
 const latestNowEntries = [...(await getCollection('now'))]
   .sort((a, b) => b.data.date.localeCompare(a.data.date))
-  .slice(0, 3)
-  .map((entry) => ({ ...entry, displayDate: formatNowDate(entry.data.date) }));
+  .slice(0, 3);
 
-// Latest thoughts for the Writing index (5 rows).
-const latestThoughts = (await getPublishedThoughts()).slice(0, 5);
-
-// Latest projects for the Projects index (3 rows).
+const latestThoughts = (await getPublishedThoughts()).slice(0, 4);
 const latestProjects = (await getProjects()).slice(0, 3);
+
+const services = (await getCollection('services')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// A strip of photographs for the gallery teaser. Two frames from each set,
+// interleaved so the marquee never shows the same concert twice in a row.
+const gallerySets = (await getCollection('gallery')).sort(
+  (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
+);
+const stripShots = gallerySets
+  .flatMap((set, setIndex) =>
+    set.data.photos.slice(1, 4).map((photo, i) => ({
+      image: photo.image as unknown as ImageMetadata,
+      caption: photo.caption || set.data.title,
+      setTitle: set.data.title,
+      // Interleave: order by frame position first, set second.
+      order: i * 10 + setIndex,
+    }))
+  )
+  .sort((a, b) => a.order - b.order);
+
+const photoCount = gallerySets.reduce((n, set) => n + set.data.photos.length, 0);
 
 const seoData = [
   webSite(),
@@ -56,54 +65,88 @@ const seoData = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  <article>
-    {/* Identity: display statement → bio. */}
-    <header>
-      <h1 class="display m-0">
+  {/* ---------------------------------------------------------------------
+      HERO. The only [data-hero] on the site: its children animate on load
+      rather than on scroll, because they are already in view.
+     --------------------------------------------------------------------- */}
+  <section class="hero" data-hero>
+    <div class="hero__glow" aria-hidden="true"></div>
+
+    <div class="shell relative">
+      <p class="mono-micro flex items-center gap-3" data-reveal="fade">
+        <span class="h-px w-8 bg-[var(--line-strong)]"></span>
+        Technologist · Philippines
+      </p>
+
+      <h1 class="display mt-8 max-w-[16ch]" data-reveal="up" data-reveal-delay="0.05">
         {greetingHead && <>{greetingHead}{' '}</>}<span class="flare">{greetingFlare}</span>
       </h1>
-      {heroIntro && (
-        <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">{heroIntro}</p>
-      )}
-    </header>
 
-    {/* Now — a slice of the /now rail; the newest entry wears the wine halo. */}
-    {latestNowEntries.length > 0 && (
-      <section class="mt-20 md:mt-24" aria-labelledby="now-heading">
-        <h2 id="now-heading" class="kicker">now</h2>
-        <div class="rail mt-6">
-          {latestNowEntries.map((entry) => (
-            <article class="rail-item">
-              <time class="rail-date" datetime={entry.data.date}>{entry.displayDate}</time>
-              <h3 class="text-h3 font-bold text-ink-900 leading-snug m-0">
-                <a
-                  href="/now/"
-                  class="text-ink-900 no-underline hover:text-wine-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-                >
-                  {entry.data.title || entry.id}
-                </a>
-              </h3>
-            </article>
+      <p class="lead mt-8 max-w-[46ch]" data-reveal="up" data-reveal-delay="0.12">
+        I help teams work out what to build — then make sure the people building
+        it and the people asking for it are describing the same thing.
+      </p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-3" data-reveal="up" data-reveal-delay="0.18">
+        <a href="/work-with-me/" class="btn btn-primary">Work with me</a>
+        <a href="/thoughts/" class="btn btn-ghost">Read the writing</a>
+      </div>
+    </div>
+
+    {/* Scroll cue. Decorative and hidden from assistive tech — the content
+        below is reachable by every other means. */}
+    <div class="hero__cue" aria-hidden="true" data-reveal="fade" data-reveal-delay="0.4">
+      <div class="marquee" style="--marquee-gap:2.5rem; --marquee-duration:24s;">
+        <div class="marquee__track">
+          {Array.from({ length: 6 }).map(() => (
+            <span class="mono-micro">Scroll to explore</span>
           ))}
         </div>
-        <a
-          href="/now/"
-          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-        >
-          see the full timeline →
-        </a>
-      </section>
-    )}
+        <div class="marquee__track">
+          {Array.from({ length: 6 }).map(() => (
+            <span class="mono-micro">Scroll to explore</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
 
-    {/* Writing index */}
-    {latestThoughts.length > 0 && (
-      <section class="mt-16 md:mt-20" aria-labelledby="writing-heading">
-        <h2 id="writing-heading" class="kicker">writing</h2>
-        <ul class="rows mt-6">
+  {/* ---------------------------------------------------------------------
+      MANIFESTO. The bio, set as a statement that brightens word by word as
+      it crosses the viewport. Its resting state is paper-400 (6.6:1), so
+      with JS off it reads as a normal dimmed pull-quote.
+     --------------------------------------------------------------------- */}
+  {heroIntro && (
+    <section class="section" aria-labelledby="intro-heading">
+      <div class="shell">
+        <h2 id="intro-heading" class="kicker">Who I am</h2>
+        <p class="statement mt-10 dim" data-split="words">{heroIntro}</p>
+        <a href="/about/" class="link-arrow mt-10">The longer version</a>
+      </div>
+    </section>
+  )}
+
+  {/* ---------------------------------------------------------------------
+      WRITING
+     --------------------------------------------------------------------- */}
+  {latestThoughts.length > 0 && (
+    <section class="section-tight" aria-labelledby="writing-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="writing-heading" class="kicker flex-1">Writing</h2>
+          <a href="/thoughts/" class="link-arrow shrink-0">All writing</a>
+        </div>
+
+        <ul class="rows mt-8" data-reveal-stagger>
           {latestThoughts.map((post) => (
-            <li>
+            <li data-reveal="up">
               <a href={`/thoughts/${post.id}/`} class="row-link">
-                <span class="font-bold">{post.data.title}</span>
+                <span class="min-w-0">
+                  <span class="row-title block">{post.data.title}</span>
+                  <span class="block mt-2 text-small text-paper-400 max-w-[60ch]">
+                    {post.data.excerpt}
+                  </span>
+                </span>
                 <time class="row-meta" datetime={post.data.publishedDate}>
                   {post.data.publishedDate.slice(0, 4)}
                 </time>
@@ -111,62 +154,234 @@ const seoData = [
             </li>
           ))}
         </ul>
-        <a
-          href="/thoughts/"
-          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-        >
-          all thoughts →
-        </a>
-      </section>
-    )}
+      </div>
+    </section>
+  )}
 
-    {/* Projects index */}
-    {latestProjects.length > 0 && (
-      <section class="mt-16 md:mt-20" aria-labelledby="projects-heading">
-        <h2 id="projects-heading" class="kicker">projects</h2>
-        <ul class="rows mt-6">
-          {latestProjects.map((project) => (
-            <li>
-              {project.data.link ? (
-                <a href={project.data.link} target="_blank" rel="noopener noreferrer" class="row-link">
-                  <span>
-                    <span class="font-bold">{project.data.title}</span>
-                    <span class="block mt-1 text-ink-500 text-small">{project.data.description}</span>
-                  </span>
-                  <span class="row-meta" aria-hidden="true">↗</span>
-                </a>
-              ) : (
-                <div class="row-link">
-                  <span>
-                    <span class="font-bold">{project.data.title}</span>
-                    <span class="block mt-1 text-ink-500 text-small">{project.data.description}</span>
-                  </span>
-                </div>
-              )}
-            </li>
+  {/* ---------------------------------------------------------------------
+      WHAT I DO — the three services, as cards.
+     --------------------------------------------------------------------- */}
+  {services.length > 0 && (
+    <section class="section" aria-labelledby="services-heading">
+      <div class="shell">
+        <h2 id="services-heading" class="kicker">What I do</h2>
+
+        <p class="statement-sm mt-10 max-w-[24ch]" data-split="lines">
+          Three ways in, depending on <span class="flare">how deep you need me</span>.
+        </p>
+
+        <div class="mt-12 grid gap-4 md:grid-cols-3" data-reveal-stagger>
+          {services.map((service, i) => (
+            <article class="card card-interactive p-8 flex flex-col" data-reveal="up">
+              <span class="mono-micro">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="mt-6">{service.data.title}</h3>
+              <p class="mt-4 mb-0 text-small text-paper-400 leading-relaxed flex-1">
+                {service.data.description}
+              </p>
+            </article>
           ))}
-        </ul>
-        <a
-          href="/projects/"
-          class="inline-block mt-6 text-small text-ink-500 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500"
-        >
-          all projects →
-        </a>
-      </section>
-    )}
+        </div>
 
-    {/* Work — the one CTA on the page, so it gets the wine block treatment. */}
-    <section class="mt-16 md:mt-20" aria-labelledby="work-heading">
-      <h2 id="work-heading" class="kicker">work</h2>
-      <p class="mt-6 mb-0 text-ink-900 text-h3 font-bold leading-snug max-w-prose">
-        Consultation, workshops, and <span class="flare">fractional product ownership</span>.
-      </p>
-      <a
-        href="/work-with-me/"
-        class="inline-block mt-6 px-6 py-3 bg-wine-500 text-paper-50 no-underline hover:bg-wine-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 focus-visible:ring-offset-2"
-      >
-        work with me →
+        <a href="/work-with-me/" class="link-arrow mt-10">How we'd work together</a>
+      </div>
+    </section>
+  )}
+
+  {/* ---------------------------------------------------------------------
+      NOW
+     --------------------------------------------------------------------- */}
+  {latestNowEntries.length > 0 && (
+    <section class="section-tight" aria-labelledby="now-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="now-heading" class="kicker flex-1">Now</h2>
+          <a href="/now/" class="link-arrow shrink-0">Full timeline</a>
+        </div>
+
+        <div class="rail mt-10" data-reveal-stagger>
+          {latestNowEntries.map((entry) => (
+            <article class="rail-item" data-reveal="up">
+              <time class="rail-date" datetime={entry.data.date}>
+                {formatDate(entry.data.date)}
+              </time>
+              <h3 class="m-0">
+                <a href="/now/" class="hover:text-wine-300 transition-colors">
+                  {entry.data.title || entry.id}
+                </a>
+              </h3>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* ---------------------------------------------------------------------
+      PROJECTS. Hidden entirely when the shelf is empty — an empty section
+      with a "nothing here yet" is worse than no section.
+     --------------------------------------------------------------------- */}
+  {latestProjects.length > 0 && (
+    <section class="section-tight" aria-labelledby="projects-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="projects-heading" class="kicker flex-1">Projects</h2>
+          <a href="/projects/" class="link-arrow shrink-0">All projects</a>
+        </div>
+
+        <ul class="rows mt-8" data-reveal-stagger>
+          {latestProjects.map((project) => {
+            const body = (
+              <span class="min-w-0">
+                <span class="row-title block">{project.data.title}</span>
+                <span class="block mt-2 text-small text-paper-400 max-w-[60ch]">
+                  {project.data.description}
+                </span>
+              </span>
+            );
+            return (
+              <li data-reveal="up">
+                {project.data.link ? (
+                  <a
+                    href={project.data.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="row-link"
+                  >
+                    {body}
+                    <span class="row-meta" aria-hidden="true">↗</span>
+                  </a>
+                ) : (
+                  <div class="row-link">{body}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {/* ---------------------------------------------------------------------
+      GALLERY. Full-bleed, so it breaks out of .shell on purpose — the wall
+      is the one place on the site where the content is the image.
+     --------------------------------------------------------------------- */}
+  {stripShots.length > 0 && (
+    <section class="section" aria-labelledby="gallery-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="gallery-heading" class="kicker flex-1">Gallery</h2>
+          <a href="/gallery/" class="link-arrow shrink-0">
+            All {photoCount} photographs
+          </a>
+        </div>
+        <p class="statement-sm mt-10 max-w-[20ch]" data-split="lines">
+          Concerts, mostly. <span class="flare">Shot from the pit.</span>
+        </p>
+      </div>
+
+      <a href="/gallery/" class="photo-strip mt-12 block group" aria-label="Browse the gallery">
+        <div class="marquee" style="--marquee-gap:1rem; --marquee-duration:70s;">
+          <div class="marquee__track">
+            {stripShots.map((shot) => (
+              <Image
+                src={shot.image}
+                alt={shot.caption}
+                widths={[420]}
+                sizes="280px"
+                loading="lazy"
+                class="photo-strip__frame"
+              />
+            ))}
+          </div>
+          <div class="marquee__track" aria-hidden="true">
+            {stripShots.map((shot) => (
+              <Image
+                src={shot.image}
+                alt=""
+                widths={[420]}
+                sizes="280px"
+                loading="lazy"
+                class="photo-strip__frame"
+              />
+            ))}
+          </div>
+        </div>
       </a>
     </section>
-  </article>
+  )}
 </BaseLayout>
+
+<style>
+  /* ---- Hero ------------------------------------------------------------ */
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Not 100vh: a full viewport with a fixed nav on top pushes the CTAs off
+     * the fold on a laptop. 88svh leaves the next section peeking, which is
+     * also the honest way to say "there is more below". */
+    min-height: 88svh;
+    padding-block: 9rem 6rem;
+    overflow: hidden;
+  }
+  .hero__glow {
+    position: absolute;
+    inset: -20% -10% auto -10%;
+    height: 70%;
+    background: radial-gradient(
+      50% 60% at 50% 0%,
+      rgba(224, 68, 111, 0.16),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+  .hero__cue {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 2rem;
+  }
+
+  /* ---- Statements ------------------------------------------------------ */
+  /* The scroll-brightened paragraph. Bigger than prose, smaller than display —
+   * it has to hold 60+ words without turning into a wall. */
+  .statement {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.05rem + 1.9vw, 2.5rem);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.03em;
+    max-width: 30ch;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  /* The section-opening line. Short, so it can run at heading scale. */
+  .statement-sm {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-paper-50);
+    margin: 0;
+  }
+
+  /* ---- Photo strip ----------------------------------------------------- */
+  .photo-strip__frame {
+    height: clamp(11rem, 8rem + 12vw, 17rem);
+    width: auto;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    filter: grayscale(1) brightness(0.75);
+    transition:
+      filter 0.6s var(--ease-out-quint),
+      transform 0.6s var(--ease-out-quint);
+  }
+  .photo-strip:hover .photo-strip__frame {
+    filter: grayscale(0) brightness(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .photo-strip__frame { filter: grayscale(0) brightness(1); }
+  }
+</style>

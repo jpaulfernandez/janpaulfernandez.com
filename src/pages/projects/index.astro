@@ -22,50 +22,76 @@ const seoData = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  <article>
-    <header>
-      <h1 class="display m-0">Projects</h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
-        Things I've built, shipped, and tinkered with — <span class="flare">indexed by year</span>.
+  <section class="page-head" data-hero>
+    <div class="shell">
+      <p class="kicker" data-reveal="fade">Work</p>
+      <h1 class="display mt-8" data-reveal="up" data-reveal-delay="0.05">Projects</h1>
+      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+        Things I've built, shipped, and tinkered with —
+        <span class="flare">indexed by year</span>.
       </p>
-    </header>
+    </div>
+  </section>
 
+  <div class="shell pb-24 md:pb-32">
     {groups.length > 0 ? (
-      <section class="mt-16 md:mt-20" aria-label="Projects by year">
+      <div aria-label="Projects by year">
         {groups.map((group) => (
-          <section class="mt-12 first:mt-0">
+          <section class="mt-16 first:mt-0">
             <h2 class="kicker tabular-nums">{group.year}</h2>
-            <ul class="rows mt-6">
-              {group.items.map((project) => (
-                <li>
-                  {project.data.link ? (
-                    <a href={project.data.link} target="_blank" rel="noopener noreferrer" class="row-link">
-                      <span>
-                        <span class="font-bold text-h3 leading-tight block text-balance">{project.data.title}</span>
-                        <span class="block mt-2 text-ink-700 text-body max-w-prose">{project.data.description}</span>
-                      </span>
-                      <span class="row-meta" aria-hidden="true">↗</span>
-                    </a>
-                  ) : (
-                    <div class="row-link">
-                      <span>
-                        <span class="font-bold text-h3 leading-tight block text-balance">{project.data.title}</span>
-                        <span class="block mt-2 text-ink-700 text-body max-w-prose">{project.data.description}</span>
-                      </span>
-                    </div>
-                  )}
-                </li>
-              ))}
+            <ul class="rows mt-8" data-reveal-stagger>
+              {group.items.map((project) => {
+                const body = (
+                  <span class="min-w-0">
+                    <span class="row-title block">{project.data.title}</span>
+                    <span class="block mt-2 text-small text-paper-400 max-w-[62ch]">
+                      {project.data.description}
+                    </span>
+                  </span>
+                );
+                return (
+                  <li data-reveal="up">
+                    {project.data.link ? (
+                      <a
+                        href={project.data.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="row-link"
+                      >
+                        {body}
+                        <span class="row-meta" aria-hidden="true">↗</span>
+                      </a>
+                    ) : (
+                      <div class="row-link">{body}</div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ))}
-      </section>
+      </div>
     ) : (
-      <div class="mt-12 border-t border-ink-200 pt-6">
-        <p class="text-ink-700 m-0">
-          Nothing on the shelf… yet. <a href="/work-with-me/#contact" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">ask me what I'm building →</a>
-        </p>
+      <div class="panel p-10 md:p-16 text-center" data-reveal="up">
+        <p class="statement-sm m-0">Nothing on the shelf… <span class="flare">yet</span>.</p>
+        <a href="/work-with-me/#contact" class="btn btn-ghost mt-8">
+          Ask me what I'm building
+        </a>
       </div>
     )}
-  </article>
+  </div>
 </BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  }
+  .statement-sm {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-paper-50);
+  }
+</style>

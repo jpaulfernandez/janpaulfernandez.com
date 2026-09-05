@@ -23,7 +23,7 @@ Before adding ANY dependency, abstraction, component, or config, ask in order:
 5. Does an already-installed dependency do it?
 6. Is it one line of code?
 
-Only after all six: add the minimum that works. Concrete house examples: reading time is `Math.ceil(words/200)`, not a package; robots.txt is a static file, not an integration; filters are ~30 lines of vanilla JS, not a React island.
+Only after all six: add the minimum that works. Concrete house examples: reading time is `Math.ceil(words/200)`, not a package; robots.txt is a static file, not an integration; filters are ~30 lines of vanilla JS, not a React island. GSAP and Lenis are the standing exception, added deliberately in Phase 20 and scoped to one file — they are not a precedent for the next dependency.
 
 ## Working principles
 
@@ -35,12 +35,16 @@ Only after all six: add the minimum that works. Concrete house examples: reading
 
 ## Hard constraints (from spec — violating these is a bug)
 
-- Fully static output. Zero client JS by default; vanilla JS before any island; React exists ONLY for the Keystatic admin and must never ship to the public site.
-- One `h1` per page. Semantic landmarks. WCAG AA contrast. `prefers-reduced-motion` respected.
-- Wine (`--color-wine-*`) never for body text — CTAs, Key Takeaway, kicker bullets, and hand-placed `.flare` words only. Palette tokens are `ink-*` (type), `paper-*` (surfaces), `wine-*` (accent).
+- Fully static output. React exists ONLY for the Keystatic admin and must never ship to the public site.
+- **Client JS (amended in Phase 20).** The site is no longer zero-JS: `src/scripts/motion.ts` (GSAP + ScrollTrigger + SplitText + Lenis, ~54KB gzip) loads on every page. That is the *only* sanctioned bundle. Everything else still climbs the YAGNI ladder — vanilla before a framework, CSS before JS, static HTML before an island. **Nothing else may import GSAP:** a page asks for motion with a `data-*` attribute and `motion.ts` decides what it means.
+- **Motion must be removable.** Every hidden resting state lives behind a `.js` ancestor class set by a blocking inline script in `<head>`, so a page with the bundle blocked, broken, or still loading renders fully legible. `prefers-reduced-motion` bails out of the runtime entirely. Never put an animation's start state in CSS unguarded by `.js`.
+- One `h1` per page. Semantic landmarks. WCAG AA contrast.
+- **Component CSS in `global.css` must sit inside `@layer components`.** Tailwind emits utilities in `@layer utilities`, and an unlayered rule beats any layered one regardless of specificity — an unlayered `.btn { display: inline-flex }` silently defeats `hidden sm:inline-flex` in the markup. Same trap in Astro `<style>` blocks, which scope selectors with an attribute and so outrank a single utility class: hide with a media query there, not with `lg:hidden`.
+- Palette is dark (Phase 20). `ink-*` is the ground, `paper-*` is the type, `wine-*` is the accent — the inverse of the Phase 9–19 meanings. Wine is never body text: CTAs, Key Takeaway, kicker dots, and hand-placed `.flare` words only. On the `#050505` ground use `wine-300`/`wine-400` for type (6.5:1 / 4.9:1); `wine-500`/`wine-600` are fills only. `paper-600` is non-text.
+- Two families: Switzer (display, headings, prose) and Courier Prime (`.mono`, `.kicker`, dates, code). Both self-hosted from `public/fonts` and `@fontsource`.
 - Keystatic and Astro content schemas must stay field-identical — check both files in any schema change.
 - Person JSON-LD `@id` is `https://janpaulfernandez.com/#person`, defined once, referenced everywhere.
-- v2 backlog items (dark mode, search, graveyard, backlinks…) are out of scope. Don't build them "while you're in there."
+- v2 backlog items (search, graveyard, backlinks…) are out of scope. Don't build them "while you're in there." ("Dark mode" left this list in Phase 20 by being resolved, not built: the site is dark, full stop. There is no toggle and no light theme to maintain.)
 
 ## Commands
 

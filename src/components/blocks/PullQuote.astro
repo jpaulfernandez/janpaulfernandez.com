@@ -1,8 +1,39 @@
 ---
-// PullQuote.astro — italic quote, no emblem, no border-y (mono context).
+// PullQuote.astro — a display-scale interruption in the reading column.
 ---
-<figure class="my-10">
-  <blockquote class="font-mono italic text-h3 text-ink-900 leading-relaxed m-0 max-w-[48ch]">
-    <slot />
-  </blockquote>
+<figure class="pull-quote">
+  <blockquote><slot /></blockquote>
 </figure>
+
+<style>
+  .pull-quote {
+    margin-block: 3.5rem;
+    position: relative;
+    padding-left: 2rem;
+  }
+  /* The rule replaces the quotation mark: a glyph at this size reads as an
+   * illustration, and the palette only has room for one accent. */
+  .pull-quote::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.35em;
+    bottom: 0.35em;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--color-wine-400), transparent);
+  }
+  blockquote {
+    margin: 0;
+    border: 0;
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    font-style: normal;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--color-paper-50);
+    max-width: 30ch;
+  }
+</style>

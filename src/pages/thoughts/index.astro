@@ -39,26 +39,30 @@ const seoData = [
 <BaseLayout title="Thoughts" description={description} ogImage="/og/thoughts.png">
   <JsonLd slot="head" data={seoData} />
 
-  <article>
-    <header>
-      <h1 class="display m-0">Thoughts</h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
-        Essays and half-formed notes. About things that <span class="flare">bother me</span>.
+  <section class="page-head" data-hero>
+    <div class="shell">
+      <p class="kicker" data-reveal="fade">Writing</p>
+      <h1 class="display mt-8" data-reveal="up" data-reveal-delay="0.05">Thoughts</h1>
+      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+        Essays and half-formed notes. About things that
+        <span class="flare">bother me</span>.
       </p>
-    </header>
+    </div>
+  </section>
 
+  <div class="shell pb-24 md:pb-32">
     {allPosts.length > 0 ? (
       <>
-        {/* Filter toolbar */}
-        <div class="mt-12 md:mt-16 flex flex-col gap-4" role="group" aria-label="Filter thoughts">
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="inline-flex border border-ink-200" data-filter-group="type">
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 aria-pressed:bg-wine-500 aria-pressed:text-paper-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="true" data-value="all">all</button>
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 aria-pressed:bg-wine-500 aria-pressed:text-paper-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value="essay">essays</button>
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 aria-pressed:bg-wine-500 aria-pressed:text-paper-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value="note">notes</button>
+        {/* Filters. Vanilla DOM toggling, no island — see the script below. */}
+        <div class="filter-bar" role="group" aria-label="Filter thoughts">
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="segmented" data-filter-group="type">
+              <button class="filter-chip seg" aria-pressed="true" data-value="all">All</button>
+              <button class="filter-chip seg" aria-pressed="false" data-value="essay">Essays</button>
+              <button class="filter-chip seg" aria-pressed="false" data-value="note">Notes</button>
             </div>
 
-            <span id="posts-counter" class="ml-auto text-small text-ink-500 tabular-nums">
+            <span id="posts-counter" class="mono-micro ml-auto">
               {allPosts.length} {allPosts.length === 1 ? 'thought' : 'thoughts'}
             </span>
             <div id="filter-aria-announcer" aria-live="polite" class="sr-only">
@@ -67,18 +71,20 @@ const seoData = [
           </div>
 
           {allTopics.length > 0 && (
-            <div class="flex flex-wrap gap-2" data-filter-group="topic">
-              <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 underline underline-offset-4 decoration-ink-200 aria-pressed:decoration-ink-900 aria-pressed:text-ink-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="true" data-value="all">all topics</button>
+            <div class="mt-5 flex flex-wrap gap-2" data-filter-group="topic">
+              <button class="filter-chip tag" aria-pressed="true" data-value="all">
+                All topics
+              </button>
               {allTopics.map((topic) => (
-                <button class="filter-chip cursor-pointer px-3 py-1 text-small text-ink-700 underline underline-offset-4 decoration-ink-200 aria-pressed:decoration-ink-900 aria-pressed:text-ink-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500" aria-pressed="false" data-value={topic}>
-                  #{topic}
+                <button class="filter-chip tag" aria-pressed="false" data-value={topic}>
+                  {topic}
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <div id="posts-list" class="mt-8 divide-y divide-ink-200 border-t border-ink-200">
+        <div id="posts-list" class="rows mt-4" data-reveal-stagger>
           {allPosts.map((post) => {
             const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
             const readingTime = Math.max(1, Math.ceil(wordCount / 200));
@@ -86,6 +92,7 @@ const seoData = [
             return (
               <div
                 class="post-row"
+                data-reveal="up"
                 data-type={post.data.type}
                 data-topics={post.data.topics?.join(',')}
               >
@@ -105,18 +112,78 @@ const seoData = [
           })}
         </div>
 
-        <div id="empty-state" class="hidden text-center py-12 border border-ink-200 mt-8">
-          <p class="text-ink-700 mb-2">No thoughts match this combo.</p>
-          <p class="text-small text-ink-500">Reset filters to "all".</p>
+        <div id="empty-state" class="hidden panel text-center py-16 mt-8">
+          <p class="text-paper-100 m-0">No thoughts match this combo.</p>
+          <p class="mono-micro mt-3">Reset the filters to "all"</p>
         </div>
       </>
     ) : (
-      <div class="mt-12 border-t border-ink-200 pt-6">
-        <p class="text-ink-700 m-0">No thoughts published yet.</p>
+      <div class="panel p-10">
+        <p class="text-paper-400 m-0">No thoughts published yet.</p>
       </div>
     )}
-  </article>
+  </div>
 </BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
+  .filter-bar {
+    padding-block: 1.5rem;
+    border-block: 1px solid var(--line);
+  }
+
+  /* Type filter — one pill split into segments, so the three options read as
+   * a single control rather than three loose buttons. */
+  .segmented {
+    display: inline-flex;
+    padding: 0.25rem;
+    background-color: var(--surface-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+  }
+  .seg {
+    padding: 0.4375rem 1rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--color-paper-400);
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    transition:
+      background-color 0.3s var(--ease-out-quint),
+      color 0.3s var(--ease-out-quint);
+  }
+  .seg:hover { color: var(--color-paper-50); }
+  .seg[aria-pressed='true'] {
+    background-color: var(--color-paper-50);
+    color: var(--color-ink-950);
+  }
+
+  /* Topic filter — reuses the global .tag chip; only the pressed state and
+   * the cursor differ from the read-only version. */
+  .filter-chip.tag { cursor: pointer; }
+  .filter-chip.tag[aria-pressed='true'] {
+    color: var(--color-wine-300);
+    border-color: var(--color-wine-600);
+    background-color: var(--surface-2);
+  }
+
+  .rows > .post-row { border-bottom: 1px solid var(--line); }
+
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+</style>
 
 <!-- Native client-side DOM filter script (rung 4 progressive enhancement) -->
 <script>

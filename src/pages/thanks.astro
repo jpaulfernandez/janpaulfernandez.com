@@ -6,13 +6,30 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout title="Message sent" description="Thank you for contacting me.">
   <meta slot="head" name="robots" content="noindex" />
 
-  <article class="text-center">
-    <h1 class="display m-0"><span class="flare">thanks.</span></h1>
-    <p class="mt-4 mb-0 text-ink-700 text-body leading-relaxed">
-      Your message has been sent. I'll get back to you as soon as I can.
-    </p>
-    <p class="mt-6 mb-0">
-      <a href="/" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">← home</a>
-    </p>
-  </article>
+  <section class="page-thanks" data-hero>
+    <div class="shell text-center">
+      <p class="kicker justify-center" data-reveal="fade">Received</p>
+      <h1 class="display mt-8" data-reveal="up" data-reveal-delay="0.05">
+        <span class="flare">Thanks.</span>
+      </h1>
+      <p class="lead mt-8 mx-auto" data-reveal="up" data-reveal-delay="0.1">
+        Your message has been sent. I'll get back to you as soon as I can.
+      </p>
+      <div class="mt-10" data-reveal="up" data-reveal-delay="0.16">
+        <a href="/" class="btn btn-ghost">← Back home</a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .page-thanks {
+    display: flex;
+    align-items: center;
+    min-height: 70svh;
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) 6rem;
+  }
+  /* The kicker is a flex row with a trailing rule; centring the page means
+   * dropping that rule rather than letting it run off one side. */
+  .kicker::after { display: none; }
+</style>

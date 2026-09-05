@@ -50,19 +50,25 @@ const seoData = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  <article>
-    <header>
-      <h1 class="display m-0"><span class="flare">Now</span></h1>
-      <p class="mt-8 mb-0 text-ink-700 text-body leading-relaxed max-w-prose">
-        A public log of what I'm focused on — current projects, learning, and where my head is at.
+  <section class="page-head" data-hero>
+    <div class="shell">
+      <p class="kicker" data-reveal="fade">Currently</p>
+      <h1 class="display mt-8" data-reveal="up" data-reveal-delay="0.05">
+        <span class="flare">Now</span>
+      </h1>
+      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+        A public log of what I'm focused on — current projects, learning, and
+        where my head is at.
       </p>
-      <p class="mt-2 mb-0 text-ink-500 text-small tabular-nums">
-        last updated: {formattedLastUpdated}
+      <p class="mono-micro mt-6" data-reveal="fade" data-reveal-delay="0.16">
+        Last updated {formattedLastUpdated}
       </p>
-    </header>
+    </div>
+  </section>
 
+  <div class="shell pb-24 md:pb-32">
     {processedNow.length > 0 ? (
-      <section class="tl mt-16 md:mt-20" aria-label="Now timeline">
+      <section class="tl" aria-label="Now timeline">
         {years.map(({ year, items }) => (
           <>
             <h2 class="tl-year">{year}</h2>
@@ -71,14 +77,14 @@ const seoData = [
               const displayTitle = data.title || data.slug || id;
               const isCurrent = data.date === latestDate;
               return (
-                <article class:list={['tl-item', isCurrent && 'is-current']}>
+                <article class:list={['tl-item', isCurrent && 'is-current']} data-reveal="up">
                   <time class="tl-date" datetime={data.date}>
                     <span class="tl-date-day">{dayLabel}</span>
                     <span class="tl-date-year">{entryYear}</span>
                   </time>
 
                   <div class="tl-content">
-                    {isCurrent && <p class="tl-badge">right now</p>}
+                    {isCurrent && <p class="tl-badge">Right now</p>}
 
                     <h3 class="tl-title">{displayTitle}</h3>
 
@@ -91,9 +97,9 @@ const seoData = [
                         href={data.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="tl-link"
+                        class="link-arrow mt-4"
                       >
-                        reference ↗
+                        Reference
                       </a>
                     )}
                   </div>
@@ -103,22 +109,27 @@ const seoData = [
           </>
         ))}
 
-        <p class="tl-end">end of timeline — go build something cool.</p>
+        <p class="tl-end">End of timeline — go build something cool.</p>
       </section>
     ) : (
-      <div class="mt-12 border-t border-ink-200 pt-6">
-        <p class="text-ink-700 m-0">
-          Nothing here yet — but my <a href="/work-with-me/#contact" class="text-ink-900 hover:text-wine-500 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm">inbox is open</a>.
+      <div class="panel p-10">
+        <p class="text-paper-400 m-0">
+          Nothing here yet — but my
+          <a href="/work-with-me/#contact" class="link">inbox is open</a>.
         </p>
       </div>
     )}
-  </article>
+  </div>
 </BaseLayout>
 
 <style>
+  .page-head {
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
   /* Timeline — /now only. One continuous hairline; year markers are the
    * chapter breaks, entries hang off it as nodes. Mobile stacks the date
-   * above the entry; ≥768px moves it into a right-aligned gutter. */
+   * above the entry; ≥768px moves it into a left gutter. */
   .tl { position: relative; }
   .tl::before {
     content: '';
@@ -127,71 +138,75 @@ const seoData = [
     top: 0.5rem;
     bottom: 0.6875rem;
     width: 1px;
-    background-color: var(--color-ink-200);
+    background: linear-gradient(180deg, var(--line-strong), var(--line) 70%, transparent);
   }
 
-  /* Year: a solid wine milestone on the rail, with a rule running to the
-   * right edge — the same structural move as .kicker, one size up. */
+  /* Year: a wine milestone on the rail with a rule running to the right edge —
+   * the same structural move as .kicker, several sizes up. */
   .tl-year {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin: 0 0 2rem;
-    padding-left: 1.75rem;
+    gap: 1rem;
+    margin: 0 0 2.5rem;
+    padding-left: 2rem;
+    font-family: var(--font-mono);
     font-size: var(--text-h3);
     font-weight: 700;
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
-    color: var(--color-ink-900);
+    color: var(--color-paper-50);
   }
-  .tl-year:not(:first-child) { margin-top: 1rem; }
+  .tl-year:not(:first-child) { margin-top: 2rem; }
   .tl-year::before {
     content: '';
     position: absolute;
-    left: -0.1875rem;
+    left: -0.125rem;
     top: 50%;
     margin-top: -0.375rem;
     width: 0.75rem;
     height: 0.75rem;
+    border-radius: 50%;
     background-color: var(--color-wine-500);
   }
   .tl-year::after {
     content: '';
     flex: 1;
     height: 1px;
-    background-color: var(--color-ink-200);
+    background: linear-gradient(90deg, var(--line-strong), transparent);
   }
 
   .tl-item {
     position: relative;
-    padding-left: 1.75rem;
-    padding-bottom: 3rem;
+    padding-left: 2rem;
+    padding-bottom: 3.5rem;
   }
   .tl-item::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 0.4375rem;
-    width: 0.375rem;
-    height: 0.375rem;
-    background-color: var(--color-paper-100);
-    box-shadow: inset 0 0 0 1px var(--color-ink-500);
+    top: 0.5rem;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    background-color: var(--color-ink-950);
+    box-shadow: inset 0 0 0 1px var(--color-paper-600);
   }
   /* The live entry is the only filled node — it is the flare on this page. */
   .tl-item.is-current::before {
-    background-color: var(--color-wine-500);
-    box-shadow: 0 0 0 0.25rem var(--color-wine-50);
+    background-color: var(--color-wine-400);
+    box-shadow: 0 0 0 0.3125rem var(--wine-glow);
   }
 
   .tl-date {
     display: block;
-    font-size: var(--text-small);
-    color: var(--color-ink-500);
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    color: var(--color-paper-400);
     font-variant-numeric: tabular-nums;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 0.5rem;
+    letter-spacing: 0.16em;
+    margin-bottom: 0.75rem;
   }
   /* The year already labels the section; the gutter only repeats it on
    * mobile, where the section marker can scroll far out of view. */
@@ -199,81 +214,70 @@ const seoData = [
 
   .tl-badge {
     display: inline-block;
-    margin: 0 0 0.5rem;
-    padding: 0.125rem 0.5rem;
-    font-size: var(--text-small);
+    margin: 0 0 0.75rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--color-wine-500);
-    background-color: var(--color-wine-50);
+    letter-spacing: 0.16em;
+    color: var(--color-wine-300);
+    background-color: var(--wine-glow);
+    border: 1px solid var(--color-wine-600);
   }
 
   .tl-title {
     margin: 0;
     font-size: var(--text-h3);
-    font-weight: 700;
-    line-height: 1.25;
-    color: var(--color-ink-900);
-    text-wrap: balance;
+    line-height: 1.15;
+    color: var(--color-paper-50);
   }
 
   .tl-prose {
-    margin-top: 0.75rem;
-    color: var(--color-ink-700);
+    margin-top: 1rem;
+    color: var(--color-paper-400);
     max-width: 62ch;
-  }
-
-  .tl-link {
-    display: inline-block;
-    margin-top: 0.75rem;
-    font-size: var(--text-small);
-    color: var(--color-ink-500);
-    text-decoration: none;
-  }
-  .tl-link:hover { color: var(--color-wine-500); }
-  .tl-link:focus-visible {
-    outline: 2px solid var(--color-wine-500);
-    outline-offset: 2px;
   }
 
   /* Terminal node — closes the rail so it doesn't just trail off. */
   .tl-end {
     position: relative;
     margin: 0;
-    padding-left: 1.75rem;
+    padding-left: 2rem;
+    font-family: var(--font-mono);
     font-size: var(--text-small);
-    font-style: italic;
-    color: var(--color-ink-500);
+    color: var(--color-paper-600);
   }
   .tl-end::before {
     content: '';
     position: absolute;
     left: 0;
     top: 0.5rem;
-    width: 0.375rem;
-    height: 0.375rem;
-    background-color: var(--color-ink-200);
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    background-color: var(--color-paper-600);
   }
 
   @media (min-width: 768px) {
-    .tl::before { left: 7.5rem; }
-    .tl-year { padding-left: 9.25rem; }
-    .tl-year::before { left: 7.125rem; }
-    .tl-item { padding-left: 9.25rem; }
-    .tl-item::before { left: 7.3125rem; }
-    .tl-end { padding-left: 9.25rem; }
-    .tl-end::before { left: 7.3125rem; }
+    .tl::before { left: 8.6875rem; }
+    .tl-year { padding-left: 10.5rem; }
+    .tl-year::before { left: 8.375rem; }
+    .tl-item { padding-left: 10.5rem; }
+    .tl-item::before { left: 8.5rem; }
+    .tl-end { padding-left: 10.5rem; }
+    .tl-end::before { left: 8.5rem; }
 
     .tl-date {
       position: absolute;
       left: 0;
-      top: 0.25rem;
-      width: 6.5rem;
+      top: 0.3125rem;
+      width: 7.5rem;
       text-align: right;
       margin-bottom: 0;
     }
-    /* In the gutter the year sits under the day, and the section marker is
-     * always in view — so it drops to a quieter second line. */
+    /* In the gutter the section marker is always in view, so the repeated
+     * year drops away. */
     .tl-date-year { display: none; }
   }
 </style>

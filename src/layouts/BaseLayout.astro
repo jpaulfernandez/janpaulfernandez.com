@@ -1,12 +1,6 @@
 ---
 import '../styles/global.css';
 
-// Import the exact critical font files as URL assets so the preload hrefs
-// always match the hashed filenames Astro/Vite emits at build time.
-// Phase 8: Courier Prime replaces Archivo Black + Lato; preload 400 + 700.
-import courierPrime400Woff2 from '@fontsource/courier-prime/files/courier-prime-latin-400-normal.woff2?url';
-import courierPrime700Woff2 from '@fontsource/courier-prime/files/courier-prime-latin-700-normal.woff2?url';
-
 interface Props {
   title: string;
   description: string;
@@ -21,7 +15,16 @@ interface Props {
   bodyClass?: string;
 }
 
-const { title, description, ogImage, ogImageAlt, type = 'website', isHome = false, noCanonical = false, bodyClass } = Astro.props;
+const {
+  title,
+  description,
+  ogImage,
+  ogImageAlt,
+  type = 'website',
+  isHome = false,
+  noCanonical = false,
+  bodyClass,
+} = Astro.props;
 
 // Google cuts titles around 60 characters. When the " — Paul Fernandez" suffix
 // is what pushes a title past that, drop the suffix rather than let the suffix
@@ -30,21 +33,24 @@ const suffixed = `${title} — Paul Fernandez`;
 const pageTitle = isHome || suffixed.length > 60 ? title : suffixed;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-// The /og/*.png route generates real 1200x630 cards at build time; /og/home.png
-// is the site-wide fallback for any page without its own card. (There is no
-// og-default.png in public/ — pointing at one shipped a 404 on every share.)
 const resolvedOgImage = new URL(ogImage ?? '/og/home.png', Astro.site);
 
 // Hrefs carry the trailing slash so every internal link points at the same URL
 // the page declares as canonical — otherwise the whole link graph lands one
 // redirect short of the indexed URL.
 const navItems = [
-  { href: '/about/', label: 'me' },
-  { href: '/work-with-me/', label: 'work' },
-  { href: '/projects/', label: 'projects' },
-  { href: '/thoughts/', label: 'thoughts' },
-  { href: '/gallery/', label: 'gallery' },
-  { href: '/now/', label: 'now' },
+  { href: '/about/', label: 'About' },
+  { href: '/thoughts/', label: 'Writing' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/gallery/', label: 'Gallery' },
+  { href: '/now/', label: 'Now' },
+];
+
+const elsewhere = [
+  { href: 'https://www.linkedin.com/in/jpaulfernandez/', label: 'LinkedIn' },
+  { href: 'https://www.instagram.com/goofffball/', label: 'Instagram' },
+  { href: 'mailto:jpaul.fernandez18@gmail.com', label: 'Email' },
+  { href: '/rss.xml', label: 'RSS' },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -55,20 +61,21 @@ const isNavActive = (href: string) => {
   // Every href ends in "/", so a prefix match covers the section's children too.
   return currentPath.startsWith(href);
 };
-
-const secondaryLinks = [
-  { href: '/colophon/', label: 'colophon' },
-  { href: '/rss.xml', label: 'rss' },
-  { href: 'mailto:jpaul.fernandez18@gmail.com', label: 'email' },
-  { href: 'https://www.linkedin.com/in/jpaulfernandez/', label: 'linkedin', external: true },
-  { href: 'https://www.instagram.com/goofffball/', label: 'instagram', external: true },
-];
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/*
+      Must run before first paint. global.css hides every [data-reveal] behind
+      a `.js` ancestor selector, so this class is what arms the animations —
+      and its absence is what guarantees the page is legible when the motion
+      bundle fails to load, is blocked, or throws.
+    */}
+    <script is:inline>document.documentElement.classList.add('js');</script>
+
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {!noCanonical && <link rel="canonical" href={canonicalURL} />}
@@ -92,9 +99,9 @@ const secondaryLinks = [
     <meta name="twitter:image" content={resolvedOgImage} />
     <meta name="twitter:image:alt" content={ogImageAlt ?? pageTitle} />
 
-    <!-- Favicon — magenta square (Phase 8). -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#FAF6F4" />
+    <meta name="theme-color" content="#050505" />
+    <meta name="color-scheme" content="dark" />
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="Paul Fernandez" href="/rss.xml" />
@@ -103,9 +110,10 @@ const secondaryLinks = [
     <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
     <link rel="alternate" type="text/plain" href="/llms-full.txt" title="llms-full.txt" />
 
-    <!-- Critical font preloads (Courier Prime 400 + 700, self-hosted @fontsource). -->
-    <link rel="preload" as="font" type="font/woff2" href={courierPrime400Woff2} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={courierPrime700Woff2} crossorigin />
+    <!-- Critical font preloads. Switzer 500 draws every heading above the fold;
+         400 draws the body under it. The other three faces load on demand. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/switzer-500.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/switzer-400.woff2" crossorigin />
 
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-KJX3LCC0SZ"></script>
@@ -119,40 +127,43 @@ const secondaryLinks = [
 
     <slot name="head" />
   </head>
+
   <body class={`min-h-screen flex flex-col ${bodyClass ?? ''}`}>
     <a href="#main" class="skip-link">Skip to content</a>
 
     {/*
-      Phase 8 shell — floating sidebar anchored next to main content.
-        • Mobile (< lg): site header sits inline at the top of the body, right-aligned.
-        • lg+: sidebar sits directly to the left of the main content column (tight gap),
-          vertically centered in the viewport, right-aligned toward the content.
-        • Main content has a generous reading width (max-w-3xl).
+      Phase 20 shell. The Phase 8 sidebar is gone: it worked at a 736px reading
+      column but it caps the page at that width forever, and a display face at
+      104px needs the whole viewport. The nav is now a floating bar, so full-
+      bleed sections can run edge to edge underneath it.
     */}
-    <div class="w-full max-w-5xl mx-auto flex-1 lg:flex lg:justify-center lg:items-start lg:gap-10 xl:gap-12 px-6">
-      <header class="pt-10 pb-8 lg:py-0 flex flex-col items-end text-right lg:sticky lg:top-0 lg:h-screen lg:justify-center lg:w-44 xl:w-48 shrink-0">
-        <a
-          href="/"
-          class="site-name block font-bold text-ink-900 no-underline tracking-tight leading-none text-body text-right focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
-        >
-          Paul Fernandez
+    <header
+      data-nav
+      data-scrolled="false"
+      data-hidden="false"
+      class="site-nav fixed inset-x-0 top-0 z-100"
+    >
+      <div class="shell flex items-center justify-between gap-4 py-4">
+        <!-- Wordmark + live status -->
+        <a href="/" class="group flex items-center gap-3 shrink-0" aria-label="Paul Fernandez — home">
+          <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
+            <span class="status-ping absolute inline-flex h-full w-full rounded-full bg-wine-400 opacity-60"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-wine-400"></span>
+          </span>
+          <span class="font-display font-medium tracking-tight text-paper-50 leading-none">
+            Paul Fernandez
+          </span>
         </a>
 
-        <span class="site-meta mt-2 block text-ink-500 text-small tracking-wide text-right">
-          technologist · philippines
-        </span>
-
-        <nav aria-label="Main" class="mt-8 lg:mt-10">
-          <ul class="flex flex-wrap justify-end gap-x-6 gap-y-2 list-none m-0 p-0 lg:flex-col lg:items-end lg:gap-y-3">
+        <!-- Desktop pill -->
+        <nav aria-label="Main" class="hidden lg:block">
+          <ul class="nav-pill flex items-center gap-1 list-none m-0 p-1">
             {navItems.map((item) => (
               <li>
                 <a
                   href={item.href}
                   aria-current={isNavActive(item.href) ? 'page' : undefined}
-                  class:list={[
-                    'nav-link text-body no-underline text-ink-700 hover:text-ink-900',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1',
-                  ]}
+                  class="nav-link"
                 >
                   {item.label}
                 </a>
@@ -161,41 +172,114 @@ const secondaryLinks = [
           </ul>
         </nav>
 
-        {/* Secondary links — under the primary nav, right-aligned. */}
-        <ul class="mt-8 lg:mt-10 hidden lg:flex flex-col items-end gap-y-2 text-small text-ink-500 list-none m-0 p-0">
-          {secondaryLinks.map((link) => (
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="hidden xl:flex items-center gap-2 mono-micro mr-2">
+            <span data-clock>—:—</span>
+            <span class="text-paper-600">·</span>
+            <span>Manila</span>
+          </span>
+
+          <a href="/work-with-me/" class="btn btn-primary hidden sm:inline-flex text-small">
+            Work with me
+          </a>
+
+          <button
+            type="button"
+            class="menu-toggle"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+            data-menu-toggle
+          >
+            <span class="sr-only">Menu</span>
+            <span class="menu-bars" aria-hidden="true"><i></i><i></i></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile menu. A plain hidden panel, not a <dialog>: it needs to sit
+         under the nav bar rather than over it, so the toggle stays visible. -->
+    <div id="mobile-menu" class="mobile-menu lg:hidden" data-menu hidden>
+      <nav aria-label="Mobile" class="shell pt-32 pb-12">
+        <ul class="list-none m-0 p-0 flex flex-col">
+          {navItems.map((item) => (
+            <li class="border-b border-[var(--line)]">
+              <a
+                href={item.href}
+                aria-current={isNavActive(item.href) ? 'page' : undefined}
+                class="mobile-link"
+              >
+                {item.label}
+                <span aria-hidden="true" class="text-paper-600">↗</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <a href="/work-with-me/" class="btn btn-primary mt-8 w-full justify-center">
+          Work with me
+        </a>
+
+        <ul class="list-none m-0 p-0 mt-8 flex flex-wrap gap-x-6 gap-y-2">
+          {elsewhere.map((link) => (
             <li>
               <a
                 href={link.href}
-                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                class="text-ink-500 hover:text-ink-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
+                {...(link.href.startsWith('http')
+                  ? { target: '_blank', rel: 'noopener noreferrer' }
+                  : {})}
+                class="mono-micro hover:text-paper-50"
               >
                 {link.label}
               </a>
             </li>
           ))}
         </ul>
-      </header>
+      </nav>
+    </div>
 
-      <div class="flex-1 min-w-0 max-w-3xl flex flex-col min-h-screen">
-        <!-- Main content — wider reading column (max-w-3xl). -->
-        <main id="main" class="flex-1 py-12 md:py-20">
-          <slot />
-        </main>
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
 
-        <!-- Footer — aligned with main content. Its only content is the
-             mobile-only secondary links, so the whole thing is hidden at lg+
-             rather than leaving an empty ruled band under the article. -->
-        <footer class="py-8 border-t border-ink-200/60 lg:hidden">
-          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-small">
-            {/* Mobile-only secondary links (< lg), since the lg+ sidebar owns them. */}
-            <ul class="flex flex-wrap gap-x-6 gap-y-1 list-none m-0 p-0 lg:hidden">
-              {secondaryLinks.map((link) => (
+    <footer class="site-footer">
+      <div class="shell">
+        <!-- The statement. One per site, and the last thing anyone reads. -->
+        <p class="footer-statement" data-split="lines">
+          Figuring out what to build,<br />
+          with the people who <span class="flare">have to build it</span>.
+        </p>
+
+        <div class="mt-12 md:mt-16 flex flex-wrap items-center gap-4">
+          <a href="/work-with-me/" class="btn btn-primary">Work with me</a>
+          <a href="mailto:jpaul.fernandez18@gmail.com" class="btn btn-ghost">Send an email</a>
+        </div>
+
+        <div
+          class="mt-16 md:mt-24 pt-10 border-t border-[var(--line)] grid gap-10 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <div>
+            <h2 class="mono-micro">Explore</h2>
+            <ul class="mt-4 list-none m-0 p-0 flex flex-col gap-2">
+              {navItems.map((item) => (
+                <li>
+                  <a href={item.href} class="footer-link">{item.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="mono-micro">Elsewhere</h2>
+            <ul class="mt-4 list-none m-0 p-0 flex flex-col gap-2">
+              {elsewhere.map((link) => (
                 <li>
                   <a
                     href={link.href}
-                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    class="text-ink-500 hover:text-ink-900 no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-500 rounded-sm px-1"
+                    {...(link.href.startsWith('http')
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                    class="footer-link"
                   >
                     {link.label}
                   </a>
@@ -203,25 +287,209 @@ const secondaryLinks = [
               ))}
             </ul>
           </div>
-        </footer>
+
+          <div>
+            <h2 class="mono-micro">This site</h2>
+            <ul class="mt-4 list-none m-0 p-0 flex flex-col gap-2">
+              <li><a href="/colophon/" class="footer-link">Colophon</a></li>
+              <li><a href="/llms.txt" class="footer-link">llms.txt</a></li>
+            </ul>
+          </div>
+
+          <div class="lg:text-right">
+            <h2 class="mono-micro lg:justify-end">Local time</h2>
+            <p class="mt-4 mb-0 font-display text-h3 text-paper-50 leading-none">
+              <span data-clock>—:—</span>
+            </p>
+            <p class="mt-2 mb-0 mono">Manila, Philippines</p>
+          </div>
+        </div>
       </div>
-    </div>
+    </footer>
 
     <style>
-      /* Magenta ● marks the active page — single accent. The marker is part
-       * of the link's inline content, so right-alignment pulls label+marker
-       * toward the right edge together. */
-      .nav-link[aria-current='page'] {
-        color: var(--color-wine-500);
-        font-weight: 700;
+      /* ---- Nav ---------------------------------------------------------- */
+      .site-nav {
+        transition:
+          transform 0.5s var(--ease-out-quint),
+          background-color 0.4s var(--ease-out-quint),
+          backdrop-filter 0.4s var(--ease-out-quint),
+          border-color 0.4s var(--ease-out-quint);
+        border-bottom: 1px solid transparent;
       }
-      .nav-link[aria-current='page']::before {
-        content: '■';
-        color: var(--color-wine-500);
-        margin-right: 0.4em;
-        font-size: 0.7em;
-        vertical-align: 0.25em;
+      .site-nav[data-scrolled='true'] {
+        background-color: rgba(5, 5, 5, 0.72);
+        backdrop-filter: blur(16px) saturate(140%);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
+        border-bottom-color: var(--line);
+      }
+      .site-nav[data-hidden='true'] { transform: translateY(-100%); }
+
+      .status-ping { animation: status-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
+      @keyframes status-ping {
+        0%   { transform: scale(1);   opacity: 0.6; }
+        70%  { transform: scale(2.6); opacity: 0;   }
+        100% { transform: scale(2.6); opacity: 0;   }
+      }
+
+      .nav-pill {
+        background-color: var(--surface-1);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-pill);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .nav-link {
+        display: block;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-pill);
+        font-size: var(--text-small);
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        color: var(--color-paper-400);
+        transition:
+          color 0.3s var(--ease-out-quint),
+          background-color 0.3s var(--ease-out-quint);
+      }
+      .nav-link:hover { color: var(--color-paper-50); background-color: var(--surface-2); }
+      .nav-link[aria-current='page'] {
+        color: var(--color-paper-50);
+        background-color: var(--surface-3);
+      }
+
+      .menu-toggle {
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: var(--radius-pill);
+        background-color: var(--surface-1);
+        border: 1px solid var(--line);
+        color: var(--color-paper-100);
+      }
+      /* Not `lg:hidden`: Astro scopes this block's selectors with an attribute,
+       * which outranks a single Tailwind class, so the utility would lose to
+       * `display: grid` above. Same reason the mobile menu hides here. */
+      @media (min-width: 64rem) {
+        .menu-toggle { display: none; }
+        .mobile-menu { display: none; }
+      }
+      .menu-bars { display: grid; gap: 5px; width: 1rem; }
+      .menu-bars i {
+        display: block;
+        height: 1.5px;
+        background-color: currentColor;
+        transition: transform 0.35s var(--ease-out-quint), opacity 0.2s;
+      }
+      [aria-expanded='true'] .menu-bars i:first-child { transform: translateY(3.25px) rotate(45deg); }
+      [aria-expanded='true'] .menu-bars i:last-child { transform: translateY(-3.25px) rotate(-45deg); }
+
+      .mobile-menu {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        background-color: var(--color-ink-950);
+        overflow-y: auto;
+        opacity: 0;
+        transition: opacity 0.35s var(--ease-out-quint);
+      }
+      .mobile-menu[data-open='true'] { opacity: 1; }
+
+      .mobile-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 0;
+        font-family: var(--font-display);
+        font-size: var(--text-h2);
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        color: var(--color-paper-100);
+      }
+      .mobile-link[aria-current='page'] { color: var(--color-wine-300); }
+
+      /* ---- Footer ------------------------------------------------------- */
+      .site-footer {
+        padding-block: clamp(4rem, 2rem + 8vw, 8rem) 3rem;
+        border-top: 1px solid var(--line);
+        background:
+          radial-gradient(90% 120% at 50% 0%, rgba(224, 68, 111, 0.08), transparent 60%),
+          var(--color-ink-950);
+      }
+      .footer-statement {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 1.1rem + 3.8vw, 4rem);
+        font-weight: 500;
+        line-height: 1.05;
+        letter-spacing: -0.035em;
+        color: var(--color-paper-50);
+        margin: 0;
+        max-width: 20ch;
+      }
+      .footer-link {
+        font-size: var(--text-small);
+        color: var(--color-paper-400);
+      }
+      .footer-link:hover { color: var(--color-paper-50); }
+
+      .sr-only {
+        position: absolute;
+        width: 1px; height: 1px;
+        padding: 0; margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
       }
     </style>
+
+    {/*
+      Mobile menu. Vanilla, ~30 lines, no island — rung 4 of the YAGNI ladder.
+      It toggles [hidden] for correctness (nothing focusable while closed) and
+      a data attribute for the fade, with a frame between the two so the
+      transition has something to animate from.
+    */}
+    <script is:inline>
+      (() => {
+        const toggle = document.querySelector('[data-menu-toggle]');
+        const menu = document.querySelector('[data-menu]');
+        const nav = document.querySelector('[data-nav]');
+        if (!toggle || !menu) return;
+
+        const setOpen = (open) => {
+          toggle.setAttribute('aria-expanded', String(open));
+          document.body.style.overflow = open ? 'hidden' : '';
+          if (open) {
+            nav && (nav.dataset.menuOpen = 'true');
+            menu.hidden = false;
+            // Force a reflow so the transition has a frame to start from.
+            // requestAnimationFrame would be the idiomatic way, but it is
+            // throttled to nothing in a backgrounded tab — which would leave
+            // the panel at opacity 0 while un-hidden: invisible, and still
+            // holding every link in the tab order.
+            void menu.offsetHeight;
+            menu.dataset.open = 'true';
+          } else {
+            nav && delete nav.dataset.menuOpen;
+            menu.dataset.open = 'false';
+            setTimeout(() => (menu.hidden = true), 350);
+          }
+        };
+
+        toggle.addEventListener('click', () =>
+          setOpen(toggle.getAttribute('aria-expanded') !== 'true')
+        );
+        menu.addEventListener('click', (e) => {
+          if (e.target.closest('a')) setOpen(false);
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') setOpen(false);
+        });
+      })();
+    </script>
+
+    <script>
+      import '../scripts/motion.ts';
+    </script>
   </body>
 </html>

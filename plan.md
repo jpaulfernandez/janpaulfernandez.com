@@ -347,7 +347,65 @@ here so the tracker stays truthful about what is live.
 
 - [ ] Paul's visual review in-browser — the nine photographs and the dropped Maslow diagram are the parts worth a look
 
+## Phase 20 — "NOCTURNE": full visual redesign (2026-09-05)
+
+Branch `redesign/midu-dark`. Paul's brief: redesign the whole site based on
+[midu.design](https://midu.design/), free to start from scratch, with GSAP
+motion. Three calls made up front and confirmed by Paul: **dark ground with
+wine kept as the accent** (not pure monochrome), **Switzer for display + prose
+with Courier Prime retained for metadata**, and **"loose inspiration"** — take
+midu's mood and motion, design the page flow from Paul's content rather than
+from midu's studio-shaped outline (no invented pricing, testimonials, or
+client logos).
+
+What midu.design actually is, for the record: a Framer site on `#050505`,
+Switzer 500 at −4% tracking on 82px display type, `rgba(255,255,255,.05–.07)`
+glass surfaces, 16–24px radii, a floating pill nav with a live clock, one
+inverted `#E6E6E6` section, Lenis smooth scroll, and scroll-driven word-by-word
+text brightening. The inverted light section is the one signature move
+deliberately **not** taken — it belongs to a studio site with case studies to
+frame, and this site has essays.
+
+- [x] (2026-09-05) **Design system rewritten** (`src/styles/global.css`). Ground inverted: `ink-*` now means surfaces and `paper-*` means type, the reverse of Phase 9–19. Wine lifted two stops for the dark ground — `#8E1B3F` scores 2.0:1 on `#050505` and was unusable as text; the ramp is now `wine-300 #F0658A` (6.5:1) and `wine-400 #E0446F` (4.9:1) for type, with `wine-500 #B02A52` as a fill carrying white at 6.4:1. Every colour used at body size is measured in the file header. Type scale un-compressed: Phase 14 pulled display down to 56px because the light layout could not carry it; on black it runs 48 → 104 at −4% tracking.
+- [x] (2026-09-05) **Switzer self-hosted** from Fontshare (ITF, free for commercial use) — 400/500 upright + italic and 600, five faces, 92KB total in `public/fonts`. No 700: the design leans on 500/600 and a fifth weight was 20KB for nothing. Courier Prime survives for `.kicker`, `.mono`, dates, counters and code — every place the old site's mono voice was doing real work rather than just being the only option.
+- [x] (2026-09-05) **Motion runtime** (`src/scripts/motion.ts`) — GSAP + ScrollTrigger + SplitText + Lenis behind a small `data-*` vocabulary (`data-reveal`, `data-reveal-stagger`, `data-split`, `data-parallax`, `data-hero`, `data-lenis-stop`). One file owns every animation on the site; nothing else imports GSAP. Lenis drives ScrollTrigger rather than the reverse, so scrubbed timelines read the eased scroll position. Chose Lenis over GSAP's own ScrollSmoother (also free since 3.13) because ScrollSmoother needs a wrapper/content DOM structure that fights the fixed nav and the lightbox `<dialog>`.
+- [x] (2026-09-05) **Shell replaced.** The Phase 8 sidebar is gone — it worked at a 736px reading column but capped the page there forever, and a 104px display face needs the viewport. Now a floating pill nav (wordmark + live Manila clock + CTA), a full-screen mobile menu, and a statement footer. Full-bleed sections can run edge to edge underneath.
+- [x] (2026-09-05) **Every page rebuilt**: home (hero → scroll-brightened bio → writing → services → now → projects → full-bleed photo marquee), about (portrait beside the display name), thoughts index (segmented type filter + topic chips), article layout, topic archives, now, projects, gallery index + sets, work-with-me, colophon, 404, thanks, and the four MDX blocks.
+
+**Bugs found and fixed during the redesign** (all three are cascade traps that
+would have shipped silently):
+
+- [x] (2026-09-05) **Unlayered component CSS was defeating Tailwind utilities.** `global.css` declared `.btn`, `.card`, `.display` etc. outside any cascade layer, and an unlayered rule beats a layered one *regardless of specificity* — so `.btn { display: inline-flex }` silently overrode `hidden sm:inline-flex`, and the "Work with me" button would not hide on mobile. Everything from `SHELL` down is now inside `@layer components`, deliberately excluding the `prefers-reduced-motion` block, which has to beat utilities too. Recorded as a hard constraint in CLAUDE.md — this is a whole class of bug, not one button.
+- [x] (2026-09-05) **The same trap in Astro scoped styles.** Astro scopes a component `<style>` with a `[data-astro-cid-*]` attribute, giving `.menu-toggle[data-astro-cid]` specificity (0,2,0) against `.lg\:hidden`'s (0,1,0) — so the hamburger stayed visible at 1280px next to the desktop nav. Those elements now hide with a media query in the scoped block rather than a utility class.
+- [x] (2026-09-05) **`.prose p { margin: 0 }` outranked `.prose > * + *`** (0,1,1 vs 0,1,0), so every paragraph in every article collapsed against the next with zero gap. Rewritten as flow spacing: `.prose > *` resets, `.prose > * + *` sets the gap, and the more specific heading/list rules override it on purpose.
+- [x] (2026-09-05) **The mobile menu could open invisible-but-focusable.** The fade used `requestAnimationFrame` to get a start frame after un-hiding, but rAF is throttled to nothing in a backgrounded tab — leaving the panel at `opacity: 0` with `hidden` removed and every link still in the tab order. Now forces a synchronous reflow instead.
+- [x] (2026-09-05) **GSAP cannot interpolate `var()` colours.** The word-brightening scrub was tweening `color: 'var(--color-paper-600)'` → `var(--color-paper-50)`; GSAP interpolates channel by channel and cannot read through a custom property. Now literal hex, with a comment tying the two values back to the tokens they mirror.
+
+**Verified, not assumed:**
+
+- `npm run build`, `npx astro check` (0 errors), and `npm test` (38 tests) all pass.
+- **JS-off contract holds.** Removing the `.js` class the head script sets leaves every `[data-reveal]` and `[data-split]` at `opacity: 1`, `visibility: visible`, no transform — confirmed in-browser. The hidden states are CSS-owned and `.js`-gated precisely so a failed or blocked bundle cannot make the site unreadable.
+- **A scripted audit of all 27 built pages**: exactly one `h1` each, 25 JSON-LD blocks, 331 images with **zero** missing alt (309 described, 22 deliberately decorative), no title over 60 chars, no description over 160, canonical on every indexable page, and no internal link pointing at a non-canonical URL. The Phase 18 SEO work survived the rebuild intact.
+- **React still never reaches the public site** — grepped the build: no public page references the Keystatic or React chunks.
+- Lightbox verified live: 95 visible triggers out of 190 in the DOM (the Phase 18 double-binding fix still holds), counter reads `4 / 95`, and `data-lenis-stop` correctly parks smooth scroll while the dialog is open.
+- Thoughts filters verified functionally: 4 → 0 (notes) → 4 (essays) → 1 (essays + #philosophy), with the counter tracking.
+- Mobile (375px) verified: nav collapses to wordmark + hamburger, full-screen menu opens opaque with the five links and the CTA.
+
+**Worth Paul's attention:**
+
+- **The motion bundle is 54KB gzip on every page** (GSAP core + ScrollTrigger + SplitText + Lenis). The site previously shipped almost nothing. This is the real price of the brief and it is not reducible by much — GSAP core + ScrollTrigger alone is ~45KB. Dropping Lenis for native scroll saves ~7KB; hand-rolling the word split saves SplitText. Say the word if the trade isn't worth it.
+- **Home-page hero copy is new and unreviewed.** "I help teams work out what to build — then make sure the people building it and the people asking for it are describing the same thing." replaced nothing — the old hero had only the Keystatic bio under it. The `heroGreeting`/`heroIntro` singletons are untouched and still drive the `h1` and the scroll-brightened statement.
+- **The footer statement is new copy too**: "Figuring out what to build, with the people who have to build it."
+- **The colophon was rewritten because the old one had become false** — it claimed one typeface and "two small vanilla enhancement scripts" of client JS. It now names Switzer + Courier Prime and the GSAP/Lenis layer honestly.
+- Nav labels went from lowercase (`me`, `work`, `thoughts`) to sentence case (`About`, `Writing`, `Projects`). URLs are unchanged. Easy to revert if the lowercase voice mattered.
+
+- [ ] Paul's visual review in-browser
+- [ ] Decide: keep the 54KB motion bundle, or trim Lenis/SplitText
+- [ ] Merge to main + deploy
+
 ## Out of scope (v2 — do not build)
 
-Dark mode, Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.
+Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.
+
+("Dark mode" left this list in Phase 20 by being resolved rather than built — the site is dark, full stop. There is no toggle and no light theme to maintain.)
 

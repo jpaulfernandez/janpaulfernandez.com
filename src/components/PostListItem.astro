@@ -92,7 +92,7 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
     /* Only lightly held back: several covers are night shots that vanish
      * entirely against the ground at a heavier dim. */
     filter: grayscale(0.85) brightness(1.05);
-    transition: filter 0.5s var(--ease-out-quint);
+    transition: filter 0.4s var(--ease-out-quint);
   }
   .group:hover .post-cover { filter: grayscale(0) brightness(1); }
 

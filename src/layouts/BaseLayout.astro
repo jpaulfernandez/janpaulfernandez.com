@@ -144,12 +144,9 @@ const isNavActive = (href: string) => {
       class="site-nav fixed inset-x-0 top-0 z-100"
     >
       <div class="shell flex items-center justify-between gap-4 py-4">
-        <!-- Wordmark + live status -->
+        <!-- Wordmark -->
         <a href="/" class="group flex items-center gap-3 shrink-0" aria-label="Paul Fernandez — home">
-          <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
-            <span class="status-ping absolute inline-flex h-full w-full rounded-full bg-wine-400 opacity-60"></span>
-            <span class="relative inline-flex h-2 w-2 rounded-full bg-wine-400"></span>
-          </span>
+          <span class="h-2 w-2 shrink-0 rounded-full bg-wine-400" aria-hidden="true"></span>
           <span class="font-display font-medium tracking-tight text-paper-50 leading-none">
             Paul Fernandez
           </span>
@@ -173,12 +170,6 @@ const isNavActive = (href: string) => {
         </nav>
 
         <div class="flex items-center gap-2 shrink-0">
-          <span class="hidden xl:flex items-center gap-2 mono-micro mr-2">
-            <span data-clock>—:—</span>
-            <span class="text-paper-600">·</span>
-            <span>Manila</span>
-          </span>
-
           <a href="/work-with-me/" class="btn btn-primary hidden sm:inline-flex text-small">
             Work with me
           </a>
@@ -256,7 +247,7 @@ const isNavActive = (href: string) => {
         </div>
 
         <div
-          class="mt-16 md:mt-24 pt-10 border-t border-[var(--line)] grid gap-10 sm:grid-cols-2 lg:grid-cols-4"
+          class="mt-16 md:mt-24 pt-10 border-t border-[var(--line)] grid gap-10 sm:grid-cols-3"
         >
           <div>
             <h2 class="mono-micro">Explore</h2>
@@ -296,13 +287,6 @@ const isNavActive = (href: string) => {
             </ul>
           </div>
 
-          <div class="lg:text-right">
-            <h2 class="mono-micro lg:justify-end">Local time</h2>
-            <p class="mt-4 mb-0 font-display text-h3 text-paper-50 leading-none">
-              <span data-clock>—:—</span>
-            </p>
-            <p class="mt-2 mb-0 mono">Manila, Philippines</p>
-          </div>
         </div>
       </div>
     </footer>
@@ -310,11 +294,7 @@ const isNavActive = (href: string) => {
     <style>
       /* ---- Nav ---------------------------------------------------------- */
       .site-nav {
-        transition:
-          transform 0.5s var(--ease-out-quint),
-          background-color 0.4s var(--ease-out-quint),
-          backdrop-filter 0.4s var(--ease-out-quint),
-          border-color 0.4s var(--ease-out-quint);
+        transition: transform 0.3s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint), backdrop-filter 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint);
         border-bottom: 1px solid transparent;
       }
       .site-nav[data-scrolled='true'] {
@@ -324,13 +304,6 @@ const isNavActive = (href: string) => {
         border-bottom-color: var(--line);
       }
       .site-nav[data-hidden='true'] { transform: translateY(-100%); }
-
-      .status-ping { animation: status-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
-      @keyframes status-ping {
-        0%   { transform: scale(1);   opacity: 0.6; }
-        70%  { transform: scale(2.6); opacity: 0;   }
-        100% { transform: scale(2.6); opacity: 0;   }
-      }
 
       .nav-pill {
         background-color: var(--surface-1);
@@ -347,9 +320,7 @@ const isNavActive = (href: string) => {
         font-weight: 500;
         letter-spacing: -0.005em;
         color: var(--color-paper-400);
-        transition:
-          color 0.3s var(--ease-out-quint),
-          background-color 0.3s var(--ease-out-quint);
+        transition: color 0.22s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint);
       }
       .nav-link:hover { color: var(--color-paper-50); background-color: var(--surface-2); }
       .nav-link[aria-current='page'] {
@@ -379,7 +350,7 @@ const isNavActive = (href: string) => {
         display: block;
         height: 1.5px;
         background-color: currentColor;
-        transition: transform 0.35s var(--ease-out-quint), opacity 0.2s;
+        transition: transform 0.3s var(--ease-out-quint), opacity 0.22s;
       }
       [aria-expanded='true'] .menu-bars i:first-child { transform: translateY(3.25px) rotate(45deg); }
       [aria-expanded='true'] .menu-bars i:last-child { transform: translateY(-3.25px) rotate(-45deg); }
@@ -391,7 +362,7 @@ const isNavActive = (href: string) => {
         background-color: var(--color-ink-950);
         overflow-y: auto;
         opacity: 0;
-        transition: opacity 0.35s var(--ease-out-quint);
+        transition: opacity 0.22s var(--ease-out-quint);
       }
       .mobile-menu[data-open='true'] { opacity: 1; }
 

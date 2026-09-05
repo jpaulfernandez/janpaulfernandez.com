@@ -32,8 +32,18 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** The site's one easing curve, matching --ease-out-quint in global.css. */
-const EASE = 'power3.out';
+/**
+ * Timing, in one place.
+ *
+ * Retuned after review: the first pass ran ~1s per reveal on power3.out, which
+ * decelerates hard and long — it reads as sluggish even though the numbers
+ * looked reasonable. Shorter durations on a softer curve (power2.out), less
+ * travel, and tighter staggers make the same choreography feel quicker AND
+ * calmer, because the eye spends less time watching a thing ease to a stop.
+ */
+const EASE = 'power2.out';
+const DUR = 0.55;        // was 0.9
+const STAGGER = 0.045;   // was 0.08
 
 /** Endpoints for the word-brightening scrub — see initSplits(). */
 const DIM_WORD = '#6B6663';
@@ -60,9 +70,8 @@ if (reduceMotion) {
   initHero();
 }
 
-/* Runs regardless of motion preference — these are behaviour, not decoration. */
+/* Runs regardless of motion preference — this is behaviour, not decoration. */
 initNav();
-initClock();
 
 /* ---------------------------------------------------------------------------
  * Smooth scroll. Lenis drives ScrollTrigger rather than the other way round,
@@ -70,8 +79,12 @@ initClock();
  * ------------------------------------------------------------------------ */
 function initSmoothScroll() {
   const lenis = new Lenis({
-    duration: 1.05,
-    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    // `lerp` rather than `duration` + `easing`: duration restarts a timed
+    // tween on every wheel event, so a burst of scrolling stacks eases and
+    // feels rubbery. lerp chases the target continuously at a fixed rate,
+    // which is both smoother under fast scrolling and noticeably tighter.
+    lerp: 0.14,
+    wheelMultiplier: 1.1,
     smoothWheel: true,
     // Touch devices already have momentum scrolling that feels better than
     // anything we can synthesise, and hijacking it costs us the address-bar
@@ -96,7 +109,7 @@ function initSmoothScroll() {
     const target = document.querySelector(id);
     if (!target) return;
     event.preventDefault();
-    lenis.scrollTo(target as HTMLElement, { offset: -112 });
+    lenis.scrollTo(target as HTMLElement, { offset: -112, duration: 0.8 });
   });
 
   // A <dialog> that opens over the page must not leave the page scrolling
@@ -124,10 +137,13 @@ function initReveals() {
       opacity: 1,
       y: 0,
       scale: 1,
-      duration: 0.9,
+      duration: DUR,
       ease: EASE,
-      stagger: 0.08,
-      scrollTrigger: { trigger: parent, start: 'top 85%', once: true },
+      stagger: STAGGER,
+      // Start a little earlier than the element's own trigger below: a grid
+      // finishes its stagger later than a single element starts, so matching
+      // the two would land the last card after it is already well in view.
+      scrollTrigger: { trigger: parent, start: 'top 92%', once: true },
       onComplete: () => children.forEach((c) => c.setAttribute('data-revealed', '')),
     });
   });
@@ -138,10 +154,10 @@ function initReveals() {
       opacity: 1,
       y: 0,
       scale: 1,
-      duration: 0.9,
+      duration: DUR,
       delay: parseFloat(el.dataset.revealDelay ?? '0'),
       ease: EASE,
-      scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+      scrollTrigger: { trigger: el, start: 'top 92%', once: true },
       onComplete: () => el.setAttribute('data-revealed', ''),
     });
   });
@@ -179,13 +195,16 @@ function initSplits() {
         gsap.set(split.words, { color: DIM_WORD });
         gsap.to(split.words, {
           color: BRIGHT_WORD,
-          stagger: 0.35,
+          stagger: 0.2,
           ease: 'none',
           scrollTrigger: {
             trigger: el,
-            start: 'top 82%',
-            end: 'bottom 55%',
-            scrub: 0.6,
+            start: 'top 85%',
+            // Finishes higher up the viewport than before, so the sentence is
+            // fully lit while you are still reading it rather than as it
+            // leaves — the old 55% meant the last words lit on the way out.
+            end: 'bottom 70%',
+            scrub: 0.45,
           },
         });
         return;
@@ -199,11 +218,11 @@ function initSplits() {
         mask: 'lines',
       });
       gsap.from(split.lines, {
-        yPercent: 110,
-        duration: 1,
+        yPercent: 105,
+        duration: 0.7,
         ease: EASE,
-        stagger: 0.09,
-        scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+        stagger: 0.06,
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true },
       });
     });
 
@@ -260,10 +279,10 @@ function initHero() {
       opacity: 1,
       y: 0,
       scale: 1,
-      duration: 1.1,
+      duration: 0.7,
       ease: EASE,
-      stagger: 0.1,
-      delay: 0.15,
+      stagger: 0.06,
+      delay: 0.05,
     });
   });
 }
@@ -289,28 +308,4 @@ function initNav() {
 
   update();
   window.addEventListener('scroll', update, { passive: true });
-}
-
-/* ---------------------------------------------------------------------------
- * Clock. Manila time in the nav and the footer — the site is written from the
- * Philippines and saying so in the chrome is cheaper than saying so in copy.
- * ------------------------------------------------------------------------ */
-function initClock() {
-  const clocks = document.querySelectorAll<HTMLElement>('[data-clock]');
-  if (!clocks.length) return;
-
-  const format = new Intl.DateTimeFormat('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'Asia/Manila',
-  });
-
-  const tick = () => {
-    const now = format.format(new Date());
-    clocks.forEach((el) => (el.textContent = now));
-  };
-
-  tick();
-  setInterval(tick, 10_000);
 }

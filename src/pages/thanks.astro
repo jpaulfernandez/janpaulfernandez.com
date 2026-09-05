@@ -8,8 +8,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   <section class="page-thanks" data-hero>
     <div class="shell text-center">
-      <p class="kicker justify-center" data-reveal="fade">Received</p>
-      <h1 class="display mt-8" data-reveal="up" data-reveal-delay="0.05">
+      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
         <span class="flare">Thanks.</span>
       </h1>
       <p class="lead mt-8 mx-auto" data-reveal="up" data-reveal-delay="0.1">
@@ -29,7 +28,4 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     min-height: 70svh;
     padding-block: clamp(8rem, 6rem + 8vw, 12rem) 6rem;
   }
-  /* The kicker is a flex row with a trailing rule; centring the page means
-   * dropping that rule rather than letting it run off one side. */
-  .kicker::after { display: none; }
 </style>

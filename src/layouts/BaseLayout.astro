@@ -44,6 +44,10 @@ const navItems = [
   { href: '/projects/', label: 'Projects' },
   { href: '/gallery/', label: 'Gallery' },
   { href: '/now/', label: 'Now' },
+  // Phase 21: "Work with me" was a filled button pinned to the top-right of a
+  // floating pill nav — the most recognisable SaaS chrome there is. It is a
+  // page like any other, so it is now a link like any other.
+  { href: '/work-with-me/', label: 'Work with me' },
 ];
 
 const elsewhere = [
@@ -132,29 +136,22 @@ const isNavActive = (href: string) => {
     <a href="#main" class="skip-link">Skip to content</a>
 
     {/*
-      Phase 20 shell. The Phase 8 sidebar is gone: it worked at a 736px reading
-      column but it caps the page at that width forever, and a display face at
-      104px needs the whole viewport. The nav is now a floating bar, so full-
-      bleed sections can run edge to edge underneath it.
-    */}
-    <header
-      data-nav
-      data-scrolled="false"
-      data-hidden="false"
-      class="site-nav fixed inset-x-0 top-0 z-100"
-    >
-      <div class="shell flex items-center justify-between gap-4 py-4">
-        <!-- Wordmark -->
-        <a href="/" class="group flex items-center gap-3 shrink-0" aria-label="Paul Fernandez — home">
-          <span class="h-2 w-2 shrink-0 rounded-full bg-wine-400" aria-hidden="true"></span>
-          <span class="font-display font-medium tracking-tight text-paper-50 leading-none">
-            Paul Fernandez
-          </span>
-        </a>
+      Phase 21 shell. The Phase 20 nav was a floating, blurred, glass pill that
+      solidified on scroll and hid itself on the way down, with a filled CTA
+      pinned beside it. That is the chrome of a product landing page, and it was
+      the loudest single thing making this site read as one.
 
-        <!-- Desktop pill -->
+      What replaces it is a masthead: it sits at the top of the document, in
+      normal flow, and scrolls away with everything else. A rule underneath, a
+      name on the left, the sections on the right. No blur, no fill, no pill,
+      no scroll behaviour to write — which is also why initNav() is gone.
+    */}
+    <header class="site-header">
+      <div class="shell flex items-baseline justify-between gap-6 py-6">
+        <a href="/" class="wordmark" aria-label="Paul Fernandez — home">Paul Fernandez</a>
+
         <nav aria-label="Main" class="hidden lg:block">
-          <ul class="nav-pill flex items-center gap-1 list-none m-0 p-1">
+          <ul class="flex items-baseline gap-6 list-none m-0 p-0">
             {navItems.map((item) => (
               <li>
                 <a
@@ -169,47 +166,40 @@ const isNavActive = (href: string) => {
           </ul>
         </nav>
 
-        <div class="flex items-center gap-2 shrink-0">
-          <a href="/work-with-me/" class="btn btn-primary hidden sm:inline-flex text-small">
-            Work with me
-          </a>
-
-          <button
-            type="button"
-            class="menu-toggle"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-            data-menu-toggle
-          >
-            <span class="sr-only">Menu</span>
-            <span class="menu-bars" aria-hidden="true"><i></i><i></i></span>
-          </button>
-        </div>
+        <button
+          type="button"
+          class="menu-toggle mono-micro"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-menu-toggle
+        >
+          Menu
+        </button>
       </div>
     </header>
 
-    <!-- Mobile menu. A plain hidden panel, not a <dialog>: it needs to sit
-         under the nav bar rather than over it, so the toggle stays visible. -->
-    <div id="mobile-menu" class="mobile-menu lg:hidden" data-menu hidden>
-      <nav aria-label="Mobile" class="shell pt-32 pb-12">
+    {/*
+      Mobile menu. Phase 21 moved it from a fixed full-screen overlay into
+      normal flow, directly under the masthead it belongs to. That removes the
+      body scroll lock, the opacity fade, and with it the forced-reflow hack
+      that the fade needed in order not to strand a transparent panel full of
+      focusable links — the panel is now either in the document or not.
+    */}
+    <div id="mobile-menu" class="mobile-menu" data-menu hidden>
+      <nav aria-label="Mobile" class="shell pb-10">
         <ul class="list-none m-0 p-0 flex flex-col">
           {navItems.map((item) => (
-            <li class="border-b border-[var(--line)]">
+            <li class="border-t border-[var(--line)]">
               <a
                 href={item.href}
                 aria-current={isNavActive(item.href) ? 'page' : undefined}
                 class="mobile-link"
               >
                 {item.label}
-                <span aria-hidden="true" class="text-paper-600">↗</span>
               </a>
             </li>
           ))}
         </ul>
-
-        <a href="/work-with-me/" class="btn btn-primary mt-8 w-full justify-center">
-          Work with me
-        </a>
 
         <ul class="list-none m-0 p-0 mt-8 flex flex-wrap gap-x-6 gap-y-2">
           {elsewhere.map((link) => (
@@ -235,15 +225,21 @@ const isNavActive = (href: string) => {
 
     <footer class="site-footer">
       <div class="shell">
-        <!-- The statement. One per site, and the last thing anyone reads. -->
-        <p class="footer-statement" data-split="lines">
+        <!-- The statement. One per site, and the last thing anyone reads.
+             Phase 21: the wine on "have to build it" is gone, and so is the
+             line-by-line mask reveal — it is a plain reveal now. -->
+        <p class="footer-statement" data-reveal="up">
           Figuring out what to build,<br />
-          with the people who <span class="flare">have to build it</span>.
+          with the people who have to build it.
         </p>
 
-        <div class="mt-12 md:mt-16 flex flex-wrap items-center gap-4">
+        <!-- Phase 21: two buttons under a statement is a conversion block. One
+             outlined control, one plain address. -->
+        <div class="mt-10 md:mt-12 flex flex-wrap items-center gap-6">
           <a href="/work-with-me/" class="btn btn-primary">Work with me</a>
-          <a href="mailto:jpaul.fernandez18@gmail.com" class="btn btn-ghost">Send an email</a>
+          <a href="mailto:jpaul.fernandez18@gmail.com" class="footer-link">
+            jpaul.fernandez18@gmail.com
+          </a>
         </div>
 
         <div
@@ -292,100 +288,61 @@ const isNavActive = (href: string) => {
     </footer>
 
     <style>
-      /* ---- Nav ---------------------------------------------------------- */
-      .site-nav {
-        transition: transform 0.3s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint), backdrop-filter 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint);
-        border-bottom: 1px solid transparent;
-      }
-      .site-nav[data-scrolled='true'] {
-        background-color: rgba(5, 5, 5, 0.72);
-        backdrop-filter: blur(16px) saturate(140%);
-        -webkit-backdrop-filter: blur(16px) saturate(140%);
-        border-bottom-color: var(--line);
-      }
-      .site-nav[data-hidden='true'] { transform: translateY(-100%); }
+      /* ---- Masthead ----------------------------------------------------- */
+      .site-header { border-bottom: 1px solid var(--line); }
 
-      .nav-pill {
-        background-color: var(--surface-1);
-        border: 1px solid var(--line);
-        border-radius: var(--radius-pill);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-      .nav-link {
-        display: block;
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius-pill);
-        font-size: var(--text-small);
+      .wordmark {
+        font-family: var(--font-display);
         font-weight: 500;
-        letter-spacing: -0.005em;
-        color: var(--color-paper-400);
-        transition: color 0.22s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint);
+        letter-spacing: -0.02em;
+        color: var(--color-paper-50);
       }
-      .nav-link:hover { color: var(--color-paper-50); background-color: var(--surface-2); }
+
+      .nav-link {
+        font-size: var(--text-small);
+        color: var(--color-paper-400);
+      }
+      .nav-link:hover { color: var(--color-paper-50); }
+      /* The current section is marked by an underline rather than a filled
+       * chip. A chip is a tab in an app; an underline is a marked-up word. */
       .nav-link[aria-current='page'] {
         color: var(--color-paper-50);
-        background-color: var(--surface-3);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.4em;
       }
 
-      .menu-toggle {
-        display: grid;
-        place-items: center;
-        width: 2.75rem;
-        height: 2.75rem;
-        border-radius: var(--radius-pill);
-        background-color: var(--surface-1);
-        border: 1px solid var(--line);
-        color: var(--color-paper-100);
-      }
+      /* Phase 21: the two-bar hamburger is gone — an icon that has to animate
+       * into an X to explain itself, when the word fits in the same space. */
+      .menu-toggle { color: var(--color-paper-400); }
+      .menu-toggle:hover { color: var(--color-paper-50); }
+      .menu-toggle[aria-expanded='true']::after { content: ' ×'; }
+
       /* Not `lg:hidden`: Astro scopes this block's selectors with an attribute,
-       * which outranks a single Tailwind class, so the utility would lose to
-       * `display: grid` above. Same reason the mobile menu hides here. */
+       * which outranks a single Tailwind class, so the utility would lose. */
       @media (min-width: 64rem) {
         .menu-toggle { display: none; }
         .mobile-menu { display: none; }
       }
-      .menu-bars { display: grid; gap: 5px; width: 1rem; }
-      .menu-bars i {
-        display: block;
-        height: 1.5px;
-        background-color: currentColor;
-        transition: transform 0.3s var(--ease-out-quint), opacity 0.22s;
-      }
-      [aria-expanded='true'] .menu-bars i:first-child { transform: translateY(3.25px) rotate(45deg); }
-      [aria-expanded='true'] .menu-bars i:last-child { transform: translateY(-3.25px) rotate(-45deg); }
-
-      .mobile-menu {
-        position: fixed;
-        inset: 0;
-        z-index: 90;
-        background-color: var(--color-ink-950);
-        overflow-y: auto;
-        opacity: 0;
-        transition: opacity 0.22s var(--ease-out-quint);
-      }
-      .mobile-menu[data-open='true'] { opacity: 1; }
 
       .mobile-link {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.25rem 0;
+        display: block;
+        padding: 1rem 0;
         font-family: var(--font-display);
-        font-size: var(--text-h2);
+        font-size: var(--text-h3);
         font-weight: 500;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.02em;
         color: var(--color-paper-100);
       }
-      .mobile-link[aria-current='page'] { color: var(--color-wine-300); }
+      .mobile-link[aria-current='page'] { color: var(--color-paper-50); }
 
       /* ---- Footer ------------------------------------------------------- */
+      /* Phase 21: the wine radial gradient bleeding down from the top edge is
+       * deleted. An ambient coloured glow behind a section is the single most
+       * legible "AI-generated landing page" tell there is. Flat ground. */
       .site-footer {
         padding-block: clamp(4rem, 2rem + 8vw, 8rem) 3rem;
         border-top: 1px solid var(--line);
-        background:
-          radial-gradient(90% 120% at 50% 0%, rgba(224, 68, 111, 0.08), transparent 60%),
-          var(--color-ink-950);
       }
       .footer-statement {
         font-family: var(--font-display);
@@ -415,36 +372,22 @@ const isNavActive = (href: string) => {
     </style>
 
     {/*
-      Mobile menu. Vanilla, ~30 lines, no island — rung 4 of the YAGNI ladder.
-      It toggles [hidden] for correctness (nothing focusable while closed) and
-      a data attribute for the fade, with a frame between the two so the
-      transition has something to animate from.
+      Mobile menu. Vanilla, no island — rung 4 of the YAGNI ladder.
+
+      Phase 21 shrank this by half. The panel is in normal flow now rather than
+      a fixed overlay, so there is no body scroll to lock and no fade to time,
+      which retires the forced-reflow hack the fade needed: [hidden] is the
+      entire state, and a hidden element holds nothing in the tab order.
     */}
     <script is:inline>
       (() => {
         const toggle = document.querySelector('[data-menu-toggle]');
         const menu = document.querySelector('[data-menu]');
-        const nav = document.querySelector('[data-nav]');
         if (!toggle || !menu) return;
 
         const setOpen = (open) => {
           toggle.setAttribute('aria-expanded', String(open));
-          document.body.style.overflow = open ? 'hidden' : '';
-          if (open) {
-            nav && (nav.dataset.menuOpen = 'true');
-            menu.hidden = false;
-            // Force a reflow so the transition has a frame to start from.
-            // requestAnimationFrame would be the idiomatic way, but it is
-            // throttled to nothing in a backgrounded tab — which would leave
-            // the panel at opacity 0 while un-hidden: invisible, and still
-            // holding every link in the tab order.
-            void menu.offsetHeight;
-            menu.dataset.open = 'true';
-          } else {
-            nav && delete nav.dataset.menuOpen;
-            menu.dataset.open = 'false';
-            setTimeout(() => (menu.hidden = true), 350);
-          }
+          menu.hidden = !open;
         };
 
         toggle.addEventListener('click', () =>

@@ -44,7 +44,7 @@ const seoData = [
       <h1 class="display" data-reveal="up" data-reveal-delay="0.05">Thoughts</h1>
       <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
         Essays and half-formed notes. About things that
-        <span class="flare">bother me</span>.
+        bother me.
       </p>
     </div>
   </section>
@@ -134,18 +134,18 @@ const seoData = [
     border-block: 1px solid var(--line);
   }
 
-  /* Type filter — one pill split into segments, so the three options read as
-   * a single control rather than three loose buttons. */
+  /* Type filter — one box split into segments, so the three options read as
+   * a single control rather than three loose buttons. Phase 21 squared it off
+   * and dropped the fill; it is a control, so it keeps its border. */
   .segmented {
     display: inline-flex;
     padding: 0.25rem;
-    background-color: var(--surface-1);
     border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-sm);
   }
   .seg {
     padding: 0.4375rem 1rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-sm);
     font-size: var(--text-small);
     font-weight: 500;
     color: var(--color-paper-400);
@@ -163,10 +163,12 @@ const seoData = [
   /* Topic filter — reuses the global .tag chip; only the pressed state and
    * the cursor differ from the read-only version. */
   .filter-chip.tag { cursor: pointer; }
+  /* Phase 21: matches the inverted .tag[data-active] in global.css — a filter
+   * that is ON should be unmissable without spending the accent on it. */
   .filter-chip.tag[aria-pressed='true'] {
-    color: var(--color-wine-300);
-    border-color: var(--color-wine-600);
-    background-color: var(--surface-2);
+    color: var(--color-ink-950);
+    background-color: var(--color-paper-100);
+    border-color: var(--color-paper-100);
   }
 
   .rows > .post-row { border-bottom: 1px solid var(--line); }

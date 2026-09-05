@@ -74,7 +74,7 @@ const breadcrumbsSchema = breadcrumbs([
           data-reveal="fade"
           data-reveal-delay="0.16"
         >
-          <span class="text-wine-400">{type}</span>
+          <span class="text-paper-400">{type}</span>
           <span aria-hidden="true" class="text-paper-600">/</span>
           <span>
             By <a href="/about/" rel="author" class="hover:text-paper-50">Paul Fernandez</a>
@@ -140,7 +140,7 @@ const breadcrumbsSchema = breadcrumbs([
       {(prevPost || nextPost) && (
         <nav aria-label="Pagination" class="mt-20 grid gap-4 sm:grid-cols-2">
           {prevPost ? (
-            <a href={`/thoughts/${prevPost.id}/`} class="card card-interactive p-6">
+            <a href={`/thoughts/${prevPost.id}/`} class="card card-interactive pt-5 pb-2">
               <span class="mono-micro">← Previous</span>
               <span class="block mt-3 text-paper-50 font-medium leading-snug">
                 {prevPost.data.title}
@@ -150,7 +150,7 @@ const breadcrumbsSchema = breadcrumbs([
             <span></span>
           )}
           {nextPost && (
-            <a href={`/thoughts/${nextPost.id}/`} class="card card-interactive p-6 sm:text-right">
+            <a href={`/thoughts/${nextPost.id}/`} class="card card-interactive pt-5 pb-2 sm:text-right">
               <span class="mono-micro">Next →</span>
               <span class="block mt-3 text-paper-50 font-medium leading-snug">
                 {nextPost.data.title}

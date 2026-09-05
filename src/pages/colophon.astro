@@ -14,7 +14,7 @@ const seoData = [
 
 // Phase 20 rewrote most of these entries. The old page claimed one typeface and
 // "two small vanilla scripts" of client JS; both stopped being true the moment
-// the redesign brought in Switzer, GSAP and Lenis, and a colophon that lies
+// the redesign brought in Switzer and GSAP, and a colophon that lies
 // about its own stack is worse than no colophon.
 const stack = [
   {
@@ -39,8 +39,8 @@ const stack = [
   },
   {
     label: 'Motion',
-    value: 'GSAP + Lenis',
-    note: 'Scroll-driven reveals, split-text statements, and smooth scrolling. All of it is decorative: the hidden resting states are applied only once JavaScript has run, and prefers-reduced-motion turns the whole system off.',
+    value: 'GSAP + ScrollTrigger',
+    note: 'Short fades as sections come into view, and nothing else. The word-by-word scroll effects, the split-text statements and the smooth-scroll layer were all cut — they made the page harder to read to prove it had been designed. What is left is decorative too: the hidden resting states are applied only once JavaScript has run, and prefers-reduced-motion turns the whole system off.',
   },
   {
     label: 'Hosting',
@@ -73,7 +73,7 @@ const principles = [
   <section class="page-head" data-hero>
     <div class="shell">
       <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
-        Colo<span class="flare">phon</span>
+        Colophon
       </h1>
       <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
         What this site is made of, and the rules it follows. Kept here so the
@@ -108,7 +108,7 @@ const principles = [
       <ul class="mt-10 m-0 p-0 list-none flex flex-col gap-6" data-reveal-stagger>
         {principles.map((line) => (
           <li class="flex gap-5 text-paper-400 leading-relaxed max-w-[68ch]" data-reveal="up">
-            <span class="text-wine-400 shrink-0 mono" aria-hidden="true">—</span>
+            <span class="text-paper-600 shrink-0 mono" aria-hidden="true">—</span>
             <span>{line}</span>
           </li>
         ))}

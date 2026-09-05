@@ -410,9 +410,49 @@ other unnecessary text, smoothen and fasten the animation":**
 - [x] (2026-09-05) **Hover transitions retuned per property** rather than by one blanket number: 0.22s for colour/border/background, 0.3s for transforms, 0.4s for the image grayscale-to-colour filters, which cover a far larger perceptual change and look abrupt any faster. (First attempt at this was a bug — a dict-based find/replace chained its own substitutions, 0.5s -> 0.3s -> 0.2s -> 0.15s, collapsing every duration to near-nothing. Redone as a single pass that picks the duration from the property being transitioned.)
 - Re-audited after the cuts: 27 pages, 25 JSON-LD blocks, one h1 each, 331 images with zero missing alt, no over-length titles or descriptions.
 
-- [ ] Paul's visual review in-browser
-- [ ] Decide: keep the 54KB motion bundle, or trim Lenis/SplitText
+- [x] (2026-09-05) Paul's visual review in-browser — verdict: "too SaaS, too AI". See Phase 21.
+- [x] (2026-09-05) Decide: keep the 54KB motion bundle, or trim Lenis/SplitText — trimmed in Phase 21.
 - [ ] Merge to main + deploy
+
+## Phase 21 — de-SaaS pass (Paul's direct request, 2026-09-05)
+
+Paul liked NOCTURNE but read it as "too SaaS, too AI". The diagnosis was that
+the dark ground and the display type were never the problem — the problem was
+roughly ten pieces of **product-marketing furniture** that arrived with the
+aesthetic, plus the fact that the home page is shaped like a **funnel**
+(hero → proof → services → gallery → CTA) rather than an **index**.
+
+Reference direction, from Mobbin: OpenAI's *Index* (year in the margin, plain
+rows, hairlines, no cards), In Common With's press list (a table, not a grid),
+MOUTHWASH Studio (dark chrome as small corner labels, not a floating glass
+pill). Deliberately **not** taken: Linear's "Designed in California" — the
+word-by-word scroll brightening was a near-copy of it, and Linear is the origin
+of the dark-SaaS look, so the borrowed move imported the whole association.
+
+Paul chose, from three options each: **strip the furniture** (keep the ground,
+the face and the scale), **demote wine to links only**, **cut the scrub and
+keep quiet reveals**.
+
+- [x] (2026-09-05) **Chrome.** The floating, blurred, glass pill nav that solidified on scroll and hid itself on the way down is now a masthead: static, in normal flow, a rule underneath, name left and sections right. "Work with me" stopped being a filled CTA pinned top-right and became the sixth nav item. The hamburger became the word "Menu". `initNav()` deleted — there is no scroll state left to track.
+- [x] (2026-09-05) **Buttons.** `--radius-pill` deleted outright, everything to 2px. `.btn-primary` went from a solid white pill to an outline that fills on hover; `.btn-wine` deleted (nothing referenced it). The hero's white-pill + ghost-pill pair became two `.link-arrow` links — a personal site has places to go, not a primary and secondary conversion action.
+- [x] (2026-09-05) **Surfaces.** `.card` went from a white-alpha fill with a 16px radius and a 1px border to a single hairline above the block; `.panel` kept its border and lost its fill. New house rule, recorded in CLAUDE.md: **a hairline is the only surface.**
+- [x] (2026-09-05) **Accent.** All 15 `.flare` spans stripped and the class deleted. Also gone: the kicker's glowing wine dot, the timeline's wine milestone and haloed live node, the wine "live" badge, the wine `::marker` and blockquote rule, the wine em-dash on /colophon, the wine step counters and section labels, the wine pull-quote bar, and the wine active-filter chip (now inverted paper-on-ink). Wine survives on inline links, the focus ring, and `KeyTakeaway` — which carries its own literal rgba now that `--wine-glow` is deleted.
+- [x] (2026-09-05) **Glow.** `.hero__glow` and the footer's wine radial gradient both deleted. An ambient coloured bloom behind a section is the most legible "AI-generated page" tell there is.
+- [x] (2026-09-05) **Services.** The 3-up numbered glass-card grid became the same ruled list the writing and projects indexes use. The framing line above it ("Three ways in, depending on how deep you need me") was cut rather than rewritten. On /work-with-me the three steps stayed in three columns but became a ruled spread rather than a card grid.
+- [x] (2026-09-05) **Gallery teaser.** The full-bleed infinite marquee — the logo-wall pattern, pointed at concert photographs — became a static six-frame contact sheet inside the page column, square-cornered and in colour at rest. The old strip desaturated every frame and gave the colour back only on hover.
+- [x] (2026-09-05) **Motion.** The word-by-word scroll brightening and the line-mask splits are gone, and with them SplitText and the `fonts.ready` race that gated real copy. Lenis went too — smooth scroll is the strongest "template" signal left, and it overrides a preference the reader set in their OS. `data-parallax` was dead code and is deleted. Bundle: **54KB → 45.7KB gzip** (40.9KB brotli). GSAP core + ScrollTrigger is the floor.
+- [x] (2026-09-05) **Hero shape.** Dropped `min-height: 88svh`. A hero sized to hold the fold is a landing page; without it the page opens as a document.
+- [x] (2026-09-05) **Copy.** Hero intro rewritten off the consultant register. Colophon corrected — it claimed "GSAP + Lenis … split-text statements, and smooth scrolling", all of which is now false.
+- [x] (2026-09-05) **Verified.** `npm run build`, `npx astro check` (0 errors), `npm test` (38 tests) all pass. Re-audited all 27 built pages: exactly one `h1` each, 25 JSON-LD blocks, 313 images with **zero** missing alt (303 described, 10 deliberately empty), no title over 60 chars, no description over 160, and no public page referencing the React/Keystatic chunks. JS-off contract re-confirmed in-browser: with `.js` removed, 0 of 23 `[data-reveal]` elements stay hidden. Mobile menu verified at 375px.
+
+**Worth Paul's attention:**
+
+- **The hero copy is new again.** "I help teams figure out what to build. Most of that work turns out to be getting everyone to agree on what the words mean." The Phase 20 line was flagged as reading like a landing page — it did, because it was built like one. This is a first pass in a plainer register and it is still my words, not Paul's.
+- **Removing Lenis was my call**, not one of the three options Paul picked; the option text said "possibly Lenis". It is a one-line revert plus reinstating `data-lenis-stop` on the lightbox, but the modal `<dialog>` blocks background scroll natively so nothing needs it back.
+- **`.claude/launch.json` gained `"autoPort": true`** so a second session can start a dev server while port 4321 is taken. Unrelated to the design; revert freely.
+- **Section spacing was left alone.** With the cards and glass gone, the Phase 20 vertical rhythm now reads as more empty space than it used to. That may want tightening once Paul has seen it — it is a one-token change (`.section` / `.section-tight`).
+
+- [ ] Paul's visual review of the de-SaaS pass
 
 ## Out of scope (v2 — do not build)
 

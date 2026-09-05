@@ -14,12 +14,6 @@ if (!homeEntry) {
 }
 const { heroGreeting, heroIntro } = homeEntry.data;
 
-// The greeting's last word carries the wine flare, so the accent tracks
-// whatever Paul writes in Keystatic instead of being hardcoded here.
-const greetingWords = heroGreeting.trim().split(' ');
-const greetingHead = greetingWords.slice(0, -1).join(' ');
-const greetingFlare = greetingWords[greetingWords.length - 1];
-
 const latestNowEntries = [...(await getCollection('now'))]
   .sort((a, b) => b.data.date.localeCompare(a.data.date))
   .slice(0, 3);
@@ -31,8 +25,8 @@ const services = (await getCollection('services')).sort(
   (a, b) => a.data.order - b.data.order
 );
 
-// A strip of photographs for the gallery teaser. Two frames from each set,
-// interleaved so the marquee never shows the same concert twice in a row.
+// A contact sheet for the gallery teaser. Frames are interleaved across sets
+// so the row never shows the same concert twice in a row.
 const gallerySets = (await getCollection('gallery')).sort(
   (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
 );
@@ -70,41 +64,44 @@ const seoData = [
       rather than on scroll, because they are already in view.
      --------------------------------------------------------------------- */}
   <section class="hero" data-hero>
-    <div class="hero__glow" aria-hidden="true"></div>
-
-    <div class="shell relative">
+    <div class="shell">
       <p class="mono-micro flex items-center gap-3" data-reveal="fade">
         <span class="h-px w-8 bg-[var(--line-strong)]"></span>
         Technologist · Philippines
       </p>
 
       <h1 class="display mt-8 max-w-[16ch]" data-reveal="up" data-reveal-delay="0.05">
-        {greetingHead && <>{greetingHead}{' '}</>}<span class="flare">{greetingFlare}</span>
+        {heroGreeting}
       </h1>
 
       <p class="lead mt-8 max-w-[46ch]" data-reveal="up" data-reveal-delay="0.12">
-        I help teams work out what to build — then make sure the people building
-        it and the people asking for it are describing the same thing.
+        I help teams figure out what to build. Most of that work turns out to be
+        getting everyone to agree on what the words mean.
       </p>
 
-      <div class="mt-10 flex flex-wrap items-center gap-3" data-reveal="up" data-reveal-delay="0.18">
-        <a href="/work-with-me/" class="btn btn-primary">Work with me</a>
-        <a href="/thoughts/" class="btn btn-ghost">Read the writing</a>
+      {/* Phase 21: the white pill + ghost pill pair is gone. A personal site
+          does not have a primary and a secondary conversion action; it has
+          places to go next. These are the same two destinations as links. */}
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3" data-reveal="up" data-reveal-delay="0.18">
+        <a href="/thoughts/" class="link-arrow">Read the writing</a>
+        <a href="/work-with-me/" class="link-arrow">Work with me</a>
       </div>
     </div>
-
   </section>
 
   {/* ---------------------------------------------------------------------
-      MANIFESTO. The bio, set as a statement that brightens word by word as
-      it crosses the viewport. Its resting state is paper-400 (6.6:1), so
-      with JS off it reads as a normal dimmed pull-quote.
+      MANIFESTO. The bio, set as a statement.
+
+      Phase 21 cut the word-by-word scroll brightening that used to run here.
+      It was Linear's "Designed in California" section almost line for line,
+      and the effect also meant a reader who stopped scrolling was left with a
+      half-lit sentence — decoration that made the copy harder to read.
      --------------------------------------------------------------------- */}
   {heroIntro && (
     <section class="section" aria-labelledby="intro-heading">
       <div class="shell">
         <h2 id="intro-heading" class="kicker">Who I am</h2>
-        <p class="statement mt-10 dim" data-split="words">{heroIntro}</p>
+        <p class="statement mt-10" data-reveal="up">{heroIntro}</p>
         <a href="/about/" class="link-arrow mt-10">The longer version</a>
       </div>
     </section>
@@ -143,30 +140,33 @@ const seoData = [
   )}
 
   {/* ---------------------------------------------------------------------
-      WHAT I DO — the three services, as cards.
+      WHAT I DO.
+
+      Phase 21: this was three numbered glass cards in a 3-up grid, which is
+      the shape of a pricing table no matter what the cards say. It is now the
+      same ruled list the writing and the projects use — three things I do,
+      in one column, in the site's own index pattern.
      --------------------------------------------------------------------- */}
   {services.length > 0 && (
     <section class="section" aria-labelledby="services-heading">
       <div class="shell">
-        <h2 id="services-heading" class="kicker">What I do</h2>
-
-        <p class="statement-sm mt-10 max-w-[24ch]" data-split="lines">
-          Three ways in, depending on <span class="flare">how deep you need me</span>.
-        </p>
-
-        <div class="mt-12 grid gap-4 md:grid-cols-3" data-reveal-stagger>
-          {services.map((service, i) => (
-            <article class="card card-interactive p-8 flex flex-col" data-reveal="up">
-              <span class="mono-micro">{String(i + 1).padStart(2, '0')}</span>
-              <h3 class="mt-6">{service.data.title}</h3>
-              <p class="mt-4 mb-0 text-small text-paper-400 leading-relaxed flex-1">
-                {service.data.description}
-              </p>
-            </article>
-          ))}
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="services-heading" class="kicker flex-1">What I do</h2>
+          <a href="/work-with-me/" class="link-arrow shrink-0">How we'd work together</a>
         </div>
 
-        <a href="/work-with-me/" class="link-arrow mt-10">How we'd work together</a>
+        <ul class="rows mt-8" data-reveal-stagger>
+          {services.map((service) => (
+            <li data-reveal="up">
+              <div class="py-6 md:py-8">
+                <h3 class="m-0">{service.data.title}</h3>
+                <p class="mt-3 mb-0 text-small text-paper-400 leading-relaxed max-w-[60ch]">
+                  {service.data.description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )}
@@ -246,8 +246,12 @@ const seoData = [
   )}
 
   {/* ---------------------------------------------------------------------
-      GALLERY. Full-bleed, so it breaks out of .shell on purpose — the wall
-      is the one place on the site where the content is the image.
+      GALLERY.
+
+      Phase 21: this was a full-bleed infinite marquee — which is the logo-wall
+      pattern, borrowed and pointed at concert photographs. It is now a static
+      contact sheet inside the page's own column: six frames, in colour, that
+      hold still long enough to be looked at.
      --------------------------------------------------------------------- */}
   {stripShots.length > 0 && (
     <section class="section" aria-labelledby="gallery-heading">
@@ -258,67 +262,46 @@ const seoData = [
             All {photoCount} photographs
           </a>
         </div>
-        <p class="statement-sm mt-10 max-w-[20ch]" data-split="lines">
-          Concerts, mostly. <span class="flare">Shot from the pit.</span>
+        <p class="statement-sm mt-10 max-w-[20ch]" data-reveal="up">
+          Concerts, mostly. Shot from the pit.
         </p>
-      </div>
 
-      <a href="/gallery/" class="photo-strip mt-12 block group" aria-label="Browse the gallery">
-        <div class="marquee" style="--marquee-gap:1rem; --marquee-duration:70s;">
-          <div class="marquee__track">
-            {stripShots.map((shot) => (
-              <Image
-                src={shot.image}
-                alt={shot.caption}
-                widths={[420]}
-                sizes="280px"
-                loading="lazy"
-                class="photo-strip__frame"
-              />
-            ))}
-          </div>
-          <div class="marquee__track" aria-hidden="true">
-            {stripShots.map((shot) => (
-              <Image
-                src={shot.image}
-                alt=""
-                widths={[420]}
-                sizes="280px"
-                loading="lazy"
-                class="photo-strip__frame"
-              />
-            ))}
-          </div>
-        </div>
-      </a>
+        <a
+          href="/gallery/"
+          class="mt-12 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6"
+          aria-label="Browse the gallery"
+          data-reveal-stagger
+        >
+          {stripShots.slice(0, 6).map((shot) => (
+            <Image
+              src={shot.image}
+              alt={shot.caption}
+              widths={[440]}
+              sizes="(min-width: 64rem) 14rem, (min-width: 40rem) 30vw, 45vw"
+              loading="lazy"
+              class="photo-sheet__frame"
+              data-reveal="fade"
+            />
+          ))}
+        </a>
+      </div>
     </section>
   )}
 </BaseLayout>
 
 <style>
   /* ---- Hero ------------------------------------------------------------ */
+  /* Phase 21 dropped two things here.
+   *
+   * The 88svh min-height: a hero sized to the viewport is a landing page
+   * holding the fold. Without it the page opens as a document — the name, the
+   * sentence, and the start of the next section, all at once.
+   *
+   * .hero__glow: a pink radial bloom behind the headline. An ambient coloured
+   * gradient is the most legible "AI-generated" tell on a page, and it was
+   * doing nothing a reader would miss. */
   .hero {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    /* Not 100vh: a full viewport with a fixed nav on top pushes the CTAs off
-     * the fold on a laptop. 88svh leaves the next section peeking, which is
-     * also the honest way to say "there is more below". */
-    min-height: 88svh;
-    padding-block: 9rem 5rem;
-    overflow: hidden;
-  }
-  .hero__glow {
-    position: absolute;
-    inset: -20% -10% auto -10%;
-    height: 70%;
-    background: radial-gradient(
-      50% 60% at 50% 0%,
-      rgba(224, 68, 111, 0.16),
-      transparent 70%
-    );
-    pointer-events: none;
+    padding-block: clamp(3rem, 2rem + 6vw, 6rem) clamp(3rem, 2rem + 4vw, 5rem);
   }
   /* ---- Statements ------------------------------------------------------ */
   /* The scroll-brightened paragraph. Bigger than prose, smaller than display —
@@ -344,20 +327,17 @@ const seoData = [
     margin: 0;
   }
 
-  /* ---- Photo strip ----------------------------------------------------- */
-  .photo-strip__frame {
-    height: clamp(11rem, 8rem + 12vw, 17rem);
-    width: auto;
-    border-radius: var(--radius-md);
+  /* ---- Contact sheet ---------------------------------------------------
+   * Square-cropped, square-cornered, and in colour at rest. The old strip
+   * desaturated every frame and gave the colour back on hover, which is a
+   * gallery holding its own content hostage to an interaction. */
+  .photo-sheet__frame {
+    aspect-ratio: 1;
+    width: 100%;
+    height: auto;
     object-fit: cover;
-    filter: grayscale(1) brightness(0.75);
-    transition: filter 0.4s var(--ease-out-quint), transform 0.3s var(--ease-out-quint);
+    opacity: 0.85;
+    transition: opacity 0.3s var(--ease-out-quint);
   }
-  .photo-strip:hover .photo-strip__frame {
-    filter: grayscale(0) brightness(1);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .photo-strip__frame { filter: grayscale(0) brightness(1); }
-  }
+  .photo-sheet__frame:hover { opacity: 1; }
 </style>

@@ -56,7 +56,7 @@ const steps = [
   <section class="page-head" data-hero>
     <div class="shell">
       <h1 class="display max-w-[14ch]" data-reveal="up" data-reveal-delay="0.05">
-        Work <span class="flare">with me</span>
+        Work with me
       </h1>
       <div class="prose mt-8 max-w-[54ch]" data-reveal="up" data-reveal-delay="0.1">
         <IntroContent />
@@ -77,7 +77,7 @@ const steps = [
             <li data-reveal="up">
               <div class="grid md:grid-cols-[1fr_1.3fr] gap-x-12 gap-y-5 py-10">
                 <div>
-                  <span class="mono-micro block mb-4 text-wine-400">
+                  <span class="mono-micro block mb-4">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <h3 class="m-0 text-h2 leading-[1.05]">{s.data.title}</h3>
@@ -95,11 +95,14 @@ const steps = [
     {/* How it works */}
     <section class="section" aria-labelledby="process-heading">
       <h2 id="process-heading" class="kicker">How it works</h2>
-      <ol class="mt-12 grid gap-4 md:grid-cols-3 list-none m-0 p-0" data-reveal-stagger>
+      {/* Phase 21: still three columns, but .card is now a hairline above the
+          block rather than a glass box around it — a ruled three-column spread
+          instead of a feature grid. */}
+      <ol class="mt-12 grid gap-x-8 gap-y-10 md:grid-cols-3 list-none m-0 p-0" data-reveal-stagger>
         {steps.map((step, i) => (
-          <li class="card p-8" data-reveal="up">
+          <li class="card pt-5" data-reveal="up">
             <span class="mono-micro">Step {String(i + 1).padStart(2, '0')}</span>
-            <h3 class="mt-6">{step.title}</h3>
+            <h3 class="mt-5">{step.title}</h3>
             <p class="mt-4 mb-0 text-small text-paper-400 leading-relaxed">{step.body}</p>
           </li>
         ))}
@@ -130,8 +133,8 @@ const steps = [
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
-          <p class="statement-sm max-w-[16ch]" data-split="lines">
-            Tell me what you're <span class="flare">trying to build</span>.
+          <p class="statement-sm max-w-[16ch]" data-reveal="up">
+            Tell me what you're trying to build.
           </p>
           <p class="mt-8 mb-0 text-paper-400 text-small">
             Or skip the form —
@@ -247,6 +250,8 @@ const steps = [
   }
   .field::placeholder { color: var(--color-paper-600); }
   .field:hover { border-color: var(--line-strong); }
+  /* The focus ring is one of the three places wine survives Phase 21 — it is
+   * the accent doing its actual job, telling you where the keyboard is. */
   .field:focus {
     border-color: var(--color-wine-400);
     background-color: var(--color-ink-800);

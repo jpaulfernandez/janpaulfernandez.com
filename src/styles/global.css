@@ -33,6 +33,21 @@
  *   white on wine-500 (#B02A52)   6.4:1   the solid CTA            (AA ✓)
  * ========================================================================= */
 
+/* ---------------------------------------------------------------------------
+ * Phase 21 (2026-09-05) — de-SaaS pass.
+ *
+ * NOCTURNE read as "too SaaS, too AI". The ground, the face and the scale were
+ * never the problem; the problem was the product-marketing furniture that came
+ * with them. Removed here: pill radii, glass card fills, the glowing kicker
+ * dot, the hero radial bloom, the footer wine gradient, the hover wash on row
+ * links, the marquee, and every decorative use of wine.
+ *
+ * The rule that replaces all of it: **a hairline is the only surface**. If a
+ * block needs to be distinguished from the page, it gets a 1px --line rule and
+ * nothing else — no fill, no radius, no shadow, no blur. Wine is now allowed
+ * in exactly three places: an inline link, a focus ring, and Key Takeaway.
+ * ------------------------------------------------------------------------- */
+
 /* Switzer — Fontshare (ITF), self-hosted from public/fonts. 400/500 upright +
  * italic and 600 for bold; no 700, because the whole design leans on 500/600
  * and a fifth face is 20KB for nothing. */
@@ -139,11 +154,14 @@
   --text-h1: clamp(2.5rem, 1.7578rem + 3.1579vw, 4rem);
   --text-display: clamp(3rem, 1.2681rem + 7.3684vw, 6.5rem);
 
-  /* ---- Surfaces, rules, radii ------------------------------------------ */
-  --radius-sm: 0.625rem;       /* 10 */
-  --radius-md: 1rem;           /* 16 — the default card */
-  --radius-lg: 1.5rem;         /* 24 — feature panels */
-  --radius-pill: 62.4375rem;
+  /* ---- Surfaces, rules, radii ------------------------------------------
+   * Phase 21: collapsed to 2px, and --radius-pill deleted outright. Soft
+   * 16–24px corners and pill buttons are the signature of a product UI kit.
+   * 2px rather than 0 only so a focus ring and a code chip do not read as
+   * accidentally sharp against otherwise square type. */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
 
   /* ---- Motion ----------------------------------------------------------
    * One easing curve for the whole site. GSAP's own eases are used for the
@@ -161,7 +179,6 @@
   --surface-3: rgba(255, 255, 255, 0.11);
   --line: rgba(255, 255, 255, 0.10);
   --line-strong: rgba(255, 255, 255, 0.18);
-  --wine-glow: rgba(224, 68, 111, 0.18);
   --shell-x: clamp(1.25rem, 0.6rem + 2.6vw, 2.5rem);
 }
 
@@ -220,17 +237,14 @@
   /* The global rule above covers everything; nothing needs its own ring. */
   :focus:not(:focus-visible) { outline: none; }
 
-  [id] { scroll-margin-top: 7rem; }
+  [id] { scroll-margin-top: 2rem; }
 
   img, svg, video { display: block; max-width: 100%; }
 
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: var(--color-ink-950); }
-  ::-webkit-scrollbar-thumb {
-    background: var(--surface-3);
-    border-radius: var(--radius-pill);
-  }
-  ::-webkit-scrollbar-thumb:hover { background: var(--color-wine-600); }
+  ::-webkit-scrollbar-thumb { background: var(--surface-3); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-paper-600); }
 }
 
 /* ----------------------------------------------------------------------------
@@ -291,14 +305,11 @@
   margin: 0;
 }
 
-/* A wine word inside otherwise monochrome display type. By hand, one or two
- * words per statement — never a whole line. */
-.flare { color: var(--color-wine-400); }
-
-/* Dimmed display type that the scroll timeline brightens word by word. The
- * dim value is the resting state, so with JS off the line still reads at
- * 6.6:1 rather than disappearing. */
-.dim { color: var(--color-paper-400); }
+/* Phase 21: `.flare` (a wine word inside display type) and `.dim` (the resting
+ * state of the word-brightening scrub) are both gone. The flare was applied on
+ * fifteen pages, which turned "one accent word" into a tic, and highlighting a
+ * keyword in a headline is a growth-marketing device regardless of how it is
+ * coloured. Display type is now paper-50, full stop. */
 
 /* Standfirst / hero sub-paragraph. */
 .lead {
@@ -309,9 +320,9 @@
   max-width: 40ch;
 }
 
-/* Section label. Mono, micro, uppercase, wine dot, rule to the right edge —
- * carried over from Phase 9 because it was the one thing the old design got
- * unambiguously right, restyled for the dark ground. */
+/* Section label. Mono, micro, uppercase, with a flat rule running out to the
+ * right edge. Phase 21 removed the wine dot and its halo: a glowing accent
+ * bullet is decoration, and the rule alone already says "new section". */
 .kicker {
   font-family: var(--font-mono);
   font-size: var(--text-micro);
@@ -324,20 +335,11 @@
   align-items: center;
   gap: 0.75rem;
 }
-.kicker::before {
-  content: '';
-  width: 0.3125rem;
-  height: 0.3125rem;
-  border-radius: 50%;
-  background-color: var(--color-wine-400);
-  box-shadow: 0 0 0 0.25rem var(--wine-glow);
-  flex-shrink: 0;
-}
 .kicker::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, var(--line-strong), transparent);
+  background-color: var(--line);
 }
 
 /* Mono metadata — dates, counters, coordinates, the clock. */
@@ -361,23 +363,23 @@
  * SURFACES
  * ========================================================================= */
 
+/* Phase 21: the glass card is gone. A white-alpha fill with a 16px radius and
+ * a 1px white border is the generic dark-mode component kit, and three of them
+ * in a row is a features section no matter what they contain. What is left is
+ * a single hairline above the block — the thing a printed document would do. */
 .card {
   position: relative;
-  background-color: var(--surface-1);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  transition: background-color 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint);
+  border-top: 1px solid var(--line);
+  transition: border-color 0.22s var(--ease-out-quint), color 0.22s var(--ease-out-quint);
 }
 a.card:hover, .card-interactive:hover {
-  background-color: var(--surface-2);
-  border-color: var(--line-strong);
+  border-top-color: var(--color-paper-400);
+  color: var(--color-paper-50);
 }
 
-.panel {
-  background-color: var(--surface-1);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-}
+/* A bounded block — the contact form, an empty state. One hairline box, no
+ * fill: it marks an edge without pretending to be a raised surface. */
+.panel { border: 1px solid var(--line); }
 
 /* Small caps-ish label chip — topic tags, service tags, tool names. */
 .tag {
@@ -388,21 +390,22 @@ a.card:hover, .card-interactive:hover {
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--color-paper-400);
-  background-color: var(--surface-1);
   border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-sm);
+  padding: 0.375rem 0.625rem;
   white-space: nowrap;
   transition: color 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint);
 }
-a.tag:hover, .tag[data-active="true"] {
+a.tag:hover {
   color: var(--color-paper-50);
   border-color: var(--line-strong);
-  background-color: var(--surface-2);
 }
+/* The selected topic inverts rather than tinting — a filter that is ON should
+ * be unmissable without spending the accent on it. */
 .tag[data-active="true"] {
-  color: var(--color-wine-300);
-  border-color: var(--color-wine-600);
+  color: var(--color-ink-950);
+  background-color: var(--color-paper-100);
+  border-color: var(--color-paper-100);
 }
 
 /* ============================================================================
@@ -418,8 +421,8 @@ a.tag:hover, .tag[data-active="true"] {
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1;
-  padding: 0.9375rem 1.5rem;
-  border-radius: var(--radius-pill);
+  padding: 0.8125rem 1.25rem;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
   white-space: nowrap;
@@ -427,30 +430,28 @@ a.tag:hover, .tag[data-active="true"] {
 }
 .btn:active { transform: scale(0.975); }
 
-/* The one loud control. Used once per page at most. */
+/* Phase 21: the solid white pill was the hero's conversion button, and a
+ * filled CTA is the loudest SaaS tell on a page. The primary control is now
+ * outlined and fills only on hover — present, findable, not shouting. It is
+ * used once per page, on the pages that actually ask for something.
+ *
+ * .btn-wine is deleted rather than restyled: a wine-filled button was the only
+ * place the accent appeared as a large field, and nothing referenced it. */
 .btn-primary {
+  border-color: var(--color-paper-50);
+  color: var(--color-paper-50);
+}
+.btn-primary:hover {
   background-color: var(--color-paper-50);
   color: var(--color-ink-950);
 }
-.btn-primary:hover {
-  background-color: var(--color-wine-400);
-  color: var(--color-paper-50);
-}
-
-.btn-wine {
-  background-color: var(--color-wine-500);
-  color: var(--color-paper-50);
-}
-.btn-wine:hover { background-color: var(--color-wine-400); }
 
 .btn-ghost {
-  background-color: var(--surface-1);
   border-color: var(--line);
   color: var(--color-paper-100);
 }
 .btn-ghost:hover {
-  background-color: var(--surface-2);
-  border-color: var(--line-strong);
+  border-color: var(--color-paper-400);
   color: var(--color-paper-50);
 }
 
@@ -504,20 +505,10 @@ a.tag:hover, .tag[data-active="true"] {
   color: var(--color-paper-100);
   isolation: isolate;
 }
-/* A wine wash bleeds in from the left on hover. It sits behind the text on
- * its own layer and extends past the gutter so the row reads as full-bleed
- * without the list itself having to be. */
-.row-link::before {
-  content: '';
-  position: absolute;
-  inset: 0 -1.5rem;
-  z-index: -1;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, var(--surface-2), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.22s var(--ease-out-quint);
-}
-.row-link:hover::before { opacity: 1; }
+/* Phase 21: the gradient wash that bled in from the left on hover is gone, and
+ * so is the 0.5rem nudge on the title. Both are template hover-craft — three
+ * things moving at once to acknowledge a mouse. A row is a line in an index;
+ * it brightens, and that is the whole feedback. */
 .row-link:hover { color: var(--color-paper-50); }
 
 .row-title {
@@ -526,9 +517,7 @@ a.tag:hover, .tag[data-active="true"] {
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.15;
-  transition: transform 0.3s var(--ease-out-quint);
 }
-.row-link:hover .row-title { transform: translateX(0.5rem); }
 
 .row-meta {
   font-family: var(--font-mono);
@@ -538,7 +527,7 @@ a.tag:hover, .tag[data-active="true"] {
   font-variant-numeric: tabular-nums;
   transition: color 0.22s var(--ease-out-quint);
 }
-.row-link:hover .row-meta { color: var(--color-wine-300); }
+.row-link:hover .row-meta { color: var(--color-paper-100); }
 
 /* ============================================================================
  * TIMELINE RAIL — career on /about, entries on /now
@@ -567,12 +556,11 @@ a.tag:hover, .tag[data-active="true"] {
   background-color: var(--color-paper-600);
   transition: background-color 0.22s var(--ease-out-quint);
 }
-/* The newest entry is live, so it wears the halo. */
-.rail-item:first-child::before {
-  background-color: var(--color-wine-400);
-  box-shadow: 0 0 0 0.3125rem var(--wine-glow);
-}
-.rail-item:hover::before { background-color: var(--color-wine-400); }
+/* The newest entry is the live one, marked by a filled white node against the
+ * grey of the rest. Phase 21 removed its wine halo — a glowing dot is a status
+ * light, and this is a date list. */
+.rail-item:first-child::before { background-color: var(--color-paper-50); }
+.rail-item:hover::before { background-color: var(--color-paper-100); }
 
 .rail-date {
   display: block;
@@ -597,37 +585,6 @@ a.tag:hover, .tag[data-active="true"] {
     text-align: right;
     margin-bottom: 0;
   }
-}
-
-/* ============================================================================
- * MARQUEE — pure CSS, duplicated track, paused for reduced motion
- * ========================================================================= */
-
-.marquee {
-  display: flex;
-  overflow: hidden;
-  user-select: none;
-  gap: var(--marquee-gap, 3rem);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-.marquee__track {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--marquee-gap, 3rem);
-  min-width: 100%;
-  /* The loop translates by exactly one track width + one gap, so the second
-   * copy lands where the first began. That only reads as seamless if the
-   * track's items actually fill its width — `min-width: 100%` on content
-   * narrower than the container otherwise leaves dead space at the end, which
-   * scrolls past as a visible seam. space-around distributes the slack. */
-  justify-content: space-around;
-  animation: marquee-scroll var(--marquee-duration, 40s) linear infinite;
-}
-.marquee:hover .marquee__track { animation-play-state: paused; }
-@keyframes marquee-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(calc(-100% - var(--marquee-gap, 3rem))); }
 }
 
 /* ============================================================================
@@ -685,12 +642,12 @@ a.tag:hover, .tag[data-active="true"] {
   margin-top: 1.25em;
 }
 .prose li { margin-bottom: 0.5em; }
-.prose li::marker { color: var(--color-wine-400); }
+.prose li::marker { color: var(--color-paper-600); }
 .prose ul { list-style-type: square; }
 .prose ol { list-style-type: decimal; }
 
 .prose blockquote {
-  border-left: 2px solid var(--color-wine-500);
+  border-left: 1px solid var(--line-strong);
   padding-left: 1.5rem;
   font-style: italic;
   color: var(--color-paper-400);
@@ -702,7 +659,7 @@ a.tag:hover, .tag[data-active="true"] {
   background-color: var(--surface-2);
   color: var(--color-paper-50);
   padding: 0.15em 0.4em;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--line);
 }
 .prose pre {
@@ -726,7 +683,8 @@ a.tag:hover, .tag[data-active="true"] {
   margin-block: 3em;
 }
 
-.prose img { border-radius: var(--radius-md); }
+/* Phase 21: photographs are square-cornered. A rounded photo is a thumbnail. */
+.prose img { border-radius: 0; }
 .prose figure { margin: 0; }
 .prose figcaption {
   font-family: var(--font-mono);
@@ -771,7 +729,7 @@ h2:hover .anchor-link,
 h3:hover .anchor-link,
 h4:hover .anchor-link,
 .anchor-link:focus-visible { opacity: 1; }
-.anchor-link:hover { color: var(--color-wine-300); }
+.anchor-link:hover { color: var(--color-paper-100); }
 
 /* ============================================================================
  * MOTION
@@ -786,11 +744,6 @@ h4:hover .anchor-link,
 .js [data-reveal="up"]    { transform: translate3d(0, 1.25rem, 0); }
 .js [data-reveal="fade"]  { transform: none; }
 .js [data-reveal="scale"] { transform: scale(0.985); }
-
-/* Per-word/line split for the scroll-brightened statements. GSAP SplitText
- * writes these wrappers; the clip is what makes the mask reveal read. */
-.split-line { overflow: hidden; display: block; }
-.js [data-split] { visibility: hidden; }
 
 /* Marks the element GSAP has finished with, so `will-change` is released. */
 [data-revealed] { will-change: auto; }
@@ -809,9 +762,6 @@ h4:hover .anchor-link,
     scroll-behavior: auto !important;
   }
   .js [data-reveal] { opacity: 1 !important; transform: none !important; }
-  .js [data-split] { visibility: visible !important; }
-  .marquee__track { animation: none !important; }
-  .marquee { mask-image: none; }
 }
 
 @layer components {
@@ -828,7 +778,7 @@ h4:hover .anchor-link,
   background-color: var(--color-paper-50);
   color: var(--color-ink-950);
   padding: 0.75rem 1.25rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   font-weight: 500;
   transition: top 0.22s var(--ease-out-quint);
 }

@@ -1,21 +1,37 @@
 /**
- * Phase 20 motion runtime.
+ * Motion runtime. Phase 20, cut back hard in Phase 21.
  *
  * One module, loaded once from BaseLayout, owning every animation on the site.
  * Nothing else may import GSAP — if a page needs motion it declares it with a
  * `data-*` attribute and this file decides what that means, so the vocabulary
  * stays small and consistent across pages.
  *
- * The attribute vocabulary:
+ * The attribute vocabulary, after Phase 21:
  *   data-reveal="up|fade|scale"   fade the element in when it enters view
  *   data-reveal-delay="0.15"      seconds, added to that element's start
  *   data-reveal-stagger           on a PARENT: its [data-reveal] children run
  *                                 as one staggered batch instead of separately
- *   data-split="words"            scrub word-by-word from dim to white
- *   data-split="lines"            mask-reveal line by line on enter
- *   data-parallax="-0.15"         translateY as a fraction of scroll distance
  *   data-hero                     on a PARENT: plays once on load, not on scroll
- *   data-lenis-stop               on a <dialog>: pause smooth scroll while open
+ *
+ * What Phase 21 removed, and why:
+ *
+ *   data-split="words"  The statement that brightened word by word on scroll.
+ *                       This was Linear's "Designed in California" section
+ *                       almost exactly, and Linear is where the whole dark-SaaS
+ *                       look comes from — so the borrowed move imported the
+ *                       association with it. Gone, along with SplitText.
+ *   data-split="lines"  The line-by-line mask reveal. Kept nothing back for it:
+ *                       those elements now use a plain [data-reveal], which
+ *                       reads nearly the same at a fraction of the machinery
+ *                       and drops the fonts.ready race that gated real copy.
+ *   Lenis               Smooth scroll. It is the single strongest "this is a
+ *                       template" signal left in the site, and it overrides a
+ *                       preference the reader already set in their OS. The
+ *                       lightbox's data-lenis-stop went with it: a modal
+ *                       <dialog> already blocks background scrolling natively.
+ *   data-parallax       Never used by a single page. Dead code.
+ *   initNav             The nav no longer floats, so it has no scrolled state
+ *                       and nothing to hide on the way down.
  *
  * Contract with global.css: the hidden resting states live under `.js`, which
  * is set by a blocking inline script in <head>. This module's job is to undo
@@ -25,10 +41,8 @@
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
-import Lenis from 'lenis';
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+gsap.registerPlugin(ScrollTrigger);
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -42,12 +56,8 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
  * calmer, because the eye spends less time watching a thing ease to a stop.
  */
 const EASE = 'power2.out';
-const DUR = 0.55;        // was 0.9
-const STAGGER = 0.045;   // was 0.08
-
-/** Endpoints for the word-brightening scrub — see initSplits(). */
-const DIM_WORD = '#6B6663';
-const BRIGHT_WORD = '#FFFFFF';
+const DUR = 0.55;
+const STAGGER = 0.045;
 
 /* ---------------------------------------------------------------------------
  * Reduced motion: show everything, wire nothing. The CSS media query already
@@ -59,65 +69,9 @@ if (reduceMotion) {
     el.style.opacity = '1';
     el.style.transform = 'none';
   });
-  document.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
-    el.style.visibility = 'visible';
-  });
 } else {
-  initSmoothScroll();
   initReveals();
-  initSplits();
-  initParallax();
   initHero();
-}
-
-/* Runs regardless of motion preference — this is behaviour, not decoration. */
-initNav();
-
-/* ---------------------------------------------------------------------------
- * Smooth scroll. Lenis drives ScrollTrigger rather than the other way round,
- * so every scrubbed timeline reads the eased position instead of the raw one.
- * ------------------------------------------------------------------------ */
-function initSmoothScroll() {
-  const lenis = new Lenis({
-    // `lerp` rather than `duration` + `easing`: duration restarts a timed
-    // tween on every wheel event, so a burst of scrolling stacks eases and
-    // feels rubbery. lerp chases the target continuously at a fixed rate,
-    // which is both smoother under fast scrolling and noticeably tighter.
-    lerp: 0.14,
-    wheelMultiplier: 1.1,
-    smoothWheel: true,
-    // Touch devices already have momentum scrolling that feels better than
-    // anything we can synthesise, and hijacking it costs us the address-bar
-    // collapse on mobile Safari.
-    syncTouch: false,
-  });
-
-  // Expose it so the lightbox and in-page anchors can talk to it without
-  // importing this module (they are inline scripts in their own components).
-  (window as unknown as { lenis: Lenis }).lenis = lenis;
-
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => lenis.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
-
-  // In-page anchors: hand them to Lenis so they ease instead of jumping.
-  document.addEventListener('click', (event) => {
-    const link = (event.target as HTMLElement)?.closest?.('a[href^="#"]');
-    if (!(link instanceof HTMLAnchorElement)) return;
-    const id = link.getAttribute('href');
-    if (!id || id === '#') return;
-    const target = document.querySelector(id);
-    if (!target) return;
-    event.preventDefault();
-    lenis.scrollTo(target as HTMLElement, { offset: -112, duration: 0.8 });
-  });
-
-  // A <dialog> that opens over the page must not leave the page scrolling
-  // behind it. The lightbox marks itself with data-lenis-stop.
-  document.querySelectorAll<HTMLDialogElement>('dialog[data-lenis-stop]').forEach((dialog) => {
-    new MutationObserver(() => (dialog.open ? lenis.stop() : lenis.start()))
-      .observe(dialog, { attributes: true, attributeFilter: ['open'] });
-  });
 }
 
 /* ---------------------------------------------------------------------------
@@ -163,73 +117,6 @@ function initReveals() {
   });
 }
 
-/* ---------------------------------------------------------------------------
- * Split text.
- *
- *   words — the statement starts dim and brightens word by word as it crosses
- *           the viewport. Scrubbed, so it tracks the scrollbar exactly.
- *   lines — each line rises out of its own clip on enter. Played, not scrubbed.
- *
- * Both wait on document.fonts.ready: splitting before Switzer arrives measures
- * the fallback's line breaks and the mask lands in the wrong places.
- * ------------------------------------------------------------------------ */
-function initSplits() {
-  const targets = document.querySelectorAll<HTMLElement>('[data-split]');
-  if (!targets.length) return;
-
-  // These elements are `visibility: hidden` until this callback runs, and the
-  // copy inside them is real (the footer statement, every section opener). So
-  // fonts.ready cannot be the only thing that can un-hide them: race it
-  // against a timeout, because a font request that hangs must cost us a
-  // slightly mismeasured line break, never a blank section.
-  fontsReadyOrTimeout(2000).then(() => {
-    targets.forEach((el) => {
-      const mode = el.dataset.split;
-      el.style.visibility = 'visible';
-
-      if (mode === 'words') {
-        const split = new SplitText(el, { type: 'words', wordsClass: 'split-word' });
-        // Literal hex, not var(): GSAP interpolates colour channel by channel
-        // and cannot read through a custom property to find them. These two
-        // must stay in step with --color-paper-600 / --color-paper-50.
-        gsap.set(split.words, { color: DIM_WORD });
-        gsap.to(split.words, {
-          color: BRIGHT_WORD,
-          stagger: 0.2,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 85%',
-            // Finishes higher up the viewport than before, so the sentence is
-            // fully lit while you are still reading it rather than as it
-            // leaves — the old 55% meant the last words lit on the way out.
-            end: 'bottom 70%',
-            scrub: 0.45,
-          },
-        });
-        return;
-      }
-
-      // "lines" — and the default for any other value.
-      const split = new SplitText(el, {
-        type: 'lines',
-        linesClass: 'split-child',
-        // Each line gets its own overflow:hidden wrapper to clip the rise.
-        mask: 'lines',
-      });
-      gsap.from(split.lines, {
-        yPercent: 105,
-        duration: 0.7,
-        ease: EASE,
-        stagger: 0.06,
-        scrollTrigger: { trigger: el, start: 'top 90%', once: true },
-      });
-    });
-
-    ScrollTrigger.refresh();
-  });
-}
-
 /**
  * Resolves when webfonts are ready, or after `ms`, whichever comes first.
  * Never rejects — a caller that gates visible content on this must not be able
@@ -241,25 +128,6 @@ function fontsReadyOrTimeout(ms: number): Promise<void> {
     ready.then(() => undefined),
     new Promise<void>((resolve) => setTimeout(resolve, ms)),
   ]).catch(() => undefined);
-}
-
-/* ---------------------------------------------------------------------------
- * Parallax. Fractional — data-parallax="-0.2" moves the element up by 20% of
- * the distance it travels through the viewport.
- * ------------------------------------------------------------------------ */
-function initParallax() {
-  document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
-    const depth = parseFloat(el.dataset.parallax ?? '-0.15');
-    gsap.fromTo(
-      el,
-      { yPercent: -depth * 50 },
-      {
-        yPercent: depth * 50,
-        ease: 'none',
-        scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true },
-      }
-    );
-  });
 }
 
 /* ---------------------------------------------------------------------------
@@ -285,27 +153,4 @@ function initHero() {
       delay: 0.05,
     });
   });
-}
-
-/* ---------------------------------------------------------------------------
- * Nav. Solidifies once the page has moved off the top, and gets out of the way
- * when scrolling down on small screens where it covers real estate.
- * ------------------------------------------------------------------------ */
-function initNav() {
-  const nav = document.querySelector<HTMLElement>('[data-nav]');
-  if (!nav) return;
-
-  let last = window.scrollY;
-
-  const update = () => {
-    const y = window.scrollY;
-    nav.dataset.scrolled = y > 24 ? 'true' : 'false';
-    // Only hide well down the page, so the toggle never fires during the
-    // small bounce at the top of a short page.
-    nav.dataset.hidden = String(y > 320 && y > last && !nav.dataset.menuOpen);
-    last = y;
-  };
-
-  update();
-  window.addEventListener('scroll', update, { passive: true });
 }

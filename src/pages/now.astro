@@ -53,7 +53,7 @@ const seoData = [
   <section class="page-head" data-hero>
     <div class="shell">
       <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
-        <span class="flare">Now</span>
+        Now
       </h1>
       <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
         A public log of what I'm focused on — current projects, learning, and
@@ -140,8 +140,9 @@ const seoData = [
     background: linear-gradient(180deg, var(--line-strong), var(--line) 70%, transparent);
   }
 
-  /* Year: a wine milestone on the rail with a rule running to the right edge —
-   * the same structural move as .kicker, several sizes up. */
+  /* Year: a milestone on the rail with a rule running to the right edge —
+   * the same structural move as .kicker, several sizes up. Phase 21 took the
+   * wine out of the node and flattened the rule's gradient. */
   .tl-year {
     position: relative;
     display: flex;
@@ -166,13 +167,13 @@ const seoData = [
     width: 0.75rem;
     height: 0.75rem;
     border-radius: 50%;
-    background-color: var(--color-wine-500);
+    background-color: var(--color-paper-50);
   }
   .tl-year::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, var(--line-strong), transparent);
+    background-color: var(--line);
   }
 
   .tl-item {
@@ -191,10 +192,11 @@ const seoData = [
     background-color: var(--color-ink-950);
     box-shadow: inset 0 0 0 1px var(--color-paper-600);
   }
-  /* The live entry is the only filled node — it is the flare on this page. */
+  /* The live entry is the only filled node. Phase 21 removed its wine halo:
+   * a glowing dot is a status light, and this is a list of dates. */
   .tl-item.is-current::before {
-    background-color: var(--color-wine-400);
-    box-shadow: 0 0 0 0.3125rem var(--wine-glow);
+    background-color: var(--color-paper-50);
+    box-shadow: none;
   }
 
   .tl-date {
@@ -215,14 +217,13 @@ const seoData = [
     display: inline-block;
     margin: 0 0 0.75rem;
     padding: 0.25rem 0.625rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-sm);
     font-family: var(--font-mono);
     font-size: var(--text-micro);
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    color: var(--color-wine-300);
-    background-color: var(--wine-glow);
-    border: 1px solid var(--color-wine-600);
+    color: var(--color-paper-100);
+    border: 1px solid var(--line-strong);
   }
 
   .tl-title {

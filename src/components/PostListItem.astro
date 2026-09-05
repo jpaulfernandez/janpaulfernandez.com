@@ -20,7 +20,7 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
 <article class="post-row-inner group">
   <div class="min-w-0 flex flex-col gap-3">
     <p class="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 mono-micro">
-      <span class="text-wine-400">{type}</span>
+      <span class="text-paper-400">{type}</span>
       <span aria-hidden="true" class="text-paper-600">/</span>
       <time datetime={date}>{formatDate(date)}</time>
       {readingTime !== undefined && (

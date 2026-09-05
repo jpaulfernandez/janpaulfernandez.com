@@ -1,5 +1,7 @@
 ---
-// KeyTakeaway.astro — the one wine-filled panel allowed inside an article.
+// KeyTakeaway.astro — after Phase 21, the ONLY place on the site where wine
+// appears as a field rather than as a link. It survived the de-SaaS pass on
+// purpose: it is a semantic block inside long-form prose, not page chrome.
 ---
 <aside class="key-takeaway">
   <p class="label">★ Key takeaway</p>
@@ -12,9 +14,10 @@
     padding: 1.75rem;
     border: 1px solid var(--color-wine-600);
     border-radius: var(--radius-md);
-    background:
-      linear-gradient(180deg, var(--wine-glow), transparent 70%),
-      var(--surface-1);
+    /* Literal rgba: --wine-glow was a global token used mostly by decoration
+     * (the kicker dot's halo, the timeline's live node), so Phase 21 deleted
+     * it. This is the one legitimate user, so it carries its own value. */
+    background: linear-gradient(180deg, rgba(224, 68, 111, 0.18), transparent 70%);
   }
   .label {
     margin: 0 0 1rem;

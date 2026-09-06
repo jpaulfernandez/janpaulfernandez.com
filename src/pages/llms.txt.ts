@@ -31,6 +31,7 @@ ${sortedServices.map(s => `- **${s.data.title}**: ${s.data.description}`).join('
 - [Thoughts](${siteUrl}/thoughts/): Blog and notes on product leadership, engineering, and technology.
 - [Now](${siteUrl}/now/): Public journal and status board of what Paul is currently focused on, building, and learning.
 - [Gallery](${siteUrl}/gallery/): Visual log of projects, workspace setups, and life moments.
+- [Workshops](${siteUrl}/workshops/): AI talks, open Zoom cohorts and in-house workshops — sessions, pricing, scope boundaries, and the enquiry form.
 - [Work With Me](${siteUrl}/work-with-me/): Booking information, consultation packages, and direct contact form.
 
 ## Recent Thoughts & Articles

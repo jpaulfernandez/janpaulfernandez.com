@@ -732,6 +732,100 @@ h4:hover .anchor-link,
 .anchor-link:hover { color: var(--color-paper-100); }
 
 /* ============================================================================
+ * DISCLOSURE LIST — the FAQ pattern (/work-with-me, /workshops)
+ *
+ * Native <details>, rung 4 of the YAGNI ladder. Extracted here on its second
+ * use rather than pasted into a third scoped <style> block.
+ * ========================================================================= */
+
+.faq { border-bottom: 1px solid var(--line); }
+.faq summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 1.25rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  font-weight: 500;
+  color: var(--color-paper-100);
+  transition: color 0.22s var(--ease-out-quint);
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--color-paper-50); }
+.faq-mark {
+  flex-shrink: 0;
+  color: var(--color-paper-400);
+  font-size: 1.125rem;
+  line-height: 1;
+  transition: transform 0.3s var(--ease-out-quint);
+}
+.faq[open] .faq-mark { transform: rotate(45deg); }
+.faq[open] summary { color: var(--color-paper-50); }
+.faq p {
+  margin: 0 0 1.5rem;
+  max-width: 68ch;
+  color: var(--color-paper-400);
+  line-height: 1.7;
+}
+
+/* ============================================================================
+ * FORM FIELDS — the enquiry forms (/work-with-me, /workshops)
+ * ========================================================================= */
+
+.field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-paper-400);
+}
+.field {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background-color: var(--color-ink-700);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--color-paper-50);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  transition: border-color 0.22s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint);
+}
+.field::placeholder { color: var(--color-paper-600); }
+.field:hover { border-color: var(--line-strong); }
+/* The focus ring is one of the three places wine survives Phase 21 — it is
+ * the accent doing its actual job, telling you where the keyboard is. */
+.field:focus {
+  border-color: var(--color-wine-400);
+  background-color: var(--color-ink-800);
+}
+textarea.field { resize: vertical; min-height: 8rem; }
+/* A <select> gets the platform arrow back explicitly: `appearance: none` on a
+ * dark ground leaves no affordance at all, and drawing a chevron in CSS is a
+ * component kit's job, not this site's. */
+select.field {
+  appearance: auto;
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+/* The section-opening line. Short enough to run at heading scale — used on the
+ * home page, /work-with-me and /workshops. */
+.statement-sm {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-paper-50);
+  margin: 0;
+}
+
+/* ============================================================================
  * MOTION
  *
  * Reveal primitives. The hidden resting state is applied ONLY under `.js`,

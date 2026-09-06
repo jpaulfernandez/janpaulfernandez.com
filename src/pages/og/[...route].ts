@@ -20,6 +20,10 @@ const pagesObj: Record<string, { title: string; description: string }> = {
     title: 'Now',
     description: 'What I am working on, learning, and focused on right now.'
   },
+  'workshops': {
+    title: 'AI Workshops',
+    description: 'Talks, open cohorts and in-house sessions — run on your workflows, not a fixed curriculum.'
+  },
   'work-with-me': {
     title: 'Work With Me',
     description: 'Consultation, workshops, and fractional product ownership.'

@@ -90,6 +90,35 @@ const seoData = [
   </section>
 
   {/* ---------------------------------------------------------------------
+      WORKSHOPS. The one thing on this page with a date attached, so it sits
+      directly under the hero.
+
+      Shaped like every other section here — kicker, link-arrow, a statement
+      line — rather than as an announcement bar. A strip with a fill and a
+      dismiss button is a growth banner; a ruled section is an entry in an
+      index that happens to be time-sensitive.
+     --------------------------------------------------------------------- */}
+  <section class="section-tight" aria-labelledby="workshops-heading">
+    <div class="shell">
+      <div class="flex items-end justify-between gap-6">
+        <h2 id="workshops-heading" class="kicker flex-1">Workshops</h2>
+        <a href="/workshops/" class="link-arrow shrink-0">See the sessions</a>
+      </div>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-end">
+        <p class="statement-sm max-w-[20ch]" data-reveal="up">
+          AI operating practice, not AI training.
+        </p>
+        <p class="m-0 text-small text-paper-400 leading-relaxed max-w-[46ch]" data-reveal="up">
+          Open Zoom cohorts and in-house sessions run on your own workflows.
+          <strong class="text-paper-100 font-medium">September and October dates are open</strong>
+          — I take one or two team engagements a month.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------------------------------------------------------------------
       MANIFESTO. The bio, set as a statement.
 
       Phase 21 cut the word-by-word scroll brightening that used to run here.
@@ -316,17 +345,6 @@ const seoData = [
     margin: 0;
     text-wrap: pretty;
   }
-  /* The section-opening line. Short, so it can run at heading scale. */
-  .statement-sm {
-    font-family: var(--font-display);
-    font-size: var(--text-h2);
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    color: var(--color-paper-50);
-    margin: 0;
-  }
-
   /* ---- Contact sheet ---------------------------------------------------
    * Square-cropped, square-cornered, and in colour at rest. The old strip
    * desaturated every frame and gave the colour back on hover, which is a

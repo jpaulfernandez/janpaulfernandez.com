@@ -60,6 +60,14 @@ Phases are vertical slices: each ends with a deployable, visibly-improved site �
 
 - **Cloudflare Images migration for the gallery (not started — needs credentials).** `src/assets/gallery` is 68 MB across 100 files and `.git` is 310 MB; every future photo permanently inflates clone time. Recommended target is Cloudflare **Images** rather than plain R2, so the `/w=800,f=auto` transform pipeline replaces the build-time optimisation Astro currently does. Blocked on Paul supplying a Cloudflare account ID and an API token (`wrangler` is installed globally but not authenticated, and there are no Cloudflare keys in `.env`). Touches `keystatic.config.ts` and `src/content.config.ts` together — the gallery `image` field becomes an image ID — so both schemas must change in the same commit.
 
+- **/workshops launch blockers (Phase 22, 2026-09-06) — the page is built but these gate announcing it.** Straight from `business/workshops-gtm.md` §6/§7/§16, all of which are Paul's calls, not code:
+  1. **The availability window is a placeholder.** `src/pages/workshops.astro` publishes "September – October 2026" in the `availability` const. It came from the request, not from a calendar. Confirm or replace — it is one string in one file.
+  2. **Publishing corporate prices was decided by §12, not by Paul.** §16 still lists "publish the corporate band or keep it to enquiry only" as open; §12's two-block layout only makes sense if both bands are shown, so the page publishes the full "from" ladder. Say the word and the right-hand column becomes "on enquiry" — one edit to the `inHouse` array.
+  3. **BIR registration, official receipts, and accountant sign-off on tax language** (§6). Corporate procurement will not release ₱140k to an unregistered individual, and the page now names ₱140k publicly. No tax wording is on the page, deliberately.
+  4. **Written employer clearance from MMDC** covering outside work, schedule, and public use of title and history. The page names Rappler, PHVote, MMDC and PSBank factually — the same claims already public on `/about` since T06, so this is not new exposure, but it is now attached to a commercial offer.
+  5. **Prices are hypotheses.** §4 says every number is untested against real delivery hours. The page states them as fixed for open seats and "from" for corporate, which is what §4 specifies, but nothing has been validated by a paid engagement yet.
+- **Stats deliberately held back from /workshops (2026-09-06).** §5 lists eight adoption figures; only three are on the page — the ones whose exact wording, source URL and population §13 actually pins down (65%/92% Philippine AI Report, 78%/35% Sprout State of HR 2026, 28% Reuters DNR via VERA Files). "86% bring their own tools", "42% pay personally", "12% have a governance officer" and "57% name skills as the top barrier" are **not** on the page because §5 groups them without individual attribution and §13 requires a URL and population per claim. Give me the source for each and they go on.
+
 Track here; tasks note where these are needed. Use placeholders until provided, never invent real data.
 
 - [x] Social profile URLs for `sameAs` (needed by T07)
@@ -453,6 +461,94 @@ keep quiet reveals**.
 - **Section spacing was left alone.** With the cards and glass gone, the Phase 20 vertical rhythm now reads as more empty space than it used to. That may want tightening once Paul has seen it — it is a one-token change (`.section` / `.section-tight`).
 
 - [x] (2026-09-05) Paul's visual review of the de-SaaS pass — approved via chat; merged to main and deployed.
+
+## Phase 22 — /workshops offer page + homepage highlight (Paul's direct request, 2026-09-06)
+
+Built from `business/workshops-gtm.md` (internal, gitignored). §12 of that doc had
+already decided the shape, so this phase mostly executed it rather than designing
+it: the `rows` pattern instead of a card grid, **Open sessions** and **For your
+team** in separate blocks so a ₱1,500 seat cannot anchor a ₱140k negotiation, the
+talk leading the corporate block, and one CTA — "Start a conversation", never
+"Book now".
+
+Mobbin was used for direction. Taken: Dropbox's ruled course lists (a named group
+heading over hairline rows with the action on the right — the house `rows` pattern
+almost exactly), Stripe's newsroom date-in-the-margin, YLLW's "aimed specifically
+at" qualification list. Deliberately **not** taken: Mailchimp's illustrated
+three-up register grid, MasterClass's filled cards, and the Ada / Sana / UGLYCASH
+closers, which are all pill-button conversion blocks — the Phase 21 furniture,
+back under a different name.
+
+- [x] (2026-09-06) **`src/pages/workshops.astro`** — ten sections: head, availability,
+      who books these, open sessions, for your team, how a booking runs, what I will
+      not do, your data in the room, who is running it, why this keeps coming up,
+      questions, enquiry form. Every editable fact (prices, caps, formats, the
+      availability window) sits in four typed consts at the top of the file.
+- [x] (2026-09-06) **Not a Keystatic collection.** A new collection means a new schema
+      kept field-identical across `keystatic.config.ts` and `src/content.config.ts`,
+      which is the hard constraint most expensive to get wrong, for copy that has to
+      be reviewed line by line anyway. One editable file is the smaller thing that
+      works. Promote it if the dates start moving weekly.
+- [x] (2026-09-06) **Lead qualification in the form.** Name, email and message are the
+      only required fields; organisation, session interest, headcount and timeline are
+      optional and exist because §10 stage 2 qualifies on exactly those. Nine "Reserve
+      a seat" / "Enquire" links carry a `data-enquire` value that preselects the
+      matching `<option>` — eight lines of vanilla JS, rung 6 of the ladder, and with
+      JS off the anchor still jumps to the form and the reader picks from the same
+      `<select>`. Verified: all 9 trigger values resolve to real options.
+- [x] (2026-09-06) **Claims discipline.** Three statistics on the page, each with §13's
+      exact wording, an attributed source and a linked URL. Five more were held back —
+      see Blocked-on-Paul. The NPC line uses §13's *corrected* wording ("remain
+      accountable under the Data Privacy Act") rather than the original draft's "strictly
+      liable", and carries "not legal advice" in the same paragraph. No press-freedom
+      or spokesperson framing anywhere, per §1's caution.
+- [x] (2026-09-06) **"What I will not do" is a section, not a footnote.** Five scope
+      boundaries at the same type scale as the offer: I do not author your policy,
+      prototypes are demos, no ROI guarantee, estimates are ranges, and sometimes the
+      answer is you do not need this. §3 and §10 both argue this converts the burned
+      buyer; it also stops the offer from over-promising in writing.
+- [x] (2026-09-06) **Homepage highlight** — a `section-tight` between the hero and
+      "Who I am", shaped like every other section on that page (kicker + link-arrow,
+      then a `.statement-sm` and a supporting line). Explicitly *not* an announcement
+      bar: a strip with a fill and a dismiss button is growth furniture and would have
+      undone Phase 21 in the first 100 pixels of the site.
+- [x] (2026-09-06) **Wiring** — `/workshops/` added to the masthead nav (7th item;
+      verified single-line at 1024px with 354px of slack), to `llms.txt`, and to the
+      OG card route. Sitemap picks it up automatically. `Service` + `FAQPage` +
+      `BreadcrumbList` JSON-LD.
+- [x] (2026-09-06) **CSS extraction.** `.faq*`, `.field*` and `.statement-sm` were
+      pasted into scoped `<style>` blocks on `/work-with-me` and the home page. This
+      page is their second and third use, so they moved into `global.css` under
+      `@layer components` and came out of both pages — the house rule is extract on the
+      second use. `select.field` was added there (explicit `appearance: auto` and
+      `color-scheme: dark`, because a select with no affordance on a dark ground is
+      unusable, and drawing a chevron in CSS is a component kit's job).
+- [x] (2026-09-06) **Verified.** `npm run build`, `npx astro check` (0 errors) and
+      `npm test` (38 tests) pass. 28 pages built, exactly one `h1` each, no title over
+      60 chars, no description over 160, no page missing alt text that did not already
+      lack it. `/workshops/` renders with zero horizontal overflow at 1440, 1024 and
+      375px. Motion vocabulary is `data-reveal` / `data-reveal-delay` /
+      `data-reveal-stagger` / `data-hero` only, no new CSS start state, so the JS-off
+      contract holds by construction — confirmed by rendering the whole page under
+      forced `prefers-reduced-motion`, where every section is fully legible.
+
+**Worth Paul's attention:**
+
+- **Read the five launch blockers above before this page is announced anywhere.**
+  The page itself is safe to have live — §14 explicitly rejected "do not publish the
+  offer ladder yet" — but the dates are a placeholder and the tax and employer items
+  are real.
+- **The copy is mine, not yours.** Every line on that page is my compression of the
+  GTM doc into the site's register. The buyer quotes under "Who books these" are §2's
+  jobs-to-be-done almost verbatim because they were already the best writing in the
+  document; everything else is a first pass and should be read as one.
+- **The `.section` rhythm shows more on this page than anywhere else.** It is the
+  longest page on the site, and the Phase 21 note about vertical spacing reading as
+  emptiness applies double here. One-token change if you want it tighter.
+- **Open decision left open.** §16 asks whether "Talks & Workshops" stays one of three
+  services or folds into this page. I changed nothing — the service still appears on
+  the home page and `/work-with-me`, and now there is a second, deeper page saying
+  more. That duplication is intentional until you decide.
 
 ## Out of scope (v2 — do not build)
 

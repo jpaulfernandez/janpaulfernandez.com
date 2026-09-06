@@ -57,38 +57,38 @@ const breadcrumbsSchema = breadcrumbs([
         same. */}
     <header class="page-head" data-hero>
       <div class="shell-narrow">
-        <a href="/thoughts/" class="mono-micro hover:text-paper-50" data-reveal="fade">
+        <a href="/thoughts/" class="mono text-paper-400 hover:text-paper-50" data-reveal="fade">
           ← Thoughts
         </a>
 
         <h1 class="mt-6 text-h1" data-reveal="up" data-reveal-delay="0.05">{title}</h1>
 
         {excerpt && (
-          <p class="lead mt-6 max-w-none" data-reveal="up" data-reveal-delay="0.1">
+          <p class="lead mt-6 max-w-none text-paper-100" data-reveal="up" data-reveal-delay="0.1">
             {excerpt}
           </p>
         )}
 
         <div
-          class="mt-8 pt-6 border-t border-[var(--line)] flex flex-wrap items-center gap-x-4 gap-y-2 mono-micro"
+          class="mt-8 pt-6 border-t border-[var(--line)] flex flex-wrap items-center gap-x-4 gap-y-2 mono text-small"
           data-reveal="fade"
           data-reveal-delay="0.16"
         >
-          <span class="text-paper-400">{type}</span>
-          <span aria-hidden="true" class="text-paper-600">/</span>
-          <span>
-            By <a href="/about/" rel="author" class="hover:text-paper-50">Paul Fernandez</a>
+          <span class="text-paper-400 uppercase tracking-widest text-micro">{type}</span>
+          <span aria-hidden="true" class="text-paper-400">/</span>
+          <span class="text-paper-100">
+            By <a href="/about/" rel="author" class="hover:text-paper-50 underline decoration-[var(--line-strong)] underline-offset-2">Paul Fernandez</a>
           </span>
-          <span aria-hidden="true" class="text-paper-600">/</span>
-          <time datetime={publishedDate}>{formatDate(publishedDate)}</time>
+          <span aria-hidden="true" class="text-paper-400">/</span>
+          <time class="text-paper-100" datetime={publishedDate}>{formatDate(publishedDate)}</time>
           {updatedDate && (
             <>
-              <span aria-hidden="true" class="text-paper-600">/</span>
-              <span>Updated {formatDate(updatedDate)}</span>
+              <span aria-hidden="true" class="text-paper-400">/</span>
+              <span class="text-paper-100">Updated {formatDate(updatedDate)}</span>
             </>
           )}
-          <span aria-hidden="true" class="text-paper-600">/</span>
-          <span>{readingTime} min</span>
+          <span aria-hidden="true" class="text-paper-400">/</span>
+          <span class="text-paper-100">{readingTime} min</span>
         </div>
 
         {topics && topics.length > 0 && (
@@ -106,7 +106,7 @@ const breadcrumbsSchema = breadcrumbs([
     {/* A described cover is a real image-search entry; an undescribed one stays
         decorative (alt="") rather than repeating the h1 to a screen reader. */}
     {cover && typeof cover !== 'string' && (
-      <figure class="shell m-0 mb-16" data-reveal="scale">
+      <figure class="shell-narrow mb-16" data-reveal="scale">
         <Image
           src={cover}
           alt={coverAlt ?? ''}
@@ -190,7 +190,7 @@ const breadcrumbsSchema = breadcrumbs([
    * column is 46rem and a rail beside it would either crowd the text or push
    * it off-centre, and native <details> costs nothing. */
   .toc {
-    border: 1px solid var(--line);
+    border: 1px solid var(--line-strong);
     border-radius: var(--radius-md);
     background-color: var(--surface-1);
     padding: 1rem 1.25rem;
@@ -201,10 +201,11 @@ const breadcrumbsSchema = breadcrumbs([
     justify-content: space-between;
     cursor: pointer;
     list-style: none;
+    color: var(--color-paper-100);
   }
   .toc summary::-webkit-details-marker { display: none; }
   .toc-mark {
-    color: var(--color-paper-400);
+    color: var(--color-paper-100);
     transition: transform 0.3s var(--ease-out-quint);
     font-size: 1.125rem;
     line-height: 1;
@@ -221,9 +222,9 @@ const breadcrumbsSchema = breadcrumbs([
     font-size: var(--text-small);
   }
   .toc-list li::marker {
-    color: var(--color-paper-600);
+    color: var(--color-paper-400);
     font-family: var(--font-mono);
   }
-  .toc-list a { color: var(--color-paper-400); }
+  .toc-list a { color: var(--color-paper-100); }
   .toc-list a:hover { color: var(--color-wine-300); }
 </style>

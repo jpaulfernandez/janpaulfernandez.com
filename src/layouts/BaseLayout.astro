@@ -38,13 +38,13 @@ const resolvedOgImage = new URL(ogImage ?? '/og/home.png', Astro.site);
 // Hrefs carry the trailing slash so every internal link points at the same URL
 // the page declares as canonical — otherwise the whole link graph lands one
 // redirect short of the indexed URL.
-const navItems: { href: string; label: string; badge?: string }[] = [
+const navItems = [
   { href: '/about/', label: 'About' },
   { href: '/thoughts/', label: 'Writing' },
   { href: '/projects/', label: 'Projects' },
   { href: '/gallery/', label: 'Gallery' },
   { href: '/now/', label: 'Now' },
-  { href: '/workshops/', label: 'Workshops', badge: 'Demystifying AI' },
+  { href: '/workshops/', label: 'Workshops' },
   // Phase 21: "Work with me" was a filled button pinned to the top-right of a
   // floating pill nav — the most recognisable SaaS chrome there is. It is a
   // page like any other, so it is now a link like any other.
@@ -158,14 +158,9 @@ const isNavActive = (href: string) => {
                 <a
                   href={item.href}
                   aria-current={isNavActive(item.href) ? 'page' : undefined}
-                  class="nav-link inline-flex items-center gap-1.5"
+                  class="nav-link"
                 >
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <span class="mono-micro px-1.5 py-0.5 border border-[var(--line-strong)] text-paper-300 rounded-[2px] text-[10px] tracking-normal normal-case">
-                      {item.badge}
-                    </span>
-                  )}
+                  {item.label}
                 </a>
               </li>
             ))}
@@ -199,14 +194,9 @@ const isNavActive = (href: string) => {
               <a
                 href={item.href}
                 aria-current={isNavActive(item.href) ? 'page' : undefined}
-                class="mobile-link flex items-baseline justify-between gap-4"
+                class="mobile-link"
               >
-                <span>{item.label}</span>
-                {item.badge && (
-                  <span class="mono-micro px-2 py-0.5 border border-[var(--line-strong)] text-paper-300 rounded-[2px] text-[11px] tracking-normal normal-case font-normal">
-                    {item.badge}
-                  </span>
-                )}
+                {item.label}
               </a>
             </li>
           ))}

@@ -84,36 +84,100 @@ const seoData = [
           places to go next. These are the same two destinations as links. */}
       <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3" data-reveal="up" data-reveal-delay="0.18">
         <a href="/thoughts/" class="link-arrow">Read the writing</a>
+        <a href="/workshops/" class="link-arrow">AI Workshops</a>
         <a href="/work-with-me/" class="link-arrow">Work with me</a>
       </div>
     </div>
   </section>
 
   {/* ---------------------------------------------------------------------
-      WORKSHOPS. The one thing on this page with a date attached, so it sits
-      directly under the hero.
-
-      Shaped like every other section here — kicker, link-arrow, a statement
-      line — rather than as an announcement bar. A strip with a fill and a
-      dismiss button is a growth banner; a ruled section is an entry in an
-      index that happens to be time-sensitive.
+      WORKSHOPS. Featured offering highlighted directly under the hero.
+      Dual-track hairline split showing Open Cohorts and In-House sessions.
      --------------------------------------------------------------------- */}
   <section class="section-tight" aria-labelledby="workshops-heading">
     <div class="shell">
       <div class="flex items-end justify-between gap-6">
-        <h2 id="workshops-heading" class="kicker flex-1">Workshops</h2>
-        <a href="/workshops/" class="link-arrow shrink-0">See the sessions</a>
+        <h2 id="workshops-heading" class="kicker flex-1">Featured Offering · AI Workshops</h2>
+        <a href="/workshops/" class="link-arrow shrink-0">All workshops &amp; pricing</a>
       </div>
 
-      <div class="mt-10 grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-end">
-        <p class="statement-sm max-w-[20ch]" data-reveal="up">
-          AI operating practice, not AI training.
-        </p>
-        <p class="m-0 text-small text-paper-400 leading-relaxed max-w-[46ch]" data-reveal="up">
-          Open Zoom cohorts and in-house sessions run on your own workflows.
-          <strong class="text-paper-100 font-medium">September and October dates are open</strong>
-          — I take one or two team engagements a month.
-        </p>
+      <div class="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+        <div>
+          <p class="statement-sm max-w-[22ch]" data-reveal="up">
+            AI operating practice, run on your actual workflows.
+          </p>
+          <p class="mt-4 mb-0 text-small text-paper-400 leading-relaxed max-w-[48ch]" data-reveal="up">
+            Hands-on sessions where participants leave holding working prototypes, ranked operational use cases, or a team-wide AI standard — not generic vendor slides.
+          </p>
+        </div>
+        <div class="border-t border-[var(--line)] pt-6 lg:border-t-0 lg:pt-0" data-reveal="up">
+          <p class="mono-micro text-paper-400">Booking status</p>
+          <p class="mt-2 text-small text-paper-100 font-medium">September – October 2026 dates open</p>
+          <p class="mt-1 mb-0 text-small text-paper-400 leading-relaxed max-w-[44ch]">
+            Public Zoom cohorts available per seat. In-house engagements strictly limited to 1–2 teams per month.
+          </p>
+        </div>
+      </div>
+
+      {/* Scannable dual-track cards with hairline border */}
+      <div class="mt-12 grid gap-8 md:grid-cols-2" data-reveal-stagger>
+        <div class="card pt-6 flex flex-col justify-between" data-reveal="up">
+          <div>
+            <div class="flex items-center justify-between gap-4 mb-4">
+              <span class="mono-micro">01 · Individuals</span>
+              <span class="mono text-small text-paper-400">From ₱1,500 / seat</span>
+            </div>
+            <h3 class="text-h3 m-0">Open Zoom Cohorts</h3>
+            <p class="mt-3 text-small text-paper-400 leading-relaxed">
+              Public cohorts you join as an individual. Practice real AI workflows, rapid prototyping without code, and AI media literacy in small cohorts of 10–25.
+            </p>
+            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-small text-paper-300 list-none p-0">
+              <li class="flex items-center gap-2">
+                <span class="text-paper-600">↳</span> AI Fluency &amp; Media Literacy (2.5 hrs)
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-paper-600">↳</span> The Owners' Table (Half day)
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-paper-600">↳</span> Ship the Idea, Not the Deck (Half day)
+              </li>
+            </ul>
+          </div>
+          <div class="mt-8 pt-4 border-t border-[var(--line)]">
+            <a href="/workshops/#open-sessions" class="link-arrow">
+              View open seats &amp; reserve
+            </a>
+          </div>
+        </div>
+
+        <div class="card pt-6 flex flex-col justify-between" data-reveal="up">
+          <div>
+            <div class="flex items-center justify-between gap-4 mb-4">
+              <span class="mono-micro">02 · Teams &amp; Orgs</span>
+              <span class="mono text-small text-paper-400">From ₱45,000</span>
+            </div>
+            <h3 class="text-h3 m-0">In-House &amp; Keynotes</h3>
+            <p class="mt-3 text-small text-paper-400 leading-relaxed">
+              Customized for your company or institution. Includes a pre-flight questionnaire and call so exercises run on your tools, documents, and data policies.
+            </p>
+            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-small text-paper-300 list-none p-0">
+              <li class="flex items-center gap-2">
+                <span class="text-paper-600">↳</span> All-hands &amp; Conference Keynotes
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-paper-600">↳</span> Half-day &amp; Full-day Team Workshops
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-paper-600">↳</span> AI for Leadership &amp; Policy Drafting
+              </li>
+            </ul>
+          </div>
+          <div class="mt-8 pt-4 border-t border-[var(--line)]">
+            <a href="/workshops/#team-sessions" class="link-arrow">
+              Explore in-house formats &amp; enquire
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>

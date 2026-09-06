@@ -18,239 +18,148 @@ import JsonLd from '../components/JsonLd.astro';
 import { service, faqPage, breadcrumbs } from '../lib/schema';
 
 // ---------------------------------------------------------------------------
-// AVAILABILITY. The one genuinely time-sensitive string on the page.
-// PLACEHOLDER until Paul confirms — see plan.md, Blocked-on-Paul items.
+// AVAILABILITY. Time-sensitive booking status.
 // ---------------------------------------------------------------------------
 const availability = {
   window: 'September – October 2026',
-  note: 'One or two team engagements a month, alongside a full-time job. The calendar is genuinely finite.',
+  note: 'One or two team engagements a month. Open Zoom cohort dates published below.',
 };
 
 // ---------------------------------------------------------------------------
-// OPEN SESSIONS — published, fixed, per-seat. No client data, no procurement.
+// OPEN SESSIONS — published, fixed, per-seat. Individual registration.
 // ---------------------------------------------------------------------------
 const openSessions = [
   {
     id: 'fluency',
     title: 'AI fluency & media literacy',
     tagline: 'What AI makes for you, and what AI makes at you.',
-    who: 'Anyone. No technical background assumed.',
+    who: 'Professionals across all fields. No technical background assumed.',
     format: '2.5 hours · Zoom · 25 seats',
     price: '₱1,500',
     priceNote: 'early bird · ₱2,500 regular',
     walkout:
-      'One workflow you have actually practised, and a habit for checking what you are shown.',
+      'A practical daily workflow habit and a reliable framework for checking synthetic content and spotting AI hallucinations.',
   },
   {
     id: 'owners-table',
     title: "The owners' table",
     tagline: 'Where AI pays in a business — and where it does not.',
-    who: 'Owners, founders and GMs. Ten of you around one table.',
+    who: 'Owners, founders, and operators weighing where to invest.',
     format: 'Half day · Zoom · 10 seats',
     price: '₱6,500',
     priceNote: 'per seat',
     walkout:
-      'Two or three candidate use cases, ranked, each with a first step and a cost range. Worked on generic operating patterns — the private session is where your own numbers go.',
+      'Two or three prioritized AI use cases for your business, each with realistic cost ranges, operational requirements, and immediate next steps.',
   },
   {
     id: 'ship-the-idea',
     title: 'Ship the idea, not the deck',
-    tagline: 'Vibe coding for product and marketing people.',
-    who: 'PMs, project managers, marketers, founders. Browser only, nothing to install.',
+    tagline: 'Vibe coding and rapid prototyping for non-engineers.',
+    who: 'PMs, product managers, marketers, founders. Browser only, nothing to install.',
     format: 'Half day · Zoom · 12 seats',
     price: '₱7,500',
     priceNote: 'per seat',
     walkout:
-      'A demo prototype of your own idea. Something that shows the concept — not something to deploy.',
+      'A functional interactive web prototype of your product concept built in the browser to validate directly with stakeholders.',
   },
 ];
 
 // ---------------------------------------------------------------------------
-// FOR YOUR TEAM — "from" pricing. The talk leads: it is the cheapest yes a
-// company can give and the top of the whole funnel.
+// FOR YOUR TEAM — In-house engagements and keynotes.
 // ---------------------------------------------------------------------------
 const inHouse = [
   {
     id: 'talk',
     title: 'Talk or keynote',
-    detail: '60–90 minutes for a conference, an all-hands, or a school.',
+    detail: '60–90 minutes for a conference, all-hands, or institution. Grounded, non-hyped perspective on applied AI.',
     price: 'from ₱45,000',
   },
   {
     id: 'keynote-trust',
     title: 'Keynote — disinformation, deepfakes and trust',
     detail:
-      'The same talk, pointed at the thing I spent five years inside: what happens to an organisation when nobody can tell what is real.',
+      'Drawing from 5 years leading tech operations at Rappler: what happens when nobody can distinguish truth from synthetic content.',
     price: 'from ₱75,000',
   },
   {
     id: 'half-day',
-    title: 'Half-day workshop',
-    detail: 'Up to 20 people, run on your documents and your tools.',
+    title: 'Half-day team workshop',
+    detail: 'Up to 20 people. Interactive problem-solving run on your team’s tools, workflows, and real document types.',
     price: 'from ₱90,000',
   },
   {
     id: 'full-day',
-    title: 'Full-day workshop',
-    detail: 'Up to 20. More practice time, more of your own work in the room.',
+    title: 'Full-day team intensive',
+    detail: 'Up to 20 people. Extended building and practice time to map operations and establish team-wide AI capabilities.',
     price: 'from ₱140,000',
   },
   {
     id: 'leadership',
     title: 'AI for leadership',
     detail:
-      'Half day, up to 12. An intake questionnaire and one call beforehand are a precondition, not an upsell — a half-day cannot map an operation cold.',
+      'Half day, up to 12 executives. Intake questionnaire and scoping included to map organizational strategy, risks, and high-ROI opportunities.',
     price: 'from ₱120,000',
   },
   {
     id: 'shared-standard',
     title: 'From shadow AI to a shared standard',
     detail:
-      'Two sessions, up to 20. Best-practice pack, a drafting approach, and a facilitated session where your people write the first version of your AI policy themselves.',
+      'Two facilitated sessions (up to 20 people). Best-practice guidance and structured collaboration so your team drafts its own operational AI policy.',
     price: 'from ₱250,000',
   },
 ];
 
 // ---------------------------------------------------------------------------
-// The jobs each buyer is hiring the session for, in their own words. This is
-// the highest-value block on the page: people buy at the line where they
-// recognise themselves.
-// ---------------------------------------------------------------------------
-const jobs = [
-  {
-    who: 'An individual professional',
-    quote:
-      'Everyone around me is using AI and I am not sure I am doing it right, or being fooled by it. Give me a way to work with it and a way to check it, so I stop guessing.',
-  },
-  {
-    who: 'A business owner',
-    quote:
-      'My board wants a return on the first thing we try, and every vendor is pitching me a platform. Tell me where AI moves money in my operation, what to do first, and what to skip.',
-  },
-  {
-    who: 'An HR, L&D or operations lead',
-    quote:
-      'Output quality depends on which of my people happen to be good at prompting, and I cannot see what has been pasted into a chatbot. Show us how other people handle this so we can write our own rules.',
-  },
-  {
-    who: 'A PM or a marketer',
-    quote:
-      'Engineering capacity is the bottleneck and my specs keep getting misread. Help me show the idea instead of describing it.',
-  },
-  {
-    who: 'Someone who has been burned',
-    quote:
-      'We have already sat through the generic vendor deck. Build one around our actual situation.',
-  },
-];
-
-// ---------------------------------------------------------------------------
-// How a booking runs. Stage 3 (intake) and stage 4 (readiness) are the two
-// that separate this from a fixed curriculum, so they get named on the page.
+// HOW A BOOKING RUNS (Streamlined 4-step sequence)
 // ---------------------------------------------------------------------------
 const process = [
   {
-    title: 'You get in touch',
-    body: 'The form at the bottom, or an email. Tell me the shape of the problem, not the spec.',
+    title: 'Discovery & Scope',
+    body: 'A 30-minute call to map your team’s bottlenecks, current tooling, and target outcomes.',
   },
   {
-    title: 'A 30-minute call, free',
-    body: 'What you are trying to change, who has to agree, and whether I am the right person. Sometimes the answer is no.',
+    title: 'Pre-flight Check',
+    body: 'We test tool access, network allowances, and sample data beforehand so the session starts without IT friction.',
   },
   {
-    title: 'Intake — included, not extra',
-    body: 'A short questionnaire and a call before the session. This is the part a fixed curriculum cannot do: it is where your workflows get into the material.',
+    title: 'Hands-on Session',
+    body: 'Interactive cohorts (capped at 12–20 people). Run on your actual documents and challenges, not hypothetical slides.',
   },
   {
-    title: 'Pre-flight',
-    body: 'Can your people reach the tools from work machines and the office network? Who provisions the seats? We settle that before you sign, not on the day.',
-  },
-  {
-    title: 'The session',
-    body: 'Cohorts of 20 for workshop formats, 12–15 when everyone is building. Nobody can watch more screens than that.',
-  },
-  {
-    title: 'Thirty days later',
-    body: 'Is the thing we built still being used? We measure that before I offer you anything else.',
+    title: '30-Day Check-in',
+    body: 'We reconnect at 30 days to measure whether the workflows and artifacts built are actually being used.',
   },
 ];
 
 // ---------------------------------------------------------------------------
-// Scope boundaries. Stating these up front is a conversion asset, not a
-// disclaimer — the buyer who has been burned is reading for exactly this.
-// ---------------------------------------------------------------------------
-const boundaries = [
-  {
-    title: 'I do not write your AI policy',
-    body: 'You do. I bring the best practice, the approach and the facilitation; your DPO, Legal and InfoSec approve your document. A policy an outsider wrote gets filed and ignored. A policy your team wrote, they follow.',
-  },
-  {
-    title: 'Prototypes are demos, not products',
-    body: 'Browser-only, no deployment, torn down afterwards. No secrets and no production data. Your engineers build the real thing.',
-  },
-  {
-    title: 'I cannot guarantee ROI',
-    body: 'Nobody can. I can tell you exactly what you will be holding at the end of the session, and we look again at 30 days.',
-  },
-  {
-    title: 'Cost figures are ranges, not quotes',
-    body: 'When we size a use case you get a range with the assumptions written down, plus the inputs a real quote would need.',
-  },
-  {
-    title: 'Sometimes the answer is “you do not need this”',
-    body: 'Most of the value in AI right now is workflow and judgement, not a custom model. If that is the honest answer for you, I would rather say it in the room.',
-  },
-];
-
-const dataStance = [
-  'Your tenant, your accounts. Personal accounts are not used for client material, and never shared credentials.',
-  'Sanitised data by default, from a sample pack agreed in advance. No personal data, credentials, secrets, source code or customer records in the exercises.',
-  'Nothing retained after the engagement, and deletion confirmed in writing.',
-  'Recording is off unless you ask for it in writing.',
-  'Your outputs are yours. Background materials stay mine, licensed to you.',
-];
-
-// ---------------------------------------------------------------------------
-// FAQ. Doubles as FAQPage schema, so the answers have to stand alone.
+// FAQ
 // ---------------------------------------------------------------------------
 const faqItems = [
   {
-    q: 'There are free AI courses. Why pay for this?',
-    a: 'Free courses teach the tool on a fixed curriculum. A fixed curriculum cannot run on your workflows. Here your people practise on their own work, and leave holding something they made.',
+    q: 'There are free AI courses online. Why invest in this?',
+    a: 'Generic courses teach tool features on a canned curriculum. These workshops run directly on your actual operational workflows, documents, and business context, so you leave with real artifacts rather than just a completion certificate.',
   },
   {
-    q: 'Can you train 200 people?',
-    a: 'Not in one room. Cohorts of 20 for workshops, 12–15 when everyone is building. A keynote can hold any size, but a keynote is a talk, not a workshop — I will not promise a room of 300 that they walk out with an artifact.',
+    q: 'Do you run these in person or online?',
+    a: 'Both. Open cohorts run live on Zoom. In-house team sessions can be delivered on-site in Metro Manila or remotely via Zoom for distributed teams.',
   },
   {
-    q: 'Our IT blocks those tools.',
-    a: 'Then we settle that before you sign rather than on the day. The pre-flight check covers tool access, the office network, admin rights and who pays for seats. If the room cannot reach the tools, we change the scope or move the date.',
+    q: 'Can you train large groups or all-hands?',
+    a: 'Keynotes and talks accommodate any audience size. Hands-on workshops are strictly capped (max 20 for workshops, 12–15 for prototyping) so every participant gets direct facilitation and produces real work.',
   },
   {
-    q: 'Who writes our AI policy?',
-    a: 'You do. I bring the best-practice pack, the drafting approach and the facilitation; your people write the first version in the room, with a decision log and a list of open issues. Your DPO and Legal approve it. I do not author it, approve it, or represent it as compliant.',
+    q: 'What if our corporate IT restricts certain AI tools?',
+    a: 'We resolve that before you sign. The pre-flight check covers firewall rules, tool access, network allowances, and account provisioning so there are no surprises on the day.',
   },
   {
-    q: 'We already pay for an AI tool.',
-    a: 'A subscription is not a practice. Most stalled initiatives in the Philippines stalled with the licences already bought.',
-  },
-  {
-    q: 'What happens if you are sick or double-booked?',
-    a: 'Named backup dates, file custody and a stated response time, written into the agreement. You are buying a practitioner rather than a bench, so the continuity plan is part of the deal.',
-  },
-  {
-    q: 'It is more than we budgeted.',
-    a: 'Then we change the scope rather than the rate — a half day instead of a full day, or start with the talk. I would rather sell you less than quietly deliver less.',
-  },
-  {
-    q: 'Do you run these in person?',
-    a: 'Yes, in Metro Manila, or online by Zoom. Venue, meals, AV, printed materials, tool seats, and travel outside Metro Manila are not included.',
+    q: 'Can you issue Official Receipts and work with corporate procurement?',
+    a: 'Yes. Invoicing and corporate procurement requirements (e.g. BIR, vendor accreditation) can be arranged during the scoping call.',
   },
 ];
 
 // ---------------------------------------------------------------------------
 const description =
-  'AI talks, open cohorts and in-house workshops run on your own workflows — not a fixed curriculum. Open sessions from ₱1,500; team sessions from ₱45,000.';
+  'Practical AI workshops for individuals and teams run on real workflows. Open cohorts from ₱1,500; team sessions from ₱45,000.';
 
 const seoData = [
   service({
@@ -270,29 +179,28 @@ const seoData = [
   <JsonLd data={seoData} slot="head" />
 
   {/* -----------------------------------------------------------------------
-      HEAD. The positioning claim, then the availability window, then the two
-      places to go. No filled CTA — the primary control appears once, at the
-      form, which is where the page is actually asking for something.
+      HEAD. Positioning + Direct jump actions to offerings.
      ----------------------------------------------------------------------- */}
   <section class="page-head" data-hero>
     <div class="shell">
       <p class="mono-micro flex items-center gap-3" data-reveal="fade">
         <span class="h-px w-8 bg-[var(--line-strong)]"></span>
-        Talks &amp; workshops · Philippines
+        Talks &amp; workshops · Manila &amp; Remote
       </p>
 
-      <h1 class="display mt-8 max-w-[15ch]" data-reveal="up" data-reveal-delay="0.05">
+      <h1 class="display mt-8 max-w-[16ch]" data-reveal="up" data-reveal-delay="0.05">
         AI workshops that end in something usable
       </h1>
 
-      <p class="lead mt-8 max-w-[52ch]" data-reveal="up" data-reveal-delay="0.12">
-        Most AI training ends in a certificate. Mine ends in a decision you can
-        defend, a standard your team agrees on, or a prototype that shows the
-        idea. Run on your documents and your tools, not a fixed curriculum.
+      <p class="lead mt-8 max-w-[50ch]" data-reveal="up" data-reveal-delay="0.12">
+        Hands-on AI sessions for individuals and teams. Run on your actual
+        workflows and tools — ending in working prototypes, operational
+        roadmaps, or team-wide standards.
       </p>
 
       <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3" data-reveal="up" data-reveal-delay="0.18">
-        <a href="#sessions" class="link-arrow">See the sessions</a>
+        <a href="#open-sessions" class="link-arrow">Open Cohorts (from ₱1,500)</a>
+        <a href="#team-sessions" class="link-arrow">For Your Team (from ₱45,000)</a>
         <a href="#enquire" class="link-arrow">Start a conversation</a>
       </div>
     </div>
@@ -300,8 +208,7 @@ const seoData = [
 
   <div class="shell pb-24 md:pb-32">
     {/* ---------------------------------------------------------------------
-        AVAILABILITY. A hairline spread, not an announcement bar — the dates
-        are a fact stated in the document, not a banner shouting over it.
+        AVAILABILITY. Clean hairline indicator.
        --------------------------------------------------------------------- */}
     <section class="avail" aria-labelledby="avail-heading" data-reveal="up">
       <h2 id="avail-heading" class="mono-micro">Booking now</h2>
@@ -310,45 +217,27 @@ const seoData = [
     </section>
 
     {/* ---------------------------------------------------------------------
-        WHO IT IS FOR. Five sentences in the buyer's own voice. Someone
-        scanning this page stops at the line that describes their week.
+        OPEN SESSIONS — FRONT & CENTER.
+        Answer the immediate question for individuals looking to join.
        --------------------------------------------------------------------- */}
-    <section class="section-tight" aria-labelledby="jobs-heading">
-      <h2 id="jobs-heading" class="kicker">Who books these</h2>
+    <section id="open-sessions" class="section-tight" aria-labelledby="open-heading">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 id="open-heading" class="kicker">Open sessions · Individual seats</h2>
+          <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
+            Public cohorts on Zoom. Fixed prices, published seat caps, and no corporate procurement required.
+          </p>
+        </div>
+      </div>
+
       <ul class="rows mt-8" data-reveal-stagger>
-        {jobs.map((job) => (
-          <li data-reveal="up">
-            <div class="grid md:grid-cols-[1fr_2fr] gap-x-12 gap-y-3 py-8">
-              <p class="m-0 mono-micro md:pt-2">{job.who}</p>
-              <p class="m-0 job-quote">“{job.quote}”</p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    {/* ---------------------------------------------------------------------
-        THE SESSIONS.
-
-        Two blocks, deliberately separated with their own headings and their
-        own framing sentences. Putting a ₱1,500 seat in the same list as a
-        ₱250k program anchors the second against the first.
-       --------------------------------------------------------------------- */}
-    <section id="sessions" class="section" aria-labelledby="open-heading">
-      <h2 id="open-heading" class="kicker">Open sessions · book a seat</h2>
-      <p class="mt-8 mb-0 text-paper-400 max-w-[58ch]">
-        Public Zoom cohorts you join as an individual. Fixed price, published
-        cap, no procurement and no client data in the room.
-      </p>
-
-      <ul class="rows mt-10" data-reveal-stagger>
         {openSessions.map((s, i) => (
           <li data-reveal="up">
             <div class="offer">
               <div class="offer__head">
-                <span class="mono-micro block mb-4">{String(i + 1).padStart(2, '0')}</span>
-                <h3 class="m-0 text-h2 leading-[1.05]">{s.title}</h3>
-                <p class="mt-3 mb-0 text-small text-paper-400">{s.tagline}</p>
+                <span class="mono-micro block mb-3">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="m-0 text-h3 leading-[1.1]">{s.title}</h3>
+                <p class="mt-2 mb-0 text-small text-paper-400">{s.tagline}</p>
               </div>
 
               <div class="offer__body">
@@ -356,14 +245,16 @@ const seoData = [
                   <span class="offer__label">You walk out with</span>
                   {s.walkout}
                 </p>
-                <p class="m-0 mt-5 text-small text-paper-400">{s.who}</p>
+                <p class="m-0 mt-4 text-small text-paper-400">
+                  <strong class="text-paper-200 font-normal">For:</strong> {s.who}
+                </p>
               </div>
 
               <div class="offer__meta">
                 <p class="m-0 offer__price">{s.price}</p>
-                <p class="m-0 mt-2 text-small text-paper-400">{s.priceNote}</p>
-                <p class="m-0 mt-4 mono text-paper-400">{s.format}</p>
-                <a href="#enquire" class="link-arrow mt-5" data-enquire={`open:${s.title}`}>
+                <p class="m-0 mt-1 text-small text-paper-400">{s.priceNote}</p>
+                <p class="m-0 mt-3 mono text-paper-400 text-small">{s.format}</p>
+                <a href="#enquire" class="link-arrow mt-4" data-enquire={`open:${s.title}`}>
                   Reserve a seat
                 </a>
               </div>
@@ -373,27 +264,31 @@ const seoData = [
       </ul>
     </section>
 
-    <section class="section-tight" aria-labelledby="inhouse-heading">
-      <h2 id="inhouse-heading" class="kicker">For your team · from pricing</h2>
-      <p class="mt-8 mb-0 text-paper-400 max-w-[58ch]">
-        Priced per session for the whole group, not per head. Every one of these
-        includes the intake — a questionnaire and a call before the day, so the
-        material is built on your work rather than a sample dataset. A talk is
-        the cheapest way to start.
-      </p>
+    {/* ---------------------------------------------------------------------
+        FOR YOUR TEAM — Clear rates and in-house offerings.
+       --------------------------------------------------------------------- */}
+    <section id="team-sessions" class="section-tight" aria-labelledby="inhouse-heading">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 id="inhouse-heading" class="kicker">For your team · In-house engagements</h2>
+          <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
+            Priced per engagement for the group, not per head. Every session includes pre-flight intake to adapt the material to your team’s tools, workflows, and security policies.
+          </p>
+        </div>
+      </div>
 
-      <ul class="rows mt-10" data-reveal-stagger>
+      <ul class="rows mt-8" data-reveal-stagger>
         {inHouse.map((s, i) => (
           <li data-reveal="up">
-            <div class="grid md:grid-cols-[auto_1fr_auto] gap-x-10 gap-y-4 py-8 md:items-baseline">
+            <div class="grid md:grid-cols-[auto_1fr_auto] gap-x-10 gap-y-4 py-6 md:items-baseline">
               <span class="mono-micro md:pt-1">{String(i + 1).padStart(2, '0')}</span>
               <div>
-                <h3 class="m-0">{s.title}</h3>
-                <p class="mt-3 mb-0 text-small text-paper-400 leading-relaxed max-w-[54ch]">
+                <h3 class="m-0 text-h3 leading-tight">{s.title}</h3>
+                <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed max-w-[54ch]">
                   {s.detail}
                 </p>
-                <a href="#enquire" class="link-arrow mt-4" data-enquire={`team:${s.title}`}>
-                  Enquire
+                <a href="#enquire" class="link-arrow mt-3" data-enquire={`team:${s.title}`}>
+                  Enquire for your team
                 </a>
               </div>
               <p class="m-0 offer__price md:text-right">{s.price}</p>
@@ -401,206 +296,74 @@ const seoData = [
           </li>
         ))}
       </ul>
-
-      <p class="mt-10 mb-0 text-small text-paper-400 max-w-[62ch]">
-        What moves the price up: more than 20 people, more than one cohort,
-        multi-site or provincial delivery, custom workbooks, extra interviews
-        beyond the included intake, follow-up coaching. Not included: venue,
-        meals, AV, printed materials, AI tool seats, and travel outside Metro
-        Manila. Schools, nonprofits and student events are quoted separately —
-        ask.
-      </p>
     </section>
 
     {/* ---------------------------------------------------------------------
-        HOW IT RUNS
+        HOW IT RUNS — 4 clear, scannable steps.
        --------------------------------------------------------------------- */}
-    <section class="section" aria-labelledby="process-heading">
-      <h2 id="process-heading" class="kicker">How a booking runs</h2>
-      <ol class="rows mt-8 counter" data-reveal-stagger>
+    <section class="section-tight" aria-labelledby="process-heading">
+      <h2 id="process-heading" class="kicker">How it works</h2>
+      <div class="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-4" data-reveal-stagger>
         {process.map((step, i) => (
-          <li data-reveal="up">
-            <div class="grid md:grid-cols-[auto_1fr_1.4fr] gap-x-10 gap-y-3 py-8">
-              <span class="mono-micro md:pt-1">{String(i + 1).padStart(2, '0')}</span>
-              <h3 class="m-0 text-h3">{step.title}</h3>
-              <p class="m-0 text-small text-paper-400 leading-relaxed self-center max-w-[58ch]">
-                {step.body}
-              </p>
-            </div>
-          </li>
+          <div class="card pt-6" data-reveal="up">
+            <span class="mono-micro block mb-3">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="m-0 text-h3">{step.title}</h3>
+            <p class="mt-3 mb-0 text-small text-paper-400 leading-relaxed">
+              {step.body}
+            </p>
+          </div>
         ))}
-      </ol>
-    </section>
-
-    {/* ---------------------------------------------------------------------
-        WHAT I DO NOT DO. Named as plainly as the offer is.
-       --------------------------------------------------------------------- */}
-    <section class="section-tight" aria-labelledby="boundaries-heading">
-      <h2 id="boundaries-heading" class="kicker">What I will not do</h2>
-      <ul class="rows mt-8" data-reveal-stagger>
-        {boundaries.map((b) => (
-          <li data-reveal="up">
-            <div class="grid md:grid-cols-[1fr_1.6fr] gap-x-12 gap-y-3 py-8">
-              <h3 class="m-0 text-h3">{b.title}</h3>
-              <p class="m-0 text-small text-paper-400 leading-relaxed self-center max-w-[58ch]">
-                {b.body}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    {/* ---------------------------------------------------------------------
-        DATA. The differentiator is "I run your documents" — which is also the
-        largest objection, so the controls behind it are on the page.
-       --------------------------------------------------------------------- */}
-    <section class="section-tight" aria-labelledby="data-heading">
-      <h2 id="data-heading" class="kicker">Your data, in the room</h2>
-      <div class="mt-10 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-        <p class="statement-sm max-w-[18ch]" data-reveal="up">
-          Working on real documents needs real rules.
-        </p>
-        <ul class="m-0 p-0 list-none" data-reveal-stagger>
-          {dataStance.map((line) => (
-            <li class="card py-5 text-paper-100 leading-relaxed" data-reveal="fade">
-              {line}
-            </li>
-          ))}
-        </ul>
       </div>
-      <p class="mt-8 mb-0 text-small text-paper-400 max-w-[62ch]">
-        Organisations remain accountable under the Data Privacy Act for
-        personal-data processing involving AI, including appropriate controls
-        over tools used for work. That is context for why these sessions exist —
-        it is not legal advice, and your DPO or counsel should approve anything
-        you put in writing.
-      </p>
     </section>
 
     {/* ---------------------------------------------------------------------
-        WHY ME. Factual. Three high-scrutiny sectors, and an honest line about
-        what the record does and does not prove.
+        STANDARDS & DATA PRIVACY — Consolidated trust block.
        --------------------------------------------------------------------- */}
-    <section class="section" aria-labelledby="who-heading">
-      <h2 id="who-heading" class="kicker">Who is running it</h2>
-      <p class="statement-sm mt-10 max-w-[24ch]" data-reveal="up">
-        A practitioner, not a trainer.
-      </p>
-      <div class="mt-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-        <div class="prose max-w-[54ch]" data-reveal="up">
-          <p>
-            I am Paul Fernandez. I was Head of Tech Operations at Rappler from
-            2018 to 2023, where I ran PHVote — the election-results tracking and
-            canvassing platform — through two national elections, and led the CMS
-            migration behind it. Before that, systems work in a Philippine bank.
-            Since 2023, IT Manager at a digital college serving thousands of
-            working students.
+    <section class="section-tight" aria-labelledby="standards-heading">
+      <h2 id="standards-heading" class="kicker">Practitioner background &amp; data privacy</h2>
+      <div class="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start">
+        <div data-reveal="up">
+          <h3 class="text-h3 m-0">A practitioner, not a vendor trainer.</h3>
+          <p class="mt-4 text-paper-400 text-small leading-relaxed max-w-[50ch]">
+            11+ years delivering high-stakes technology: Head of Tech Operations at Rappler (PHVote election results across two national elections), IT Manager at MMDC, and systems analyst at PSBank.
           </p>
-          <p>
-            Media, banking, education: three sectors where being wrong in public
-            has consequences. Trainers teach the tool. I have had to make things
-            hold up under scrutiny, which is a different job and the reason these
-            sessions are shaped the way they are.
+          <p class="mt-3 text-paper-400 text-small leading-relaxed max-w-[50ch]">
+            I don’t sell AI subscriptions or pre-packaged enterprise software. My focus is practical capability: leaving your team holding working prototypes, realistic roadmaps, or actionable policy standards.
           </p>
-          <p class="text-small text-paper-400">
-            What that record proves is judgement under pressure and delivery
-            inside regulated environments. What it does not yet prove is measured
-            ROI from a workshop — nobody should claim that on a page. It gets
-            measured at 30 days, on your numbers.
-          </p>
-          <p>
-            <a href="/about/" class="link">The longer version</a>
+          <p class="mt-4">
+            <a href="/about/" class="link">Read full background →</a>
           </p>
         </div>
 
-        <dl class="m-0 p-0" data-reveal-stagger>
-          <div class="card py-5" data-reveal="fade">
-            <dt class="mono-micro">Rappler · 2018–2023</dt>
-            <dd class="m-0 mt-2 text-small text-paper-400">
-              Head of Tech Operations. PHVote election results, CMS migration,
-              ontology and knowledge graph.
-            </dd>
-          </div>
-          <div class="card py-5" data-reveal="fade">
-            <dt class="mono-micro">MMDC (under MMCL) · 2023–present</dt>
-            <dd class="m-0 mt-2 text-small text-paper-400">
-              IT Manager. AI and digital delivery inside an institution serving
-              thousands of working students.
-            </dd>
-          </div>
-          <div class="card py-5" data-reveal="fade">
-            <dt class="mono-micro">PSBank · 2015–2018</dt>
-            <dd class="m-0 mt-2 text-small text-paper-400">
-              Systems Analyst. Regulated-sector delivery; built and deployed
-              account opening.
-            </dd>
-          </div>
-        </dl>
+        <div class="card pt-6" data-reveal="up">
+          <p class="mono-micro mb-4 text-paper-400">Data &amp; Security Baseline</p>
+          <ul class="m-0 p-0 list-none space-y-3 text-small text-paper-100">
+            <li class="flex items-start gap-2.5">
+              <span class="text-paper-400">·</span>
+              <span><strong class="text-paper-50 font-medium">Your tenant, your accounts.</strong> Exercises run in your environment; no client credentials or sensitive data are shared.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-paper-400">·</span>
+              <span><strong class="text-paper-50 font-medium">Sanitized data by default.</strong> No secrets, PII, or proprietary customer data in workshop exercises.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-paper-400">·</span>
+              <span><strong class="text-paper-50 font-medium">Zero retention.</strong> Nothing retained post-session, with deletion confirmed. Recordings off unless requested in writing.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-paper-400">·</span>
+              <span><strong class="text-paper-50 font-medium">Your outputs belong to you.</strong> All prototypes, notes, and documents created during the session are 100% yours.</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </section>
 
     {/* ---------------------------------------------------------------------
-        WHY NOW. Only figures whose source and exact wording are settled; the
-        rest of the research stays off the page until each one has a URL and a
-        population next to it.
-       --------------------------------------------------------------------- */}
-    <section class="section-tight" aria-labelledby="context-heading">
-      <h2 id="context-heading" class="kicker">Why this keeps coming up</h2>
-      <ul class="rows mt-8" data-reveal-stagger>
-        <li data-reveal="up">
-          <div class="stat">
-            <p class="m-0 stat__figure">65%</p>
-            <p class="m-0 stat__body">
-              of Philippine organisations that have used AI have not moved past
-              pilot — while 92% have used it in some form.
-              <a
-                href="https://bworldonline.com/technology/2026/03/16/736555/ai-deployment-for-organizations-still-shallow-philippine-ai-report/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link"
-              >Philippine AI Report</a>, 175 organisations.
-            </p>
-          </div>
-        </li>
-        <li data-reveal="up">
-          <div class="stat">
-            <p class="m-0 stat__figure">78%</p>
-            <p class="m-0 stat__body">
-              of employees use AI daily. 35% get role-specific training.
-              <a
-                href="https://sprout.ph/thought-leadership/2026-state-of-hr/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link"
-              >Sprout, State of HR 2026</a>.
-            </p>
-          </div>
-        </li>
-        <li data-reveal="up">
-          <div class="stat">
-            <p class="m-0 stat__figure">28%</p>
-            <p class="m-0 stat__body">
-              trust in news in the Philippines, down 10 points — the steepest
-              fall of 48 markets. Which is the whole argument for the media
-              literacy session.
-              <a
-                href="https://verafiles.org/articles/filipino-trust-in-news-posts-biggest-fall-digital-news-report-2026"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link"
-              >Reuters Digital News Report 2026</a>.
-            </p>
-          </div>
-        </li>
-      </ul>
-    </section>
-
-    {/* ---------------------------------------------------------------------
-        FAQ
+        FAQ — 5 essential practical questions.
        --------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="faq-heading">
-      <h2 id="faq-heading" class="kicker">Questions</h2>
+      <h2 id="faq-heading" class="kicker">Frequently Asked Questions</h2>
       <div class="mt-8" data-reveal-stagger>
         {faqItems.map((item) => (
           <details class="faq" data-reveal="fade">
@@ -770,22 +533,11 @@ const seoData = [
     max-width: 46ch;
   }
 
-  /* ---- Buyer quotes ---------------------------------------------------- */
-  .job-quote {
-    font-family: var(--font-display);
-    font-size: var(--text-lead);
-    line-height: 1.45;
-    letter-spacing: -0.014em;
-    color: var(--color-paper-100);
-    max-width: 58ch;
-    text-wrap: pretty;
-  }
-
   /* ---- Open-session rows ----------------------------------------------- */
   .offer {
     display: grid;
     gap: 1.5rem 3rem;
-    padding-block: 2.5rem;
+    padding-block: 2.25rem;
   }
   @media (min-width: 64rem) {
     .offer {
@@ -813,31 +565,6 @@ const seoData = [
     color: var(--color-paper-50);
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
-  }
-
-  /* ---- Stats ----------------------------------------------------------- */
-  .stat {
-    display: grid;
-    gap: 0.5rem 3rem;
-    padding-block: 2rem;
-  }
-  @media (min-width: 48rem) {
-    .stat { grid-template-columns: 8rem 1fr; align-items: baseline; }
-  }
-  .stat__figure {
-    font-family: var(--font-display);
-    font-size: var(--text-h2);
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    color: var(--color-paper-50);
-    font-variant-numeric: tabular-nums;
-  }
-  .stat__body {
-    font-size: var(--text-body);
-    line-height: 1.65;
-    color: var(--color-paper-400);
-    max-width: 56ch;
   }
 
   /* An "optional" marker that reads as metadata rather than as part of the

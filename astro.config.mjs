@@ -76,6 +76,9 @@ export default defineConfig({
   // Canonical URLs carry the trailing slash, so the bare form must redirect to
   // it rather than serve a second 200 at a URL the page tells Google to ignore.
   trailingSlash: 'always',
+  redirects: {
+    '/workshop': '/workshops/',
+  },
   adapter: vercel(),
   security: {
     allowedDomains: [

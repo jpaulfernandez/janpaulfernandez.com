@@ -1,156 +1,29 @@
 ---
-// workshops.astro — the offer page for AI talks, cohorts and in-house sessions.
-//
-// Built from business/workshops-gtm.md §12, which set the shape deliberately:
-// the `rows` pattern rather than a card grid (a four-card grid reads as SaaS
-// pricing; hairlines don't), Open sessions and For your team kept in SEPARATE
-// blocks so a ₱1,500 seat never anchors a ₱140k negotiation, the talk first
-// because it is the safest thing to sell, and one CTA — "Start a conversation",
-// not "Book now".
-//
-// Everything a reader can act on lives in the four const arrays below. Prices,
-// caps and the availability window are meant to be edited here; the page is
-// deliberately NOT a Keystatic collection yet, because a new collection means a
-// new schema kept field-identical in two files, and one editable file is the
-// smaller thing that works. Promote it if the dates start moving weekly.
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { service, faqPage, breadcrumbs } from '../lib/schema';
-import { availability } from '../lib/workshops';
+import {
+  availability,
+  faqItems,
+  featuredOpenSession,
+  featuredTeamSession,
+  openEnquireLabel,
+  openProcess,
+  openSessions,
+  otherOpenSessions,
+  otherTeamSessions,
+  teamEnquireLabel,
+  teamProcess,
+  teamSessions,
+} from '../lib/workshops';
+import portrait from '../assets/paul.webp';
 
-// ---------------------------------------------------------------------------
-// OPEN SESSIONS — published, fixed, per-seat. Individual registration.
-// ---------------------------------------------------------------------------
-const openSessions = [
-  {
-    id: 'fluency',
-    title: 'AI fluency & media literacy',
-    tagline: 'What AI makes for you, and what AI makes at you.',
-    who: 'Professionals across all fields. No technical background assumed.',
-    format: '2.5 hours · Zoom · 25 seats',
-    price: '₱1,500',
-    priceNote: 'early bird · ₱2,500 regular',
-    walkout:
-      'A practical daily workflow habit and a reliable framework for checking synthetic content and spotting AI hallucinations.',
-  },
-  {
-    id: 'owners-table',
-    title: "The owners' table",
-    tagline: 'Where AI pays in a business — and where it does not.',
-    who: 'Owners, founders, and operators weighing where to invest.',
-    format: 'Half day · Zoom · 10 seats',
-    price: '₱6,500',
-    priceNote: 'per seat',
-    walkout:
-      'Two or three prioritized AI use cases for your business, each with realistic cost ranges, operational requirements, and immediate next steps.',
-  },
-  {
-    id: 'ship-the-idea',
-    title: 'Ship the idea, not the deck',
-    tagline: 'Vibe coding and rapid prototyping for non-engineers.',
-    who: 'Product managers, marketers, and founders. Browser only, nothing to install.',
-    format: 'Half day · Zoom · 12 seats',
-    price: '₱7,500',
-    priceNote: 'per seat',
-    walkout:
-      'A functional interactive web prototype of your product concept built in the browser to validate directly with stakeholders.',
-  },
-];
+const fluency = featuredOpenSession();
+const moreOpen = otherOpenSessions();
+const halfDay = featuredTeamSession();
+const moreTeam = otherTeamSessions();
 
-// ---------------------------------------------------------------------------
-// FOR YOUR TEAM — In-house engagements and keynotes.
-// ---------------------------------------------------------------------------
-const inHouse = [
-  {
-    id: 'talk',
-    title: 'Talk or keynote',
-    detail: '60–90 minutes for a conference, all-hands, or institution. Grounded, non-hyped perspective on applied AI.',
-    price: 'from ₱45,000',
-  },
-  {
-    id: 'keynote-trust',
-    title: 'Keynote — disinformation, deepfakes and trust',
-    detail:
-      'Drawing from 5 years leading tech operations at Rappler: what happens when nobody can distinguish truth from synthetic content.',
-    price: 'from ₱75,000',
-  },
-  {
-    id: 'half-day',
-    title: 'Half-day team workshop',
-    detail: "Up to 20 people. Interactive problem-solving run on your team's tools, workflows, and real documents.",
-    price: 'from ₱90,000',
-  },
-  {
-    id: 'full-day',
-    title: 'Full-day team intensive',
-    detail: 'Up to 20 people. Dedicated building time to work through complex workflows and set team-wide standards.',
-    price: 'from ₱140,000',
-  },
-  {
-    id: 'leadership',
-    title: 'AI for leadership',
-    detail:
-      'Half day, up to 12 executives. Intake questionnaire and scoping included to weigh real risks, prioritize investments, and separate hype from leverage.',
-    price: 'from ₱120,000',
-  },
-  {
-    id: 'shared-standard',
-    title: 'From shadow AI to a shared standard',
-    detail:
-      'Two facilitated sessions (up to 20 people). Best-practice guidance and structured collaboration so your team drafts its own operational AI policy.',
-    price: 'from ₱250,000',
-  },
-];
-
-// ---------------------------------------------------------------------------
-// HOW A BOOKING RUNS (Streamlined 4-step sequence)
-// ---------------------------------------------------------------------------
-const process = [
-  {
-    title: 'Discovery & scope',
-    body: "A 30-minute call to understand your team's bottlenecks and what you want to walk away with.",
-  },
-  {
-    title: 'Pre-flight check',
-    body: 'We test tool access and sample data beforehand so the session starts without IT delays.',
-  },
-  {
-    title: 'Hands-on session',
-    body: 'Interactive cohorts capped at 12–20 people, working directly on your real documents and everyday problems.',
-  },
-  {
-    title: '30-day check-in',
-    body: 'We reconnect a month later to check whether the workflows we built are still in daily use.',
-  },
-];
-
-// ---------------------------------------------------------------------------
-// FAQ
-// ---------------------------------------------------------------------------
-const faqItems = [
-  {
-    q: 'There are free AI courses online. Why invest in this?',
-    a: 'Generic courses teach tool features on demo data. These workshops run directly on your everyday work and real files, so you leave with usable tools and workflows built for your team.',
-  },
-  {
-    q: 'Do you run these in person or online?',
-    a: 'Both. Open cohorts run live on Zoom. In-house team sessions can be delivered on-site in Metro Manila or remotely via Zoom for distributed teams.',
-  },
-  {
-    q: 'Can you train large groups or all-hands?',
-    a: 'Keynotes and talks accommodate any audience size. Hands-on workshops are strictly capped (max 20 for workshops, 12–15 for prototyping) so every participant gets direct facilitation and produces real work.',
-  },
-  {
-    q: 'What if our corporate IT restricts certain AI tools?',
-    a: 'We resolve that before you sign. The pre-flight check covers firewall rules, tool access, network allowances, and account provisioning so there are no surprises on the day.',
-  },
-  {
-    q: 'Can you issue Official Receipts and work with corporate procurement?',
-    a: 'Yes. Invoicing and corporate procurement requirements (e.g. BIR, vendor accreditation) can be arranged during the scoping call.',
-  },
-];
-
-// ---------------------------------------------------------------------------
 const description =
   'Practical AI workshops for individuals and teams run on real workflows. Open cohorts from ₱1,500; team sessions from ₱45,000.';
 
@@ -171,161 +44,250 @@ const seoData = [
 <BaseLayout title="AI workshops" description={description} ogImage="/og/workshops.png">
   <JsonLd data={seoData} slot="head" />
 
-  {/* -----------------------------------------------------------------------
-      HEAD. Positioning + Direct jump actions to offerings.
-     ----------------------------------------------------------------------- */}
   <section class="page-head" data-hero>
     <div class="shell">
       <p class="mono-micro flex items-center gap-3" data-reveal="fade">
         <span class="h-px w-8 bg-[var(--line-strong)]"></span>
-        Talks &amp; workshops · Manila &amp; Remote
+        Talks &amp; workshops · Manila &amp; remote · English · PHT
       </p>
 
-      <h1 class="display mt-8 max-w-[16ch]" data-reveal="up" data-reveal-delay="0.05">
-        AI workshops that end in something usable
+      <h1 class="display mt-8 max-w-[18ch]" data-reveal="up" data-reveal-delay="0.05">
+        Your team leaves with something they can run on Monday
       </h1>
 
       <p class="lead mt-8 max-w-[50ch]" data-reveal="up" data-reveal-delay="0.12">
-        You bring real work — an actual document, an actual bottleneck,
-        something on your desk right now. We spend the session on that
-        instead of a demo dataset, and you leave holding whatever we built.
+        You bring a real bottleneck — a document, a shadow-AI mess, a
+        question leadership keeps asking. We spend the hours on that.
+        Individuals can ask for the next Zoom seat; teams get the room.
       </p>
 
-      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3" data-reveal="up" data-reveal-delay="0.18">
-        <a href="#open-sessions" class="link-arrow">Open cohorts (from ₱1,500)</a>
-        <a href="#team-sessions" class="link-arrow">For your team (from ₱45,000)</a>
-        <a href="#enquire" class="link-arrow">Start a conversation</a>
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up" data-reveal-delay="0.18">
+        <a href="#enquire" class="btn btn-primary">Start a conversation</a>
+        <a href="#open-sessions" class="link-arrow">Open cohorts from ₱1,500</a>
       </div>
     </div>
   </section>
 
   <div class="shell pb-24 md:pb-32">
-    {/* ---------------------------------------------------------------------
-        AVAILABILITY. Clean hairline indicator.
-       --------------------------------------------------------------------- */}
     <section class="avail" aria-labelledby="avail-heading" data-reveal="up">
       <h2 id="avail-heading" class="mono-micro">Booking now</h2>
       <p class="avail__window">{availability.window}</p>
       <p class="avail__note">{availability.note}</p>
     </section>
 
-    {/* ---------------------------------------------------------------------
-        OPEN SESSIONS — FRONT & CENTER.
-        Answer the immediate question for individuals looking to join.
-       --------------------------------------------------------------------- */}
     <section id="open-sessions" class="section-tight" aria-labelledby="open-heading">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 id="open-heading" class="kicker">Open sessions · Individual seats</h2>
-          <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
-            Public cohorts on Zoom with fixed prices and published seat caps. Register directly as an individual.
-          </p>
-        </div>
-      </div>
+      <h2 id="open-heading" class="kicker">Open sessions · Individual seats</h2>
+      <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
+        Public cohorts on Zoom with fixed prices and seat caps. Dates are not
+        up yet — ask and I will email you when the first one is set.
+      </p>
 
       <ul class="rows mt-8" data-reveal-stagger>
-        {openSessions.map((s, i) => (
-          <li data-reveal="up">
-            <div class="offer">
-              <div class="offer__head">
-                <span class="mono-micro block mb-3">{String(i + 1).padStart(2, '0')}</span>
-                <h3 class="m-0 text-h3 leading-[1.1]">{s.title}</h3>
-                <p class="mt-2 mb-0 text-small text-paper-400">{s.tagline}</p>
-              </div>
-
-              <div class="offer__body">
-                <p class="m-0 text-paper-100">
-                  <span class="offer__label">You walk out with</span>
-                  {s.walkout}
-                </p>
-                <p class="m-0 mt-4 text-small text-paper-400">
-                  <strong class="text-paper-200 font-normal">For:</strong> {s.who}
-                </p>
-              </div>
-
-              <div class="offer__meta">
-                <p class="m-0 offer__price">{s.price}</p>
-                <p class="m-0 mt-1 text-small text-paper-400">{s.priceNote}</p>
-                <p class="m-0 mt-3 mono text-paper-400 text-small">{s.format}</p>
-                <a href="#enquire" class="link-arrow mt-4" data-enquire={`open:${s.title}`}>
-                  Reserve a seat
-                </a>
-              </div>
+        <li data-reveal="up">
+          <p class="mono-micro mb-0">Start here</p>
+          <div class="offer">
+            <div class="offer__head">
+              <h3 class="m-0 text-h3 leading-[1.1]">{fluency.title}</h3>
+              <p class="mt-2 mb-0 text-small text-paper-400">{fluency.tagline}</p>
             </div>
-          </li>
-        ))}
+
+            <div class="offer__body">
+              <p class="m-0 text-paper-100">
+                <span class="offer__label">You walk out with</span>
+                {fluency.walkout}
+              </p>
+              <p class="m-0 mt-4 text-small text-paper-400">
+                <strong class="text-paper-200 font-normal">For:</strong> {fluency.who}
+              </p>
+            </div>
+
+            <div class="offer__meta">
+              <p class="m-0 offer__price">{fluency.price}</p>
+              <p class="m-0 mt-1 text-small text-paper-400">{fluency.priceNote}</p>
+              <p class="m-0 mt-3 mono text-paper-400 text-small">{fluency.format}</p>
+              <a href="#enquire" class="link-arrow mt-4" data-enquire={`open:${fluency.title}`}>
+                {openEnquireLabel}
+              </a>
+            </div>
+          </div>
+        </li>
       </ul>
+
+      <details class="more" data-reveal="up">
+        <summary>
+          <span>Two more open sessions</span>
+          <span class="faq-mark" aria-hidden="true">+</span>
+        </summary>
+        <ul class="rows">
+          {moreOpen.map((s) => (
+            <li>
+              <div class="offer">
+                <div class="offer__head">
+                  <h3 class="m-0 text-h3 leading-[1.1]">{s.title}</h3>
+                  <p class="mt-2 mb-0 text-small text-paper-400">{s.tagline}</p>
+                </div>
+                <div class="offer__body">
+                  <p class="m-0 text-paper-100">
+                    <span class="offer__label">You walk out with</span>
+                    {s.walkout}
+                  </p>
+                  <p class="m-0 mt-4 text-small text-paper-400">
+                    <strong class="text-paper-200 font-normal">For:</strong> {s.who}
+                  </p>
+                </div>
+                <div class="offer__meta">
+                  <p class="m-0 offer__price">{s.price}</p>
+                  <p class="m-0 mt-1 text-small text-paper-400">{s.priceNote}</p>
+                  <p class="m-0 mt-3 mono text-paper-400 text-small">{s.format}</p>
+                  <a href="#enquire" class="link-arrow mt-4" data-enquire={`open:${s.title}`}>
+                    {openEnquireLabel}
+                  </a>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </details>
     </section>
 
-    {/* ---------------------------------------------------------------------
-        FOR YOUR TEAM — Clear rates and in-house offerings.
-       --------------------------------------------------------------------- */}
     <section id="team-sessions" class="section-tight" aria-labelledby="inhouse-heading">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 id="inhouse-heading" class="kicker">For your team · In-house engagements</h2>
-          <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
-            Fixed pricing for the whole group. Every session includes pre-flight intake to adapt the material to your team's tools, workflows, and security policies.
-          </p>
-        </div>
-      </div>
+      <h2 id="inhouse-heading" class="kicker">For your team · In-house engagements</h2>
+      <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
+        Most teams start here: half-day, from ₱90,000, you leave with a ranked
+        list and one workflow the room actually ran. Other formats below.
+      </p>
 
       <ul class="rows mt-8" data-reveal-stagger>
-        {inHouse.map((s, i) => (
-          <li data-reveal="up">
-            <div class="grid md:grid-cols-[auto_1fr_auto] gap-x-10 gap-y-4 py-6 md:items-baseline">
-              <span class="mono-micro md:pt-1">{String(i + 1).padStart(2, '0')}</span>
-              <div>
-                <h3 class="m-0 text-h3 leading-tight">{s.title}</h3>
-                <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed max-w-[54ch]">
-                  {s.detail}
-                </p>
-                <a href="#enquire" class="link-arrow mt-3" data-enquire={`team:${s.title}`}>
-                  Inquire for your team
-                </a>
-              </div>
-              <p class="m-0 offer__price md:text-right">{s.price}</p>
+        <li data-reveal="up">
+          <p class="mono-micro mb-0">Most teams start here</p>
+          <div class="offer">
+            <div class="offer__head">
+              <h3 class="m-0 text-h3 leading-[1.1]">{halfDay.title}</h3>
+              <p class="mt-2 mb-0 text-small text-paper-400">{halfDay.detail}</p>
             </div>
-          </li>
-        ))}
+            <div class="offer__body">
+              <p class="m-0 text-paper-100">
+                <span class="offer__label">You walk out with</span>
+                {halfDay.walkout}
+              </p>
+            </div>
+            <div class="offer__meta">
+              <p class="m-0 offer__price">{halfDay.price}</p>
+              <a href="#enquire" class="link-arrow mt-4" data-enquire={`team:${halfDay.title}`}>
+                {teamEnquireLabel}
+              </a>
+            </div>
+          </div>
+        </li>
       </ul>
+
+      <details class="more" data-reveal="up">
+        <summary>
+          <span>Other team formats</span>
+          <span class="faq-mark" aria-hidden="true">+</span>
+        </summary>
+        <ul class="rows">
+          {moreTeam.map((s, i) => (
+            <li>
+              <div class="grid md:grid-cols-[auto_1fr_auto] gap-x-10 gap-y-4 py-6 md:items-baseline">
+                <span class="mono-micro md:pt-1">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3 class="m-0 text-h3 leading-tight">{s.title}</h3>
+                  <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed max-w-[54ch]">
+                    {s.detail}
+                  </p>
+                  {s.walkout && (
+                    <p class="mt-3 mb-0 text-small text-paper-100 max-w-[54ch]">
+                      <span class="offer__label">You walk out with</span>
+                      {s.walkout}
+                    </p>
+                  )}
+                  <a href="#enquire" class="link-arrow mt-3" data-enquire={`team:${s.title}`}>
+                    {teamEnquireLabel}
+                  </a>
+                </div>
+                <p class="m-0 offer__price md:text-right">{s.price}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </details>
     </section>
 
-    {/* ---------------------------------------------------------------------
-        HOW IT RUNS — 4 clear, scannable steps.
-       --------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="process-heading">
       <h2 id="process-heading" class="kicker">How it works</h2>
-      <div class="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-4" data-reveal-stagger>
-        {process.map((step, i) => (
-          <div class="card pt-6" data-reveal="up">
-            <span class="mono-micro block mb-3">{String(i + 1).padStart(2, '0')}</span>
-            <h3 class="m-0 text-h3">{step.title}</h3>
-            <p class="mt-3 mb-0 text-small text-paper-400 leading-relaxed">
-              {step.body}
-            </p>
-          </div>
-        ))}
+      <div class="mt-10 grid gap-12 md:grid-cols-2 md:gap-16" data-reveal-stagger>
+        <div data-reveal="up">
+          <h3 class="text-h3 m-0">Open sessions</h3>
+          <ol class="steps">
+            {openProcess.map((step, i) => (
+              <li>
+                <span class="mono-micro">{String(i + 1).padStart(2, '0')}</span>
+                <h4 class="m-0 mt-2">{step.title}</h4>
+                <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div data-reveal="up">
+          <h3 class="text-h3 m-0">For your team</h3>
+          <ol class="steps">
+            {teamProcess.map((step, i) => (
+              <li>
+                <span class="mono-micro">{String(i + 1).padStart(2, '0')}</span>
+                <h4 class="m-0 mt-2">{step.title}</h4>
+                <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
 
-    {/* ---------------------------------------------------------------------
-        STANDARDS & DATA PRIVACY — Consolidated trust block.
-       --------------------------------------------------------------------- */}
-    <section class="section-tight" aria-labelledby="standards-heading">
-      <h2 id="standards-heading" class="kicker">Practitioner background &amp; data privacy</h2>
-      <div class="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start">
+    <section class="section-tight" aria-labelledby="proof-heading">
+      <h2 id="proof-heading" class="kicker">Who's in the room</h2>
+      <div class="mt-10 grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
+        <figure class="portrait m-0" data-reveal="up">
+          <Image
+            src={portrait}
+            alt="Paul Fernandez"
+            widths={[480, 720]}
+            sizes="(min-width: 1024px) 320px, 100vw"
+          />
+        </figure>
         <div data-reveal="up">
-          <h3 class="text-h3 m-0">I've been on the other side of this.</h3>
+          <h3 class="text-h3 m-0">I ran tech operations at Rappler through two national elections.</h3>
           <p class="mt-4 text-paper-400 text-small leading-relaxed max-w-[50ch]">
-            Eleven years shipping things that broke in public when they broke. I ran tech operations at Rappler through the 2019 and 2022 elections, where PHVote had to publish results live while the country watched. Before that: IT manager at MMDC, systems analyst at PSBank.
+            Eleven years shipping things that broke in public when they broke.
+            PHVote had to publish results live while the country watched. Before
+            that: IT manager at MMDC, systems analyst at PSBank.
           </p>
           <p class="mt-3 text-paper-400 text-small leading-relaxed max-w-[50ch]">
-            I have nothing to sell you afterwards — no subscription, no platform, no certification. What I know is what happens to a plan once real people and real deadlines get hold of it, and that's what the session is about.
+            I have nothing to sell you afterwards — no subscription, no platform,
+            no certification. What I know is what happens to a plan once real
+            people and real deadlines get hold of it, and that's what the
+            session is about.
           </p>
-          <p class="mt-4">
+          <p class="mt-4 mb-0">
             <a href="/about/" class="link">Read full background →</a>
           </p>
+        </div>
+      </div>
+
+      <div class="mt-12 grid gap-10 lg:grid-cols-2 lg:items-start">
+        <div data-reveal="up">
+          <h3 class="text-h3 m-0">Fluency rundown</h3>
+          <p class="mt-2 mb-6 text-small text-paper-400 max-w-[46ch]">
+            2.5 hours on Zoom. Screenshot this into Slack if you need to justify the ₱1,500.
+          </p>
+          <ol class="rundown">
+            {fluency.rundown?.map((row) => (
+              <li>
+                <span class="mono-micro text-paper-400">{row.time}</span>
+                <span>{row.item}</span>
+              </li>
+            ))}
+          </ol>
         </div>
 
         <div class="card pt-6" data-reveal="up">
@@ -352,9 +314,6 @@ const seoData = [
       </div>
     </section>
 
-    {/* ---------------------------------------------------------------------
-        FAQ — 5 essential practical questions.
-       --------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="faq-heading">
       <h2 id="faq-heading" class="kicker">Questions</h2>
       <div class="mt-8" data-reveal-stagger>
@@ -370,25 +329,18 @@ const seoData = [
       </div>
     </section>
 
-    {/* ---------------------------------------------------------------------
-        ENQUIRY. The only filled-in ask on the page.
-
-        The extra fields are qualification, not friction: only name, email and
-        message are required, and the rest are what turn an enquiry into a
-        first call that is worth having.
-       --------------------------------------------------------------------- */}
     <section id="enquire" class="section-tight" aria-labelledby="enquire-heading">
       <h2 id="enquire-heading" class="kicker">Start a conversation</h2>
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
           <p class="statement-sm max-w-[16ch]" data-reveal="up">
-            Tell me what your people are actually stuck on.
+            Tell me what you're stuck on.
           </p>
           <p class="mt-8 mb-0 text-paper-400 text-small max-w-[42ch]">
-            The first call is 30 minutes and costs nothing. If a session is the
-            wrong answer for you, I will say so on that call rather than in a
-            proposal.
+            I usually reply within two days. The first call is 30 minutes and
+            costs nothing. If a session is the wrong answer, I will say so on
+            that call rather than in a proposal.
           </p>
           <p class="mt-6 mb-0 text-paper-400 text-small">
             Or skip the form —
@@ -435,7 +387,7 @@ const seoData = [
                 ))}
               </optgroup>
               <optgroup label="For your team">
-                {inHouse.map((s) => (
+                {teamSessions.map((s) => (
                   <option value={`team:${s.title}`}>{s.title}</option>
                 ))}
               </optgroup>
@@ -459,7 +411,7 @@ const seoData = [
           </div>
 
           <div>
-            <label for="w-message" class="field-label">What is going on</label>
+            <label for="w-message" class="field-label">What you want to walk out with</label>
             <textarea id="w-message" name="message" required rows="5" class="field"></textarea>
           </div>
 
@@ -470,12 +422,6 @@ const seoData = [
   </div>
 </BaseLayout>
 
-{/*
-  Progressive enhancement, rung 6 of the YAGNI ladder. Clicking "Enquire" on a
-  session preselects it in the form, so a lead arrives already qualified.
-  With JS off the anchor still jumps to the form and the reader picks from the
-  same <select> — nothing is gated behind this.
-*/}
 <script is:inline>
   (() => {
     const target = document.querySelector('[data-enquire-target]');
@@ -494,9 +440,6 @@ const seoData = [
     padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
   }
 
-  /* ---- Availability ----------------------------------------------------
-   * Rules top and bottom, no fill. An announcement bar with a background is
-   * the SaaS version of this; a ruled spread is the document version. */
   .avail {
     border-block: 1px solid var(--line);
     padding-block: 2rem;
@@ -526,7 +469,6 @@ const seoData = [
     max-width: 46ch;
   }
 
-  /* ---- Open-session rows ----------------------------------------------- */
   .offer {
     display: grid;
     gap: 1.5rem 3rem;
@@ -560,8 +502,62 @@ const seoData = [
     font-variant-numeric: tabular-nums;
   }
 
-  /* An "optional" marker that reads as metadata rather than as part of the
-   * label — lowercase, so it is visibly not the field name. */
+  .more {
+    border-bottom: 1px solid var(--line);
+  }
+  .more summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-paper-400);
+  }
+  .more summary::-webkit-details-marker { display: none; }
+  .more summary:hover { color: var(--color-paper-50); }
+  .more[open] summary { color: var(--color-paper-50); }
+
+  .steps {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+  }
+  .steps li {
+    border-top: 1px solid var(--line);
+    padding-block: 1.25rem;
+  }
+
+  .rundown {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .rundown li {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: 1rem;
+    border-top: 1px solid var(--line);
+    padding-block: 0.85rem;
+    font-size: var(--text-small);
+    color: var(--color-paper-100);
+    line-height: 1.5;
+  }
+
+  .portrait {
+    border: 1px solid var(--line);
+  }
+  .portrait :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
   .field-opt {
     text-transform: none;
     letter-spacing: 0.04em;

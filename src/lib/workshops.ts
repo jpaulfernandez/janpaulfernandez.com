@@ -17,7 +17,7 @@
 
 export const availability = {
   window: 'September – October 2026',
-  note: 'One or two team engagements a month. Open cohort dates are not up yet — ask if you want a seat.',
+  note: "I take one or two team engagements a month. Open-cohort dates are not up yet — message me if you want a seat and I'll hold one.",
 };
 
 export const enquireLabel = 'Talk to me';
@@ -84,19 +84,19 @@ export const audienceRoutes: AudienceRoute[] = [
   {
     id: 'upskiller',
     label: 'You want to get good at this yourself',
-    line: 'Everyone around you is using AI and you cannot tell whether you are doing it right — or being fooled by it.',
+    line: 'Everyone around you is using AI and no one told you where it actually helps — or where it quietly wastes your time.',
     href: '#personal',
   },
   {
     id: 'leader',
-    label: 'You are deciding what your company should do about AI',
-    line: 'Every vendor is pitching you a platform and you need to know where this actually pays in your operation.',
+    label: "You're deciding what your company should do about AI",
+    line: 'Every vendor is pitching you a platform. You need to know where this actually pays off in your operation before you sign anything.',
     href: '#enterprise',
   },
   {
     id: 'org',
     label: 'You need to train a team',
-    line: 'Output quality depends on whoever happens to be good at prompting, and nobody can see what has been pasted into a chatbot.',
+    line: 'Output quality depends on whoever happens to be good at prompting. You want that to be a standard, not a lottery.',
     href: '#enterprise',
   },
 ];
@@ -267,12 +267,12 @@ export const trackIntro: Record<Track, { label: string; heading: string; body: s
   personal: {
     label: 'For yourself',
     heading: 'Personal',
-    body: 'Book a seat in an open cohort, an hour and a half one-on-one, or bring your own small group. You pay, you keep it.',
+    body: 'An open Zoom cohort, ninety minutes one-on-one, or a private group of three to eight you bring yourself. You pick the pace; you keep what we build.',
   },
   enterprise: {
     label: 'For your organisation',
     heading: 'Enterprise',
-    body: 'Run on your tools, your documents and your actual bottleneck. Scoping call first, always — I will tell you if a session is the wrong answer.',
+    body: "Run on your tools, your documents, and your real bottleneck. Scoping call and pre-flight are included, so day one doesn't start with an IT ticket.",
   },
 };
 

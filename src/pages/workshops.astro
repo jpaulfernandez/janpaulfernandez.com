@@ -25,7 +25,7 @@ const enterprise = enterpriseOfferings();
 const fluency = findOffering('fluency');
 
 const description =
-  'Demystifying AI for people who have to use it on Monday. One-on-one and open cohorts from ₱2,500; team sessions from ₱90,000.';
+  'Demystifying AI: A few hours on the work you actually have open, until it stops feeling like a magic trick and starts doing something useful. Seats and one-on-ones from ₱2,500; team sessions from ₱90,000.';
 
 const seoData = [
   service({
@@ -45,24 +45,23 @@ const seoData = [
   <JsonLd data={seoData} slot="head" />
 
   {/* ---------------------------------------------------------------------
-      HERO. The headline is the page's largest visual element — two words at
-      display scale do more than any ornament would.
+      HERO. Outcome-led headline, grounded tone, and clear primary CTA.
      --------------------------------------------------------------------- */}
   <section class="page-head" data-hero>
     <div class="shell">
       <p class="mono-micro flex items-center gap-3" data-reveal="fade">
         <span class="h-px w-8 bg-[var(--line-strong)]"></span>
-        Talks &amp; workshops · Manila &amp; remote · English · PHT
+        Demystifying AI · Manila &amp; remote · English · PHT
       </p>
 
       <h1 class="display hero-display mt-8" data-reveal="up" data-reveal-delay="0.05">
-        Demystifying AI
+        You already use AI.<br class="hidden sm:inline" /> This is where you get good at it.
       </h1>
 
-      <p class="lead mt-8 max-w-[52ch]" data-reveal="up" data-reveal-delay="0.12">
-        Not the hype, not the doom, not a vendor pitch. A few hours spent on
-        the work you already have open — until the thing stops feeling like
-        magic and starts feeling like a tool you can aim.
+      <p class="lead mt-8 max-w-[54ch]" data-reveal="up" data-reveal-delay="0.12">
+        No hype and no doomsaying — just a few hours on the work you already have open.
+        By the end, the parts that felt like magic feel like something you can direct.
+        Book a seat, a one-on-one, or bring me in to run it on your team's real tools and documents.
       </p>
 
       <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up" data-reveal-delay="0.18">
@@ -243,6 +242,11 @@ const seoData = [
         Venue, meals, AV, tool seats and travel outside Metro Manila are not
         included.
       </p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up">
+        <a href="#enquire" class="btn btn-primary">Talk to me</a>
+        <a href="mailto:jpaul.fernandez18@gmail.com" class="link-arrow">Or email directly</a>
+      </div>
     </section>
 
     {/* -------------------------------------------------------------------
@@ -508,12 +512,11 @@ const seoData = [
     padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
   }
 
-  /* Two words carry this page. The site-wide .display caps at 6.5rem; the
-   * hero headline is the only element allowed past it, because it is the
-   * only place where the type IS the illustration. */
+  /* Outcome-led hero display: balanced across screens without overflowing. */
   .hero-display {
-    font-size: clamp(3.25rem, 1rem + 10vw, 8.5rem);
-    line-height: 0.92;
+    font-size: clamp(2.75rem, 1.25rem + 4.5vw, 5.75rem);
+    line-height: 0.98;
+    max-width: 18ch;
   }
 
   /* --- Router ------------------------------------------------------------ */

@@ -17,10 +17,10 @@ export const GET: APIRoute = async ({ site }) => {
 
   const content = `# Paul Fernandez
 
-> Technologist from the Philippines who has shipped under pressure — banking, election-night newsrooms, national-scale education — now offering product consultation, workshops, and fractional product ownership.
+> Technologist in the Philippines. Ran tech operations at Rappler through two national elections, built banking software at PSBank, and is now IT manager at MMDC. Helps teams figure out what to build.
 
 ## About Paul Fernandez
-Paul Fernandez is a product technologist, consultant, and builder based in the Philippines. He specializes in turning complex, ambiguous business goals into clear, actionable technical and product specifications for engineering teams. With extensive experience shipping national-scale systems under intense pressure—including banking platforms, election-night newsrooms, and national education infrastructure—Paul helps organizations build the right product without wasting engineering bandwidth or losing focus.
+Paul Fernandez is a technologist in the Philippines. He turns vague business goals into specs a development team can build from. He ran tech operations at Rappler through the 2019 and 2022 Philippine elections, built account-opening software at PSBank, and is now IT manager at Mapúa Malayan Digital College. He writes about technology, money, and psychology, and runs AI workshops for teams in Manila and remotely.
 
 ## Core Services & Ways to Work Together
 ${sortedServices.map(s => `- **${s.data.title}**: ${s.data.description}`).join('\n')}
@@ -28,10 +28,10 @@ ${sortedServices.map(s => `- **${s.data.title}**: ${s.data.description}`).join('
 ## Site Navigation & Main Pages
 - [Home](${siteUrl}/): Overview, services, and recent writings.
 - [About](${siteUrl}/about/): Comprehensive background, philosophy, and career history.
-- [Thoughts](${siteUrl}/thoughts/): Blog and notes on product leadership, engineering, and technology.
-- [Now](${siteUrl}/now/): Public journal and status board of what Paul is currently focused on, building, and learning.
-- [Gallery](${siteUrl}/gallery/): Visual log of projects, workspace setups, and life moments.
-- [Workshops](${siteUrl}/workshops/): AI talks, open Zoom cohorts and in-house workshops — sessions, pricing, scope boundaries, and the enquiry form.
+- [Writing](${siteUrl}/thoughts/): Essays and notes on technology, money, and psychology.
+- [Now](${siteUrl}/now/): Public journal and timeline of what Paul is currently focused on, building, and learning.
+- [Gallery](${siteUrl}/gallery/): Concert and live music photography in Manila.
+- [Workshops](${siteUrl}/workshops/): AI talks, open Zoom cohorts and in-house workshops — sessions, pricing, scope boundaries, and the inquiry form.
 - [Work With Me](${siteUrl}/work-with-me/): Booking information, consultation packages, and direct contact form.
 
 ## Recent Thoughts & Articles

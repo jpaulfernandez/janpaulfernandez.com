@@ -25,7 +25,7 @@ export async function getStaticPaths() {
 // below keeps an unlisted topic from breaking the build.
 const TOPIC_INTROS: Record<string, string> = {
   ai: 'What AI actually changes — the unit economics of tokens, agentic workflows, and what human work is for once the machines can do it.',
-  culture: 'On predigested culture, snack-sized media, and what gets lost when a story is optimised for the scroll.',
+  culture: 'On predigested culture, snack-sized media, and what gets lost when a story is optimized for the scroll.',
   engineering: 'The practical craft of shipping — tools, models, and the decisions that only show up once you build the thing.',
   media: 'Media diets, recommendation engines, and the shape attention takes when something else is choosing for you.',
   philosophy: 'The bigger questions underneath the tooling — meaning, boredom, and why we do anything at all.',
@@ -52,7 +52,7 @@ const seoData = [
   }),
   breadcrumbs([
     { name: 'Home', url: '/' },
-    { name: 'Thoughts', url: '/thoughts/' },
+    { name: 'Writing', url: '/thoughts/' },
     { name: `#${topic}`, url: `/topics/${topic}/` },
   ]),
 ];
@@ -64,7 +64,7 @@ const seoData = [
   <section class="page-head" data-hero>
     <div class="shell">
       <a href="/thoughts/" class="mono-micro hover:text-paper-50" data-reveal="fade">
-        ← All thoughts
+        ← All writing
       </a>
       <h1 class="display mt-6" data-reveal="up" data-reveal-delay="0.05">
         #{topic}

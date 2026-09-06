@@ -43,7 +43,7 @@ const blogPostSchema = blogPosting({
 
 const breadcrumbsSchema = breadcrumbs([
   { name: 'Home', url: '/' },
-  { name: 'Thoughts', url: '/thoughts/' },
+  { name: 'Writing', url: '/thoughts/' },
   { name: title, url: `/thoughts/${post.id}/` },
 ]);
 ---
@@ -58,7 +58,7 @@ const breadcrumbsSchema = breadcrumbs([
     <header class="page-head" data-hero>
       <div class="shell-narrow">
         <a href="/thoughts/" class="mono text-paper-400 hover:text-paper-50" data-reveal="fade">
-          ← Thoughts
+          ← Writing
         </a>
 
         <h1 class="mt-6 text-h1" data-reveal="up" data-reveal-delay="0.05">{title}</h1>

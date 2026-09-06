@@ -7,6 +7,7 @@ import { person, webSite, profilePage, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects } from '../lib/projects';
 import { formatDate } from '../lib/dates';
+import { availability } from '../lib/workshops';
 
 const homeEntry = await getEntry('home', 'home');
 if (!homeEntry) {
@@ -54,7 +55,7 @@ const seoData = [
 
 <BaseLayout
   title="Paul Fernandez"
-  description="Technologist from the Philippines — banking systems, election-night newsrooms, national-scale education. Now helping teams adopt AI and ship right."
+  description="Technologist from the Philippines. Shipped banking systems, ran election results at Rappler, and now build for higher ed. I help teams figure out what to build."
   isHome
 >
   <JsonLd data={seoData} slot="head" />
@@ -107,14 +108,14 @@ const seoData = [
             AI operating practice, run on your actual workflows.
           </p>
           <p class="mt-4 mb-0 text-small text-paper-400 leading-relaxed max-w-[48ch]" data-reveal="up">
-            Hands-on sessions where participants leave holding working prototypes, ranked operational use cases, or a team-wide AI standard — not generic vendor slides.
+            Hands-on sessions where participants leave with working prototypes, ranked use cases, and concrete internal standards.
           </p>
         </div>
         <div class="border-t border-[var(--line)] pt-6 lg:border-t-0 lg:pt-0" data-reveal="up">
           <p class="mono-micro text-paper-400">Booking status</p>
-          <p class="mt-2 text-small text-paper-100 font-medium">September – October 2026 dates open</p>
+          <p class="mt-2 text-small text-paper-100 font-medium">{availability.window}</p>
           <p class="mt-1 mb-0 text-small text-paper-400 leading-relaxed max-w-[44ch]">
-            Public Zoom cohorts available per seat. In-house engagements strictly limited to 1–2 teams per month.
+            {availability.note}
           </p>
         </div>
       </div>
@@ -174,7 +175,7 @@ const seoData = [
           </div>
           <div class="mt-8 pt-4 border-t border-[var(--line)]">
             <a href="/workshops/#team-sessions" class="link-arrow">
-              Explore in-house formats &amp; enquire
+              Explore in-house formats &amp; ask
             </a>
           </div>
         </div>
@@ -194,7 +195,11 @@ const seoData = [
     <section class="section" aria-labelledby="intro-heading">
       <div class="shell">
         <h2 id="intro-heading" class="kicker">Who I am</h2>
-        <p class="statement mt-10" data-reveal="up">{heroIntro}</p>
+        <div class="statement mt-10 space-y-6" data-reveal="up">
+          {heroIntro.split('\n\n').map((paragraph) => (
+            <p class="m-0">{paragraph}</p>
+          ))}
+        </div>
         <a href="/about/" class="link-arrow mt-10">The longer version</a>
       </div>
     </section>

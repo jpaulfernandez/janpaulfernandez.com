@@ -1,12 +1,12 @@
 {
   "title": "Talks & Workshops",
-  "description": "Interactive sessions on product ideation, AI tools, and AI-assisted coding — plus help developing your AI strategy and the policies to use it responsibly. For teams, schools, and conferences that want to move from curiosity to something they can actually apply.",
+  "description": "Interactive sessions on AI workflows, rapid prototyping, and responsible adoption. Built for teams, schools, and conferences that want something they can apply Monday morning.",
   "icon": "talks",
   "order": 2,
   "faq": [
     {
       "q": "What topics do your talks and workshops cover?",
-      "a": "High-stakes software delivery under pressure, elections technology, practical AI adoption, and digital transformation strategies for schools and enterprises. Sessions are interactive, not lecture-style."
+      "a": "High-stakes software delivery, election systems, and practical AI adoption for teams and schools. Every session is hands-on — people work through real problems in the room."
     }
   ]
 }

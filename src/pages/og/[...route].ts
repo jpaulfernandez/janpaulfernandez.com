@@ -22,15 +22,15 @@ const pagesObj: Record<string, { title: string; description: string }> = {
   },
   'workshops': {
     title: 'AI Workshops',
-    description: 'Talks, open cohorts and in-house sessions — run on your workflows, not a fixed curriculum.'
+    description: 'Talks, open cohorts and in-house sessions run directly on your actual workflows.'
   },
   'work-with-me': {
     title: 'Work With Me',
     description: 'Consultation, workshops, and fractional product ownership.'
   },
   'thoughts': {
-    title: 'Thoughts',
-    description: 'Essays and half-formed notes — on technology, economy, and psychology.'
+    title: 'Writing',
+    description: 'Essays and half-formed notes — on technology, money, and psychology.'
   },
   'gallery': {
     title: 'Gallery',

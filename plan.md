@@ -550,6 +550,19 @@ back under a different name.
   the home page and `/work-with-me`, and now there is a second, deeper page saying
   more. That duplication is intentional until you decide.
 
+## Phase 23 — Language review audit implementation (2026-09-06)
+
+Source: `language-review.md` (comprehensive copy audit against researched rubrics, removing robotic tells and B2B vendor jargon, aligning on Paul's authentic voice).
+
+- [x] (2026-09-06) **First-person voice everywhere a human reads (F1):** `home.json` `heroIntro` rewritten to first person with authentic career milestones and rhythmic punch; meta descriptions on `/`, `/about/`, `/now/`, `/projects/`, `/thanks/`, and `/work-with-me/` unified into first person.
+- [x] (2026-09-06) **Canonical bio & machine surfaces (F6, §8.9, §8.10):** Single canonical bio written for `seo.json`, home meta, `llms.txt.ts`, and `rss.xml.ts`. Corporate buzzwords ("engineering bandwidth", "practical capability") removed. Corrected `/gallery/` description in `llms.txt.ts` to concert photography.
+- [x] (2026-09-06) **Microcopy humanization (F7, §8.3, §8.4):** `/thanks` rewritten with a genuine 2-day reply commitment and permission to nudge; `/404` rewritten with a personal admission ("Either I moved it and forgot to leave a note...").
+- [x] (2026-09-06) **Authentic gallery captions (F5, §8.8):** Replaced four templated PR-style set descriptions in `src/content/gallery/*.json` with tactile photographer observations (gear, lighting, crowd vantage).
+- [x] (2026-09-06) **Availability single source of truth (F10, §8.11):** Extracted `availability` into `src/lib/workshops.ts`, imported into both `index.astro` and `workshops.astro`. Dropped artificial scarcity ("strictly limited to") in favor of honest capacity phrasing.
+- [x] (2026-09-06) **Offer pages & services voice pass (F2, F3, F4, §8.5–8.7):** Converted 10 instances of negative parallelism ("X, not Y") to positive statements, keeping only the high-conviction boundary in the enquiry form. Rewrote `/workshops/` lead and bio ("I've been on the other side of this"), process steps in sentence case, and `product-consultation.json` / `talks-workshops.json` descriptions to focus on concrete outcomes.
+- [x] (2026-09-06) **Craft polish & consistency (F9):** Straightened all curly apostrophes in `workshops.astro`; standardized on en-US (`Organization`, `Inquire`, `optimized`); updated `/workshops/` headings to sentence case and "Frequently Asked Questions" → "Questions"; standardized the writing section chrome name to `Writing`; dropped `★` glyph from `KeyTakeaway.astro`.
+- [x] (2026-09-06) **Verified:** `npm run build`, `npx astro check` (0 errors, 0 warnings), `npm test` (38 tests) all pass. 29 built pages audited: exactly one `h1` each, 0 meta descriptions over 160 characters.
+
 ## Out of scope (v2 — do not build)
 
 Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

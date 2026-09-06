@@ -1,12 +1,12 @@
 {
   "title": "Digital Transformation Consulting",
-  "description": "From martech and digital marketing to product building. I help you map where tech actually moves the needle — optimizing how leads become customers, studying the information architecture behind the journey, and applying a bit of psychology to why people convert. Practical direction, not a slide deck you'll never open.",
+  "description": "I help you find the two or three places where technology actually changes your numbers, and say plainly which of the other twenty it won't. Usually that means looking hard at where people fall out of your funnel, and why — the answer is more often a confusing page than a missing feature. You get direction you can act on this quarter.",
   "icon": "consult",
   "order": 1,
   "faq": [
     {
       "q": "What does a product consultation involve?",
-      "a": "It starts with a deep dive into your goals, users, current systems, and operational bottlenecks. From there we shape a practical product direction and a roadmap sequenced by impact — not by what's trendy."
+      "a": "We start with your current bottlenecks and what users are actually doing. From there we shape a practical product direction and sequence the work by what moves numbers first."
     },
     {
       "q": "How long does an engagement typically take?",

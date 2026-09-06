@@ -18,7 +18,7 @@ const description =
 
 const seoData = [
   blog({
-    title: 'Thoughts',
+    title: 'Writing',
     description,
     url: '/thoughts/',
     posts: allPosts.map((post) => ({
@@ -31,17 +31,17 @@ const seoData = [
   }),
   breadcrumbs([
     { name: 'Home', url: '/' },
-    { name: 'Thoughts', url: '/thoughts/' },
+    { name: 'Writing', url: '/thoughts/' },
   ]),
 ];
 ---
 
-<BaseLayout title="Thoughts" description={description} ogImage="/og/thoughts.png">
+<BaseLayout title="Writing" description={description} ogImage="/og/thoughts.png">
   <JsonLd slot="head" data={seoData} />
 
   <section class="page-head" data-hero>
     <div class="shell">
-      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">Thoughts</h1>
+      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">Writing</h1>
       <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
         Essays and half-formed notes. About things that
         bother me.

@@ -16,14 +16,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { service, faqPage, breadcrumbs } from '../lib/schema';
-
-// ---------------------------------------------------------------------------
-// AVAILABILITY. Time-sensitive booking status.
-// ---------------------------------------------------------------------------
-const availability = {
-  window: 'September – October 2026',
-  note: 'One or two team engagements a month. Open Zoom cohort dates published below.',
-};
+import { availability } from '../lib/workshops';
 
 // ---------------------------------------------------------------------------
 // OPEN SESSIONS — published, fixed, per-seat. Individual registration.
@@ -55,7 +48,7 @@ const openSessions = [
     id: 'ship-the-idea',
     title: 'Ship the idea, not the deck',
     tagline: 'Vibe coding and rapid prototyping for non-engineers.',
-    who: 'PMs, product managers, marketers, founders. Browser only, nothing to install.',
+    who: 'Product managers, marketers, and founders. Browser only, nothing to install.',
     format: 'Half day · Zoom · 12 seats',
     price: '₱7,500',
     priceNote: 'per seat',
@@ -84,20 +77,20 @@ const inHouse = [
   {
     id: 'half-day',
     title: 'Half-day team workshop',
-    detail: 'Up to 20 people. Interactive problem-solving run on your team’s tools, workflows, and real document types.',
+    detail: "Up to 20 people. Interactive problem-solving run on your team's tools, workflows, and real documents.",
     price: 'from ₱90,000',
   },
   {
     id: 'full-day',
     title: 'Full-day team intensive',
-    detail: 'Up to 20 people. Extended building and practice time to map operations and establish team-wide AI capabilities.',
+    detail: 'Up to 20 people. Dedicated building time to work through complex workflows and set team-wide standards.',
     price: 'from ₱140,000',
   },
   {
     id: 'leadership',
     title: 'AI for leadership',
     detail:
-      'Half day, up to 12 executives. Intake questionnaire and scoping included to map organizational strategy, risks, and high-ROI opportunities.',
+      'Half day, up to 12 executives. Intake questionnaire and scoping included to weigh real risks, prioritize investments, and separate hype from leverage.',
     price: 'from ₱120,000',
   },
   {
@@ -114,20 +107,20 @@ const inHouse = [
 // ---------------------------------------------------------------------------
 const process = [
   {
-    title: 'Discovery & Scope',
-    body: 'A 30-minute call to map your team’s bottlenecks, current tooling, and target outcomes.',
+    title: 'Discovery & scope',
+    body: "A 30-minute call to understand your team's bottlenecks and what you want to walk away with.",
   },
   {
-    title: 'Pre-flight Check',
-    body: 'We test tool access, network allowances, and sample data beforehand so the session starts without IT friction.',
+    title: 'Pre-flight check',
+    body: 'We test tool access and sample data beforehand so the session starts without IT delays.',
   },
   {
-    title: 'Hands-on Session',
-    body: 'Interactive cohorts (capped at 12–20 people). Run on your actual documents and challenges, not hypothetical slides.',
+    title: 'Hands-on session',
+    body: 'Interactive cohorts capped at 12–20 people, working directly on your real documents and everyday problems.',
   },
   {
-    title: '30-Day Check-in',
-    body: 'We reconnect at 30 days to measure whether the workflows and artifacts built are actually being used.',
+    title: '30-day check-in',
+    body: 'We reconnect a month later to check whether the workflows we built are still in daily use.',
   },
 ];
 
@@ -137,7 +130,7 @@ const process = [
 const faqItems = [
   {
     q: 'There are free AI courses online. Why invest in this?',
-    a: 'Generic courses teach tool features on a canned curriculum. These workshops run directly on your actual operational workflows, documents, and business context, so you leave with real artifacts rather than just a completion certificate.',
+    a: 'Generic courses teach tool features on demo data. These workshops run directly on your everyday work and real files, so you leave with usable tools and workflows built for your team.',
   },
   {
     q: 'Do you run these in person or online?',
@@ -193,14 +186,14 @@ const seoData = [
       </h1>
 
       <p class="lead mt-8 max-w-[50ch]" data-reveal="up" data-reveal-delay="0.12">
-        Hands-on AI sessions for individuals and teams. Run on your actual
-        workflows and tools — ending in working prototypes, operational
-        roadmaps, or team-wide standards.
+        You bring real work — an actual document, an actual bottleneck,
+        something on your desk right now. We spend the session on that
+        instead of a demo dataset, and you leave holding whatever we built.
       </p>
 
       <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3" data-reveal="up" data-reveal-delay="0.18">
-        <a href="#open-sessions" class="link-arrow">Open Cohorts (from ₱1,500)</a>
-        <a href="#team-sessions" class="link-arrow">For Your Team (from ₱45,000)</a>
+        <a href="#open-sessions" class="link-arrow">Open cohorts (from ₱1,500)</a>
+        <a href="#team-sessions" class="link-arrow">For your team (from ₱45,000)</a>
         <a href="#enquire" class="link-arrow">Start a conversation</a>
       </div>
     </div>
@@ -225,7 +218,7 @@ const seoData = [
         <div>
           <h2 id="open-heading" class="kicker">Open sessions · Individual seats</h2>
           <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
-            Public cohorts on Zoom. Fixed prices, published seat caps, and no corporate procurement required.
+            Public cohorts on Zoom with fixed prices and published seat caps. Register directly as an individual.
           </p>
         </div>
       </div>
@@ -272,7 +265,7 @@ const seoData = [
         <div>
           <h2 id="inhouse-heading" class="kicker">For your team · In-house engagements</h2>
           <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
-            Priced per engagement for the group, not per head. Every session includes pre-flight intake to adapt the material to your team’s tools, workflows, and security policies.
+            Fixed pricing for the whole group. Every session includes pre-flight intake to adapt the material to your team's tools, workflows, and security policies.
           </p>
         </div>
       </div>
@@ -288,7 +281,7 @@ const seoData = [
                   {s.detail}
                 </p>
                 <a href="#enquire" class="link-arrow mt-3" data-enquire={`team:${s.title}`}>
-                  Enquire for your team
+                  Inquire for your team
                 </a>
               </div>
               <p class="m-0 offer__price md:text-right">{s.price}</p>
@@ -323,12 +316,12 @@ const seoData = [
       <h2 id="standards-heading" class="kicker">Practitioner background &amp; data privacy</h2>
       <div class="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start">
         <div data-reveal="up">
-          <h3 class="text-h3 m-0">A practitioner, not a vendor trainer.</h3>
+          <h3 class="text-h3 m-0">I've been on the other side of this.</h3>
           <p class="mt-4 text-paper-400 text-small leading-relaxed max-w-[50ch]">
-            11+ years delivering high-stakes technology: Head of Tech Operations at Rappler (PHVote election results across two national elections), IT Manager at MMDC, and systems analyst at PSBank.
+            Eleven years shipping things that broke in public when they broke. I ran tech operations at Rappler through the 2019 and 2022 elections, where PHVote had to publish results live while the country watched. Before that: IT manager at MMDC, systems analyst at PSBank.
           </p>
           <p class="mt-3 text-paper-400 text-small leading-relaxed max-w-[50ch]">
-            I don’t sell AI subscriptions or pre-packaged enterprise software. My focus is practical capability: leaving your team holding working prototypes, realistic roadmaps, or actionable policy standards.
+            I have nothing to sell you afterwards — no subscription, no platform, no certification. What I know is what happens to a plan once real people and real deadlines get hold of it, and that's what the session is about.
           </p>
           <p class="mt-4">
             <a href="/about/" class="link">Read full background →</a>
@@ -336,7 +329,7 @@ const seoData = [
         </div>
 
         <div class="card pt-6" data-reveal="up">
-          <p class="mono-micro mb-4 text-paper-400">Data &amp; Security Baseline</p>
+          <p class="mono-micro mb-4 text-paper-400">Data &amp; security baseline</p>
           <ul class="m-0 p-0 list-none space-y-3 text-small text-paper-100">
             <li class="flex items-start gap-2.5">
               <span class="text-paper-400">·</span>
@@ -352,7 +345,7 @@ const seoData = [
             </li>
             <li class="flex items-start gap-2.5">
               <span class="text-paper-400">·</span>
-              <span><strong class="text-paper-50 font-medium">Your outputs belong to you.</strong> All prototypes, notes, and documents created during the session are 100% yours.</span>
+              <span><strong class="text-paper-50 font-medium">Your outputs belong to you.</strong> All prototypes and notes created during the session are 100% yours.</span>
             </li>
           </ul>
         </div>
@@ -363,7 +356,7 @@ const seoData = [
         FAQ — 5 essential practical questions.
        --------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="faq-heading">
-      <h2 id="faq-heading" class="kicker">Frequently Asked Questions</h2>
+      <h2 id="faq-heading" class="kicker">Questions</h2>
       <div class="mt-8" data-reveal-stagger>
         {faqItems.map((item) => (
           <details class="faq" data-reveal="fade">
@@ -413,7 +406,7 @@ const seoData = [
         >
           <input type="hidden" name="access_key" value="3adf4959-3a04-4fc5-a990-e1159605181f" />
           <input type="hidden" name="redirect" value="https://www.janpaulfernandez.com/thanks/" />
-          <input type="hidden" name="subject" value="Workshop enquiry from janpaulfernandez.com" />
+          <input type="hidden" name="subject" value="Workshop inquiry from janpaulfernandez.com" />
           <input type="hidden" name="from_name" value="Jan Paul Fernandez Website" />
           <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
 
@@ -428,8 +421,8 @@ const seoData = [
           </div>
 
           <div>
-            <label for="w-org" class="field-label">Organisation <span class="field-opt">optional</span></label>
-            <input type="text" id="w-org" name="organisation" autocomplete="organization" class="field" />
+            <label for="w-org" class="field-label">Organization <span class="field-opt">optional</span></label>
+            <input type="text" id="w-org" name="organization" autocomplete="organization" class="field" />
           </div>
 
           <div>

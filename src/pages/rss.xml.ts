@@ -44,8 +44,8 @@ export async function GET(context: any) {
   }
 
   return rss({
-    title: 'Paul Fernandez · Thoughts',
-    description: 'Opinions, notes, and lessons from shipping national scale platforms.',
+    title: 'Paul Fernandez · Writing',
+    description: 'Essays and notes on technology, money, and why people do what they do.',
     site: context.site || 'https://www.janpaulfernandez.com',
     items: published.map((post) => ({
       title: post.data.title,

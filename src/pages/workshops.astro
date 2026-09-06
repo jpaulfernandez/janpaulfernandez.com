@@ -382,8 +382,50 @@ const seoData = [
       </div>
     </section>
 
+    {/* -------------------------------------------------------------------
+        WHY I'M DOING THIS. The one section that is not about you — it is
+        Paul's stake, stated plainly, student loan and all. Same two-column
+        structure as the enquiry block, so it reads as part of the document.
+       ------------------------------------------------------------------- */}
+    <section class="section-tight" aria-labelledby="why-heading">
+      <h2 id="why-heading" class="kicker"><span class="kicker__num">07</span>Why I'm doing this</h2>
+
+      <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <p class="statement-sm max-w-[20ch]" data-reveal="up">
+          My relationship with AI is complicated. I teach it anyway.
+        </p>
+
+        <div class="why-prose" data-reveal="up">
+          <p>
+            I hate how it arrived — trained on everyone's work without asking,
+            then sold back to us as magic. I watch it get weaponised to deceive,
+            used to cover for incompetence, and leaned on until people stop
+            thinking for themselves. Used without understanding, it just makes us
+            lazy.
+          </p>
+          <p>
+            But it is already in how we work, how we learn, and how we get lied
+            to — and that is exactly why I teach it. My advocacy has always been
+            tech for good. You don't have to use AI. You do have to understand
+            it: you can't equip yourself, or protect yourself, against something
+            you refuse to look at. Knowing AI is knowing when to use it, and when
+            to walk away.
+          </p>
+          <p>
+            The goal was never to make you faster. It's to make you harder to
+            fool, and clearer about where this actually helps the people around
+            you.
+          </p>
+          <p>
+            And the honest, unglamorous part: I'm also doing this to pay off my
+            student loans. Both things are true. <span aria-hidden="true">🙂</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section class="section-tight" aria-labelledby="faq-heading">
-      <h2 id="faq-heading" class="kicker"><span class="kicker__num">07</span>Questions</h2>
+      <h2 id="faq-heading" class="kicker"><span class="kicker__num">08</span>Questions</h2>
       <div class="mt-8" data-reveal-stagger>
         {faqItems.map((item) => (
           <details class="faq" data-reveal="fade">
@@ -398,7 +440,7 @@ const seoData = [
     </section>
 
     <section id="enquire" class="section-tight" aria-labelledby="enquire-heading">
-      <h2 id="enquire-heading" class="kicker"><span class="kicker__num">08</span>Talk to me</h2>
+      <h2 id="enquire-heading" class="kicker"><span class="kicker__num">09</span>Talk to me</h2>
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
@@ -966,6 +1008,21 @@ const seoData = [
   .kicker__num {
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.1em;
+  }
+
+  /* --- Why I'm doing this ------------------------------------------------
+   * Plain prose at a comfortable reading measure. The statement carries the
+   * weight; these paragraphs just have to be legible and unhurried. */
+  .why-prose p {
+    margin: 0 0 1.35rem;
+    max-width: 60ch;
+    font-size: var(--text-small);
+    color: var(--color-paper-100);
+    line-height: 1.8;
+  }
+  .why-prose p:last-child {
+    margin-bottom: 0;
+    color: var(--color-paper-400);
   }
 
   /* --- Statement breaker ------------------------------------------------

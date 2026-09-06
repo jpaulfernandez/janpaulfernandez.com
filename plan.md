@@ -641,6 +641,33 @@ exist yet; Paul has not launched.
       `#team-sessions`), plus `llms.txt`, the OG card copy, and the
       `talks-workshops` service description.
 
+## Phase 25 — Overwhelm pass: scope trim + honesty + section spine (Paul's request, 2026-09-06)
+
+Paul still felt the page was overwhelming and ran an adversary review against it.
+Chosen depth: **moderate** cut (both doors kept, not the review's single-offer
+version) plus the honesty items his own tracker already flagged.
+
+- [x] (2026-09-06) **Dropped the "Vibe coding & web basics" offering** (`ship-the-idea`).
+      The personal track now leads with the single ₱2,500 fluency offer. Removed
+      from `offerings[]`, SEO `service()` copy, and the two personal-track tests.
+- [x] (2026-09-06) **Folded the standalone "What you leave with" section into each
+      offer card** (`.offer__take`). Each SKU is now self-contained — price ladder
+      and outcomes in one block — and the page loses a whole repeated section.
+- [x] (2026-09-06) **Honesty pass, grounded in the blocked list below.** The FAQ no
+      longer claims official receipts "can be issued" (they can't yet — BIR is still
+      blocked); it states plainly that no BIR OR can be issued and to raise finance
+      needs up front. `availability.note` softened from "one or two a month" (an
+      invented cadence) to "a limited number." Locked both with tests.
+- [x] (2026-09-06) **FAQ trimmed 10 → 7** — merged refunds into the payment answer,
+      dropped the IT-blocks and competitor-in-the-Zoom items.
+- [x] (2026-09-06) **Visual breakers, in-system (hairline only).** A mono numeral
+      spine (01–08) on every section kicker turns a uniform stack into numbered
+      movements; one full-bleed statement breaker ("The test isn't the session…")
+      sits between the price ladder and the fit boundary. No fills, no accent.
+- [x] (2026-09-06) **Verified:** `npx astro check` (0 errors), `npm run build`, and
+      `npm test` (74 tests) all pass. Content and computed CSS confirmed in-browser;
+      the pixel look still wants Paul's eye (below).
+
 ### Blocked / needs Paul
 
 - **The 1-on-1 and private-group prices are the least evidenced numbers on the

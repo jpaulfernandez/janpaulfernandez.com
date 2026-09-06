@@ -17,7 +17,7 @@
 
 export const availability = {
   window: 'September – October 2026',
-  note: "I take one or two team engagements a month. Open-cohort dates are not up yet — message me if you want a seat and I'll hold one.",
+  note: "I take a limited number of team engagements. Open-cohort dates are not up yet — message me if you want a seat and I'll hold one.",
 };
 
 export const enquireLabel = 'Talk to me';
@@ -148,39 +148,6 @@ export const offerings: Offering[] = [
     ],
   },
   {
-    id: 'ship-the-idea',
-    track: 'personal',
-    title: 'Vibe coding & web basics',
-    tagline: 'Ship the idea, not the deck.',
-    who: 'Product managers, marketers, founders. Browser only — nothing to install.',
-    outcomes: [
-      'A working prototype of your own idea, running in a browser before you leave.',
-      'Enough web literacy to say what you want without hand-waving at a developer.',
-      'A clear line between what a prototype proves and what it does not.',
-    ],
-    caveat:
-      'A prototype is a demo. It is not production, not secure, and not supported — your engineers still build the real thing.',
-    formats: [
-      {
-        label: 'Open cohort seat',
-        detail: 'Half day · Zoom · 12 seats',
-        price: '₱7,500',
-        priceNote: 'per seat',
-      },
-      {
-        label: 'One-on-one',
-        detail: 'Half day · we build your idea',
-        price: '₱15,000',
-      },
-      {
-        label: 'Private group',
-        detail: 'Half day · 3–8 people you bring',
-        price: '₱60,000',
-        priceNote: 'flat',
-      },
-    ],
-  },
-  {
     id: 'team-fluency',
     track: 'enterprise',
     title: 'AI fluency & media literacy',
@@ -286,7 +253,7 @@ export function enterpriseOfferings(): Offering[] {
 
 /**
  * The value that lands in Paul's inbox when someone picks a session. Readable
- * on its own — an id like `ship-the-idea` is not — and unique, which matters
+ * on its own — an id like `team-fluency` is not — and unique, which matters
  * because both tracks carry an offering called "AI fluency & media literacy".
  */
 export function enquiryValue(offering: Offering): string {
@@ -387,12 +354,8 @@ export const faqItems: WorkshopFaq[] = [
     a: 'Bring whatever you already use — ChatGPT, Copilot, Claude, or Gemini. A Microsoft-only shop can still sit at the owners\' table. You use your own account. Team sessions confirm tools on the pre-flight.',
   },
   {
-    q: 'How do I pay? Can I get an official receipt?',
-    a: 'Payment is not taken on this page. Once a date is set I email you how to pay, with cancellation terms in that email. Official receipts can be issued for open seats and for team engagements. Corporate procurement — BIR, vendor accreditation — is arranged on that email, not guessed from a Gmail address.',
-  },
-  {
-    q: 'If I cannot attend, do I get a refund?',
-    a: 'Payment is not taken on this page — you are asking to be notified, not buying a ticket. Cancellation terms go out with the payment email once a date is set.',
+    q: 'How do I pay, and can I get an official receipt?',
+    a: 'Payment is not taken on this page — you are asking to be notified, not buying a ticket. Once a date is set I email you how to pay, with cancellation terms in that email. One honest caveat: I cannot issue a BIR official receipt yet, so if your finance team needs formal documentation to expense a session, tell me up front and we will sort out what I can provide.',
   },
   {
     q: 'Why is the corporate price a "from"?',
@@ -401,13 +364,5 @@ export const faqItems: WorkshopFaq[] = [
   {
     q: 'Is the 30-day check-in included?',
     a: 'Included in team engagements. Not included in an open-cohort seat or a one-on-one.',
-  },
-  {
-    q: 'What if IT blocks the tools on the day?',
-    a: 'Team sessions resolve that before you sign — the pre-flight covers firewall rules, tool access and account provisioning. Open cohorts run on whatever you can already open in a browser.',
-  },
-  {
-    q: 'Will my competitors be in the owners\' table Zoom?',
-    a: 'Possibly. It is a public cohort of owners. Do not bring confidential numbers — we work at the level of use-case shape, not your books.',
   },
 ];

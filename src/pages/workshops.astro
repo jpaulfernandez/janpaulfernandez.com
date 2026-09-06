@@ -13,7 +13,6 @@ import {
   findOffering,
   fit,
   marketStats,
-  offerings,
   personalOfferings,
   process,
   trackIntro,
@@ -31,7 +30,7 @@ const seoData = [
   service({
     title: 'AI workshops and talks',
     description:
-      'AI fluency and media literacy, vibe coding for non-engineers, AI for leadership with a policy exercise, and keynotes. Booked one-on-one, as open Zoom cohorts, or in-house for teams in the Philippines.',
+      'AI fluency and media literacy, AI for leadership with a policy exercise, and keynotes. Booked one-on-one, as open Zoom cohorts, or in-house for teams in the Philippines.',
   }),
   faqPage(faqItems),
   breadcrumbs([
@@ -91,7 +90,7 @@ const seoData = [
         argument for why fluency and media literacy are one session.
        ------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="thesis-heading">
-      <h2 id="thesis-heading" class="kicker">The two halves</h2>
+      <h2 id="thesis-heading" class="kicker"><span class="kicker__num">01</span>The two halves</h2>
 
       <div class="thesis mt-10" data-reveal="up">
         <div class="thesis__side">
@@ -136,7 +135,7 @@ const seoData = [
         structure is the picture; nothing here has a fill or a radius.
        ------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="offer-heading">
-      <h2 id="offer-heading" class="kicker">What you can book</h2>
+      <h2 id="offer-heading" class="kicker"><span class="kicker__num">02</span>What you can book</h2>
 
       <div class="fork mt-10">
         <div id="personal" class="fork__col" data-reveal="up">
@@ -164,6 +163,13 @@ const seoData = [
               </ul>
 
               {o.caveat && <p class="offer__caveat">{o.caveat}</p>}
+
+              <div class="offer__take">
+                <p class="offer__take-label">You leave with</p>
+                <ul class="offer__take-list">
+                  {o.outcomes.map((line) => <li>{line}</li>)}
+                </ul>
+              </div>
 
               <a href="#enquire" class="link-arrow mt-5" data-enquire={enquiryValue(o)}>
                 {enquireLabel}
@@ -213,6 +219,13 @@ const seoData = [
 
               {o.caveat && <p class="offer__caveat">{o.caveat}</p>}
 
+              <div class="offer__take">
+                <p class="offer__take-label">You leave with</p>
+                <ul class="offer__take-list">
+                  {o.outcomes.map((line) => <li>{line}</li>)}
+                </ul>
+              </div>
+
               <a href="#enquire" class="link-arrow mt-5" data-enquire={enquiryValue(o)}>
                 {enquireLabel}
               </a>
@@ -250,11 +263,21 @@ const seoData = [
     </section>
 
     {/* -------------------------------------------------------------------
+        BREAKER. A single full-bleed hairline statement — the page's spine,
+        restated. No fill, no accent: two rules and one line of display type.
+       ------------------------------------------------------------------- */}
+    <section class="breaker" aria-labelledby="breaker-text">
+      <p id="breaker-text" class="breaker__text" data-reveal="up">
+        The test isn't the session. It's whether you're still using it a month later.
+      </p>
+    </section>
+
+    {/* -------------------------------------------------------------------
         WHO THIS IS FOR. The right-hand column is the half that matters —
         it is the scope boundary, stated before you pay rather than after.
        ------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="fit-heading">
-      <h2 id="fit-heading" class="kicker">Who this is for</h2>
+      <h2 id="fit-heading" class="kicker"><span class="kicker__num">03</span>Who this is for</h2>
 
       <div class="mt-10 grid gap-10 md:grid-cols-2 md:gap-16" data-reveal-stagger>
         <div data-reveal="up">
@@ -273,37 +296,11 @@ const seoData = [
     </section>
 
     {/* -------------------------------------------------------------------
-        OUTCOMES. Sourced from the same offering objects as the price
-        ladder, rendered once, here.
-       ------------------------------------------------------------------- */}
-    <section class="section-tight" aria-labelledby="outcomes-heading">
-      <h2 id="outcomes-heading" class="kicker">What you leave with</h2>
-
-      <div class="mt-10 grid gap-12 md:grid-cols-2 md:gap-16" data-reveal-stagger>
-        {(['personal', 'enterprise'] as const).map((track) => (
-          <div data-reveal="up">
-            <h3 class="text-h3 m-0">{trackIntro[track].heading}</h3>
-            {offerings
-              .filter((o) => o.track === track)
-              .map((o) => (
-                <div class="outcome">
-                  <p class="outcome__for">{o.title}</p>
-                  <ul class="outcome__list">
-                    {o.outcomes.map((line) => <li>{line}</li>)}
-                  </ul>
-                </div>
-              ))}
-          </div>
-        ))}
-      </div>
-    </section>
-
-    {/* -------------------------------------------------------------------
         WHY ANY OF THIS. Three sourced figures at display scale. Every one
         carries a URL and a stated population.
        ------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="stats-heading">
-      <h2 id="stats-heading" class="kicker">Why this keeps coming up</h2>
+      <h2 id="stats-heading" class="kicker"><span class="kicker__num">04</span>Why this keeps coming up</h2>
       <ul class="stats mt-10" data-reveal-stagger>
         {marketStats.map((stat) => (
           <li class="stat" data-reveal="up">
@@ -320,7 +317,7 @@ const seoData = [
     </section>
 
     <section class="section-tight" aria-labelledby="process-heading">
-      <h2 id="process-heading" class="kicker">How it works</h2>
+      <h2 id="process-heading" class="kicker"><span class="kicker__num">05</span>How it works</h2>
       <ol class="steps mt-10" data-reveal-stagger>
         {process.map((step, i) => (
           <li data-reveal="up">
@@ -333,7 +330,7 @@ const seoData = [
     </section>
 
     <section class="section-tight" aria-labelledby="proof-heading">
-      <h2 id="proof-heading" class="kicker">Who's in the room</h2>
+      <h2 id="proof-heading" class="kicker"><span class="kicker__num">06</span>Who's in the room</h2>
       <div class="mt-10 grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
         <figure class="portrait m-0" data-reveal="up">
           <Image
@@ -386,7 +383,7 @@ const seoData = [
     </section>
 
     <section class="section-tight" aria-labelledby="faq-heading">
-      <h2 id="faq-heading" class="kicker">Questions</h2>
+      <h2 id="faq-heading" class="kicker"><span class="kicker__num">07</span>Questions</h2>
       <div class="mt-8" data-reveal-stagger>
         {faqItems.map((item) => (
           <details class="faq" data-reveal="fade">
@@ -401,7 +398,7 @@ const seoData = [
     </section>
 
     <section id="enquire" class="section-tight" aria-labelledby="enquire-heading">
-      <h2 id="enquire-heading" class="kicker">Talk to me</h2>
+      <h2 id="enquire-heading" class="kicker"><span class="kicker__num">08</span>Talk to me</h2>
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
@@ -863,8 +860,10 @@ const seoData = [
     line-height: 1.65;
   }
 
-  .outcome { margin-top: 2rem; }
-  .outcome__for {
+  /* Outcomes, folded into each offer so the card is self-contained: what it
+   * costs and what you walk out holding sit in one block, not two sections. */
+  .offer__take { margin-top: 1.75rem; }
+  .offer__take-label {
     margin: 0;
     font-family: var(--font-mono);
     font-size: var(--text-micro);
@@ -872,17 +871,17 @@ const seoData = [
     letter-spacing: 0.18em;
     color: var(--color-paper-400);
   }
-  .outcome__list {
+  .offer__take-list {
     list-style: none;
-    margin: 0.75rem 0 0;
+    margin: 0.5rem 0 0;
     padding: 0;
   }
-  .outcome__list li {
+  .offer__take-list li {
     border-top: 1px solid var(--line);
-    padding-block: 0.85rem;
+    padding-block: 0.7rem;
     font-size: var(--text-small);
     color: var(--color-paper-100);
-    line-height: 1.6;
+    line-height: 1.55;
   }
 
   /* --- Stats ------------------------------------------------------------- */
@@ -957,5 +956,35 @@ const seoData = [
     text-transform: none;
     letter-spacing: 0.04em;
     color: var(--color-paper-600);
+  }
+
+  /* --- Section spine ----------------------------------------------------
+   * A mono numeral in front of each kicker turns a stack of same-looking
+   * sections into numbered movements: you can see how far through you are.
+   * Same paper-400 as the label (contrast-safe); the rule still does the
+   * separating. */
+  .kicker__num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.1em;
+  }
+
+  /* --- Statement breaker ------------------------------------------------
+   * The only full-bleed pause on the page. Two hairlines and one line of
+   * display type — no fill, no accent, no radius. */
+  .breaker {
+    border-block: 1px solid var(--line);
+    padding-block: clamp(3rem, 2rem + 5vw, 5.5rem);
+    margin-block: clamp(3rem, 2rem + 4vw, 5rem);
+  }
+  .breaker__text {
+    margin: 0;
+    max-width: 24ch;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1rem + 3vw, 3.25rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--color-paper-50);
+    text-wrap: balance;
   }
 </style>

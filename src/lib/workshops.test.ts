@@ -22,7 +22,10 @@ describe('availability', () => {
   });
 
   it('states team capacity instead of fake scarcity', () => {
-    expect(availability.note.toLowerCase()).toMatch(/one or two/);
+    const note = availability.note.toLowerCase();
+    expect(note).toMatch(/limited number/);
+    // No invented cadence — the first run hasn't happened yet.
+    expect(note).not.toMatch(/a month|per month|each month|one or two/);
   });
 });
 
@@ -79,8 +82,8 @@ describe('every offering', () => {
 });
 
 describe('the personal track', () => {
-  it('carries fluency and the vibe-coding session, in that order', () => {
-    expect(personalOfferings().map((o) => o.id)).toEqual(['fluency', 'ship-the-idea']);
+  it('leads with the single fluency offering for the first run', () => {
+    expect(personalOfferings().map((o) => o.id)).toEqual(['fluency']);
   });
 
   it('offers both a one-on-one and a group price on each session', () => {
@@ -265,5 +268,11 @@ describe('faq', () => {
 
   it('does not use a purchase verb for a form scroll', () => {
     expect(enquireLabel.toLowerCase()).not.toMatch(/reserve|buy|checkout/);
+  });
+
+  it('does not promise an official receipt it cannot yet issue', () => {
+    // BIR registration / ORs are still blocked-on-Paul (see plan.md).
+    expect(blob).not.toMatch(/official receipts? can be issued|can issue an? official receipt/);
+    expect(blob).toMatch(/cannot issue a bir official receipt|no bir/);
   });
 });

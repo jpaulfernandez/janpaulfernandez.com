@@ -31,7 +31,7 @@ ${sortedServices.map(s => `- **${s.data.title}**: ${s.data.description}`).join('
 - [Writing](${siteUrl}/thoughts/): Essays and notes on technology, money, and psychology.
 - [Now](${siteUrl}/now/): Public journal and timeline of what Paul is currently focused on, building, and learning.
 - [Gallery](${siteUrl}/gallery/): Concert and live music photography in Manila.
-- [Workshops](${siteUrl}/workshops/): AI talks, open Zoom cohorts and in-house workshops — sessions, pricing, scope boundaries, and the inquiry form.
+- [Workshops](${siteUrl}/workshops/): Demystifying AI — booked personally (open Zoom cohort, one-on-one, or a private group of 3–8) or for an organisation (team fluency, AI for leadership with a policy exercise, talks and keynotes). Published pricing, scope boundaries, and the inquiry form.
 - [Work With Me](${siteUrl}/work-with-me/): Booking information, consultation packages, and direct contact form.
 
 ## Recent Thoughts & Articles

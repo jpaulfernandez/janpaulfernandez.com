@@ -563,6 +563,104 @@ Source: `language-review.md` (comprehensive copy audit against researched rubric
 - [x] (2026-09-06) **Craft polish & consistency (F9):** Straightened all curly apostrophes in `workshops.astro`; standardized on en-US (`Organization`, `Inquire`, `optimized`); updated `/workshops/` headings to sentence case and "Frequently Asked Questions" → "Questions"; standardized the writing section chrome name to `Writing`; dropped `★` glyph from `KeyTakeaway.astro`.
 - [x] (2026-09-06) **Verified:** `npm run build`, `npx astro check` (0 errors, 0 warnings), `npm test` (38 tests) all pass. 29 built pages audited: exactly one `h1` each, 0 meta descriptions over 160 characters.
 
+## Phase 24 — "Demystifying AI": /workshops restructured around two doors (Paul's direct request, 2026-09-06)
+
+Paul's brief: lead with *Demystifying AI*, speak to three audiences (personal
+upskiller, leadership implementing AI, companies needing fluency training), fork
+the offer into **Personal** (1-on-1 or group; AI fluency & media literacy, vibe
+coding + web basics) and **Enterprise** (team fluency, leadership + policy
+exercise, "have something in mind? talk to me"), add a "who is this for" and a
+simplified learning-outcome section — and fix the fact that the page had no
+visual. Talks and keynotes stay on this page (Paul's call). No session photos
+exist yet; Paul has not launched.
+
+- [x] (2026-09-06) **Repriced against fresh PH market research**, not against the
+      previous page. Anchors verified 2026-09-06: Nexacu PH *AI for Business
+      Leaders and Managers* ₱32,600/person (1 day, max 8, live); LOKAL public AI
+      workshop from ₱3,500/seat; AIM *AI for Business Leaders* ₱80,000–₱200,000+
+      per person (3–5 days); PH norms ₱2,500–₱15,000 per participant per day
+      (public) and ₱40,000–₱280,000 per in-house session; PH executive coaching
+      ₱5,000–₱250,000 per programme. Changes and why:
+      - **Fluency open seat ₱1,500 → ₱2,500.** ₱1,500 sat *below* the PH public
+        floor and 57% under LOKAL. At 2.5 hrs, ₱2,500 pro-rates to ~₱7,500/day —
+        mid-band, which is where an 11-year practitioner belongs. No early bird
+        is advertised, because there is no end date to attach to one (§4).
+      - **New: 1-on-1 and private-group prices** (fluency ₱7,500 / ₱30,000 flat;
+        vibe coding ₱15,000 / ₱60,000 flat). No PH market price exists for
+        1-on-1 AI coaching, so these are derived: a group flat rate never prices
+        below the equivalent open seat per head (enforced by test), and the
+        1-on-1 sits above a seat and far below Nexacu's per-head day rate.
+      - **Leadership half-day ₱120,000 → ₱150,000.** The brief merges the
+        policy exercise into it, absorbing scope that used to be the separate
+        ₱250,000 two-session engagement. ₱150k for up to 12 is ₱12,500/head
+        against Nexacu's ₱32,600. The full two-session standard stays at
+        ₱250,000 as the step-up.
+      - **Full day ₱140,000 → ₱160,000.** §4 flagged that a ₱50k step over a
+        half day does not track the extra prep. ₱70k does, and it stays inside
+        the PH in-house band.
+      - Unchanged: half-day team ₱90,000, keynote ₱45,000, disinformation
+        keynote ₱75,000, owners' table ₱6,500, vibe-coding seat ₱7,500.
+      - **Every price is still a hypothesis** until paid delivery tests it
+        against real hours (§4). Log actual hours on the first three.
+- [x] (2026-09-06) **`src/lib/workshops.ts` restructured** from
+      `openSessions`/`teamSessions` into one `offerings` array carrying a
+      `track`, a format ladder, and outcomes. TDD: 41 tests written first,
+      including the market-positioning assertions above so a future price edit
+      that falls out of the PH band fails the suite rather than shipping.
+- [x] (2026-09-06) **The catalogue became a fork.** Eight SKUs across two
+      process ladders and nine FAQs collapsed to two columns split by a single
+      vertical hairline. The owners' table moved under Enterprise as the
+      "explore first" open seat, which is where a leader browsing actually
+      wants it. One "How it works" ladder replaced two.
+- [x] (2026-09-06) **The visual problem, solved without a fill.** Phase 21 bans
+      glass, radius, shadow and glow, and the Phase 19 note is explicit that a
+      diagram needs a hand-drawn SVG rather than a photograph. So the page's
+      three visuals are structural: the two-word `h1` at up to 8.5rem (the only
+      element allowed past the site-wide 6.5rem `.display` cap, because here the
+      type *is* the illustration); the vertical hairline splitting Personal from
+      Enterprise; and **"The two halves"** — a for-you/at-you diagram built from
+      one hairline and two `<ul>`s rather than an SVG, so it stays legible at
+      360px, reads correctly to a screen reader, and needs no asset.
+- [x] (2026-09-06) **The three sourced stats came back**, condensed. They were
+      removed in `1f34ff6` for length, not for accuracy; each still carries a
+      URL and a stated population per §13, and they now render as three figures
+      at `--text-h2` in a hairline grid rather than the old verbose block.
+      **Easy to cut again if Paul disagrees with the reversal.**
+- [x] (2026-09-06) **"What I will not do" is back as the right-hand half of
+      "Who this is for"** — no certificate, I do not build it for you, no
+      guaranteed ROI, no tools tour. Per-offering `caveat` lines carry the rest:
+      a prototype is a demo, a keynote produces no artifact, and I do not author
+      your policy.
+- [x] (2026-09-06) **Form regression caught and fixed.** Rebuilding the select
+      from offering ids would have emailed Paul `ship-the-idea` instead of a
+      session name, and both tracks carry an offering titled "AI fluency &
+      media literacy". `enquiryValue()` renders "Personal — …" / "Enterprise — …",
+      unique and readable, and is asserted unique by test.
+- [x] (2026-09-06) **Wiring:** homepage highlight rewritten to the two tracks
+      and the new anchors (`#personal` / `#enterprise` replace `#open-sessions` /
+      `#team-sessions`), plus `llms.txt`, the OG card copy, and the
+      `talks-workshops` service description.
+
+### Blocked / needs Paul
+
+- **The 1-on-1 and private-group prices are the least evidenced numbers on the
+  page.** There is no PH comparable for either; they were derived from the
+  group economics. Expect to move them after the first three sales.
+- The Phase 22 launch blockers all still stand and now cover larger numbers:
+  BIR registration and official receipts, accountant sign-off on tax language,
+  written MMDC employer clearance, and the fact that the availability window
+  ("September – October 2026") is still a placeholder from the original request
+  rather than a calendar.
+- **Jerry Ilao (jerryilao.com) is now a direct positional competitor** — his
+  corporate AI training page promises "your company's AI policy written…
+  and a 30-day plan they built themselves", which is this offer almost verbatim.
+  He does not publish prices. Publishing a floor is the differentiator; the FAQ
+  now explains why the corporate number is a "from".
+
+- [ ] Paul's visual review in-browser — the hero scale, the fork hairline, and
+      "The two halves" are the parts worth a look
+
+
 ## Out of scope (v2 — do not build)
 
 Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

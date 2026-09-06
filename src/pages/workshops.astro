@@ -5,33 +5,33 @@ import JsonLd from '../components/JsonLd.astro';
 import { service, faqPage, breadcrumbs } from '../lib/schema';
 import {
   availability,
+  audienceRoutes,
+  enquireLabel,
+  enquiryValue,
+  enterpriseOfferings,
   faqItems,
-  featuredOpenSession,
-  featuredTeamSession,
-  openEnquireLabel,
-  openProcess,
-  openSessions,
-  otherOpenSessions,
-  otherTeamSessions,
-  teamEnquireLabel,
-  teamProcess,
-  teamSessions,
+  findOffering,
+  fit,
+  marketStats,
+  offerings,
+  personalOfferings,
+  process,
+  trackIntro,
 } from '../lib/workshops';
 import portrait from '../assets/paul.webp';
 
-const fluency = featuredOpenSession();
-const moreOpen = otherOpenSessions();
-const halfDay = featuredTeamSession();
-const moreTeam = otherTeamSessions();
+const personal = personalOfferings();
+const enterprise = enterpriseOfferings();
+const fluency = findOffering('fluency');
 
 const description =
-  'Practical AI workshops for individuals and teams run on real workflows. Open cohorts from ₱1,500; team sessions from ₱45,000.';
+  'Demystifying AI for people who have to use it on Monday. One-on-one and open cohorts from ₱2,500; team sessions from ₱90,000.';
 
 const seoData = [
   service({
     title: 'AI workshops and talks',
     description:
-      'AI fluency and media literacy, AI for leadership, prototyping for non-engineers, and facilitated AI policy sessions. Delivered as open Zoom cohorts or in-house for teams in the Philippines.',
+      'AI fluency and media literacy, vibe coding for non-engineers, AI for leadership with a policy exercise, and keynotes. Booked one-on-one, as open Zoom cohorts, or in-house for teams in the Philippines.',
   }),
   faqPage(faqItems),
   breadcrumbs([
@@ -41,9 +41,13 @@ const seoData = [
 ];
 ---
 
-<BaseLayout title="AI workshops" description={description} ogImage="/og/workshops.png">
+<BaseLayout title="Demystifying AI" description={description} ogImage="/og/workshops.png">
   <JsonLd data={seoData} slot="head" />
 
+  {/* ---------------------------------------------------------------------
+      HERO. The headline is the page's largest visual element — two words at
+      display scale do more than any ornament would.
+     --------------------------------------------------------------------- */}
   <section class="page-head" data-hero>
     <div class="shell">
       <p class="mono-micro flex items-center gap-3" data-reveal="fade">
@@ -51,197 +55,277 @@ const seoData = [
         Talks &amp; workshops · Manila &amp; remote · English · PHT
       </p>
 
-      <h1 class="display mt-8 max-w-[18ch]" data-reveal="up" data-reveal-delay="0.05">
-        Your team leaves with something they can run on Monday
+      <h1 class="display hero-display mt-8" data-reveal="up" data-reveal-delay="0.05">
+        Demystifying AI
       </h1>
 
-      <p class="lead mt-8 max-w-[50ch]" data-reveal="up" data-reveal-delay="0.12">
-        You bring a real bottleneck — a document, a shadow-AI mess, a
-        question leadership keeps asking. We spend the hours on that.
-        Individuals can ask for the next Zoom seat; teams get the room.
+      <p class="lead mt-8 max-w-[52ch]" data-reveal="up" data-reveal-delay="0.12">
+        Not the hype, not the doom, not a vendor pitch. A few hours spent on
+        the work you already have open — until the thing stops feeling like
+        magic and starts feeling like a tool you can aim.
       </p>
 
       <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up" data-reveal-delay="0.18">
-        <a href="#enquire" class="btn btn-primary">Start a conversation</a>
-        <a href="#open-sessions" class="link-arrow">Open cohorts from ₱1,500</a>
+        <a href="#enquire" class="btn btn-primary">Talk to me</a>
+        <a href="#personal" class="link-arrow">Seats and one-on-ones from ₱2,500</a>
       </div>
     </div>
   </section>
 
   <div class="shell pb-24 md:pb-32">
+    {/* -------------------------------------------------------------------
+        ROUTER. Three audiences, two doors. A one-line triage, not a section.
+       ------------------------------------------------------------------- */}
+    <section class="routes" aria-labelledby="routes-heading" data-reveal-stagger>
+      <h2 id="routes-heading" class="sr-only">Who is asking</h2>
+      {audienceRoutes.map((route) => (
+        <a href={route.href} class="route" data-reveal="fade">
+          <span class="route__label">{route.label}</span>
+          <span class="route__line">{route.line}</span>
+          <span class="route__mark" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </section>
+
+    {/* -------------------------------------------------------------------
+        THE THESIS. A diagram made of a hairline and two lists — the whole
+        argument for why fluency and media literacy are one session.
+       ------------------------------------------------------------------- */}
+    <section class="section-tight" aria-labelledby="thesis-heading">
+      <h2 id="thesis-heading" class="kicker">The two halves</h2>
+
+      <div class="thesis mt-10" data-reveal="up">
+        <div class="thesis__side">
+          <p class="thesis__head">What AI makes <em>for</em> you</p>
+          <ul class="thesis__list">
+            <li>Drafts, summaries, first passes</li>
+            <li>Code you did not write</li>
+            <li>A prototype by lunchtime</li>
+            <li>The dull half of your job</li>
+          </ul>
+          <p class="thesis__flow"><span aria-hidden="true">←</span> you aim it</p>
+        </div>
+
+        <div class="thesis__side thesis__side--right">
+          <p class="thesis__head">What AI makes <em>at</em> you</p>
+          <ul class="thesis__list">
+            <li>A video of a speech never given</li>
+            <li>A citation to a paper that does not exist</li>
+            <li>A scam in a voice you recognise</li>
+            <li>A feed tuned to move you</li>
+          </ul>
+          <p class="thesis__flow">it arrives anyway <span aria-hidden="true">→</span></p>
+        </div>
+      </div>
+
+      <p class="thesis__note" data-reveal="up">
+        Same technology. Two completely different skills. Most training only
+        teaches the left-hand column — which is how you end up with a team
+        that is fast at producing things and defenceless against being fooled
+        by them.
+      </p>
+    </section>
+
     <section class="avail" aria-labelledby="avail-heading" data-reveal="up">
       <h2 id="avail-heading" class="mono-micro">Booking now</h2>
       <p class="avail__window">{availability.window}</p>
       <p class="avail__note">{availability.note}</p>
     </section>
 
-    <section id="open-sessions" class="section-tight" aria-labelledby="open-heading">
-      <h2 id="open-heading" class="kicker">Open sessions · Individual seats</h2>
-      <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
-        Public cohorts on Zoom with fixed prices and seat caps. Dates are not
-        up yet — ask and I will email you when the first one is set.
-      </p>
+    {/* -------------------------------------------------------------------
+        THE FORK. Two columns split by a single vertical hairline. The
+        structure is the picture; nothing here has a fill or a radius.
+       ------------------------------------------------------------------- */}
+    <section class="section-tight" aria-labelledby="offer-heading">
+      <h2 id="offer-heading" class="kicker">What you can book</h2>
 
-      <ul class="rows mt-8" data-reveal-stagger>
-        <li data-reveal="up">
-          <p class="mono-micro mb-0">Start here</p>
-          <div class="offer">
-            <div class="offer__head">
-              <h3 class="m-0 text-h3 leading-[1.1]">{fluency.title}</h3>
-              <p class="mt-2 mb-0 text-small text-paper-400">{fluency.tagline}</p>
-            </div>
+      <div class="fork mt-10">
+        <div id="personal" class="fork__col" data-reveal="up">
+          <p class="mono-micro">{trackIntro.personal.label}</p>
+          <h3 class="fork__title">{trackIntro.personal.heading}</h3>
+          <p class="fork__body">{trackIntro.personal.body}</p>
 
-            <div class="offer__body">
-              <p class="m-0 text-paper-100">
-                <span class="offer__label">You walk out with</span>
-                {fluency.walkout}
-              </p>
-              <p class="m-0 mt-4 text-small text-paper-400">
-                <strong class="text-paper-200 font-normal">For:</strong> {fluency.who}
-              </p>
-            </div>
+          {personal.map((o) => (
+            <article class="offer">
+              <h4 class="offer__title">{o.title}</h4>
+              <p class="offer__tagline">{o.tagline}</p>
+              <p class="offer__who">{o.who}</p>
 
-            <div class="offer__meta">
-              <p class="m-0 offer__price">{fluency.price}</p>
-              <p class="m-0 mt-1 text-small text-paper-400">{fluency.priceNote}</p>
-              <p class="m-0 mt-3 mono text-paper-400 text-small">{fluency.format}</p>
-              <a href="#enquire" class="link-arrow mt-4" data-enquire={`open:${fluency.title}`}>
-                {openEnquireLabel}
+              <ul class="ladder">
+                {o.formats.map((f) => (
+                  <li class="ladder__row">
+                    <span class="ladder__label">{f.label}</span>
+                    <span class="ladder__detail">{f.detail}</span>
+                    <span class="ladder__price">
+                      {f.price}
+                      {f.priceNote && <span class="ladder__note">{f.priceNote}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {o.caveat && <p class="offer__caveat">{o.caveat}</p>}
+
+              <a href="#enquire" class="link-arrow mt-5" data-enquire={enquiryValue(o)}>
+                {enquireLabel}
               </a>
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <details class="more" data-reveal="up">
-        <summary>
-          <span>Two more open sessions</span>
-          <span class="faq-mark" aria-hidden="true">+</span>
-        </summary>
-        <ul class="rows">
-          {moreOpen.map((s) => (
-            <li>
-              <div class="offer">
-                <div class="offer__head">
-                  <h3 class="m-0 text-h3 leading-[1.1]">{s.title}</h3>
-                  <p class="mt-2 mb-0 text-small text-paper-400">{s.tagline}</p>
-                </div>
-                <div class="offer__body">
-                  <p class="m-0 text-paper-100">
-                    <span class="offer__label">You walk out with</span>
-                    {s.walkout}
-                  </p>
-                  <p class="m-0 mt-4 text-small text-paper-400">
-                    <strong class="text-paper-200 font-normal">For:</strong> {s.who}
-                  </p>
-                </div>
-                <div class="offer__meta">
-                  <p class="m-0 offer__price">{s.price}</p>
-                  <p class="m-0 mt-1 text-small text-paper-400">{s.priceNote}</p>
-                  <p class="m-0 mt-3 mono text-paper-400 text-small">{s.format}</p>
-                  <a href="#enquire" class="link-arrow mt-4" data-enquire={`open:${s.title}`}>
-                    {openEnquireLabel}
-                  </a>
-                </div>
-              </div>
-            </li>
+            </article>
           ))}
-        </ul>
-      </details>
+
+          <details class="more">
+            <summary>
+              <span>What the 2.5 hours actually look like</span>
+              <span class="faq-mark" aria-hidden="true">+</span>
+            </summary>
+            <ol class="rundown">
+              {fluency.rundown?.map((row) => (
+                <li>
+                  <span class="mono-micro text-paper-400">{row.time}</span>
+                  <span>{row.item}</span>
+                </li>
+              ))}
+            </ol>
+          </details>
+        </div>
+
+        <div id="enterprise" class="fork__col fork__col--right" data-reveal="up">
+          <p class="mono-micro">{trackIntro.enterprise.label}</p>
+          <h3 class="fork__title">{trackIntro.enterprise.heading}</h3>
+          <p class="fork__body">{trackIntro.enterprise.body}</p>
+
+          {enterprise.map((o) => (
+            <article class="offer">
+              <h4 class="offer__title">{o.title}</h4>
+              <p class="offer__tagline">{o.tagline}</p>
+              <p class="offer__who">{o.who}</p>
+
+              <ul class="ladder">
+                {o.formats.map((f) => (
+                  <li class="ladder__row">
+                    <span class="ladder__label">{f.label}</span>
+                    <span class="ladder__detail">{f.detail}</span>
+                    <span class="ladder__price">
+                      {f.price}
+                      {f.priceNote && <span class="ladder__note">{f.priceNote}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {o.caveat && <p class="offer__caveat">{o.caveat}</p>}
+
+              <a href="#enquire" class="link-arrow mt-5" data-enquire={enquiryValue(o)}>
+                {enquireLabel}
+              </a>
+            </article>
+          ))}
+
+          <article class="offer">
+            <h4 class="offer__title">Something else in mind?</h4>
+            <p class="offer__tagline">
+              A format that is not on this list, a school, a nonprofit, a
+              conference with an odd shape.
+            </p>
+            <p class="offer__who">
+              Tell me what you are trying to do. Schools, nonprofits and student
+              events are quoted separately and cost less.
+            </p>
+            <a href="#enquire" class="link-arrow mt-5" data-enquire="Something else">
+              {enquireLabel}
+            </a>
+          </article>
+        </div>
+      </div>
+
+      <p class="fork__foot">
+        Corporate figures are floors, not quotes. Headcount above 20, provincial
+        or multi-site delivery, extra cohorts and custom material move them.
+        Venue, meals, AV, tool seats and travel outside Metro Manila are not
+        included.
+      </p>
     </section>
 
-    <section id="team-sessions" class="section-tight" aria-labelledby="inhouse-heading">
-      <h2 id="inhouse-heading" class="kicker">For your team · In-house engagements</h2>
-      <p class="mt-4 mb-0 text-paper-400 max-w-[58ch]">
-        Most teams start here: half-day, from ₱90,000, you leave with a ranked
-        list and one workflow the room actually ran. Other formats below.
-      </p>
+    {/* -------------------------------------------------------------------
+        WHO THIS IS FOR. The right-hand column is the half that matters —
+        it is the scope boundary, stated before you pay rather than after.
+       ------------------------------------------------------------------- */}
+    <section class="section-tight" aria-labelledby="fit-heading">
+      <h2 id="fit-heading" class="kicker">Who this is for</h2>
 
-      <ul class="rows mt-8" data-reveal-stagger>
-        <li data-reveal="up">
-          <p class="mono-micro mb-0">Most teams start here</p>
-          <div class="offer">
-            <div class="offer__head">
-              <h3 class="m-0 text-h3 leading-[1.1]">{halfDay.title}</h3>
-              <p class="mt-2 mb-0 text-small text-paper-400">{halfDay.detail}</p>
-            </div>
-            <div class="offer__body">
-              <p class="m-0 text-paper-100">
-                <span class="offer__label">You walk out with</span>
-                {halfDay.walkout}
-              </p>
-            </div>
-            <div class="offer__meta">
-              <p class="m-0 offer__price">{halfDay.price}</p>
-              <a href="#enquire" class="link-arrow mt-4" data-enquire={`team:${halfDay.title}`}>
-                {teamEnquireLabel}
-              </a>
-            </div>
-          </div>
-        </li>
-      </ul>
+      <div class="mt-10 grid gap-10 md:grid-cols-2 md:gap-16" data-reveal-stagger>
+        <div data-reveal="up">
+          <h3 class="text-h3 m-0">Book it if</h3>
+          <ul class="fitlist">
+            {fit.forYou.map((line) => <li>{line}</li>)}
+          </ul>
+        </div>
+        <div data-reveal="up">
+          <h3 class="text-h3 m-0">Do not book it if</h3>
+          <ul class="fitlist">
+            {fit.notForYou.map((line) => <li>{line}</li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
 
-      <details class="more" data-reveal="up">
-        <summary>
-          <span>Other team formats</span>
-          <span class="faq-mark" aria-hidden="true">+</span>
-        </summary>
-        <ul class="rows">
-          {moreTeam.map((s, i) => (
-            <li>
-              <div class="grid md:grid-cols-[auto_1fr_auto] gap-x-10 gap-y-4 py-6 md:items-baseline">
-                <span class="mono-micro md:pt-1">{String(i + 1).padStart(2, '0')}</span>
-                <div>
-                  <h3 class="m-0 text-h3 leading-tight">{s.title}</h3>
-                  <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed max-w-[54ch]">
-                    {s.detail}
-                  </p>
-                  {s.walkout && (
-                    <p class="mt-3 mb-0 text-small text-paper-100 max-w-[54ch]">
-                      <span class="offer__label">You walk out with</span>
-                      {s.walkout}
-                    </p>
-                  )}
-                  <a href="#enquire" class="link-arrow mt-3" data-enquire={`team:${s.title}`}>
-                    {teamEnquireLabel}
-                  </a>
+    {/* -------------------------------------------------------------------
+        OUTCOMES. Sourced from the same offering objects as the price
+        ladder, rendered once, here.
+       ------------------------------------------------------------------- */}
+    <section class="section-tight" aria-labelledby="outcomes-heading">
+      <h2 id="outcomes-heading" class="kicker">What you leave with</h2>
+
+      <div class="mt-10 grid gap-12 md:grid-cols-2 md:gap-16" data-reveal-stagger>
+        {(['personal', 'enterprise'] as const).map((track) => (
+          <div data-reveal="up">
+            <h3 class="text-h3 m-0">{trackIntro[track].heading}</h3>
+            {offerings
+              .filter((o) => o.track === track)
+              .map((o) => (
+                <div class="outcome">
+                  <p class="outcome__for">{o.title}</p>
+                  <ul class="outcome__list">
+                    {o.outcomes.map((line) => <li>{line}</li>)}
+                  </ul>
                 </div>
-                <p class="m-0 offer__price md:text-right">{s.price}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </details>
+              ))}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* -------------------------------------------------------------------
+        WHY ANY OF THIS. Three sourced figures at display scale. Every one
+        carries a URL and a stated population.
+       ------------------------------------------------------------------- */}
+    <section class="section-tight" aria-labelledby="stats-heading">
+      <h2 id="stats-heading" class="kicker">Why this keeps coming up</h2>
+      <ul class="stats mt-10" data-reveal-stagger>
+        {marketStats.map((stat) => (
+          <li class="stat" data-reveal="up">
+            <p class="stat__figure">{stat.figure}</p>
+            <p class="stat__body">
+              {stat.body}{' '}
+              <a href={stat.sourceUrl} target="_blank" rel="noopener noreferrer" class="link">
+                {stat.sourceLabel}
+              </a>.
+            </p>
+          </li>
+        ))}
+      </ul>
     </section>
 
     <section class="section-tight" aria-labelledby="process-heading">
       <h2 id="process-heading" class="kicker">How it works</h2>
-      <div class="mt-10 grid gap-12 md:grid-cols-2 md:gap-16" data-reveal-stagger>
-        <div data-reveal="up">
-          <h3 class="text-h3 m-0">Open sessions</h3>
-          <ol class="steps">
-            {openProcess.map((step, i) => (
-              <li>
-                <span class="mono-micro">{String(i + 1).padStart(2, '0')}</span>
-                <h4 class="m-0 mt-2">{step.title}</h4>
-                <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed">{step.body}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <div data-reveal="up">
-          <h3 class="text-h3 m-0">For your team</h3>
-          <ol class="steps">
-            {teamProcess.map((step, i) => (
-              <li>
-                <span class="mono-micro">{String(i + 1).padStart(2, '0')}</span>
-                <h4 class="m-0 mt-2">{step.title}</h4>
-                <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed">{step.body}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
+      <ol class="steps mt-10" data-reveal-stagger>
+        {process.map((step, i) => (
+          <li data-reveal="up">
+            <span class="mono-micro">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="m-0 mt-2 text-h3">{step.title}</h3>
+            <p class="mt-2 mb-0 text-small text-paper-400 leading-relaxed max-w-[52ch]">{step.body}</p>
+          </li>
+        ))}
+      </ol>
     </section>
 
     <section class="section-tight" aria-labelledby="proof-heading">
@@ -274,43 +358,26 @@ const seoData = [
         </div>
       </div>
 
-      <div class="mt-12 grid gap-10 lg:grid-cols-2 lg:items-start">
-        <div data-reveal="up">
-          <h3 class="text-h3 m-0">Fluency rundown</h3>
-          <p class="mt-2 mb-6 text-small text-paper-400 max-w-[46ch]">
-            2.5 hours on Zoom. Screenshot this into Slack if you need to justify the ₱1,500.
-          </p>
-          <ol class="rundown">
-            {fluency.rundown?.map((row) => (
-              <li>
-                <span class="mono-micro text-paper-400">{row.time}</span>
-                <span>{row.item}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        <div class="card pt-6" data-reveal="up">
-          <p class="mono-micro mb-4 text-paper-400">Data &amp; security baseline</p>
-          <ul class="m-0 p-0 list-none space-y-3 text-small text-paper-100">
-            <li class="flex items-start gap-2.5">
-              <span class="text-paper-400">·</span>
-              <span><strong class="text-paper-50 font-medium">Your tenant, your accounts.</strong> Exercises run in your environment; no client credentials or sensitive data are shared.</span>
-            </li>
-            <li class="flex items-start gap-2.5">
-              <span class="text-paper-400">·</span>
-              <span><strong class="text-paper-50 font-medium">Sanitized data by default.</strong> No secrets, PII, or proprietary customer data in workshop exercises.</span>
-            </li>
-            <li class="flex items-start gap-2.5">
-              <span class="text-paper-400">·</span>
-              <span><strong class="text-paper-50 font-medium">Zero retention.</strong> Nothing retained post-session, with deletion confirmed. Recordings off unless requested in writing.</span>
-            </li>
-            <li class="flex items-start gap-2.5">
-              <span class="text-paper-400">·</span>
-              <span><strong class="text-paper-50 font-medium">Your outputs belong to you.</strong> All prototypes and notes created during the session are 100% yours.</span>
-            </li>
-          </ul>
-        </div>
+      <div class="card mt-12 pt-6" data-reveal="up">
+        <p class="mono-micro mb-4 text-paper-400">Data &amp; security baseline</p>
+        <ul class="m-0 p-0 list-none grid gap-3 md:grid-cols-2 md:gap-x-10 text-small text-paper-100">
+          <li class="flex items-start gap-2.5">
+            <span class="text-paper-400">·</span>
+            <span><strong class="text-paper-50 font-medium">Your tenant, your accounts.</strong> Exercises run in your environment; no client credentials or sensitive data are shared.</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="text-paper-400">·</span>
+            <span><strong class="text-paper-50 font-medium">Sanitized data by default.</strong> No secrets, PII, or proprietary customer data in workshop exercises.</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="text-paper-400">·</span>
+            <span><strong class="text-paper-50 font-medium">Zero retention.</strong> Nothing retained post-session, with deletion confirmed. Recordings off unless requested in writing.</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="text-paper-400">·</span>
+            <span><strong class="text-paper-50 font-medium">Your outputs belong to you.</strong> All prototypes and notes created during the session are 100% yours.</span>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -330,7 +397,7 @@ const seoData = [
     </section>
 
     <section id="enquire" class="section-tight" aria-labelledby="enquire-heading">
-      <h2 id="enquire-heading" class="kicker">Start a conversation</h2>
+      <h2 id="enquire-heading" class="kicker">Talk to me</h2>
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
@@ -381,16 +448,17 @@ const seoData = [
             <label for="w-interest" class="field-label">What are you interested in?</label>
             <select id="w-interest" name="interested_in" class="field" data-enquire-target>
               <option value="Not sure yet">Not sure yet — help me pick</option>
-              <optgroup label="Open sessions">
-                {openSessions.map((s) => (
-                  <option value={`open:${s.title}`}>{s.title}</option>
+              <optgroup label="For yourself">
+                {personal.map((o) => (
+                  <option value={enquiryValue(o)}>{o.title}</option>
                 ))}
               </optgroup>
-              <optgroup label="For your team">
-                {teamSessions.map((s) => (
-                  <option value={`team:${s.title}`}>{s.title}</option>
+              <optgroup label="For your organisation">
+                {enterprise.map((o) => (
+                  <option value={enquiryValue(o)}>{o.title}</option>
                 ))}
               </optgroup>
+              <option value="Something else">Something else</option>
             </select>
           </div>
 
@@ -440,9 +508,143 @@ const seoData = [
     padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
   }
 
+  /* Two words carry this page. The site-wide .display caps at 6.5rem; the
+   * hero headline is the only element allowed past it, because it is the
+   * only place where the type IS the illustration. */
+  .hero-display {
+    font-size: clamp(3.25rem, 1rem + 10vw, 8.5rem);
+    line-height: 0.92;
+  }
+
+  /* --- Router ------------------------------------------------------------ */
+
+  .routes {
+    border-top: 1px solid var(--line);
+    margin-top: 1rem;
+  }
+  .route {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+    padding-block: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  @media (min-width: 64rem) {
+    .route {
+      grid-template-columns: minmax(0, 22rem) minmax(0, 1fr) auto;
+      align-items: baseline;
+      gap: 3rem;
+    }
+  }
+  .route__label {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-paper-50);
+  }
+  .route__line {
+    font-size: var(--text-small);
+    color: var(--color-paper-400);
+    line-height: 1.6;
+    max-width: 52ch;
+  }
+  .route__mark {
+    font-family: var(--font-mono);
+    color: var(--color-paper-600);
+    transition: transform 0.2s ease, color 0.2s ease;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  @media (min-width: 64rem) {
+    .route__mark { grid-column: 3; }
+  }
+  .route:hover .route__mark,
+  .route:focus-visible .route__mark {
+    color: var(--color-paper-50);
+    transform: translateX(4px);
+  }
+
+  /* --- The thesis diagram ------------------------------------------------
+   * A picture built from a hairline and two lists, so it stays legible at
+   * 360px, reads correctly to a screen reader, and needs no SVG. */
+
+  .thesis {
+    display: grid;
+    border: 1px solid var(--line);
+  }
+  @media (min-width: 48rem) {
+    .thesis { grid-template-columns: 1fr 1fr; }
+  }
+  .thesis__side {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .thesis__side--right {
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 48rem) {
+    .thesis__side { padding: 2.25rem; }
+    .thesis__side--right {
+      border-top: 0;
+      border-left: 1px solid var(--line);
+      text-align: right;
+    }
+  }
+  .thesis__head {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-paper-400);
+  }
+  .thesis__head em {
+    font-style: normal;
+    color: var(--color-paper-50);
+  }
+  .thesis__list {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    flex: 1;
+  }
+  .thesis__list li {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--color-paper-50);
+    padding-block: 0.4rem;
+  }
+  .thesis__flow {
+    margin: 1.75rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-paper-400);
+  }
+  .thesis__note {
+    margin: 2rem 0 0;
+    font-size: var(--text-small);
+    color: var(--color-paper-400);
+    line-height: 1.7;
+    max-width: 62ch;
+  }
+
+  /* --- Availability ------------------------------------------------------ */
+
   .avail {
     border-block: 1px solid var(--line);
     padding-block: 2rem;
+    margin-top: clamp(3rem, 2rem + 4vw, 5rem);
     display: grid;
     gap: 0.75rem 3rem;
   }
@@ -469,41 +671,145 @@ const seoData = [
     max-width: 46ch;
   }
 
-  .offer {
+  /* --- The fork ----------------------------------------------------------
+   * One vertical hairline is the entire device. No fills, no cards. */
+
+  .fork {
     display: grid;
-    gap: 1.5rem 3rem;
-    padding-block: 2.25rem;
+    gap: 3.5rem;
   }
   @media (min-width: 64rem) {
-    .offer {
-      grid-template-columns: 1fr 1.3fr minmax(12rem, 15rem);
-      gap: 3rem;
+    .fork {
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
     }
-    .offer__meta { text-align: right; }
-    .offer__meta .link-arrow { justify-content: flex-end; }
+    .fork__col { padding-right: 3.5rem; }
+    .fork__col--right {
+      border-left: 1px solid var(--line);
+      padding-right: 0;
+      padding-left: 3.5rem;
+    }
   }
-  .offer__body { max-width: 52ch; line-height: 1.6; }
-  .offer__label {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
+  .fork__col--right {
+    border-top: 1px solid var(--line);
+    padding-top: 3.5rem;
+  }
+  @media (min-width: 64rem) {
+    .fork__col--right {
+      border-top: 0;
+      padding-top: 0;
+    }
+  }
+  .fork__title {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--color-paper-50);
+  }
+  .fork__body {
+    margin: 1rem 0 0;
+    font-size: var(--text-small);
     color: var(--color-paper-400);
-    margin-bottom: 0.5rem;
+    line-height: 1.65;
+    max-width: 44ch;
   }
-  .offer__price {
+  .fork__foot {
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    font-size: var(--text-micro);
+    color: var(--color-paper-400);
+    line-height: 1.7;
+    max-width: 68ch;
+  }
+
+  .offer {
+    margin-top: 3rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .offer__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-paper-50);
+  }
+  .offer__tagline {
+    margin: 0.5rem 0 0;
+    font-size: var(--text-small);
+    color: var(--color-paper-100);
+    line-height: 1.55;
+  }
+  .offer__who {
+    margin: 0.5rem 0 0;
+    font-size: var(--text-small);
+    color: var(--color-paper-400);
+    line-height: 1.55;
+  }
+  .offer__caveat {
+    margin: 1.25rem 0 0;
+    padding-left: 0.9rem;
+    border-left: 1px solid var(--line-strong);
+    font-size: var(--text-micro);
+    color: var(--color-paper-400);
+    line-height: 1.7;
+  }
+
+  /* The price ladder. Tabular figures so the column reads as a column. */
+  .ladder {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+  }
+  .ladder__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 1.5rem;
+    border-top: 1px solid var(--line);
+    padding-block: 0.85rem;
+    align-items: baseline;
+  }
+  .ladder__label {
+    font-size: var(--text-small);
+    color: var(--color-paper-50);
+  }
+  .ladder__detail {
+    grid-column: 1;
+    font-size: var(--text-micro);
+    color: var(--color-paper-400);
+    line-height: 1.5;
+  }
+  .ladder__price {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    justify-self: end;
+    text-align: right;
     font-family: var(--font-display);
     font-size: var(--text-h3);
     font-weight: 500;
     letter-spacing: -0.02em;
     color: var(--color-paper-50);
-    white-space: nowrap;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ladder__note {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.04em;
+    font-weight: 400;
+    color: var(--color-paper-400);
   }
 
   .more {
-    border-bottom: 1px solid var(--line);
+    border-block: 1px solid var(--line);
+    margin-top: 3rem;
   }
   .more summary {
     display: flex;
@@ -523,19 +829,9 @@ const seoData = [
   .more summary:hover { color: var(--color-paper-50); }
   .more[open] summary { color: var(--color-paper-50); }
 
-  .steps {
-    list-style: none;
-    margin: 1.5rem 0 0;
-    padding: 0;
-  }
-  .steps li {
-    border-top: 1px solid var(--line);
-    padding-block: 1.25rem;
-  }
-
   .rundown {
     list-style: none;
-    margin: 0;
+    margin: 0 0 1.25rem;
     padding: 0;
   }
   .rundown li {
@@ -547,6 +843,102 @@ const seoData = [
     font-size: var(--text-small);
     color: var(--color-paper-100);
     line-height: 1.5;
+  }
+
+  /* --- Fit / outcomes ---------------------------------------------------- */
+
+  .fitlist {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+  }
+  .fitlist li {
+    border-top: 1px solid var(--line);
+    padding-block: 1rem;
+    font-size: var(--text-small);
+    color: var(--color-paper-100);
+    line-height: 1.65;
+  }
+
+  .outcome { margin-top: 2rem; }
+  .outcome__for {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-paper-400);
+  }
+  .outcome__list {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+  }
+  .outcome__list li {
+    border-top: 1px solid var(--line);
+    padding-block: 0.85rem;
+    font-size: var(--text-small);
+    color: var(--color-paper-100);
+    line-height: 1.6;
+  }
+
+  /* --- Stats ------------------------------------------------------------- */
+
+  .stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+  @media (min-width: 48rem) {
+    .stats { grid-template-columns: repeat(3, 1fr); }
+  }
+  .stat {
+    border-top: 1px solid var(--line);
+    padding-block: 1.75rem;
+  }
+  @media (min-width: 48rem) {
+    .stat { padding-right: 2.5rem; }
+    .stat + .stat {
+      border-left: 1px solid var(--line);
+      padding-left: 2.5rem;
+    }
+  }
+  .stat__figure {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--color-paper-50);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat__body {
+    margin: 0.9rem 0 0;
+    font-size: var(--text-small);
+    color: var(--color-paper-400);
+    line-height: 1.65;
+  }
+
+  /* --- Process / proof --------------------------------------------------- */
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  @media (min-width: 64rem) {
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2.5rem;
+    }
+  }
+  .steps li {
+    border-top: 1px solid var(--line);
+    padding-block: 1.25rem;
   }
 
   .portrait {

@@ -83,6 +83,7 @@ function initReveals() {
   const grouped = new Set<Element>();
 
   document.querySelectorAll<HTMLElement>('[data-reveal-stagger]').forEach((parent) => {
+    if (parent.closest('[data-hero]')) return;
     const children = [...parent.querySelectorAll<HTMLElement>('[data-reveal]')];
     if (!children.length) return;
     children.forEach((child) => grouped.add(child));

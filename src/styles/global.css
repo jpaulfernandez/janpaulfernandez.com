@@ -576,10 +576,10 @@ a.tag:hover {
 }
 
 @media (min-width: 768px) {
-  .rail::before { left: 8.6875rem; }
-  .rail-item { padding-left: 10.5rem; }
-  .rail-item::before { left: 8.5rem; }
-  .rail-date {
+  .rail:not(.rail-compact)::before { left: 8.6875rem; }
+  .rail:not(.rail-compact) .rail-item { padding-left: 10.5rem; }
+  .rail:not(.rail-compact) .rail-item::before { left: 8.5rem; }
+  .rail:not(.rail-compact) .rail-date {
     position: absolute;
     left: 0;
     top: 0.3125rem;
@@ -588,6 +588,8 @@ a.tag:hover {
     margin-bottom: 0;
   }
 }
+
+.rail-compact .rail-item { padding-bottom: 2.25rem; }
 
 /* ============================================================================
  * PROSE — article body

@@ -668,6 +668,13 @@ version) plus the honesty items his own tracker already flagged.
       `npm test` (74 tests) all pass. Content and computed CSS confirmed in-browser;
       the pixel look still wants Paul's eye (below).
 
+## Phase 23 — Career timeline beside homepage hero (Paul's direct request, 2026-09-07)
+
+- [x] (2026-09-07) `src/pages/index.astro`: Hero restructured into a 2-column responsive layout (`lg:grid-cols-[1.15fr_0.85fr]`). Career timeline (`Timeline.astro` with `variant="compact"`) placed beside the hero bio and CTAs, establishing immediate pedigree (MMDC, Rappler, RightCrowd, PSBank).
+- [x] (2026-09-07) `src/styles/global.css`: Added `.rail-compact` modifier in `@layer components` to preserve the clean stacked layout and avoid gutter crowding within multi-column containers.
+- [x] (2026-09-07) `src/scripts/motion.ts`: Guarded hero descendants in `initReveals()` to prevent ScrollTrigger conflict with `initHero()` load animation.
+- [x] (2026-09-07) **Verified:** `npx astro check` (0 errors), `npm test` (74 tests passed), `npm run build` clean static generation.
+
 ### Blocked / needs Paul
 
 - **The 1-on-1 and private-group prices are the least evidenced numbers on the

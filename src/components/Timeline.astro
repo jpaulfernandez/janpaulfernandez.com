@@ -27,7 +27,7 @@ const processedEntries = await Promise.all(
 );
 ---
 
-<div class="rail" data-reveal-stagger>
+<div class:list={['rail', variant === 'compact' && 'rail-compact']} data-reveal-stagger>
   {
     processedEntries.map(({ data, Content, id }) => (
       <article class="rail-item" id={variant === 'full' ? id : undefined} data-reveal="up">

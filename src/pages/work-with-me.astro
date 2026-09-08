@@ -82,7 +82,7 @@ const steps = [
                   </span>
                   <h3 class="m-0 text-h2 leading-[1.05]">{s.data.title}</h3>
                 </div>
-                <p class="m-0 text-paper-400 leading-relaxed self-center">
+                <p class="m-0 subtext self-center">
                   {s.data.description}
                 </p>
               </div>
@@ -103,7 +103,7 @@ const steps = [
           <li class="card pt-5" data-reveal="up">
             <span class="mono-micro">Step {String(i + 1).padStart(2, '0')}</span>
             <h3 class="mt-5">{step.title}</h3>
-            <p class="mt-4 mb-0 text-small text-paper-400 leading-relaxed">{step.body}</p>
+            <p class="mt-4 mb-0 subtext">{step.body}</p>
           </li>
         ))}
       </ol>
@@ -128,7 +128,7 @@ const steps = [
     )}
 
     {/* Contact */}
-    <section id="contact" class="section-tight" aria-labelledby="contact-heading">
+    <section id="contact" class="section section-ruled" aria-labelledby="contact-heading">
       <h2 id="contact-heading" class="kicker">Get in touch</h2>
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
@@ -136,7 +136,7 @@ const steps = [
           <p class="statement-sm max-w-[16ch]" data-reveal="up">
             Tell me what you're trying to build.
           </p>
-          <p class="mt-8 mb-0 text-paper-400 text-small">
+          <p class="mt-8 mb-0 subtext">
             Or skip the form —
             <a href="mailto:jpaul.fernandez18@gmail.com" class="link">
               jpaul.fernandez18@gmail.com

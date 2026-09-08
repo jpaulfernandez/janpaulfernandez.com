@@ -23,15 +23,46 @@
  *     the light layout could not carry it. On black it can: display now runs
  *     48 → 104 at -4% tracking, which is the single largest change here.
  *
- * Contrast, measured on the #050505 ground:
- *   paper-50   #FFFFFF   19.7:1   display type
+ * Contrast: see the Phase 29 table below — these figures were remeasured when
+ * the ground moved off #050505 and pure white left the palette.
+ * ========================================================================= */
+
+/* ---------------------------------------------------------------------------
+ * Phase 29 (2026-09-09) — legibility pass.
+ *
+ * Paul's report: "hard to read", "the pitch black and white feels strange in
+ * my eyes", "I am being overwhelmed by the text", "no visual break", "the
+ * subtexts and paragraphs feel so small". Four causes, all measurable:
+ *
+ *   1. Over-contrast, not under. #FFFFFF on #050505 is 20.4:1 — near the sRGB
+ *      maximum — and display type ran it at 104px/500. That blooms on an OLED
+ *      panel and the eye never stops correcting for it. The ground came up to
+ *      #0B0B0C and pure white left the palette entirely (paper-50 → #F4F1EE).
+ *      Peak contrast is now 17.5:1, still far past AAA.
+ *   2. No mid-tone. The ramp went 20.4 → 17 → *cliff* → 6.8:1, so anything
+ *      that was not a heading or body copy fell into metadata grey. paper-200
+ *      (#C7C1BC, 11.0:1) is that missing tier.
+ *   3. Subtext was literally styled as metadata. `text-small text-paper-400`
+ *      — 13px at 6.8:1, the date-stamp treatment — was carrying sentence-length
+ *      descriptive copy in 20 places across five pages. Those are now body
+ *      size in paper-200; small went 13 → 14 and is metadata again.
+ *   4. Flatness. ink-900/800/700 were defined and unused: the whole site was
+ *      one value. And .section-tight was used 22 times against .section's 3,
+ *      so every section had identical padding and an identical top hairline —
+ *      six of them on the homepage. Fixed by rhythm, not by fills (see the
+ *      SHELL block): major sections breathe, subordinate ones do not, and a
+ *      rule is drawn where the argument turns rather than every 800px.
+ *
+ * Contrast, remeasured on the #0B0B0C ground:
+ *   paper-50   #F4F1EE   17.5:1   display type, headings
  *   paper-100  #EDEAE7   16.4:1   body + prose
- *   paper-400  #9B9490    6.6:1   metadata, captions, kickers      (AA ✓)
+ *   paper-200  #C7C1BC   11.0:1   subtext, .lead, card descriptions (AA ✓)
+ *   paper-400  #9B9490    6.6:1   metadata, dates, kickers         (AA ✓)
  *   wine-300   #F0658A    6.5:1   focus ring only                  (AA ✓)
  *   wine-400   #E0446F    4.9:1   links, hover, accent type        (AA ✓)
  *   paper-600  #6B6663    3.5:1   NON-TEXT ONLY — rules, icons, dividers
  *   white on wine-500 (#B02A52)   6.4:1   the solid CTA            (AA ✓)
- * ========================================================================= */
+ * ------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------
  * Phase 21 (2026-09-05) — de-SaaS pass.
@@ -80,6 +111,25 @@
 @import "@fontsource/courier-prime/400.css";
 @import "@fontsource/courier-prime/700.css";
 
+/* Metric-matched fallback. Phase 29: both font stacks named "Switzer Fallback"
+ * but nothing ever defined it, so it was a dead entry — and with
+ * `font-display: swap`, the page reflowed unmetered when Switzer landed.
+ *
+ * Switzer's own metrics (read from the woff2: upem 1000, hhea ascent 980,
+ * descent 250, lineGap 90, xHeight 531) against Helvetica Neue's xHeight of
+ * ~517/1000. size-adjust 103% matches the two x-heights, so the swap changes
+ * letterforms without changing apparent size. The ascent/descent overrides are
+ * Switzer's own, divided by that same 1.03 — the spec applies size-adjust
+ * first, so they have to be pre-scaled to land on the same absolute metrics. */
+@font-face {
+  font-family: "Switzer Fallback";
+  src: local("Helvetica Neue"), local("Helvetica"), local("Arial");
+  size-adjust: 103%;
+  ascent-override: 95%;
+  descent-override: 24%;
+  line-gap-override: 9%;
+}
+
 @theme {
   /* Reset Tailwind's expanding spacing scale, then declare only the 8-pt grid
    * with 4-pt sub-cells. Off-grid keys (1.5/2.5/3.5/…) stay unreferenceable.
@@ -110,16 +160,17 @@
   --spacing-96: 24rem;         /* 384              */
 
   /* ---- Ground ---------------------------------------------------------- */
-  --color-ink-950: #050505;    /* page ground                              */
+  --color-ink-950: #0B0B0C;    /* page ground                              */
   --color-ink-900: #0A0A0A;    /* section ground, one stop up              */
   --color-ink-800: #121212;    /* raised card, opaque                      */
   --color-ink-700: #1A1A1A;    /* input wells, hover fills                 */
-  --color-ink: #050505;
+  --color-ink: #0B0B0C;
 
   /* ---- Type ------------------------------------------------------------ */
-  --color-paper-50: #FFFFFF;
+  --color-paper-50: #F4F1EE;   /* brightest type — display, headings       */
   --color-paper-100: #EDEAE7;  /* warm off-white — body                    */
-  --color-paper-400: #9B9490;  /* metadata (AA at body size)               */
+  --color-paper-200: #C7C1BC;  /* secondary reading copy — subtext, .lead  */
+  --color-paper-400: #9B9490;  /* metadata ONLY — dates, counters, kickers */
   --color-paper-600: #6B6663;  /* NON-TEXT: rules, disabled glyphs         */
 
   /* ---- Accent ---------------------------------------------------------- */
@@ -138,21 +189,27 @@
 
   /* Scale. Clamps interpolate across 375px → 1440px.
    *   micro     11 (fixed)        — mono eyebrow, counters
-   *   small     13 (fixed)        — metadata, captions
-   *   body      16 (fixed)        — UI + prose
+   *   small     14 (fixed)        — dates, captions, counters ONLY
+   *   body      17 (fixed)        — UI + subtext + prose
    *   lead      18 →  20          — hero sub-paragraph, article standfirst
    *   h3        24 →  28          — card titles, inline headings
    *   h2        32 →  48          — section headings
    *   h1        40 →  64          — page title
-   *   display   48 → 104          — one hero statement per page           */
+   *   display   48 →  88          — one hero statement per page
+   *
+   * Phase 29 moved small 13 → 14 and body 16 → 17, and pulled display's
+   * ceiling 104 → 88. The old display:body ratio was 6.5:1 — an enormous
+   * headline over small print, with the whole middle of the scale unused.
+   * 88:17 is 5.2:1, which still reads as a hero without making everything
+   * under it look like a footnote. */
   --text-micro: 0.6875rem;
-  --text-small: 0.8125rem;
-  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-body: 1.0625rem;
   --text-lead: clamp(1.125rem, 1.0632rem + 0.2632vw, 1.25rem);
   --text-h3: clamp(1.5rem, 1.3764rem + 0.5263vw, 1.75rem);
   --text-h2: clamp(2rem, 1.6289rem + 1.5789vw, 3rem);
   --text-h1: clamp(2.5rem, 1.7578rem + 3.1579vw, 4rem);
-  --text-display: clamp(3rem, 1.2681rem + 7.3684vw, 6.5rem);
+  --text-display: clamp(3rem, 2.1197rem + 3.7559vw, 5.5rem);
 
   /* ---- Surfaces, rules, radii ------------------------------------------
    * Phase 21: collapsed to 2px, and --radius-pill deleted outright. Soft
@@ -276,16 +333,32 @@
   margin-inline: auto;
   padding-inline: var(--shell-x);
 }
+/* Phase 29: 46rem → 44rem. At the old width the prose column ran ~77
+ * characters, above the range a reader can track without losing the line;
+ * 44rem at 18px lands at ~69. */
 .shell-narrow {
   width: 100%;
-  max-width: 46rem;             /* 736 — the reading column */
+  max-width: 44rem;             /* 704 — the reading column */
   margin-inline: auto;
   padding-inline: var(--shell-x);
 }
 
-/* Vertical rhythm between major page sections. */
+/* Vertical rhythm between major page sections.
+ *
+ * Phase 29: these were a hierarchy on paper and a single value in practice —
+ * .section-tight appeared 22 times against .section's 3, so every section on
+ * every page had identical padding, and six of them stacked on the homepage
+ * read as one continuous wall. The fix is to actually use both: .section for
+ * a section that starts a new argument, .section-tight for one that continues
+ * the previous. See .section-ruled for the other half of it. */
 .section { padding-block: clamp(4rem, 2rem + 8vw, 9rem); }
 .section-tight { padding-block: clamp(3rem, 2rem + 4vw, 5rem); }
+
+/* The top hairline, as a class rather than a `border-t` utility repeated in
+ * the markup. A printed document rules a line where the argument turns, not
+ * at every interval — so this goes on the sections that open something new,
+ * and the ones that continue a thought are separated by their padding alone. */
+.section-ruled { border-top: 1px solid var(--line); }
 
 /* ============================================================================
  * TYPE PRIMITIVES
@@ -311,13 +384,28 @@
  * keyword in a headline is a growth-marketing device regardless of how it is
  * coloured. Display type is now paper-50, full stop. */
 
-/* Standfirst / hero sub-paragraph. */
+/* Standfirst / hero sub-paragraph. Phase 29 moved this off paper-400: it is
+ * the second most important line on the page and it was painted the same grey
+ * as a date stamp. paper-200 keeps it clearly subordinate to the display type
+ * without demoting it to metadata. */
 .lead {
   font-size: var(--text-lead);
-  line-height: 1.5;
-  color: var(--color-paper-400);
+  line-height: 1.55;
+  color: var(--color-paper-200);
   letter-spacing: -0.014em;
   max-width: 40ch;
+}
+
+/* Descriptive subtext — the sentence under a card title, a service, a step.
+ * This is the class the 20 `text-small text-paper-400` paragraphs became:
+ * reading material, so body size and the paper-200 tier, not 13px metadata
+ * grey. Kept as a class rather than a utility pair so the next one is right
+ * by default. */
+.subtext {
+  font-size: var(--text-body);
+  line-height: 1.65;
+  color: var(--color-paper-200);
+  letter-spacing: -0.011em;
 }
 
 /* Section label. Mono, micro, uppercase, with a flat rule running out to the
@@ -597,8 +685,8 @@ a.tag:hover {
 
 .prose {
   font-family: var(--font-body);
-  font-size: 1.0625rem;               /* 17 — long-form gets one step up */
-  line-height: 1.75;
+  font-size: 1.125rem;                /* 18 — long-form gets one step up */
+  line-height: 1.7;
   letter-spacing: -0.011em;
   color: var(--color-paper-100);
 }

@@ -824,6 +824,56 @@ Two moves: (1) reframe the personal side from per-seat cohort to 1-on-1 / small 
       "Thoughts" kicker reads as the section title and the sentence as its subtext;
       it also carries `data-brighten` now.
 
+## Phase 29 — legibility pass (2026-09-09)
+
+Paul's report, unprompted, on the live site: "some of it feels like it's hard to
+read", "the pitch black and white feels strange in my eyes", "I am being
+overwhelmed by the text", "I don't feel there's a visual break happening", "the
+subtexts and paragraphs feel so small". Reviewed against the running dev server
+and the token usage counts; four separate causes, none of them a WCAG failure —
+the site passed AA everywhere and was still tiring to read.
+
+- [x] (2026-09-09) **A. Lower the ceiling, raise the floor.** Ground `ink-950` #050505 →
+      #0B0B0C; `paper-50` #FFFFFF → #F4F1EE — pure white leaves the palette.
+      Peak contrast 20.4:1 → 17.5:1 (still past AAA). New `paper-200` #C7C1BC
+      (11.0:1) fills the gap in the ramp, which ran 20.4 → 17 → *cliff* → 6.8:1.
+      Re-verify wine-400 (4.9:1) and paper-400 (6.6:1) still clear AA on the new
+      ground.
+- [x] (2026-09-09) **B. Subtext stops being metadata.** `text-small text-paper-400` — 13px at
+      6.8:1, the date-stamp treatment — was carrying sentence-length descriptive
+      copy in 20 places across index / workshops / work-with-me / projects /
+      gallery / colophon / now / PostListItem. New `.subtext` class (body size,
+      paper-200, 1.65). `.lead` off paper-400 → paper-200. `--text-small` 13 → 14
+      and restricted to genuine metadata.
+- [x] (2026-09-09) **C. Compress the scale.** `--text-display` ceiling 104 → 88px,
+      `--text-body` 16 → 17. Display:body ratio 6.5:1 → 5.2:1. `.prose` 17 → 18px
+      at line-height 1.7, and `.shell-narrow` 46rem → 44rem so the measure lands
+      at ~69 characters instead of ~77.
+- [x] (2026-09-09) **D1. Rhythm, not fills.** `.section-tight` was used 22 times against
+      `.section`'s 3, every one with a `border-t` — identical padding and an
+      identical rule on every section of every page. New `.section-ruled` class;
+      major sections that open an argument get `.section .section-ruled`, ones
+      that continue the previous thought get a bare `.section-tight`. Applied to
+      index (6), workshops (9), workshops/[slug] (4), work-with-me.
+      **Chose D1 over D2 deliberately** — D2 was a one-stop ground shift
+      (#101011) on alternating sections, which would break the argument up more
+      decisively but bends "a hairline is the only surface" and edges back
+      toward the tinted-panel look Phase 21 cut. Rhythm first; revisit only if
+      D1 proves insufficient.
+- [x] (2026-09-09) **E. Metric-matched font fallback.** Both stacks named "Switzer Fallback"
+      and nothing defined it, so with `font-display: swap` the page reflowed
+      unmetered when Switzer landed. Defined it against Switzer's real metrics
+      (read from the woff2: upem 1000, ascent 980, descent 250, lineGap 90,
+      xHeight 531) — size-adjust 103% to match Helvetica Neue's x-height, with
+      the ascent/descent overrides pre-scaled by that factor.
+- [x] (2026-09-09) **Caught in review:** `text-paper-300` on the homepage's two
+      workshop lists was a dangling class — `--color-paper-300` was never
+      defined, so Tailwind emitted nothing and they silently inherited body
+      colour. Now `text-paper-200`, which is what they were reaching for.
+- [x] (2026-09-09) **Verify:** `astro check` / `npm test` / `npm run build` green; contrast
+      ratios remeasured on the new ground; no `#FFFFFF` left as a type colour;
+      no `text-paper-400` left on a full sentence.
+
 ## Out of scope (v2 — do not build)
 
 Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

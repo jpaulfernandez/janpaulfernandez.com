@@ -146,7 +146,7 @@ const seoData = [
                   </a>
                 </h3>
                 {index === 0 && entry.snippet && (
-                  <p class="mt-3 mb-0 text-small text-paper-400 leading-relaxed max-w-[44ch]">
+                  <p class="mt-3 mb-0 subtext max-w-[44ch]">
                     {entry.snippet}
                   </p>
                 )}
@@ -162,7 +162,7 @@ const seoData = [
       WORKSHOPS. Featured offering highlighted directly under the hero.
       Two-audience hairline split: for you & business owners, or your org.
      --------------------------------------------------------------------- */}
-  <section class="section-tight border-t border-[var(--line)]" aria-labelledby="workshops-heading">
+  <section class="section section-ruled" aria-labelledby="workshops-heading">
     <div class="shell">
       <div class="flex items-end justify-between gap-6">
         <h2 id="workshops-heading" class="kicker flex-1">Featured workshop</h2>
@@ -174,14 +174,14 @@ const seoData = [
           <p class="statement-sm max-w-[22ch]" data-reveal="up">
             Getting lost in all the AI noise?
           </p>
-          <p class="mt-4 mb-0 text-small text-paper-400 leading-relaxed max-w-[48ch]" data-reveal="up">
+          <p class="mt-4 mb-0 subtext max-w-[48ch]" data-reveal="up">
             A workshop that puts you to work on your own real tasks with AI — one-on-one, in a small group, or with your whole team.
           </p>
         </div>
         <div class="border-t border-[var(--line)] pt-6 lg:border-t-0 lg:pt-0" data-reveal="up">
           <p class="mono-micro text-paper-400">Open schedule</p>
           <p class="mt-2 text-small text-paper-100 font-medium">{availability.window}</p>
-          <p class="mt-1 mb-0 text-small text-paper-400 leading-relaxed max-w-[44ch]">
+          <p class="mt-1 mb-0 subtext max-w-[44ch]">
             {availability.note}
           </p>
         </div>
@@ -193,13 +193,13 @@ const seoData = [
           <div>
             <div class="flex items-center justify-between gap-4 mb-4">
               <span class="mono-micro">01 · For you &amp; business owners</span>
-              <span class="mono text-small text-paper-400">From ₱2,500</span>
+              <span class="mono">From ₱2,500</span>
             </div>
             <h3 class="text-h3 m-0">Personal</h3>
-            <p class="mt-3 text-small text-paper-400 leading-relaxed">
+            <p class="mt-3 subtext">
               1-on-1 or a small group you bring — an interactive workshop on the work you actually do.
             </p>
-            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-small text-paper-300 list-none p-0">
+            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-paper-200 list-none p-0">
               <li class="flex items-center gap-2">
                 <span class="text-paper-600">↳</span> Understand how AI works, and how to spot fakes online
               </li>
@@ -217,13 +217,13 @@ const seoData = [
           <div>
             <div class="flex items-center justify-between gap-4 mb-4">
               <span class="mono-micro">02 · For your organisation</span>
-              <span class="mono text-small text-paper-400">Message to quote</span>
+              <span class="mono">Message to quote</span>
             </div>
             <h3 class="text-h3 m-0">Enterprise / Org</h3>
-            <p class="mt-3 text-small text-paper-400 leading-relaxed">
+            <p class="mt-3 subtext">
               Your people are already using AI tools. Where's the line, and how do you keep the company safe from misuse?
             </p>
-            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-small text-paper-300 list-none p-0">
+            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-paper-200 list-none p-0">
               <li class="flex items-center gap-2">
                 <span class="text-paper-600">↳</span> Leadership AI training + the policy-making exercise
               </li>
@@ -256,7 +256,7 @@ const seoData = [
       near-invisible, so stopping anywhere still leaves it readable.
      --------------------------------------------------------------------- */}
   {heroIntro && (
-    <section class="section-tight border-t border-[var(--line)]" aria-labelledby="intro-heading">
+    <section class="section section-ruled" aria-labelledby="intro-heading">
       <div class="shell">
         <h2 id="intro-heading" class="kicker">Who I am</h2>
         <div class="statement mt-10 space-y-6" data-brighten>
@@ -280,7 +280,7 @@ const seoData = [
       WRITING
      --------------------------------------------------------------------- */}
   {latestThoughts.length > 0 && (
-    <section class="section-tight border-t border-[var(--line)]" aria-labelledby="writing-heading">
+    <section class="section-tight" aria-labelledby="writing-heading">
       <div class="shell">
         <div class="flex items-end justify-between gap-6">
           <h2 id="writing-heading" class="kicker flex-1">Thoughts</h2>
@@ -298,7 +298,7 @@ const seoData = [
               <a href={`/thoughts/${post.id}/`} class="row-link">
                 <span class="min-w-0">
                   <span class="row-title block">{post.data.title}</span>
-                  <span class="block mt-2 text-small text-paper-400 max-w-[60ch]">
+                  <span class="block mt-2 subtext max-w-[60ch]">
                     {post.data.excerpt}
                   </span>
                 </span>
@@ -322,7 +322,7 @@ const seoData = [
       in one column, in the site's own index pattern.
      --------------------------------------------------------------------- */}
   {services.length > 0 && (
-    <section class="section-tight border-t border-[var(--line)]" aria-labelledby="services-heading">
+    <section class="section section-ruled" aria-labelledby="services-heading">
       <div class="shell">
         <div class="flex items-end justify-between gap-6">
           <h2 id="services-heading" class="kicker flex-1">What I do</h2>
@@ -338,7 +338,7 @@ const seoData = [
             <li data-reveal="up">
               <div class="py-6 md:py-8">
                 <h3 class="m-0">{service.data.title}</h3>
-                <p class="mt-3 mb-0 text-small text-paper-400 leading-relaxed max-w-[60ch]">
+                <p class="mt-3 mb-0 subtext max-w-[60ch]">
                   {service.data.description}
                 </p>
               </div>
@@ -354,7 +354,7 @@ const seoData = [
       with a "nothing here yet" is worse than no section.
      --------------------------------------------------------------------- */}
   {latestProjects.length > 0 && (
-    <section class="section-tight border-t border-[var(--line)]" aria-labelledby="projects-heading">
+    <section class="section-tight" aria-labelledby="projects-heading">
       <div class="shell">
         <div class="flex items-end justify-between gap-6">
           <h2 id="projects-heading" class="kicker flex-1">Projects</h2>
@@ -366,7 +366,7 @@ const seoData = [
             const body = (
               <span class="min-w-0">
                 <span class="row-title block">{project.data.title}</span>
-                <span class="block mt-2 text-small text-paper-400 max-w-[60ch]">
+                <span class="block mt-2 subtext max-w-[60ch]">
                   {project.data.description}
                 </span>
               </span>
@@ -403,7 +403,7 @@ const seoData = [
       hold still long enough to be looked at.
      --------------------------------------------------------------------- */}
   {stripShots.length > 0 && (
-    <section class="section-tight border-t border-[var(--line)]" aria-labelledby="gallery-heading">
+    <section class="section-tight" aria-labelledby="gallery-heading">
       <div class="shell">
         <div class="flex items-end justify-between gap-6">
           <h2 id="gallery-heading" class="kicker flex-1">I also shoot</h2>

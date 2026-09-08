@@ -787,6 +787,28 @@ Two moves: (1) reframe the personal side from per-seat cohort to 1-on-1 / small 
       one `workshops.test.ts` assertion moved from `/minimum/` to `/quote/`), and
       `npm run build` all pass. Both pages checked in the dev server: copy renders as
       intended and the two bio links resolve with clean surrounding whitespace.
+- [x] (2026-09-08) **Bio statement resized + brighten restored** (Paul's follow-up).
+      `.statement` in `index.astro` now `clamp(1.3rem, 1.05rem + 1.1vw, 1.9rem)` (was
+      →2.5rem) at `max-width: 46ch` (was 30ch) — smaller, wider, fewer wrap points.
+      New `data-brighten` motion primitive: resting state `.js [data-brighten] {
+      opacity: 0.5 }` in `global.css` (a legible grey, never invisible — unlike
+      `[data-reveal]`), scrubbed to full opacity by a ScrollTrigger in `motion.ts`
+      (`start: top 80%`, `end: top 35%`, `scrub: true`). `prefers-reduced-motion`
+      forces opacity 1 in both CSS (`!important`) and the JS bail branch. Applied once,
+      on the homepage bio. This deliberately walks back part of the Phase 21 cut — the
+      plainer whole-block form, from grey not near-black, so a reader who stops mid-
+      scroll still gets readable copy.
+- [x] (2026-09-08) **Wine accent darkened site-wide.** `wine-300` (#F0658A, pink) →
+      `wine-400` (#E0446F) for every reader-visible accent: `.link` + `.prose a`
+      (colour + underline), `.link-arrow:hover`, `KeyTakeaway`, `Callout` warning
+      label, `Lightbox` link hover, TOC hover, and the `hover:text-wine-*` on Now /
+      PostListItem rows. `wine-300` is now the `:focus-visible` ring only (keeps the
+      higher 6.5:1 contrast where it matters). `@theme` comments + CLAUDE.md updated.
+- [x] (2026-09-08) **Re-verified:** `astro check` / `npm test` (59) / `npm run build`
+      all green; built bundle confirmed to carry `data-brighten` + `scrub`, the
+      `opacity:.5` resting rule, the reduced-motion override, and `.link` → wine-400.
+      (Live paint not screenshot-verified — the in-app browser pane was not rendering
+      this session; logic mirrors the existing reveal pattern and degrades safely.)
 
 ## Out of scope (v2 — do not build)
 

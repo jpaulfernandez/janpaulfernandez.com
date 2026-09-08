@@ -141,7 +141,7 @@ const seoData = [
                   {formatDate(entry.data.date)}
                 </time>
                 <h3 class="m-0">
-                  <a href="/now/" class="hover:text-wine-300 transition-colors">
+                  <a href="/now/" class="hover:text-wine-400 transition-colors">
                     {entry.data.title || entry.id}
                   </a>
                 </h3>
@@ -248,16 +248,18 @@ const seoData = [
   {/* ---------------------------------------------------------------------
       MANIFESTO. The bio, set as a statement.
 
-      Phase 21 cut the word-by-word scroll brightening that used to run here.
-      It was Linear's "Designed in California" section almost line for line,
-      and the effect also meant a reader who stopped scrolling was left with a
-      half-lit sentence — decoration that made the copy harder to read.
+      Phase 21 cut the word-by-word scroll brightening that ran here — it was
+      Linear's "Designed in California" section almost line for line, and a
+      reader who stopped scrolling was left with a half-lit sentence. Phase 28
+      brought back a plainer version at Paul's request: [data-brighten] scrubs
+      the whole block, not word by word, and from a legible grey rather than
+      near-invisible, so stopping anywhere still leaves it readable.
      --------------------------------------------------------------------- */}
   {heroIntro && (
     <section class="section-tight border-t border-[var(--line)]" aria-labelledby="intro-heading">
       <div class="shell">
         <h2 id="intro-heading" class="kicker">Who I am</h2>
-        <div class="statement mt-10 space-y-6" data-reveal="up">
+        <div class="statement mt-10 space-y-6" data-brighten>
           {heroIntro.split('\n\n').map((paragraph) => (
             <p class="m-0">
               {withInlineLinks(paragraph).map((seg) =>
@@ -451,15 +453,17 @@ const seoData = [
     padding-block: clamp(3rem, 2rem + 6vw, 6rem) clamp(3rem, 2rem + 4vw, 5rem);
   }
   /* ---- Statements ------------------------------------------------------ */
-  /* The scroll-brightened paragraph. Bigger than prose, smaller than display —
-   * it has to hold 60+ words without turning into a wall. */
+  /* The scroll-brightened paragraph ([data-brighten], resting grey set in
+   * global.css). Bigger than prose, smaller than display — it has to hold 60+
+   * words without turning into a wall, so it runs a touch smaller and a good
+   * deal wider than the hero statement. */
   .statement {
     font-family: var(--font-display);
-    font-size: clamp(1.5rem, 1.05rem + 1.9vw, 2.5rem);
+    font-size: clamp(1.3rem, 1.05rem + 1.1vw, 1.9rem);
     font-weight: 500;
-    line-height: 1.25;
-    letter-spacing: -0.03em;
-    max-width: 30ch;
+    line-height: 1.32;
+    letter-spacing: -0.025em;
+    max-width: 46ch;
     margin: 0;
     text-wrap: pretty;
   }

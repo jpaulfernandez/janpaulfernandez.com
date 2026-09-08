@@ -12,6 +12,8 @@
  *   data-reveal-stagger           on a PARENT: its [data-reveal] children run
  *                                 as one staggered batch instead of separately
  *   data-hero                     on a PARENT: plays once on load, not on scroll
+ *   data-brighten                 scrub the element from a dimmed resting state
+ *                                 to full colour as it scrolls through view
  *
  * What Phase 21 removed, and why:
  *
@@ -20,6 +22,9 @@
  *                       almost exactly, and Linear is where the whole dark-SaaS
  *                       look comes from — so the borrowed move imported the
  *                       association with it. Gone, along with SplitText.
+ *                       (Phase 28 brought back a plainer form of the idea as
+ *                       data-brighten: the whole block, not word by word, and
+ *                       from a legible grey rather than near-invisible.)
  *   data-split="lines"  The line-by-line mask reveal. Kept nothing back for it:
  *                       those elements now use a plain [data-reveal], which
  *                       reads nearly the same at a fraction of the machinery
@@ -69,8 +74,12 @@ if (reduceMotion) {
     el.style.opacity = '1';
     el.style.transform = 'none';
   });
+  document.querySelectorAll<HTMLElement>('[data-brighten]').forEach((el) => {
+    el.style.opacity = '1';
+  });
 } else {
   initReveals();
+  initBrighten();
   initHero();
 }
 
@@ -114,6 +123,27 @@ function initReveals() {
       ease: EASE,
       scrollTrigger: { trigger: el, start: 'top 92%', once: true },
       onComplete: () => el.setAttribute('data-revealed', ''),
+    });
+  });
+}
+
+/* ---------------------------------------------------------------------------
+ * Brighten. A scroll-scrubbed opacity lerp from the CSS resting state (a dimmed
+ * grey) to full colour. `scrub` ties progress to scroll position both ways, so
+ * scrolling back up dims it again — the movement is the point. `ease: 'none'`
+ * keeps the lerp linear against the scrollbar.
+ * ------------------------------------------------------------------------ */
+function initBrighten() {
+  document.querySelectorAll<HTMLElement>('[data-brighten]').forEach((el) => {
+    gsap.to(el, {
+      opacity: 1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 80%',
+        end: 'top 35%',
+        scrub: true,
+      },
     });
   });
 }

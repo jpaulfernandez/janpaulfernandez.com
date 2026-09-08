@@ -34,7 +34,7 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
     {/* h2, not h3: both callers (/thoughts, /topics/[topic]) render this
         directly under the page h1, and h1 -> h3 is a heading-level skip. */}
     <h2 class="m-0 text-h3 leading-tight">
-      <a href={url} class="post-link group-hover:text-wine-300 transition-colors">
+      <a href={url} class="post-link group-hover:text-wine-400 transition-colors">
         {title}
       </a>
     </h2>

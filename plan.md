@@ -675,6 +675,11 @@ version) plus the honesty items his own tracker already flagged.
 - [x] (2026-09-07) `src/scripts/motion.ts`: Guarded hero descendants in `initReveals()` to prevent ScrollTrigger conflict with `initHero()` load animation.
 - [x] (2026-09-07) **Verified:** `npx astro check` (0 errors), `npm test` (74 tests passed), `npm run build` clean static generation.
 
+## Phase 26 — Homepage section visual breaks (Paul's direct request, 2026-09-08)
+
+- [x] (2026-09-08) `src/pages/index.astro`: Added full-bleed 1px hairline dividers (`border-t border-[var(--line)]`) to all major sections below the hero (Workshops, Who I am, Writing, What I do, Projects, Gallery). Unified section vertical rhythm on `.section-tight` (`clamp(3rem, 5rem)`) for consistent, balanced spacing above and below every hairline rule.
+- [x] (2026-09-08) **Verified:** `npx astro check` (0 errors), `npm test` (74 tests passed), `npm run build` clean static generation.
+
 ### Blocked / needs Paul
 
 - **The 1-on-1 and private-group prices are the least evidenced numbers on the

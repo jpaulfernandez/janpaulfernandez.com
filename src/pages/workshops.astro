@@ -21,7 +21,7 @@ const orgCourses = courseEntries.filter(
 );
 
 const description =
-  'Demystifying AI — a few hours on the work you already have open, 1-on-1 or a small group you bring. From ₱2,500 for you; ask for our minimum for organisations.';
+  'A few hours on the work you already have open, 1-on-1 or a small group you bring. From ₱2,500 for you; message to quote for organisations.';
 
 const seoData = [
   service({
@@ -37,7 +37,7 @@ const seoData = [
 ];
 ---
 
-<BaseLayout title="Demystifying AI" description={description} ogImage="/og/workshops.png">
+<BaseLayout title="AI Workshop" description={description} ogImage="/og/workshops.png">
   <JsonLd data={seoData} slot="head" />
 
   {/* ---------------------------------------------------------------------
@@ -47,11 +47,11 @@ const seoData = [
     <div class="shell">
       <p class="mono-micro flex items-center gap-3" data-reveal="fade">
         <span class="h-px w-8 bg-[var(--line-strong)]"></span>
-        Demystifying AI · Manila &amp; remote · English · PHT
+        AI Workshop · Manila &amp; remote · English · PHT
       </p>
 
       <h1 class="display hero-display mt-8" data-reveal="up" data-reveal-delay="0.05">
-        You already use AI.<br class="hidden sm:inline" /> This is where you get good at it.
+        Getting lost in all<br class="hidden sm:inline" /> the AI noise?
       </h1>
 
       <p class="lead mt-8 max-w-[54ch]" data-reveal="up" data-reveal-delay="0.12">
@@ -108,7 +108,7 @@ const seoData = [
     </section>
 
     <section class="avail" aria-labelledby="avail-heading" data-reveal="up">
-      <h2 id="avail-heading" class="mono-micro">Booking now</h2>
+      <h2 id="avail-heading" class="mono-micro">Open schedule</h2>
       <p class="avail__window">{availability.window}</p>
       <p class="avail__note">{availability.note}</p>
     </section>

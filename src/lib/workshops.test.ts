@@ -35,7 +35,7 @@ describe('the landing router', () => {
   it('signals a personal floor and an org ask, and nothing else priced', () => {
     const [personal, org] = landingSections;
     expect(personal.signal).toMatch(/₱2,500/);
-    expect(org.signal.toLowerCase()).toMatch(/minimum/);
+    expect(org.signal.toLowerCase()).toMatch(/quote/);
     // No per-door prices on the landing — only the section signal carries one.
     for (const s of landingSections) {
       for (const door of s.doors) {

@@ -22,7 +22,7 @@ const pagesObj: Record<string, { title: string; description: string }> = {
     description: 'What I am working on, learning, and focused on right now.'
   },
   'workshops': {
-    title: 'Demystifying AI',
+    title: 'AI Workshop',
     description: 'Workshops and talks for yourself or your organisation — run on the work you already have open.'
   },
   'work-with-me': {

@@ -10,14 +10,14 @@
  * stats, the process, and the FAQ.
  *
  * Price signals on the landing are signals only (decision confirmed with Paul):
- * personal = from ₱2,500; org = ask for our minimum. The full ladder lives on
+ * personal = from ₱2,500; org = message to quote. The full ladder lives on
  * each course page, and every number is still a hypothesis until paid delivery
  * tests it against real hours.
  */
 
 export const availability = {
   window: 'September – October 2026',
-  note: 'Booking 1-on-1s and small groups now — message me to hold a date. A fixed public schedule is not up yet.',
+  note: 'Booking 1-on-1s and small groups now — message me to hold a date.',
 };
 
 export const enquireLabel = 'Talk to me';
@@ -60,7 +60,7 @@ export type LandingSection = {
   /** Anchor id, also the homepage deep-link target. */
   id: string;
   heading: string;
-  /** from ₱2,500 · … / ask for our minimum — the section's only price. */
+  /** from ₱2,500 · … / message to quote — the section's only price. */
   signal: string;
   doors: LandingDoor[];
 };
@@ -72,12 +72,12 @@ export const landingSections: LandingSection[] = [
     signal: 'from ₱2,500 · 1-on-1 or a small group you bring',
     doors: [
       {
-        label: 'New to AI and want to actually understand it',
+        label: 'Understand how AI works, and how to spot fakes online',
         clarifier: 'AI Fluency & Media Literacy',
         href: '/workshops/ai-fluency/',
       },
       {
-        label: 'You run a business and want to know where AI pays',
+        label: 'Explore where AI realistically fits in your business',
         clarifier: 'AI for Business',
         href: '/workshops/ai-for-business/',
       },
@@ -91,7 +91,7 @@ export const landingSections: LandingSection[] = [
   {
     id: 'for-orgs',
     heading: 'For your organization',
-    signal: 'ask for our minimum',
+    signal: 'message to quote',
     doors: [
       {
         label: 'Get leadership aligned and set your AI ground rules',

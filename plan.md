@@ -759,6 +759,35 @@ Two moves: (1) reframe the personal side from per-seat cohort to 1-on-1 / small 
   leadership is "ask for our minimum" (prior floor ₱150k). These were already the least-
   evidenced numbers on the site (Phase 22 note).
 
+## Phase 28 — Home + workshops copy pass (Paul's direct request, 2026-09-08)
+
+- [x] (2026-09-08) **Homepage AI section reworded.** Hero CTA → "See the AI Workshop";
+      kicker "Featured workshop · Demystifying AI" → "Featured workshop"; statement →
+      "Getting lost in all the AI noise?"; plain-language subtext; "Booking status" →
+      "Open schedule"; cards retitled **Personal** / **Enterprise / Org**; org signal
+      "Ask for our minimum" → "Message to quote"; topic bullets reworded; org card copy
+      → the misuse-protection question; both card footer CTAs removed; bottom CTA →
+      "Explore the AI workshop".
+- [x] (2026-09-08) **"Who I am" bio replaced** in `src/content/pages/home.json` — Manila,
+      fintech-for-a-bank → Rappler (digital transformation + tech ops, two elections) →
+      digital college; "money" → "economics". Two inline markdown links (Rappler bio,
+      mmdc.mcl.edu.ph) render via a small `withInlineLinks` helper in `index.astro`
+      (Keystatic field stays plain text; no markdown pipeline added).
+- [x] (2026-09-08) **Section headers.** "Writing" → "Thoughts" + a tightened one-line
+      intro; "What I do" gains the line "Interested in working together?"; gallery
+      "Gallery" → "I also shoot" with the "right side of my brain" subtext.
+- [x] (2026-09-08) **/workshops carried the AI-section changes** — page title + hero
+      eyebrow → "AI Workshop", h1 → "Getting lost in all the AI noise?", "Booking now" →
+      "Open schedule", router org signal + course `price`/`priceSignal` → "Message to
+      quote", two personal door labels reworded. `availability.note` trimmed of the
+      "fixed public schedule is not up yet" line (shared with the homepage card).
+      "Demystifying AI" also dropped from `og/[...route].ts`, `llms.txt.ts`, and the
+      `talks-workshops` service blurb.
+- [x] (2026-09-08) **Verified:** `npx astro check` (0 errors), `npm test` (59 pass —
+      one `workshops.test.ts` assertion moved from `/minimum/` to `/quote/`), and
+      `npm run build` all pass. Both pages checked in the dev server: copy renders as
+      intended and the two bio links resolve with clean surrounding whitespace.
+
 ## Out of scope (v2 — do not build)
 
 Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

@@ -28,10 +28,10 @@ ${sortedServices.map(s => `- **${s.data.title}**: ${s.data.description}`).join('
 ## Site Navigation & Main Pages
 - [Home](${siteUrl}/): Overview, services, and recent writings.
 - [About](${siteUrl}/about/): Comprehensive background, philosophy, and career history.
-- [Writing](${siteUrl}/thoughts/): Essays and notes on technology, money, and psychology.
+- [Writing](${siteUrl}/thoughts/): Essays and notes on technology, economics, and psychology.
 - [Now](${siteUrl}/now/): Public journal and timeline of what Paul is currently focused on, building, and learning.
 - [Gallery](${siteUrl}/gallery/): Concert and live music photography in Manila.
-- [Workshops](${siteUrl}/workshops/): Demystifying AI — booked 1-on-1 or as a small private group you bring (from ₱2,500), or in-house for an organisation (ask for our minimum). Course pages: AI fluency & media literacy, AI for business, vibe coding with web basics, and leadership AI training + policy exercise. Scope boundaries and the inquiry form.
+- [Workshops](${siteUrl}/workshops/): AI workshops — booked 1-on-1 or as a small private group you bring (from ₱2,500), or in-house for an organisation (message to quote). Course pages: AI fluency & media literacy, AI for business, vibe coding with web basics, and leadership AI training + policy exercise. Scope boundaries and the inquiry form.
 - [Work With Me](${siteUrl}/work-with-me/): Booking information, consultation packages, and direct contact form.
 
 ## Recent Thoughts & Articles

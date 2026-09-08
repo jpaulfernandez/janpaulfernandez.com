@@ -809,6 +809,20 @@ Two moves: (1) reframe the personal side from per-seat cohort to 1-on-1 / small 
       `opacity:.5` resting rule, the reduced-motion override, and `.link` → wine-400.
       (Live paint not screenshot-verified — the in-app browser pane was not rendering
       this session; logic mirrors the existing reveal pattern and degrades safely.)
+- [x] (2026-09-08) **Brighten made line-by-line** (Paul's follow-up). `data-brighten`
+      now uses SplitText (`type: 'lines'`, `autoSplit`, `onSplit` returns the scrubbed
+      tween) — each wrapped line staggers from 0.28 → 1 opacity as it scrolls up
+      through the reading zone (`start: top 78%`, `end: top 25%`). SplitText re-added
+      to `motion.ts` (free in GSAP 3.13+, no new dep; +~3KB gzip → bundle ~49KB) and
+      registered alongside ScrollTrigger; it also sets `aria-label` to the original
+      text so screen readers get one clean sentence. CSS: `.js [data-brighten]`
+      fallback opacity 0.55, `.brighten-line { will-change: opacity }`.
+      DOM-verified in the dev server: bio splits to 10 lines, Thoughts intro to 2;
+      mid-scroll sample showed lines 1–5 lit, line 6 mid, 7–10 still dim.
+- [x] (2026-09-08) **Thoughts section hierarchy.** The "I'm no writer…" line dropped
+      from `.statement-sm` (→3rem display) to `.lead` (~1.25rem, paper-400) so the
+      "Thoughts" kicker reads as the section title and the sentence as its subtext;
+      it also carries `data-brighten` now.
 
 ## Out of scope (v2 — do not build)
 

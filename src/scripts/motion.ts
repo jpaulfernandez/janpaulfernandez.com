@@ -12,8 +12,9 @@
  *   data-reveal-stagger           on a PARENT: its [data-reveal] children run
  *                                 as one staggered batch instead of separately
  *   data-hero                     on a PARENT: plays once on load, not on scroll
- *   data-brighten                 scrub the element from a dimmed resting state
- *                                 to full colour as it scrolls through view
+ *   data-brighten                 split into lines; scrub each line from a
+ *                                 dim grey to full colour, line by line, on
+ *                                 scroll (SplitText, autoSplit)
  *
  * What Phase 21 removed, and why:
  *
@@ -21,10 +22,10 @@
  *                       This was Linear's "Designed in California" section
  *                       almost exactly, and Linear is where the whole dark-SaaS
  *                       look comes from — so the borrowed move imported the
- *                       association with it. Gone, along with SplitText.
- *                       (Phase 28 brought back a plainer form of the idea as
- *                       data-brighten: the whole block, not word by word, and
- *                       from a legible grey rather than near-invisible.)
+ *                       association with it. Phase 28 brought the idea back as
+ *                       data-brighten — line by line, not word by word, and
+ *                       from a legible grey rather than near-invisible — and
+ *                       with it SplitText (free in GSAP 3.13+, so no new dep).
  *   data-split="lines"  The line-by-line mask reveal. Kept nothing back for it:
  *                       those elements now use a plain [data-reveal], which
  *                       reads nearly the same at a fraction of the machinery
@@ -46,8 +47,9 @@
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -128,21 +130,42 @@ function initReveals() {
 }
 
 /* ---------------------------------------------------------------------------
- * Brighten. A scroll-scrubbed opacity lerp from the CSS resting state (a dimmed
- * grey) to full colour. `scrub` ties progress to scroll position both ways, so
- * scrolling back up dims it again — the movement is the point. `ease: 'none'`
- * keeps the lerp linear against the scrollbar.
+ * Brighten. The block is split into its wrapped lines; each line scrubs from a
+ * dim grey to full colour as it passes up through the reading zone, staggered
+ * so it reads line by line rather than all at once. `scrub` ties progress to
+ * scroll both ways; `ease: 'none'` keeps it linear against the scrollbar.
+ *
+ * SplitText's `autoSplit` re-runs the split (and the tween returned from
+ * `onSplit`) after a resize or a late webfont, so the breaks always match
+ * what is on screen. It also sets `aria-label` to the original text and hides
+ * the pieces, so a screen reader still gets one clean sentence.
+ *
+ * Fallback: if this never runs, `.js [data-brighten]` rests at 0.55 opacity —
+ * dim but perfectly readable — rather than hidden.
  * ------------------------------------------------------------------------ */
 function initBrighten() {
   document.querySelectorAll<HTMLElement>('[data-brighten]').forEach((el) => {
-    gsap.to(el, {
-      opacity: 1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 80%',
-        end: 'top 35%',
-        scrub: true,
+    SplitText.create(el, {
+      type: 'lines',
+      linesClass: 'brighten-line',
+      autoSplit: true,
+      onSplit: (self) => {
+        gsap.set(el, { opacity: 1 });
+        return gsap.fromTo(
+          self.lines,
+          { opacity: 0.28 },
+          {
+            opacity: 1,
+            ease: 'none',
+            stagger: 0.5,
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 78%',
+              end: 'top 25%',
+              scrub: true,
+            },
+          }
+        );
       },
     });
   });

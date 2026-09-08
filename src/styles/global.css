@@ -844,11 +844,12 @@ select.field {
 .js [data-reveal="fade"]  { transform: none; }
 .js [data-reveal="scale"] { transform: scale(0.985); }
 
-/* Scroll-scrubbed brighten. Unlike [data-reveal] this never hides the element —
- * the resting state is a legible dimmed grey, and GSAP lerps it to full colour
- * as the block scrolls through view. If the runtime never loads it just stays
- * a little muted, still perfectly readable. */
-.js [data-brighten] { opacity: 0.5; will-change: opacity; }
+/* Line-by-line brighten. Unlike [data-reveal] this never hides the element:
+ * SplitText breaks it into lines and GSAP scrubs each from dim grey to full
+ * colour on scroll. This resting opacity is the fallback if the runtime never
+ * runs — dim but perfectly readable, not hidden. */
+.js [data-brighten] { opacity: 0.55; }
+.brighten-line { will-change: opacity; }
 
 /* Marks the element GSAP has finished with, so `will-change` is released. */
 [data-revealed] { will-change: auto; }

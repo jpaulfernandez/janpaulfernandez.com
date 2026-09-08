@@ -171,6 +171,30 @@ export function service(s: ServiceInput) {
   };
 }
 
+export interface CourseInput {
+  title: string;
+  description: string;
+  /** Site-relative canonical path, e.g. `/workshops/ai-fluency/`. */
+  url: string;
+}
+
+/**
+ * Course schema for the per-course workshop pages. Provider is Paul (the one
+ * @id every graph keys on) — there is no separate teaching organisation.
+ */
+export function course(c: CourseInput) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: c.title,
+    description: c.description,
+    url: abs(c.url),
+    provider: {
+      '@id': PERSON_ID,
+    },
+  };
+}
+
 export interface ImageObjectInput {
   /** Site-relative or absolute source URL. */
   url: string;

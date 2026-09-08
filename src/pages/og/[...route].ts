@@ -6,6 +6,7 @@ import { getPublishedThoughts } from '../../lib/thoughts';
 // guessable /og/<slug>.png URLs, leaking unpublished titles and excerpts.
 const thoughts = await getPublishedThoughts();
 const gallerySets = await getCollection('gallery');
+const courses = await getCollection('courses');
 
 const pagesObj: Record<string, { title: string; description: string }> = {
   'home': {
@@ -59,6 +60,15 @@ gallerySets.forEach((set) => {
   pagesObj[`gallery-${set.id}`] = {
     title: set.data.title,
     description: set.data.description ?? 'Photography by Paul Fernandez.'
+  };
+});
+
+// Each course page gets its own card, keyed workshops-<slug>, so a shared
+// /workshops/[slug] page never falls back to the generic site card.
+courses.forEach((c) => {
+  pagesObj[`workshops-${c.id}`] = {
+    title: c.data.title,
+    description: c.data.tagline
   };
 });
 

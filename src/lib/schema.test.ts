@@ -12,6 +12,7 @@ import {
   imageGallery,
   blog,
   collectionPage,
+  course,
 } from './schema';
 
 describe('JSON-LD schema library', () => {
@@ -286,6 +287,22 @@ describe('JSON-LD schema library', () => {
       url: `${SITE_URL}/thoughts/what-is-a-token-anyway/`,
     });
     expect(c.mainEntity.itemListElement[1].position).toBe(2);
+
+    expect(() => JSON.stringify(c)).not.toThrow();
+  });
+
+  it('should generate Course schema with an absolute url and Paul as provider', () => {
+    const c = course({
+      title: 'AI Fluency & Digital Media Literacy',
+      description: 'What AI makes for you, and what it makes at you.',
+      url: '/workshops/ai-fluency/',
+    });
+    expect(c['@context']).toBe('https://schema.org');
+    expect(c['@type']).toBe('Course');
+    expect(c.name).toBe('AI Fluency & Digital Media Literacy');
+    expect(c.description).toBe('What AI makes for you, and what it makes at you.');
+    expect(c.url).toBe(`${SITE_URL}/workshops/ai-fluency/`);
+    expect(c.provider).toEqual({ '@id': PERSON_ID });
 
     expect(() => JSON.stringify(c)).not.toThrow();
   });

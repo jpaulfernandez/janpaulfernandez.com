@@ -700,6 +700,65 @@ version) plus the honesty items his own tracker already flagged.
       "The two halves" are the parts worth a look
 
 
+## Phase 27 — Workshops revamp: personal reframe + course pages (Paul's direct request, 2026-09-08)
+
+Plan lives in [tasks/workshops-revamp/](tasks/workshops-revamp/00-overview.md) — one
+overview + five independent page briefs, each with an ASCII layout and its own DoD.
+Two moves: (1) reframe the personal side from per-seat cohort to 1-on-1 / small group;
+(2) split the landing (pitch + two-audience router) from the catalog (four
+`/workshops/[course]` detail pages driven by a new `courses` collection).
+
+- [x] (2026-09-08) [Overview — architecture, `courses` collection, routing, research](tasks/workshops-revamp/00-overview.md)
+- [x] (2026-09-08) [`courses` collection + `[slug].astro` route + `course()` JSON-LD](tasks/workshops-revamp/00-overview.md) (infra, per overview build-order §1)
+- [x] (2026-09-08) [Revised `/workshops` landing (router replaces the fork)](tasks/workshops-revamp/01-page-workshops.md)
+- [x] (2026-09-08) [Course — AI Fluency & Digital Media Literacy](tasks/workshops-revamp/02-course-ai-fluency.md)
+- [x] (2026-09-08) [Course — AI Business Application Consultation](tasks/workshops-revamp/03-course-ai-for-business.md)
+- [x] (2026-09-08) [Course — Vibe Coding with Basic Web Development](tasks/workshops-revamp/04-course-vibe-coding.md)
+- [x] (2026-09-08) [Course — Leadership AI Training + Policy Making Exercise](tasks/workshops-revamp/05-course-leadership-ai.md)
+- [x] (2026-09-08) Migrate `offerings[]` out of `src/lib/workshops.ts`; trim cohort/seat copy; update `workshops.test.ts`
+
+**How it shipped:**
+
+- [x] (2026-09-08) **New `courses` collection**, field-identical in `keystatic.config.ts`
+      and `src/content.config.ts` (slug, title, tagline, audiences, duration, formatLabel,
+      whoFor, approach, approachNote, outcomes[], outline[], formats[], priceSignal,
+      caveat?, order). Four seeded entries in `src/content/courses/*.json`.
+- [x] (2026-09-08) **One shared route** `src/pages/workshops/[slug].astro` renders every
+      course via `getStaticPaths()` — kicker meta line, hairline meta strip (Duration /
+      Format / Who / Approach), outcomes rows, numbered outline + approach note, optional
+      caveat, from-price ladder, and CTAs to `/workshops/#enquire` + back to the landing.
+      Emits `Course` + `BreadcrumbList` JSON-LD (new `course()` builder in `schema.ts`,
+      TDD'd). Each course gets its own OG card (`workshops-<slug>.png`).
+- [x] (2026-09-08) **Landing reframed + split.** `src/pages/workshops.astro` lost the
+      price-ladder fork; in its place a two-audience **router** (For you & business owners /
+      For your organization), plain hairline door rows, the only prices being the two
+      section signals (from ₱2,500 / ask for our minimum). Per-seat cohort framing removed
+      everywhere — hero sub-CTA, availability, and two FAQs reframed to 1-on-1 / small group.
+      Form "interested in" options now generate from the `courses` collection; course-page
+      CTAs preselect it via a `?enquire=` param (rung 6, JS-off still jumps to the form).
+- [x] (2026-09-08) **`src/lib/workshops.ts` reshaped** — `offerings[]`, tracks, `trackIntro`,
+      `enquiryValue`, `findOffering`, `audienceRoutes` removed; `landingSections` added; kept
+      `fit`, `process`, `marketStats`, `faqItems`, reframed `availability`. `workshops.test.ts`
+      rewritten to the new shape.
+- [x] (2026-09-08) **Downstream wiring:** homepage highlight anchors → `#for-you`/`#for-orgs`
+      and cohort/₱45,000 language dropped; `llms.txt` workshop line rewritten; `og/[...route].ts`
+      seeds the four course cards.
+- [x] (2026-09-08) **Verified:** `npx astro check` (0 errors), `npm test` (59 tests), and
+      `npm run build` all pass. In-browser (dev server): four course routes each render exactly
+      one `h1` with valid Course + BreadcrumbList JSON-LD; landing router is two columns at
+      1440px / one column at 375px with zero horizontal overflow; meta strip 4→2 cols on mobile;
+      muted text ≥ 6.8:1 (AA); no "seat"/"cohort"/"25 seats" anywhere on the landing; the
+      `?enquire=` preselect confirmed live. Prices remain the placeholders flagged below.
+- [ ] Paul's visual review in-browser — the router, the shared course-page template, and the
+      vibe-coding placeholder price are the parts worth a look
+
+### Blocked / needs Paul (Phase 27)
+
+- **All course from-prices are placeholders.** Personal fluency/business carry the
+  ₱2,500 signal; vibe coding (4 hrs) and any real 1-on-1 numbers need Paul's call; org
+  leadership is "ask for our minimum" (prior floor ₱150k). These were already the least-
+  evidenced numbers on the site (Phase 22 note).
+
 ## Out of scope (v2 — do not build)
 
 Idea Graveyard, backlinks/hover previews, search, library page, webmentions, newsletter, footnotes/sidenotes.

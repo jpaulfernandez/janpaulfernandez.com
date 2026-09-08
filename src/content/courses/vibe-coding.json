@@ -1,0 +1,50 @@
+{
+  "title": "Vibe Coding with Basic Web Development",
+  "tagline": "Describe what you want. Ship it live. No coding background needed.",
+  "audiences": ["personal", "business"],
+  "duration": "4 hours",
+  "formatLabel": "1-on-1 / group",
+  "whoFor": "non-coders",
+  "approach": "you build",
+  "approachNote": "You build the whole time. You leave with something shipped.",
+  "outcomes": [
+    "One real thing you built, deployed live — a page, a tool, a small app.",
+    "A reusable setup (tools + a working loop) so you can build the next one alone.",
+    "A clear line: what to hand to AI, and what still needs a real engineer."
+  ],
+  "outline": [
+    {
+      "step": "What vibe coding is — and where it bites",
+      "item": "The honest version, up front."
+    },
+    {
+      "step": "Web basics, plainly",
+      "item": "Just enough vocabulary to steer the AI and read what it made."
+    },
+    {
+      "step": "Build your thing",
+      "item": "Describe → generate → review → fix, on your own idea."
+    },
+    {
+      "step": "Ship it + keep going",
+      "item": "Deploy it live; the setup you reuse tomorrow."
+    }
+  ],
+  "caveat": "This makes you dangerous, not a software engineer. You'll ship real things and you'll also hit walls where you need someone who actually writes code — knowing that line is part of the point.",
+  "formats": [
+    {
+      "label": "1-on-1",
+      "detail": "4 hrs · your idea, start to shipped",
+      "price": "from ₱2,500",
+      "priceNote": "placeholder — 4-hr rate TBC"
+    },
+    {
+      "label": "Small group",
+      "detail": "4 hrs · 3–8 people you bring",
+      "price": "from ₱2,500",
+      "priceNote": "placeholder — per person, TBC"
+    }
+  ],
+  "priceSignal": "from ₱2,500",
+  "order": 3
+}

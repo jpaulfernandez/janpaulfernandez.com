@@ -1,0 +1,49 @@
+{
+  "title": "AI Fluency & Digital Media Literacy",
+  "tagline": "What AI makes for you, and what it makes at you.",
+  "audiences": ["personal", "business", "org"],
+  "duration": "2 hours",
+  "formatLabel": "1-on-1 / group",
+  "whoFor": "any field",
+  "approach": "hands-on",
+  "approachNote": "Interactive throughout — you work on your own task, not slides.",
+  "outcomes": [
+    "One task from your week done faster — with the prompt saved so you can run it again.",
+    "A check you can run on any image, clip, or claim in under a minute.",
+    "A straight answer on where AI is worth your time, and where it isn't."
+  ],
+  "outline": [
+    {
+      "step": "What it is, and what it isn't",
+      "item": "For you vs at you, in plain language, with a live demo."
+    },
+    {
+      "step": "Do one real task",
+      "item": "Pick something from your actual week; run it with the tool you already have."
+    },
+    {
+      "step": "Spot the fake, keep the habit",
+      "item": "Break a deepfake, catch a hallucination, and turn the check into something you'll still do next month."
+    }
+  ],
+  "formats": [
+    {
+      "label": "1-on-1",
+      "detail": "90 min · your files, your tools",
+      "price": "from ₱2,500"
+    },
+    {
+      "label": "Small group",
+      "detail": "2.5 hrs · 3–8 people you bring",
+      "price": "from ₱2,500",
+      "priceNote": "per person"
+    },
+    {
+      "label": "Team",
+      "detail": "3 hrs · your org, your material",
+      "price": "Ask for our minimum"
+    }
+  ],
+  "priceSignal": "from ₱2,500",
+  "order": 1
+}

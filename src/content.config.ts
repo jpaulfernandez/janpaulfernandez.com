@@ -94,6 +94,41 @@ const projects = defineCollection({
   }),
 });
 
+const courses = defineCollection({
+  loader: glob({
+    pattern: '*.json',
+    base: 'src/content/courses',
+  }),
+  schema: z.object({
+    title: z.string(),
+    tagline: z.string(),
+    audiences: z.array(z.enum(['personal', 'business', 'org'])),
+    duration: z.string(),
+    formatLabel: z.string(),
+    whoFor: z.string(),
+    approach: z.string(),
+    approachNote: z.string(),
+    outcomes: z.array(z.string()),
+    outline: z.array(
+      z.object({
+        step: z.string(),
+        item: z.string(),
+      })
+    ),
+    formats: z.array(
+      z.object({
+        label: z.string(),
+        detail: z.string(),
+        price: z.string(),
+        priceNote: z.string().optional(),
+      })
+    ),
+    priceSignal: z.string(),
+    caveat: z.string().optional(),
+    order: z.number(),
+  }),
+});
+
 const seo = defineCollection({
   loader: glob({
     pattern: 'seo.json',
@@ -147,5 +182,5 @@ const gallery = defineCollection({
   }),
 });
 
-export const collections = { now, career, home, about, workWithMe, seo, thoughts, services, projects, gallery };
+export const collections = { now, career, home, about, workWithMe, seo, thoughts, services, projects, gallery, courses };
 

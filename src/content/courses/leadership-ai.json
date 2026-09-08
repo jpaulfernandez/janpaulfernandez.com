@@ -1,0 +1,48 @@
+{
+  "title": "Leadership AI Training + Policy Making Exercise",
+  "tagline": "Where AI pays in your business — and the ground rules your team writes for it.",
+  "audiences": ["org"],
+  "duration": "6–8 hours",
+  "formatLabel": "team / on-site",
+  "whoFor": "owners & leaders",
+  "approach": "team drafts",
+  "approachNote": "Interactive: your people write the first draft, not me.",
+  "outcomes": [
+    "Two or three ranked use cases, each with a cost range and its assumptions.",
+    "A 30-day test for the first one — named owner, success threshold, kill criterion.",
+    "A first draft of your AI ground rules, written by your own people, plus an open-issues list."
+  ],
+  "outline": [
+    {
+      "step": "Level-set, honestly",
+      "item": "What this is and isn't, for a leadership audience."
+    },
+    {
+      "step": "Where it pays in your business",
+      "item": "A working session — rank two or three use cases by payoff."
+    },
+    {
+      "step": "The policy exercise",
+      "item": "Your team drafts the ground rules together, in the room."
+    },
+    {
+      "step": "The 30-day test + decision log",
+      "item": "Owner, threshold, kill criterion; and an open-issues list."
+    }
+  ],
+  "caveat": "I don't author, approve, or certify your policy. The draft is yours, and it goes to your DPO, Legal, and InfoSec. What I run is the exercise that gets your people to write a real first draft instead of nothing.",
+  "formats": [
+    {
+      "label": "Full session",
+      "detail": "6–8 hrs · leadership + key staff · your tools & documents",
+      "price": "Ask for our minimum"
+    },
+    {
+      "label": "Two-session",
+      "detail": "drafting + decision log across two days",
+      "price": "Ask for our minimum"
+    }
+  ],
+  "priceSignal": "Ask for our minimum",
+  "order": 4
+}

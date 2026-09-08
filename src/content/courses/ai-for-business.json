@@ -1,0 +1,38 @@
+{
+  "title": "AI Business Application Consultation",
+  "tagline": "Where AI actually pays in your business — and what to ignore.",
+  "audiences": ["personal", "business"],
+  "duration": "2 hours",
+  "formatLabel": "1-on-1",
+  "whoFor": "owners / GMs",
+  "approach": "working",
+  "approachNote": "We work on your business, not slides.",
+  "outcomes": [
+    "Two or three ranked use cases, each with a cost range and the assumption behind it.",
+    "A 30-day test for the first one — named owner, success threshold, kill criterion.",
+    "A short list of what to ignore, so you stop paying attention to the wrong pitches."
+  ],
+  "outline": [
+    {
+      "step": "Your operation on one page",
+      "item": "Where time, money, and repeat work actually go."
+    },
+    {
+      "step": "Find the real use cases",
+      "item": "A working session on your numbers — rank two or three by payoff."
+    },
+    {
+      "step": "Design the 30-day test",
+      "item": "Pick one; give it an owner, a threshold, and a stop rule."
+    }
+  ],
+  "formats": [
+    {
+      "label": "1-on-1 consultation",
+      "detail": "2 hrs · you + a key person or two",
+      "price": "from ₱2,500"
+    }
+  ],
+  "priceSignal": "from ₱2,500",
+  "order": 2
+}

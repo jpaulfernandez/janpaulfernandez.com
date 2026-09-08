@@ -1,36 +1,33 @@
 ---
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { service, faqPage, breadcrumbs } from '../lib/schema';
 import {
   availability,
-  audienceRoutes,
-  enquireLabel,
-  enquiryValue,
-  enterpriseOfferings,
   faqItems,
-  findOffering,
   fit,
+  landingSections,
   marketStats,
-  personalOfferings,
   process,
-  trackIntro,
 } from '../lib/workshops';
 import portrait from '../assets/paul.webp';
 
-const personal = personalOfferings();
-const enterprise = enterpriseOfferings();
-const fluency = findOffering('fluency');
+const courseEntries = (await getCollection('courses')).sort((a, b) => a.data.order - b.data.order);
+const personalCourses = courseEntries.filter((c) => c.data.audiences.includes('personal'));
+const orgCourses = courseEntries.filter(
+  (c) => c.data.audiences.includes('org') && !c.data.audiences.includes('personal')
+);
 
 const description =
-  'Demystifying AI: A few hours on the work you actually have open, until it stops feeling like a magic trick and starts doing something useful. Seats and one-on-ones from ₱2,500; team sessions from ₱90,000.';
+  'Demystifying AI — a few hours on the work you already have open, 1-on-1 or a small group you bring. From ₱2,500 for you; ask for our minimum for organisations.';
 
 const seoData = [
   service({
     title: 'AI workshops and talks',
     description:
-      'AI fluency and media literacy, AI for leadership with a policy exercise, and keynotes. Booked one-on-one, as open Zoom cohorts, or in-house for teams in the Philippines.',
+      'AI fluency and media literacy, AI for business, vibe coding, and AI for leadership with a policy exercise. Delivered 1-on-1, as a small private group you bring, or in-house for teams in the Philippines.',
   }),
   faqPage(faqItems),
   breadcrumbs([
@@ -60,31 +57,17 @@ const seoData = [
       <p class="lead mt-8 max-w-[54ch]" data-reveal="up" data-reveal-delay="0.12">
         No hype and no doomsaying — just a few hours on the work you already have open.
         By the end, the parts that felt like magic feel like something you can direct.
-        Book a seat, a one-on-one, or bring me in to run it on your team's real tools and documents.
+        1-on-1, or a small group you bring.
       </p>
 
       <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up" data-reveal-delay="0.18">
         <a href="#enquire" class="btn btn-primary">Talk to me</a>
-        <a href="#personal" class="link-arrow">Seats and one-on-ones from ₱2,500</a>
+        <a href="#book" class="link-arrow">1-on-1 &amp; group sessions from ₱2,500</a>
       </div>
     </div>
   </section>
 
   <div class="shell pb-24 md:pb-32">
-    {/* -------------------------------------------------------------------
-        ROUTER. Three audiences, two doors. A one-line triage, not a section.
-       ------------------------------------------------------------------- */}
-    <section class="routes" aria-labelledby="routes-heading" data-reveal-stagger>
-      <h2 id="routes-heading" class="sr-only">Who is asking</h2>
-      {audienceRoutes.map((route) => (
-        <a href={route.href} class="route" data-reveal="fade">
-          <span class="route__label">{route.label}</span>
-          <span class="route__line">{route.line}</span>
-          <span class="route__mark" aria-hidden="true">→</span>
-        </a>
-      ))}
-    </section>
-
     {/* -------------------------------------------------------------------
         THE THESIS. A diagram made of a hairline and two lists — the whole
         argument for why fluency and media literacy are one session.
@@ -131,135 +114,35 @@ const seoData = [
     </section>
 
     {/* -------------------------------------------------------------------
-        THE FORK. Two columns split by a single vertical hairline. The
-        structure is the picture; nothing here has a fill or a radius.
+        THE ROUTER. Two audiences, a stack of plain doors each. Split by the
+        same vertical hairline the fork used. No prices beyond the signal.
        ------------------------------------------------------------------- */}
-    <section class="section-tight" aria-labelledby="offer-heading">
+    <section id="book" class="section-tight" aria-labelledby="offer-heading">
       <h2 id="offer-heading" class="kicker"><span class="kicker__num">02</span>What you can book</h2>
 
-      <div class="fork mt-10">
-        <div id="personal" class="fork__col" data-reveal="up">
-          <p class="mono-micro">{trackIntro.personal.label}</p>
-          <h3 class="fork__title">{trackIntro.personal.heading}</h3>
-          <p class="fork__body">{trackIntro.personal.body}</p>
-
-          {personal.map((o) => (
-            <article class="offer">
-              <h4 class="offer__title">{o.title}</h4>
-              <p class="offer__tagline">{o.tagline}</p>
-              <p class="offer__who">{o.who}</p>
-
-              <ul class="ladder">
-                {o.formats.map((f) => (
-                  <li class="ladder__row">
-                    <span class="ladder__label">{f.label}</span>
-                    <span class="ladder__detail">{f.detail}</span>
-                    <span class="ladder__price">
-                      {f.price}
-                      {f.priceNote && <span class="ladder__note">{f.priceNote}</span>}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              {o.caveat && <p class="offer__caveat">{o.caveat}</p>}
-
-              <div class="offer__take">
-                <p class="offer__take-label">You leave with</p>
-                <ul class="offer__take-list">
-                  {o.outcomes.map((line) => <li>{line}</li>)}
-                </ul>
-              </div>
-
-              <a href="#enquire" class="link-arrow mt-5" data-enquire={enquiryValue(o)}>
-                {enquireLabel}
-              </a>
-            </article>
-          ))}
-
-          <details class="more">
-            <summary>
-              <span>What the 2.5 hours actually look like</span>
-              <span class="faq-mark" aria-hidden="true">+</span>
-            </summary>
-            <ol class="rundown">
-              {fluency.rundown?.map((row) => (
-                <li>
-                  <span class="mono-micro text-paper-400">{row.time}</span>
-                  <span>{row.item}</span>
-                </li>
+      <div class="router mt-10">
+        {landingSections.map((sec) => (
+          <div id={sec.id} class="router__group" data-reveal="up">
+            <div class="router__head">
+              <h3 class="router__heading">{sec.heading}</h3>
+              <p class="router__signal">{sec.signal}</p>
+            </div>
+            <div class="doors">
+              {sec.doors.map((door) => (
+                <a href={door.href} class="door" data-enquire={door.enquire}>
+                  <span class="door__label">{door.label}</span>
+                  <span class="door__clarifier">{door.clarifier}</span>
+                  <span class="door__mark" aria-hidden="true">→</span>
+                </a>
               ))}
-            </ol>
-          </details>
-        </div>
-
-        <div id="enterprise" class="fork__col fork__col--right" data-reveal="up">
-          <p class="mono-micro">{trackIntro.enterprise.label}</p>
-          <h3 class="fork__title">{trackIntro.enterprise.heading}</h3>
-          <p class="fork__body">{trackIntro.enterprise.body}</p>
-
-          {enterprise.map((o) => (
-            <article class="offer">
-              <h4 class="offer__title">{o.title}</h4>
-              <p class="offer__tagline">{o.tagline}</p>
-              <p class="offer__who">{o.who}</p>
-
-              <ul class="ladder">
-                {o.formats.map((f) => (
-                  <li class="ladder__row">
-                    <span class="ladder__label">{f.label}</span>
-                    <span class="ladder__detail">{f.detail}</span>
-                    <span class="ladder__price">
-                      {f.price}
-                      {f.priceNote && <span class="ladder__note">{f.priceNote}</span>}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              {o.caveat && <p class="offer__caveat">{o.caveat}</p>}
-
-              <div class="offer__take">
-                <p class="offer__take-label">You leave with</p>
-                <ul class="offer__take-list">
-                  {o.outcomes.map((line) => <li>{line}</li>)}
-                </ul>
-              </div>
-
-              <a href="#enquire" class="link-arrow mt-5" data-enquire={enquiryValue(o)}>
-                {enquireLabel}
-              </a>
-            </article>
-          ))}
-
-          <article class="offer">
-            <h4 class="offer__title">Something else in mind?</h4>
-            <p class="offer__tagline">
-              A format that is not on this list, a school, a nonprofit, a
-              conference with an odd shape.
-            </p>
-            <p class="offer__who">
-              Tell me what you are trying to do. Schools, nonprofits and student
-              events are quoted separately and cost less.
-            </p>
-            <a href="#enquire" class="link-arrow mt-5" data-enquire="Something else">
-              {enquireLabel}
-            </a>
-          </article>
-        </div>
+            </div>
+          </div>
+        ))}
       </div>
 
-      <p class="fork__foot">
-        Corporate figures are floors, not quotes. Headcount above 20, provincial
-        or multi-site delivery, extra cohorts and custom material move them.
-        Venue, meals, AV, tool seats and travel outside Metro Manila are not
-        included.
+      <p class="router__foot" data-reveal="up">
+        Each door opens a course page with the outline, format, and a from-price.
       </p>
-
-      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up">
-        <a href="#enquire" class="btn btn-primary">Talk to me</a>
-        <a href="mailto:jpaul.fernandez18@gmail.com" class="link-arrow">Or email directly</a>
-      </div>
     </section>
 
     {/* -------------------------------------------------------------------
@@ -273,11 +156,32 @@ const seoData = [
     </section>
 
     {/* -------------------------------------------------------------------
+        WHY ANY OF THIS. Three sourced figures at display scale. Every one
+        carries a URL and a stated population.
+       ------------------------------------------------------------------- */}
+    <section class="section-tight" aria-labelledby="stats-heading">
+      <h2 id="stats-heading" class="kicker"><span class="kicker__num">03</span>Why this keeps coming up</h2>
+      <ul class="stats mt-10" data-reveal-stagger>
+        {marketStats.map((stat) => (
+          <li class="stat" data-reveal="up">
+            <p class="stat__figure">{stat.figure}</p>
+            <p class="stat__body">
+              {stat.body}{' '}
+              <a href={stat.sourceUrl} target="_blank" rel="noopener noreferrer" class="link">
+                {stat.sourceLabel}
+              </a>.
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* -------------------------------------------------------------------
         WHO THIS IS FOR. The right-hand column is the half that matters —
         it is the scope boundary, stated before you pay rather than after.
        ------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="fit-heading">
-      <h2 id="fit-heading" class="kicker"><span class="kicker__num">03</span>Who this is for</h2>
+      <h2 id="fit-heading" class="kicker"><span class="kicker__num">04</span>Who this is for</h2>
 
       <div class="mt-10 grid gap-10 md:grid-cols-2 md:gap-16" data-reveal-stagger>
         <div data-reveal="up">
@@ -293,27 +197,6 @@ const seoData = [
           </ul>
         </div>
       </div>
-    </section>
-
-    {/* -------------------------------------------------------------------
-        WHY ANY OF THIS. Three sourced figures at display scale. Every one
-        carries a URL and a stated population.
-       ------------------------------------------------------------------- */}
-    <section class="section-tight" aria-labelledby="stats-heading">
-      <h2 id="stats-heading" class="kicker"><span class="kicker__num">04</span>Why this keeps coming up</h2>
-      <ul class="stats mt-10" data-reveal-stagger>
-        {marketStats.map((stat) => (
-          <li class="stat" data-reveal="up">
-            <p class="stat__figure">{stat.figure}</p>
-            <p class="stat__body">
-              {stat.body}{' '}
-              <a href={stat.sourceUrl} target="_blank" rel="noopener noreferrer" class="link">
-                {stat.sourceLabel}
-              </a>.
-            </p>
-          </li>
-        ))}
-      </ul>
     </section>
 
     <section class="section-tight" aria-labelledby="process-heading">
@@ -384,8 +267,7 @@ const seoData = [
 
     {/* -------------------------------------------------------------------
         WHY I'M DOING THIS. The one section that is not about you — it is
-        Paul's stake, stated plainly, student loan and all. Same two-column
-        structure as the enquiry block, so it reads as part of the document.
+        Paul's stake, stated plainly, student loan and all.
        ------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="why-heading">
       <h2 id="why-heading" class="kicker"><span class="kicker__num">07</span>Why I'm doing this</h2>
@@ -491,17 +373,18 @@ const seoData = [
             <label for="w-interest" class="field-label">What are you interested in?</label>
             <select id="w-interest" name="interested_in" class="field" data-enquire-target>
               <option value="Not sure yet">Not sure yet — help me pick</option>
-              <optgroup label="For yourself">
-                {personal.map((o) => (
-                  <option value={enquiryValue(o)}>{o.title}</option>
+              <optgroup label="For you & business owners">
+                {personalCourses.map((c) => (
+                  <option value={c.data.title}>{c.data.title}</option>
                 ))}
               </optgroup>
               <optgroup label="For your organisation">
-                {enterprise.map((o) => (
-                  <option value={enquiryValue(o)}>{o.title}</option>
+                {orgCourses.map((c) => (
+                  <option value={c.data.title}>{c.data.title}</option>
                 ))}
+                <option value="Something specific to my department">Something specific to my department</option>
+                <option value="Invite me as a speaker">Invite me as a speaker</option>
               </optgroup>
-              <option value="Something else">Something else</option>
             </select>
           </div>
 
@@ -537,12 +420,18 @@ const seoData = [
   (() => {
     const target = document.querySelector('[data-enquire-target]');
     if (!target) return;
+    const preselect = (value) => {
+      if (value && [...target.options].some((o) => o.value === value)) target.value = value;
+    };
+    // In-page doors preset on click.
     document.addEventListener('click', (e) => {
       const trigger = e.target.closest('[data-enquire]');
       if (!trigger) return;
-      const value = trigger.getAttribute('data-enquire');
-      if ([...target.options].some((o) => o.value === value)) target.value = value;
+      preselect(trigger.getAttribute('data-enquire'));
     });
+    // Arriving from a course page carries the course in ?enquire=.
+    const param = new URLSearchParams(location.search).get('enquire');
+    if (param) preselect(param);
   })();
 </script>
 
@@ -556,59 +445,6 @@ const seoData = [
     font-size: clamp(2.75rem, 1.25rem + 4.5vw, 5.75rem);
     line-height: 0.98;
     max-width: 18ch;
-  }
-
-  /* --- Router ------------------------------------------------------------ */
-
-  .routes {
-    border-top: 1px solid var(--line);
-    margin-top: 1rem;
-  }
-  .route {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.5rem 1.5rem;
-    border-bottom: 1px solid var(--line);
-    padding-block: 1.5rem;
-    text-decoration: none;
-    color: inherit;
-  }
-  @media (min-width: 64rem) {
-    .route {
-      grid-template-columns: minmax(0, 22rem) minmax(0, 1fr) auto;
-      align-items: baseline;
-      gap: 3rem;
-    }
-  }
-  .route__label {
-    font-family: var(--font-display);
-    font-size: var(--text-h3);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    color: var(--color-paper-50);
-  }
-  .route__line {
-    font-size: var(--text-small);
-    color: var(--color-paper-400);
-    line-height: 1.6;
-    max-width: 52ch;
-  }
-  .route__mark {
-    font-family: var(--font-mono);
-    color: var(--color-paper-600);
-    transition: transform 0.2s ease, color 0.2s ease;
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-  }
-  @media (min-width: 64rem) {
-    .route__mark { grid-column: 3; }
-  }
-  .route:hover .route__mark,
-  .route:focus-visible .route__mark {
-    color: var(--color-paper-50);
-    transform: translateX(4px);
   }
 
   /* --- The thesis diagram ------------------------------------------------
@@ -710,40 +546,41 @@ const seoData = [
     font-size: var(--text-small);
     color: var(--color-paper-400);
     line-height: 1.6;
-    max-width: 46ch;
+    max-width: 52ch;
   }
 
-  /* --- The fork ----------------------------------------------------------
-   * One vertical hairline is the entire device. No fills, no cards. */
+  /* --- The router --------------------------------------------------------
+   * Two audience columns split by one vertical hairline. Each door is a
+   * hairline row: a pain line, a short destination, an arrow. No fills. */
 
-  .fork {
+  .router {
     display: grid;
     gap: 3.5rem;
   }
   @media (min-width: 64rem) {
-    .fork {
+    .router {
       grid-template-columns: 1fr 1fr;
       gap: 0;
     }
-    .fork__col { padding-right: 3.5rem; }
-    .fork__col--right {
+    .router__group { padding-right: 3.5rem; }
+    .router__group + .router__group {
       border-left: 1px solid var(--line);
       padding-right: 0;
       padding-left: 3.5rem;
     }
   }
-  .fork__col--right {
+  .router__group + .router__group {
     border-top: 1px solid var(--line);
     padding-top: 3.5rem;
   }
   @media (min-width: 64rem) {
-    .fork__col--right {
+    .router__group + .router__group {
       border-top: 0;
       padding-top: 0;
     }
   }
-  .fork__title {
-    margin: 0.75rem 0 0;
+  .router__heading {
+    margin: 0;
     font-family: var(--font-display);
     font-size: var(--text-h2);
     font-weight: 500;
@@ -751,143 +588,63 @@ const seoData = [
     line-height: 1;
     color: var(--color-paper-50);
   }
-  .fork__body {
-    margin: 1rem 0 0;
-    font-size: var(--text-small);
-    color: var(--color-paper-400);
-    line-height: 1.65;
-    max-width: 44ch;
-  }
-  .fork__foot {
-    margin: 3rem 0 0;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--line);
-    font-size: var(--text-micro);
-    color: var(--color-paper-400);
-    line-height: 1.7;
-    max-width: 68ch;
-  }
-
-  .offer {
-    margin-top: 3rem;
-    padding-top: 1.75rem;
-    border-top: 1px solid var(--line);
-  }
-  .offer__title {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: var(--text-h3);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    color: var(--color-paper-50);
-  }
-  .offer__tagline {
-    margin: 0.5rem 0 0;
-    font-size: var(--text-small);
-    color: var(--color-paper-100);
-    line-height: 1.55;
-  }
-  .offer__who {
-    margin: 0.5rem 0 0;
-    font-size: var(--text-small);
-    color: var(--color-paper-400);
-    line-height: 1.55;
-  }
-  .offer__caveat {
-    margin: 1.25rem 0 0;
-    padding-left: 0.9rem;
-    border-left: 1px solid var(--line-strong);
-    font-size: var(--text-micro);
-    color: var(--color-paper-400);
-    line-height: 1.7;
-  }
-
-  /* The price ladder. Tabular figures so the column reads as a column. */
-  .ladder {
-    list-style: none;
-    margin: 1.5rem 0 0;
-    padding: 0;
-  }
-  .ladder__row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.25rem 1.5rem;
-    border-top: 1px solid var(--line);
-    padding-block: 0.85rem;
-    align-items: baseline;
-  }
-  .ladder__label {
-    font-size: var(--text-small);
-    color: var(--color-paper-50);
-  }
-  .ladder__detail {
-    grid-column: 1;
-    font-size: var(--text-micro);
-    color: var(--color-paper-400);
-    line-height: 1.5;
-  }
-  .ladder__price {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    justify-self: end;
-    text-align: right;
-    font-family: var(--font-display);
-    font-size: var(--text-h3);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    color: var(--color-paper-50);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-  .ladder__note {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: var(--text-micro);
-    letter-spacing: 0.04em;
-    font-weight: 400;
-    color: var(--color-paper-400);
-  }
-
-  .more {
-    border-block: 1px solid var(--line);
-    margin-top: 3rem;
-  }
-  .more summary {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1.5rem;
-    padding-block: 1.25rem;
-    cursor: pointer;
-    list-style: none;
+  .router__signal {
+    margin: 0.9rem 0 0;
     font-family: var(--font-mono);
     font-size: var(--text-micro);
     text-transform: uppercase;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.1em;
     color: var(--color-paper-400);
   }
-  .more summary::-webkit-details-marker { display: none; }
-  .more summary:hover { color: var(--color-paper-50); }
-  .more[open] summary { color: var(--color-paper-50); }
-
-  .rundown {
-    list-style: none;
-    margin: 0 0 1.25rem;
-    padding: 0;
-  }
-  .rundown li {
-    display: grid;
-    grid-template-columns: 3.5rem 1fr;
-    gap: 1rem;
+  .doors {
+    margin-top: 1.75rem;
     border-top: 1px solid var(--line);
-    padding-block: 0.85rem;
+  }
+  .door {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.2rem 1.25rem;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    padding-block: 1.15rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  .door__label {
+    grid-column: 1;
     font-size: var(--text-small);
-    color: var(--color-paper-100);
-    line-height: 1.5;
+    color: var(--color-paper-50);
+    line-height: 1.4;
+  }
+  .door__clarifier {
+    grid-column: 1;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.04em;
+    color: var(--color-paper-400);
+  }
+  .door__mark {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    justify-self: end;
+    align-self: center;
+    font-family: var(--font-mono);
+    color: var(--color-paper-600);
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  .door:hover .door__mark,
+  .door:focus-visible .door__mark {
+    color: var(--color-paper-50);
+    transform: translateX(4px);
+  }
+  .router__foot {
+    margin: 2.5rem 0 0;
+    font-size: var(--text-micro);
+    color: var(--color-paper-400);
+    line-height: 1.7;
   }
 
-  /* --- Fit / outcomes ---------------------------------------------------- */
+  /* --- Fit --------------------------------------------------------------- */
 
   .fitlist {
     list-style: none;
@@ -900,30 +657,6 @@ const seoData = [
     font-size: var(--text-small);
     color: var(--color-paper-100);
     line-height: 1.65;
-  }
-
-  /* Outcomes, folded into each offer so the card is self-contained: what it
-   * costs and what you walk out holding sit in one block, not two sections. */
-  .offer__take { margin-top: 1.75rem; }
-  .offer__take-label {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--color-paper-400);
-  }
-  .offer__take-list {
-    list-style: none;
-    margin: 0.5rem 0 0;
-    padding: 0;
-  }
-  .offer__take-list li {
-    border-top: 1px solid var(--line);
-    padding-block: 0.7rem;
-    font-size: var(--text-small);
-    color: var(--color-paper-100);
-    line-height: 1.55;
   }
 
   /* --- Stats ------------------------------------------------------------- */
@@ -1002,17 +735,13 @@ const seoData = [
 
   /* --- Section spine ----------------------------------------------------
    * A mono numeral in front of each kicker turns a stack of same-looking
-   * sections into numbered movements: you can see how far through you are.
-   * Same paper-400 as the label (contrast-safe); the rule still does the
-   * separating. */
+   * sections into numbered movements: you can see how far through you are. */
   .kicker__num {
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.1em;
   }
 
-  /* --- Why I'm doing this ------------------------------------------------
-   * Plain prose at a comfortable reading measure. The statement carries the
-   * weight; these paragraphs just have to be legible and unhurried. */
+  /* --- Why I'm doing this ------------------------------------------------ */
   .why-prose p {
     margin: 0 0 1.35rem;
     max-width: 60ch;

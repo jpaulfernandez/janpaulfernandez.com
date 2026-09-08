@@ -1,0 +1,306 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { course, breadcrumbs } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const courses = await getCollection('courses');
+  return courses.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const c = entry.data;
+const path = `/workshops/${entry.id}/`;
+// Carry the course into the landing form so arriving at #enquire preselects it.
+const enquireHref = `/workshops/?enquire=${encodeURIComponent(c.title)}#enquire`;
+
+const seoData = [
+  course({ title: c.title, description: c.tagline, url: path }),
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Workshops', url: '/workshops/' },
+    { name: c.title, url: path },
+  ]),
+];
+
+const meta = [
+  { label: 'Duration', value: c.duration },
+  { label: 'Format', value: c.formatLabel },
+  { label: "Who it's for", value: c.whoFor },
+  { label: 'Approach', value: c.approach },
+];
+---
+
+<BaseLayout title={c.title} description={c.tagline} ogImage={`/og/workshops-${entry.id}.png`}>
+  <JsonLd data={seoData} slot="head" />
+
+  <section class="page-head" data-hero>
+    <div class="shell">
+      <p class="mono-micro flex items-center gap-3" data-reveal="fade">
+        <a href="/workshops/" class="crumb">Workshops</a>
+        <span aria-hidden="true">/</span>
+        <span class="text-paper-400">{c.title}</span>
+      </p>
+
+      <p class="mono-micro mt-8" data-reveal="up">
+        Course · Interactive · {c.duration}
+      </p>
+      <h1 class="display course-title mt-4" data-reveal="up" data-reveal-delay="0.05">{c.title}</h1>
+      <p class="lead mt-6 max-w-[46ch]" data-reveal="up" data-reveal-delay="0.12">{c.tagline}</p>
+
+      <div class="mt-10" data-reveal="up" data-reveal-delay="0.18">
+        <a href={enquireHref} class="btn btn-primary">Talk to me →</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell pb-24 md:pb-32">
+    {/* Hairline meta strip — Codecademy pattern, no fill. */}
+    <dl class="meta" data-reveal="up">
+      {meta.map((m) => (
+        <div class="meta__cell">
+          <dt class="meta__label">{m.label}</dt>
+          <dd class="meta__val">{m.value}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <section class="section-tight" aria-labelledby="take-heading">
+      <h2 id="take-heading" class="kicker">You'll leave with</h2>
+      <ul class="rows-list mt-8" data-reveal-stagger>
+        {c.outcomes.map((line) => <li data-reveal="up">{line}</li>)}
+      </ul>
+    </section>
+
+    <section class="section-tight" aria-labelledby="cover-heading">
+      <h2 id="cover-heading" class="kicker">What we cover</h2>
+      <ol class="outline mt-8" data-reveal-stagger>
+        {c.outline.map((row, i) => (
+          <li data-reveal="up">
+            <span class="outline__num mono-micro">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <p class="outline__step">{row.step}</p>
+              <p class="outline__item">{row.item}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="cover-note" data-reveal="up"><span aria-hidden="true">› </span>{c.approachNote}</p>
+      {c.caveat && (
+        <p class="caveat" data-reveal="up"><span aria-hidden="true">⚠ </span>{c.caveat}</p>
+      )}
+    </section>
+
+    <section class="section-tight" aria-labelledby="price-heading">
+      <h2 id="price-heading" class="kicker">Formats &amp; price</h2>
+      <ul class="ladder mt-8" data-reveal-stagger>
+        {c.formats.map((f) => (
+          <li class="ladder__row" data-reveal="up">
+            <span class="ladder__label">{f.label}</span>
+            <span class="ladder__detail">{f.detail}</span>
+            <span class="ladder__price">
+              {f.price}
+              {f.priceNote && <span class="ladder__note">{f.priceNote}</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up">
+        <a href={enquireHref} class="btn btn-primary">Talk to me →</a>
+        <a href="/workshops/" class="link-back">← Back to all workshops</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: clamp(7rem, 5rem + 8vw, 10rem) clamp(2rem, 1.5rem + 3vw, 3.5rem);
+  }
+  .course-title {
+    font-size: clamp(2.25rem, 1.25rem + 3.75vw, 4.5rem);
+    line-height: 1.02;
+    max-width: 20ch;
+  }
+  .crumb {
+    color: var(--color-paper-400);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .crumb:hover { color: var(--color-paper-50); }
+
+  /* --- Hairline meta strip ---------------------------------------------- */
+  .meta {
+    margin: 0;
+    border-block: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (min-width: 48rem) {
+    .meta { grid-template-columns: repeat(4, 1fr); }
+  }
+  .meta__cell {
+    padding: 1.5rem 1.5rem 1.5rem 0;
+  }
+  .meta__cell + .meta__cell {
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 48rem) {
+    .meta__cell {
+      border-top: 0;
+      padding: 1.75rem 1.5rem 1.75rem 0;
+    }
+    .meta__cell + .meta__cell {
+      border-top: 0;
+      border-left: 1px solid var(--line);
+      padding-left: 1.5rem;
+    }
+  }
+  .meta__label {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-paper-400);
+  }
+  .meta__val {
+    margin: 0.6rem 0 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-paper-50);
+  }
+
+  /* --- Outcome rows ----------------------------------------------------- */
+  .rows-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .rows-list li {
+    border-top: 1px solid var(--line);
+    padding-block: 1rem;
+    font-size: var(--text-small);
+    color: var(--color-paper-100);
+    line-height: 1.65;
+  }
+  .rows-list li:last-child { border-bottom: 1px solid var(--line); }
+
+  /* --- Outline ---------------------------------------------------------- */
+  .outline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .outline li {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 1rem;
+    border-top: 1px solid var(--line);
+    padding-block: 1.25rem;
+  }
+  .outline li:last-child { border-bottom: 1px solid var(--line); }
+  .outline__num {
+    color: var(--color-paper-400);
+    padding-top: 0.15rem;
+  }
+  .outline__step {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-paper-50);
+  }
+  .outline__item {
+    margin: 0.4rem 0 0;
+    font-size: var(--text-small);
+    color: var(--color-paper-400);
+    line-height: 1.6;
+    max-width: 54ch;
+  }
+  .cover-note {
+    margin: 1.5rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-paper-100);
+    line-height: 1.6;
+  }
+  .caveat {
+    margin: 1.5rem 0 0;
+    padding-left: 0.9rem;
+    border-left: 1px solid var(--line-strong);
+    font-size: var(--text-micro);
+    color: var(--color-paper-400);
+    line-height: 1.7;
+    max-width: 62ch;
+  }
+
+  /* --- Price ladder (shares the /workshops vocabulary) ------------------ */
+  .ladder {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ladder__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 1.5rem;
+    border-top: 1px solid var(--line);
+    padding-block: 1rem;
+    align-items: baseline;
+  }
+  .ladder__row:last-child { border-bottom: 1px solid var(--line); }
+  .ladder__label {
+    font-size: var(--text-small);
+    color: var(--color-paper-50);
+  }
+  .ladder__detail {
+    grid-column: 1;
+    font-size: var(--text-micro);
+    color: var(--color-paper-400);
+    line-height: 1.5;
+  }
+  .ladder__price {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    justify-self: end;
+    text-align: right;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--color-paper-50);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ladder__note {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.04em;
+    font-weight: 400;
+    color: var(--color-paper-400);
+  }
+
+  .link-back {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-paper-400);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .link-back:hover { color: var(--color-paper-50); }
+</style>

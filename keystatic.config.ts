@@ -174,6 +174,60 @@ export default config({
         ),
       },
     }),
+    courses: collection({
+      label: 'Courses',
+      slugField: 'slug',
+      path: 'src/content/courses/*',
+      format: { data: 'json' },
+      schema: {
+        slug: fields.slug({ name: { label: 'Slug', description: 'URL segment, e.g. ai-fluency' } }),
+        title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+        tagline: fields.text({ label: 'Tagline (one line under the H1)', validation: { isRequired: true } }),
+        audiences: fields.multiselect({
+          label: 'Audiences',
+          description: 'Drives which landing section lists it and how the form groups it',
+          options: [
+            { label: 'Personal', value: 'personal' },
+            { label: 'Business', value: 'business' },
+            { label: 'Organization', value: 'org' },
+          ],
+        }),
+        duration: fields.text({ label: 'Duration (e.g. "2 hours")', validation: { isRequired: true } }),
+        formatLabel: fields.text({ label: 'Format (meta strip, e.g. "1-on-1 / group")', validation: { isRequired: true } }),
+        whoFor: fields.text({ label: "Who it's for (meta strip, short)", validation: { isRequired: true } }),
+        approach: fields.text({ label: 'Approach (meta strip, e.g. "hands-on")', validation: { isRequired: true } }),
+        approachNote: fields.text({ label: 'Approach note (one line in the body)', multiline: true, validation: { isRequired: true } }),
+        outcomes: fields.array(fields.text({ label: 'Outcome' }), {
+          label: "You'll leave with",
+          itemLabel: (item) => item.value || 'Outcome',
+        }),
+        outline: fields.array(
+          fields.object({
+            step: fields.text({ label: 'Step', validation: { isRequired: true } }),
+            item: fields.text({ label: 'What happens', multiline: true, validation: { isRequired: true } }),
+          }),
+          {
+            label: 'What we cover (outline)',
+            itemLabel: (item) => item.fields.step.value || 'Step',
+          }
+        ),
+        formats: fields.array(
+          fields.object({
+            label: fields.text({ label: 'Format', validation: { isRequired: true } }),
+            detail: fields.text({ label: 'Detail (length, place, cap)', validation: { isRequired: true } }),
+            price: fields.text({ label: 'Price', validation: { isRequired: true } }),
+            priceNote: fields.text({ label: 'Price note (optional)', validation: { isRequired: false } }),
+          }),
+          {
+            label: 'Formats & price',
+            itemLabel: (item) => item.fields.label.value || 'Format',
+          }
+        ),
+        priceSignal: fields.text({ label: 'Price signal (e.g. "from ₱2,500")', validation: { isRequired: true } }),
+        caveat: fields.text({ label: 'Honest caveat (optional)', multiline: true, validation: { isRequired: false } }),
+        order: fields.number({ label: 'Order', validation: { isRequired: true } }),
+      },
+    }),
     projects: collection({
       label: 'Projects',
       slugField: 'slug',

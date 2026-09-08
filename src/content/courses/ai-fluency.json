@@ -45,5 +45,19 @@
     }
   ],
   "priceSignal": "from ₱2,500",
+  "faq": [
+    {
+      "q": "Do I need any background in tech?",
+      "a": "None. If you can use a phone and a browser, you can do this. We start from what these tools are and build up from there."
+    },
+    {
+      "q": "I already use ChatGPT every day. Is this too basic for me?",
+      "a": "Probably not. Most daily users were never shown the media-literacy half — spotting a deepfake or a fabricated citation — or how to get consistent results instead of lucky ones. We work on your real tasks, so it meets you where you are."
+    },
+    {
+      "q": "What do I need to bring?",
+      "a": "One real task from your week — a document, an email thread, a decision you're chewing on — and whatever AI tool you already have. That's it."
+    }
+  ],
   "order": 1
 }

@@ -126,8 +126,7 @@ describe('faq', () => {
     expect(blob).not.toMatch(/\bcohort\b|open-cohort|seat in a cohort/);
   });
 
-  it('covers language, tools, receipts, refunds, and the 30-day check-in', () => {
-    expect(blob).toMatch(/english|tagalog/);
+  it('covers tools, receipts, refunds, and the 30-day check-in', () => {
     expect(blob).toMatch(/chatgpt|copilot|claude/);
     expect(blob).toMatch(/official receipt/);
     expect(blob).toMatch(/refund|payment is not taken|no payment/);

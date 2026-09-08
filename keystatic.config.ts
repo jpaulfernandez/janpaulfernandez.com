@@ -225,6 +225,16 @@ export default config({
         ),
         priceSignal: fields.text({ label: 'Price signal (e.g. "from ₱2,500")', validation: { isRequired: true } }),
         caveat: fields.text({ label: 'Honest caveat (optional)', multiline: true, validation: { isRequired: false } }),
+        faq: fields.array(
+          fields.object({
+            q: fields.text({ label: 'Question', validation: { isRequired: true } }),
+            a: fields.text({ label: 'Answer', multiline: true, validation: { isRequired: true } }),
+          }),
+          {
+            label: 'FAQ (specific to this course)',
+            itemLabel: (item) => item.fields.q.value || 'FAQ Item',
+          }
+        ),
         order: fields.number({ label: 'Order', validation: { isRequired: true } }),
       },
     }),

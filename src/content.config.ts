@@ -125,6 +125,14 @@ const courses = defineCollection({
     ),
     priceSignal: z.string(),
     caveat: z.string().optional(),
+    faq: z
+      .array(
+        z.object({
+          q: z.string(),
+          a: z.string(),
+        })
+      )
+      .optional(),
     order: z.number(),
   }),
 });

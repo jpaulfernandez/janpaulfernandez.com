@@ -195,12 +195,8 @@ export const faqItems: WorkshopFaq[] = [
     a: "I'm booking 1-on-1s and small groups now — message me and we'll hold a date. A fixed public schedule is not up yet; ask and I'll tell you the next session I can run. Everything runs in Philippine Time (PHT, UTC+8), remote or in Manila.",
   },
   {
-    q: 'English or Tagalog? What does remote mean if I am in Cebu or Dubai?',
-    a: 'English. I switch to Tagalog in the room when it helps. Remote means Zoom in PHT — Cebu or Dubai is fine; the clock is still Manila.',
-  },
-  {
-    q: 'Do I need a ChatGPT Plus account, and who pays?',
-    a: 'Bring whatever you already use — ChatGPT, Copilot, Claude, or Gemini. A Microsoft-only shop is fine. You use your own account. Team sessions confirm tools on the pre-flight.',
+    q: 'Do I need a ChatGPT or any AI subscription?',
+    a: 'A paid subscription helps, but it is not required — the free tiers of ChatGPT, Copilot, Claude, or Gemini are enough to follow along, and a paid plan just gives you more room. Either way you use your own account, whatever you already have. Team sessions confirm tools on the pre-flight.',
   },
   {
     q: 'How do I pay, and can I get an official receipt?',

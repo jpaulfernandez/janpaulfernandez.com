@@ -34,5 +34,19 @@
     }
   ],
   "priceSignal": "from ₱2,500",
+  "faq": [
+    {
+      "q": "Is this a sales pitch for tools or software?",
+      "a": "No. I have nothing to sell you afterwards — no platform, no subscription, no affiliate links. We work on your operation and you leave with a plan, not a shopping list."
+    },
+    {
+      "q": "What should I bring, and who should join?",
+      "a": "Bring how your business actually runs — where time and money go — and, ideally, one key person who knows the day-to-day. Rough numbers are fine; you don't need a finance report."
+    },
+    {
+      "q": "Will you tell me exactly what to build?",
+      "a": "I help you rank where AI is likely to pay and design a 30-day test with a named owner. What to fund is your call — the point is to make it an informed one, not a guess."
+    }
+  ],
   "order": 2
 }

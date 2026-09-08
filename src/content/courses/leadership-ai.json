@@ -44,5 +44,19 @@
     }
   ],
   "priceSignal": "Ask for our minimum",
+  "faq": [
+    {
+      "q": "Who from our side should be in the room?",
+      "a": "Decision-makers — owners, founders, GMs, department heads. The people who can actually approve a use case and own the ground rules. Bring the ones who'll be held to the outcome."
+    },
+    {
+      "q": "Do we walk out with a finished, compliant AI policy?",
+      "a": "No — you walk out with a real first draft your own people wrote, plus an open-issues list. It then goes to your DPO, Legal, and InfoSec. I run the exercise; I don't author or certify the policy."
+    },
+    {
+      "q": "How is this different from the vendors pitching us a platform?",
+      "a": "They sell you a product; I help you decide what's worth funding and set the rules before you spend. There's a published floor, and nothing to buy from me afterwards."
+    }
+  ],
   "order": 4
 }

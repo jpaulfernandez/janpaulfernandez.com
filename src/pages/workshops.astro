@@ -132,7 +132,9 @@ const seoData = [
                 <a href={door.href} class="door" data-enquire={door.enquire}>
                   <span class="door__label">{door.label}</span>
                   <span class="door__clarifier">{door.clarifier}</span>
-                  <span class="door__mark" aria-hidden="true">→</span>
+                  <span class="door__cta">
+                    {door.href.startsWith('/workshops/') ? "See what you'll learn" : 'Enquire'}<span aria-hidden="true"> →</span>
+                  </span>
                 </a>
               ))}
             </div>
@@ -140,9 +142,10 @@ const seoData = [
         ))}
       </div>
 
-      <p class="router__foot" data-reveal="up">
-        Each door opens a course page with the outline, format, and a from-price.
-      </p>
+      <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up">
+        <a href="#enquire" class="btn btn-primary">Talk to me</a>
+        <a href="mailto:jpaul.fernandez18@gmail.com" class="link-arrow">Or email directly</a>
+      </div>
     </section>
 
     {/* -------------------------------------------------------------------
@@ -623,25 +626,30 @@ const seoData = [
     letter-spacing: 0.04em;
     color: var(--color-paper-400);
   }
-  .door__mark {
+  .door__cta {
     grid-column: 2;
     grid-row: 1 / span 2;
     justify-self: end;
     align-self: center;
     font-family: var(--font-mono);
-    color: var(--color-paper-600);
-    transition: transform 0.2s ease, color 0.2s ease;
-  }
-  .door:hover .door__mark,
-  .door:focus-visible .door__mark {
-    color: var(--color-paper-50);
-    transform: translateX(4px);
-  }
-  .router__foot {
-    margin: 2.5rem 0 0;
     font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
     color: var(--color-paper-400);
-    line-height: 1.7;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+  .door__cta span {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  .door:hover .door__cta,
+  .door:focus-visible .door__cta {
+    color: var(--color-paper-50);
+  }
+  .door:hover .door__cta span,
+  .door:focus-visible .door__cta span {
+    transform: translateX(3px);
   }
 
   /* --- Fit --------------------------------------------------------------- */

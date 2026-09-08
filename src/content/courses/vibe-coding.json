@@ -46,5 +46,19 @@
     }
   ],
   "priceSignal": "from ₱2,500",
+  "faq": [
+    {
+      "q": "Do I really not need to know how to code?",
+      "a": "Correct — you describe what you want in plain language and the AI writes the code. The 'web basics' half is just enough vocabulary to steer it and to know when something's off."
+    },
+    {
+      "q": "What do I need before the session?",
+      "a": "A laptop, an idea for one small thing you want to build, and an account on an AI build tool — I'll point you to a free one beforehand. We set the rest up together."
+    },
+    {
+      "q": "Will what I build actually be online?",
+      "a": "Yes — you leave with one real thing deployed live, plus the setup to keep building on your own. Just keep the honest limit above in mind."
+    }
+  ],
   "order": 3
 }

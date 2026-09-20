@@ -35,14 +35,32 @@ const TOPIC_INTROS: Record<string, string> = {
   workflows: 'How the work gets done — AI-assisted workflows, research agents, and the process behind the output.',
 };
 
+// T30/A4. The <title> used to be the raw slug — "#ai — Paul Fernandez". A
+// hash-prefixed slug is not a phrase anyone types or an LLM matches against a
+// topical query. The visible h1 keeps the #tag treatment; this is for the
+// title tag, the breadcrumb, and the CollectionPage name.
+const TOPIC_NAMES: Record<string, string> = {
+  ai: 'AI',
+  culture: 'Culture',
+  engineering: 'Engineering',
+  media: 'Media',
+  philosophy: 'Philosophy',
+  product: 'Product',
+  psychology: 'Psychology',
+  technology: 'Technology',
+  workflows: 'Workflows',
+};
+
 const { posts, topic } = Astro.props;
 
 const intro = TOPIC_INTROS[topic] ?? `Essays and notes tagged #${topic}.`;
+// Title-case is wrong for "ai"; fall back to it only for an unlisted topic.
+const topicName = TOPIC_NAMES[topic] ?? topic.charAt(0).toUpperCase() + topic.slice(1);
 const description = `${intro} ${posts.length} ${posts.length === 1 ? 'post' : 'posts'} by Paul Fernandez.`;
 
 const seoData = [
   collectionPage({
-    title: `#${topic}`,
+    title: `Writing on ${topicName}`,
     description,
     url: `/topics/${topic}/`,
     items: posts.map((post) => ({
@@ -53,12 +71,12 @@ const seoData = [
   breadcrumbs([
     { name: 'Home', url: '/' },
     { name: 'Writing', url: '/thoughts/' },
-    { name: `#${topic}`, url: `/topics/${topic}/` },
+    { name: topicName, url: `/topics/${topic}/` },
   ]),
 ];
 ---
 
-<BaseLayout title={`#${topic}`} description={description}>
+<BaseLayout title={`Writing on ${topicName}`} description={description}>
   <JsonLd slot="head" data={seoData} />
 
   <section class="page-head" data-hero>

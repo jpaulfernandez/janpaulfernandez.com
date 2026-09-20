@@ -4,7 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostListItem from '../../components/PostListItem.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import { getPublishedThoughts } from '../../lib/thoughts';
-import { blog, breadcrumbs } from '../../lib/schema';
+import { blog, breadcrumbs, person } from '../../lib/schema';
 
 const allPosts = await getPublishedThoughts();
 
@@ -14,7 +14,8 @@ const allTopics = Array.from(
 ).sort();
 
 const description =
-  'Essays and notes from Paul Fernandez — on technology, economy, and psychology.';
+  'Essays and notes by Paul Fernandez on technology, economics and psychology — '
+  + 'what AI actually changes, how things get built, and why people do what they do.';
 
 const seoData = [
   blog({
@@ -33,6 +34,10 @@ const seoData = [
     { name: 'Home', url: '/' },
     { name: 'Writing', url: '/thoughts/' },
   ]),
+// T30/A2. `person()` rides along so the `@id` this page references actually
+// resolves here. Google parses structured data per-document, so without it the
+// reference dangles and the page publishes an entity with no name.
+  person(),
 ];
 ---
 

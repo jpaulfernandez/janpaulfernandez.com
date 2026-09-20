@@ -58,6 +58,17 @@ function contentLastmod() {
     }
   }
 
+  // /now/ is a dated journal, so its freshness is the newest entry's date —
+  // a real, content-owned signal, same as the thoughts above. The individual
+  // entries have no URLs of their own; they all live on this one page.
+  // `courses` is deliberately NOT read here: the collection carries no date
+  // field, and inventing one would be exactly the build-timestamp signal this
+  // function exists to avoid.
+  for (const file of readdirSync('src/content/now').filter((f) => /\.mdx?$/.test(f))) {
+    const src = readFileSync(`src/content/now/${file}`, 'utf-8');
+    bump('/now/', field(src, 'date'));
+  }
+
   for (const file of readdirSync('src/content/gallery').filter((f) => f.endsWith('.json'))) {
     const data = JSON.parse(readFileSync(`src/content/gallery/${file}`, 'utf-8'));
     const date = String(data.publishedDate ?? '').slice(0, 10);

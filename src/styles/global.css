@@ -333,12 +333,15 @@
   margin-inline: auto;
   padding-inline: var(--shell-x);
 }
-/* Phase 29: 46rem → 44rem. At the old width the prose column ran ~77
- * characters, above the range a reader can track without losing the line;
- * 44rem at 18px lands at ~69. */
+/* Reading column: 58rem (928px). With desktop padding (--shell-x: 2.5rem = 80px total),
+ * inner usable width is 53rem (848px). At 44rem, inner width was compressed to
+ * 39rem (624px), which crushed article titles into 4 lines, squeezed 4-column
+ * Markdown tables, and rendered architecture diagrams illegible. 58rem restores
+ * comfortable diagram legibility and table breathing room while keeping line lengths
+ * well within readable bounds. */
 .shell-narrow {
   width: 100%;
-  max-width: 44rem;             /* 704 — the reading column */
+  max-width: 58rem;             /* 928 — comfortable article column */
   margin-inline: auto;
   padding-inline: var(--shell-x);
 }

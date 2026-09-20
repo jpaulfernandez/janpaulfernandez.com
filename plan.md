@@ -873,6 +873,11 @@ the site passed AA everywhere and was still tiring to read.
 - [x] (2026-09-09) **Verify:** `astro check` / `npm test` / `npm run build` green; contrast
       ratios remeasured on the new ground; no `#FFFFFF` left as a type colour;
       no `text-paper-400` left on a full sentence.
+- [x] (2026-09-20) **Fix article reading column:** Widened `.shell-narrow` from 44rem → 58rem (928px).
+      The 44rem target overlooked `.shell-narrow`'s `padding-inline: var(--shell-x)` (80px total
+      on desktop), which squeezed the usable column to 39rem (624px). This crushed article titles
+      into 4 lines, squeezed 4-column tables, and shrunk architecture diagrams below legible size.
+      58rem yields 848px inner width, giving diagrams, tables, and headlines breathing room.
 
 ## Out of scope (v2 — do not build)
 

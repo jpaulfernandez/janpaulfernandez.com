@@ -54,7 +54,8 @@ Phases are vertical slices: each ends with a deployable, visibly-improved site �
 
 ## Blocked-on-Paul items (spec §10)
 
-- **Cloudflare is blocking the AI crawlers the spec targets (Critical, 2026-09-04 review, not fixable in this repo).** `public/robots.txt` correctly allows GPTBot / ClaudeBot / PerplexityBot / Google-Extended, but Cloudflare (which now fronts Vercel) injects a managed block **above** those rules that disallows `GPTBot`, `ClaudeBot`, `CCBot`, `Google-Extended`, `meta-externalagent`, `Amazonbot`, `Applebot-Extended`, `Bytespider`, plus `Content-Signal: ai-train=no`. Verified live 2026-09-04 by fetching the served robots.txt. The duplicate `Allow` groups below do not reliably win — merged-group behaviour is crawler-defined. This directly contradicts spec §1 ("ranking/cited in ChatGPT, Perplexity, AI Overviews") and §7.1. **Paul must fix this in the Cloudflare dashboard (AI Audit / managed robots.txt settings)** — no repo change can override it. Once cleared, optionally name the additional crawlers explicitly in `public/robots.txt`.
+- [x] **RESOLVED (verified live 2026-09-20) — Cloudflare is no longer blocking AI crawlers.** The 2026-09-04 review found a Cloudflare managed block injected *above* the repo's rules, disallowing `GPTBot`, `ClaudeBot`, `CCBot`, `Google-Extended`, `meta-externalagent`, `Amazonbot`, `Applebot-Extended`, `Bytespider`, plus `Content-Signal: ai-train=no`. Re-verified on 2026-09-20 by fetching the served file and headers: `https://www.janpaulfernandez.com/robots.txt` now returns **200 with exactly the repo's content** — no managed block, no injected disallows. Response headers carry **no** `Content-Signal` and **no** `X-Robots-Tag`, and the apex still 308s to www. Spec §1 / §7.1 are satisfied: GPTBot, ClaudeBot, PerplexityBot and Google-Extended are all served `Allow: /`. Paul appears to have cleared this in the Cloudflare dashboard. **Optional follow-up:** the repo file names only four crawlers explicitly — `meta-externalagent`, `Applebot-Extended`, `CCBot` and `OAI-SearchBot` fall through to `User-agent: *` (which allows them), so this is cosmetic, not a defect.
+
 - **GA4 vs. spec §8 (decision needed, not a bug).** `BaseLayout` ships the gtag script on every page. Added deliberately in Phase 6, but spec §8 calls for Plausible/Umami with "no cookie banner", it conflicts with the zero-client-JS stance, and GA4 technically wants consent under ePrivacy/GDPR. Left in place pending Paul's call; the colophon copy was corrected to describe what actually ships.
 - **Unconsumed CMS fields (content-model decision, not a bug).** `services.icon`, `gallery.featured`, `gallery.licensingAvailable`, and `thoughts.stage` (passed to `PostListItem`, then ignored) are authored but never rendered, and the `seo` singleton is read by nothing. Each should be either rendered or deleted from `keystatic.config.ts` and `src/content.config.ts` **together** — schema parity is a hard constraint.
 
@@ -74,6 +75,7 @@ Track here; tasks note where these are needed. Use placeholders until provided, 
 - [x] Contact email for form (needed by T15)
 - [x] Exact PSBank / RightCrowd / Rappler dates (needed by T06)
 - [x] Topics for seed essays (needed by T14)
+- [ ] **BOOKKEEPING (spotted 2026-09-20): T05's checkbox in Phase 1 is still `[ ]`** even though its deploy wiring is recorded as DONE below and prod has been verified repeatedly since. Left unchecked deliberately — per rule 5 nobody should tick a box they have not walked the DoD for. Someone should open [tasks/task-05-deploy.md](tasks/task-05-deploy.md), confirm each item, and either check it or record what is genuinely outstanding. Right now Phase 1 reads as incomplete and the "work the first unchecked task" rule points any agent at a task that is probably already done.
 - [x] **Deploy wiring for T05** — DONE (2026-09-02). Repo lives at `github.com:jpaulfernandez/janpaulfernandez.com`; Vercel project `janpaulfernandez-com` is Git-connected — push-to-main triggers a production deploy (verified with Phase 13: commit `c20c9f0` deployed and aliased to janpaulfernandez.com + www in ~2 min). Prod checks: all routes 200, robots 200, sitemap 200, apex → www 308 (single canonical host: **www**, note this supersedes the original "www→apex" note). `/keystatic` serves 200 in prod **by intent** — `KEYSTATIC_URL` + `KEYSTATIC_GITHUB_CLIENT_ID/SECRET` + `KEYSTATIC_SECRET` were configured on 2026-07-06, making it the live git-based CMS dashboard; the earlier "keystatic should 404" expectation is superseded. A `SKIP_KEYSTATIC=1` production env var was briefly added by mistake and removed after confirming the auth setup.
 
 Social profiles
@@ -878,6 +880,106 @@ the site passed AA everywhere and was still tiring to read.
       on desktop), which squeezed the usable column to 39rem (624px). This crushed article titles
       into 4 lines, squeezed 4-column tables, and shrunk architecture diagrams below legible size.
       58rem yields 848px inner width, giving diagrams, tables, and headlines breathing room.
+
+## Phase 30 — SEO/GEO correctness & entity pass (planned 2026-09-20)
+
+Full audit in [seo-strategy.md](seo-strategy.md); task detail in
+[T30](tasks/task-30-seo-entity.md). Scored **SEO A− / GEO C+** — technical hygiene
+is already excellent, the gap is entity thinness. Three defects were verified
+against built output in `dist/client/`, not inferred from source, which is how they
+survived earlier reviews.
+
+**Part A — correctness. Unblocked; ship on its own.**
+
+- [x] (2026-09-20) **A1. ProfilePage URL collision.** `profilePage()` hardcodes `url: SITE_URL`
+      and is called from *both* `index.astro` and `about.astro`, so two documents
+      claim to be the ProfilePage for the same URL. Give it `url` + `name` params,
+      drop the call from the homepage (a hub, not a profile), emit it on `/about/`
+      only — which is the use case Google's docs actually name.
+- [x] (2026-09-20) **A2. Dangling `@id` references.** Article pages emit only `Article` +
+      `BreadcrumbList`, so `author: {"@id": …#person}` resolves to nothing and every
+      post publishes an author with **no name**. Same on `Course.provider`,
+      `Service.provider`, `ImageGallery.author`, `Blog.author`. Define `person()`
+      on those pages too — same `@id`, so the graph still collapses to one entity.
+- [x] (2026-09-20) **A3. `Article.image` is the OG card, not the photograph.** `ArticleLayout`
+      sets `/og/{id}.png` unconditionally; two posts have real covers with authored
+      `coverAlt` being overridden by a 1200×630 text card. Prefer the cover, fall
+      back to the card. `ogImage` stays the card.
+- [x] (2026-09-20) **A4. Nine topic titles are slugs** — `<title>#ai — Paul Fernandez</title>`.
+      Not a phrase anyone types. Needs a display-name map (`ai` → `AI`). `<title>`
+      only; the visible `h1` treatment stays if it is deliberate.
+- [x] (2026-09-20) **A5. Seven thin meta descriptions** (48–82 chars), four of them commercial
+      workshop pages. Rewrite to 140–160 — the article descriptions (129–148) are
+      already the right register. `/thanks/` is noindexed, leave it.
+- [x] (2026-09-20) **A6. Sitemap `lastmod` covers 21/32 URLs.** Extend `contentLastmod()` to the
+      `now` collection (has a real `date`). **Skip `courses`** — no date field, and
+      inventing one defeats the purpose. Keep `/`, `/about/`, `/colophon/`,
+      `/projects/` bare: the existing "a build-time timestamp is a worse signal than
+      none" reasoning is correct and must survive the change.
+
+**Part B — entity. Needs Paul's input first (see Blocked-on-Paul).**
+
+- [x] (2026-09-20) **B1. Enrich the `Person` node.** The highest-leverage item in the audit: the
+      Person node and its `sameAs` chain is the mechanism 2026 E-E-A-T runs on, and
+      it is currently a stub — no `description`, two `sameAs` (one a personal
+      Instagram), `jobTitle: 'Tech Leader'` contradicting `/about/` and `llms.txt`
+      which both say IT Manager at MMDC, five generic `knowsAbout` nouns, and
+      `worksFor`/`alumniOf` as bare unlinkable strings.
+- [ ] **B2. Create a Wikidata item** and add the Q-ID to `sameAs`. Off-site, no
+      code, and the single highest-leverage action available — Wikidata is the
+      canonical graph Google resolves knowledge panels against, and roughly half of
+      personal panels no longer need Wikipedia.
+
+**Part C — Course `offers`. Specified in T30 §4, deliberately NOT authorised.**
+
+- [ ] **C1. `hasCourseInstance` + `offers` on workshop pages — HOLD.** Two
+      corrections to the audit: the data already exists (`duration`, `formatLabel`,
+      `formats[].price` are all in the `courses` collection, so this needs **no**
+      config change and carries no schema-parity risk) — but it escalates an
+      uncleared commercial claim. BIR registration, official receipts and MMDC
+      employer clearance are still open below, and every price is recorded there as
+      an untested hypothesis. Prices sit in prose today; `offers` makes them
+      machine-readable and rich-result eligible. Business decision, not an SEO one.
+      **Do not build until those blockers clear.**
+
+**What the build surfaced that the audit missed.** Both were caught by rebuilding
+and re-parsing every `ld+json` block, not by reading source — the same method that
+found the originals.
+
+- [x] (2026-09-20) **There were THREE ProfilePage emitters, not two.** `/now/` was the
+      third, also pointed at the home page's URL; the audit sampled four pages and
+      missed it. Its intent was right — `dateModified` from the newest entry — so
+      rather than deleting the node it moved to a new `webPage()` builder, which is
+      what the page actually is. Found by the type checker after A1 changed the
+      signature.
+- [x] (2026-09-20) **`/about/` was pinned to the pre-fix values.** It called
+      `person({ knowsAbout: [...] })` with the five generic nouns inline, so the
+      strongest entity page on the site would have kept shipping them after B1.
+      Overrides removed; `person()` defaults are the single source. Caught only
+      because the built Person node was re-read after the change.
+- [x] (2026-09-20) **`/workshops/` (the hub) had a dangling `@id` too** — `Service.provider`,
+      not in A2's original five-file list.
+- [x] (2026-09-20) **`/thoughts/` was an eighth thin description** (78 chars) that the audit
+      table under-reported. Fixed with the other seven; now 156.
+
+**Known and deliberately left:** `/about/` (95), `/projects/` (90) and
+`/work-with-me/` (90) sit under the 140–160 target but were not in scope and are
+defensible as-is. The LLM post's `<title>` is 74 chars — over Google's ~60 cut, but
+that is the post's own title and renaming Paul's work is not a mechanical fix.
+
+- [x] (2026-09-20) **Verified:** `npx astro check` 0 errors · `npm test` 67 passing (was 59;
+      8 new, all written before implementation per CLAUDE.md) · `npm run build`
+      green. Built output re-audited across all 34 pages: **exactly one
+      ProfilePage**, on `/about/`, with `url` = `/about/`; **zero dangling `@id`
+      references** sitewide; no duplicated singleton nodes; sitemap `lastmod`
+      21 → 22 with `/now/` gained and `/`, `/about/`, `/colophon/`, `/projects/`
+      still deliberately bare.
+
+**Explicitly not doing: anything further with `llms.txt`.** The audit found ~408
+targeted fetches across ~500M AI bot visits, Google confirmed non-support on the
+record in July 2025, and one citation model *improved* when the variable was
+dropped. The implementation here is good and costs nothing to keep — so keep it,
+change nothing, add nothing. It was a correct decision that turned out not to matter.
 
 ## Out of scope (v2 — do not build)
 

@@ -13,6 +13,7 @@ import {
   blog,
   collectionPage,
   course,
+  webPage,
 } from './schema';
 
 describe('JSON-LD schema library', () => {
@@ -50,13 +51,93 @@ describe('JSON-LD schema library', () => {
 
   it('should generate ProfilePage referencing stable PERSON_ID', () => {
     const dateStr = '2026-07-05T12:00:00Z';
-    const pp = profilePage(dateStr);
+    const pp = profilePage({ dateModified: dateStr });
     expect(pp['@context']).toBe('https://schema.org');
     expect(pp['@type']).toBe('ProfilePage');
     expect(pp.mainEntity['@id']).toBe(PERSON_ID);
     expect(pp.dateModified).toBe(dateStr);
 
     expect(() => JSON.stringify(pp)).not.toThrow();
+  });
+
+  // T30/A1. profilePage() used to hardcode `url: SITE_URL`, and both the home
+  // page and /about/ called it — so two documents claimed to be the
+  // ProfilePage for the same URL. It now takes the path it actually lives at.
+  it('should resolve a relative ProfilePage url to an absolute one', () => {
+    const pp = profilePage({ url: '/about/', name: 'Jan Paul Fernandez' });
+    expect(pp.url).toBe(`${SITE_URL}/about/`);
+    expect(pp.name).toBe('Jan Paul Fernandez');
+  });
+
+  it('should default the ProfilePage url to the site root when no path is given', () => {
+    expect(profilePage().url).toBe(SITE_URL);
+  });
+
+  it('should omit ProfilePage dateModified and name when not supplied', () => {
+    const pp = profilePage({ url: '/about/' });
+    expect(pp).not.toHaveProperty('dateModified');
+    expect(pp).not.toHaveProperty('name');
+  });
+
+  // T30/B1. The Person node is the one entity the whole graph keys on; it was
+  // shipping without a description, without a country, and with `worksFor` as
+  // a bare unlinkable string.
+  it('should describe the Person with a bio, a country, and linked organisations', () => {
+    const p = person();
+
+    expect(p.description).toMatch(/Manila/);
+    expect(p.description!.length).toBeGreaterThan(80);
+
+    expect(p.jobTitle).toBe('IT Manager');
+
+    expect(p.address).toEqual({
+      '@type': 'PostalAddress',
+      addressLocality: 'Manila',
+      addressCountry: 'PH',
+    });
+
+    // Bare name strings are not entity references — these need URLs to resolve.
+    expect(p.worksFor.name).toBe('Mapúa Malayan Digital College');
+    expect(p.worksFor.url).toBe('https://mmdc.mcl.edu.ph/');
+    expect(p.alumniOf.url).toBeTruthy();
+  });
+
+  it('should list specific, evidenced knowsAbout topics rather than generic nouns', () => {
+    const topics = person().knowsAbout;
+
+    expect(topics).toContain('Election technology');
+    expect(topics).toContain('Knowledge graphs and ontology');
+    expect(topics).toContain('AI literacy');
+
+    // The five generic nouns this replaced carried no discriminating signal.
+    expect(topics).not.toContain('Technology');
+    expect(topics).not.toContain('Economy');
+  });
+
+  it('should keep the public Instagram and LinkedIn in sameAs', () => {
+    const p = person();
+    expect(p.sameAs).toContain('https://www.linkedin.com/in/jpaulfernandez/');
+    expect(p.sameAs).toContain('https://www.instagram.com/goofffball/');
+  });
+
+  // T30/A1. /now/ was the third page emitting a ProfilePage pointed at the
+  // home page's URL. Its freshness intent was right — the latest entry date as
+  // dateModified — so it keeps that on the correct type instead.
+  it('should generate WebPage with a resolved url, dateModified, and the person as subject', () => {
+    const wp = webPage({
+      url: '/now/',
+      name: 'Now',
+      description: 'What Paul is focused on.',
+      dateModified: '2026-09-13T00:00:00.000Z',
+    });
+    expect(wp['@type']).toBe('WebPage');
+    expect(wp.url).toBe(`${SITE_URL}/now/`);
+    expect(wp.dateModified).toBe('2026-09-13T00:00:00.000Z');
+    expect(wp.about['@id']).toBe(PERSON_ID);
+  });
+
+  it('should omit WebPage dateModified when not supplied', () => {
+    expect(webPage({ url: '/now/', name: 'Now' })).not.toHaveProperty('dateModified');
   });
 
   it('should generate BreadcrumbList with relative and absolute URLs resolved', () => {

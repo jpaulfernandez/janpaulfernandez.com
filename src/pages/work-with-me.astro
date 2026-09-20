@@ -3,7 +3,7 @@
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
-import { service, faqPage, breadcrumbs } from '../lib/schema';
+import { service, faqPage, breadcrumbs, person } from '../lib/schema';
 
 const workWithMeEntry = await getEntry('workWithMe', 'workWithMe');
 if (!workWithMeEntry) {
@@ -29,6 +29,10 @@ const seoData = [
   ...serviceSchemas,
   ...(faqSchema ? [faqSchema] : []),
   breadcrumbsSchema,
+// T30/A2. `person()` rides along so the `@id` this page references actually
+// resolves here. Google parses structured data per-document, so without it the
+// reference dangles and the page publishes an entity with no name.
+  person(),
 ];
 
 const description =

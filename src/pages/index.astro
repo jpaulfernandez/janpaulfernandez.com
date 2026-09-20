@@ -3,7 +3,7 @@ import { getCollection, getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
-import { person, webSite, profilePage, breadcrumbs } from '../lib/schema';
+import { person, webSite, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects } from '../lib/projects';
 import { formatDate } from '../lib/dates';
@@ -83,9 +83,12 @@ const stripShots = gallerySets
 
 const photoCount = gallerySets.reduce((n, set) => n + set.data.photos.length, 0);
 
+// No ProfilePage here — this page is a hub (now-feed, recent writing,
+// workshops teaser), not a profile. That node lives on /about/, which is the
+// case Google's docs actually name. Emitting it from both pages made two
+// documents claim to be the ProfilePage for the same URL.
 const seoData = [
   webSite(),
-  profilePage(),
   person(),
   breadcrumbs([{ name: 'Home', url: '/' }]),
 ];

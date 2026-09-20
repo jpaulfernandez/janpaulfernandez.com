@@ -3,7 +3,7 @@
 import { Image } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
-import { blogPosting, breadcrumbs } from '../lib/schema';
+import { blogPosting, breadcrumbs, person } from '../lib/schema';
 import { formatDate } from '../lib/dates';
 import type { ThoughtEntry } from '../lib/thoughts';
 
@@ -26,8 +26,14 @@ const showToc = h2s.length >= 2;
 
 // Article rich results require an image. The /og route generates a stable
 // 1200x630 card for every post, so use that rather than leaving `image` off
-// whenever a post has no cover (none currently do).
+// whenever a post has no cover.
 const shareImage = `/og/${post.id}.png`;
+
+// T30/A3. The share card stays the share card, but Article.image should be the
+// photograph when there is one — a 1200x630 text card is a worse thing for an
+// image index to hold than the actual cover. `cover` is an imported asset, so
+// take its resolved src.
+const articleImage = cover?.src ?? shareImage;
 
 const blogPostSchema = blogPosting({
   title,
@@ -35,7 +41,7 @@ const blogPostSchema = blogPosting({
   url: `/thoughts/${post.id}/`,
   publishedDate,
   updatedDate,
-  cover: shareImage,
+  cover: articleImage,
   topics,
   wordCount,
   type,
@@ -49,7 +55,7 @@ const breadcrumbsSchema = breadcrumbs([
 ---
 
 <BaseLayout title={title} description={excerpt} ogImage={shareImage} type="article">
-  <JsonLd slot="head" data={[blogPostSchema, breadcrumbsSchema]} />
+  <JsonLd slot="head" data={[blogPostSchema, breadcrumbsSchema, person()]} />
 
   <article>
     {/* The masthead runs at page width; everything below it drops into the

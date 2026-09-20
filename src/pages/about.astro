@@ -15,21 +15,14 @@ const { Content: AboutIntro } = await render(aboutEntry);
 
 const careerEntries = await getCollection('career');
 
-// Detailed Person info for About page JSON-LD
-const detailedPerson = person({
-  alumniOf: 'Nueva Ecija University of Science and Technology',
-  worksFor: 'Mapúa Malayan Digital College (under MMCL)',
-  knowsAbout: [
-    'Technology',
-    'Digital Transformation',
-    'AI Implementation',
-    'Economy',
-    'Psychology',
-  ],
-});
+// T30. These overrides used to restate the defaults — and after the Person
+// node was enriched they were actively stale, pinning this page (the strongest
+// entity page on the site) to the five generic knowsAbout nouns the change was
+// meant to remove. The defaults in `person()` are the single source now.
+const detailedPerson = person();
 
 const seoData = [
-  profilePage(),
+  profilePage({ url: '/about/', name: 'Jan Paul Fernandez' }),
   detailedPerson,
   breadcrumbs([
     { name: 'Home', url: '/' },

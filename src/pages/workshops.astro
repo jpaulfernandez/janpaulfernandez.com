@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
-import { service, faqPage, breadcrumbs } from '../lib/schema';
+import { service, faqPage, breadcrumbs, person } from '../lib/schema';
 import {
   availability,
   faqItems,
@@ -34,6 +34,8 @@ const seoData = [
     { name: 'Home', url: '/' },
     { name: 'Workshops', url: '/workshops/' },
   ]),
+  // T30/A2. `person()` rides along so Service.provider's @id resolves here.
+  person(),
 ];
 ---
 

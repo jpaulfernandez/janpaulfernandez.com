@@ -16,11 +16,49 @@ export interface PersonOverrides {
   url?: string;
   image?: string;
   jobTitle?: string;
+  description?: string;
   alumniOf?: string;
   worksFor?: string;
   knowsAbout?: string[];
   sameAs?: string[];
 }
+
+/**
+ * The bio an LLM quotes when asked who Paul is. Third person and factual on
+ * purpose: this string gets lifted out of the page and reproduced without any
+ * surrounding context, so it carries the verifiable career record and none of
+ * the voice that belongs on /about/.
+ */
+const PERSON_DESCRIPTION =
+  'Paul Fernandez is a technologist in Manila, Philippines. He built ' +
+  'account-opening software as a systems analyst at PSBank, led digital ' +
+  'transformation and tech operations at Rappler — running election-night ' +
+  'results through the 2019 and 2022 national votes — and is now IT Manager ' +
+  'at Mapúa Malayan Digital College. He writes about technology, economics ' +
+  'and psychology, and teaches AI workshops.';
+
+/**
+ * Every entry here is provable from content already on this site — the career
+ * collection, the workshop pages, or the essays. An unsupported knowsAbout
+ * claim is worse than no claim, so nothing goes in this list that a crawler
+ * cannot corroborate on the page it came from.
+ *
+ * This replaced five generic nouns ('Technology', 'Economy', …) that carried
+ * no discriminating signal.
+ */
+const PERSON_KNOWS_ABOUT = [
+  'Election technology',            // career/rappler.md — PHVote, 2019 + 2022
+  'Election results reporting',     // PHVote canvassing coverage
+  'Newsroom technology operations', // Head of Tech Operations, 2018–2023
+  'Knowledge graphs and ontology',  // career/rappler.md — CMS migration
+  'Digital transformation',         // home.json, Rappler
+  'Financial technology',           // career/psbank.md — account opening
+  'AI literacy',                    // /workshops/ai-fluency/ + the explainers
+  'AI governance and policy',       // /workshops/leadership-ai/ policy exercise
+  'Product discovery',              // /work-with-me/, services collection
+  'Requirements elicitation',       // home.json — standing between the two sides
+  'IT infrastructure management',   // career/mmdc.md
+];
 
 export function person(overrides?: PersonOverrides) {
   return {
@@ -31,22 +69,31 @@ export function person(overrides?: PersonOverrides) {
     alternateName: ['Jan Paul Fernandez', 'Jan Paul'],
     url: overrides?.url ?? SITE_URL,
     image: overrides?.image ?? `${SITE_URL}/paul.jpg`,
-    jobTitle: overrides?.jobTitle ?? 'Tech Leader',
+    // The title alone; the organisation lives in worksFor rather than being
+    // duplicated into this string, which matches career/mmdc.md.
+    jobTitle: overrides?.jobTitle ?? 'IT Manager',
+    description: overrides?.description ?? PERSON_DESCRIPTION,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Manila',
+      addressCountry: 'PH',
+    },
+    // AIM is deliberately absent: the coursework is finished but the degree is
+    // not conferred, and alumniOf is a claim about a conferred degree. Add it
+    // when Paul graduates, not before.
     alumniOf: {
-      '@type': 'EducationalOrganization',
+      '@type': 'CollegeOrUniversity',
       name: overrides?.alumniOf ?? 'Nueva Ecija University of Science and Technology',
+      url: 'https://neust.edu.ph/',
     },
+    // A bare name string is not an entity reference. The url is what lets the
+    // MMDC / Rappler / PSBank associations resolve to something in the graph.
     worksFor: {
-      '@type': 'EducationalOrganization',
-      name: overrides?.worksFor ?? 'Mapúa Malayan Digital College (under MMCL)',
+      '@type': 'CollegeOrUniversity',
+      name: overrides?.worksFor ?? 'Mapúa Malayan Digital College',
+      url: 'https://mmdc.mcl.edu.ph/',
     },
-    knowsAbout: overrides?.knowsAbout ?? [
-      'Technology',
-      'Digital Transformation',
-      'AI Implementation',
-      'Economy',
-      'Psychology',
-    ],
+    knowsAbout: overrides?.knowsAbout ?? PERSON_KNOWS_ABOUT,
     sameAs: overrides?.sameAs ?? [
       'https://www.linkedin.com/in/jpaulfernandez/',
       'https://www.instagram.com/goofffball/',
@@ -67,15 +114,61 @@ export function webSite() {
   };
 }
 
-export function profilePage(dateModified?: string) {
+export interface ProfilePageInput {
+  /** Site-relative canonical path of the page this node describes. */
+  url?: string;
+  name?: string;
+  dateModified?: string;
+}
+
+/**
+ * ProfilePage for /about/ — and only /about/.
+ *
+ * This used to hardcode `url: SITE_URL` while being called from both the home
+ * page and /about/, so two separate documents asserted they were the
+ * ProfilePage for the same URL. Google's docs name an "About Me" page on a
+ * blog as the valid case; the home page here is a hub, not a profile.
+ */
+export function profilePage(input?: ProfilePageInput) {
   return {
     '@context': 'https://schema.org',
     '@type': 'ProfilePage',
-    url: SITE_URL,
+    url: input?.url ? abs(input.url) : SITE_URL,
     mainEntity: {
       '@id': PERSON_ID,
     },
-    ...(dateModified ? { dateModified } : {}),
+    ...(input?.name ? { name: input.name } : {}),
+    ...(input?.dateModified ? { dateModified: input.dateModified } : {}),
+  };
+}
+
+export interface WebPageInput {
+  /** Site-relative canonical path, e.g. `/now/`. */
+  url: string;
+  name: string;
+  description?: string;
+  /** ISO 8601. Use a real, content-owned date — never a build timestamp. */
+  dateModified?: string;
+}
+
+/**
+ * A plain WebPage about Paul, for pages that carry a genuine freshness signal
+ * but are not a profile — /now/ being the case this exists for.
+ *
+ * /now/ previously emitted a ProfilePage whose url was the home page, making
+ * it the third document to claim that node. The freshness intent was right
+ * (dateModified from the newest entry), so it keeps that on a type that is
+ * actually true of the page.
+ */
+export function webPage(input: WebPageInput) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    url: abs(input.url),
+    name: input.name,
+    ...(input.description ? { description: input.description } : {}),
+    ...(input.dateModified ? { dateModified: input.dateModified } : {}),
+    about: { '@id': PERSON_ID },
   };
 }
 

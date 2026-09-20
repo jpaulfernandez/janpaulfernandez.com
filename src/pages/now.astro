@@ -2,7 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
-import { profilePage, breadcrumbs } from '../lib/schema';
+import { webPage, breadcrumbs, person } from '../lib/schema';
 import { parseDateSafe, formatDateLong } from '../lib/dates';
 
 const nowEntries = await getCollection('now');
@@ -33,19 +33,32 @@ for (const entry of processedNow) {
   else years.push({ year: entry.year, items: [entry] });
 }
 
-// ProfilePage dateModified reflects the latest Now entry date for freshness signals
+// dateModified reflects the latest Now entry date — a real, content-owned
+// freshness signal. T30/A1: this used to be a ProfilePage pointed at the home
+// page's URL, making /now/ the third document claiming that node. The page is
+// a dated journal, not a profile, so it is a WebPage about Paul instead.
+const description =
+  "What I'm focused on, building and learning right now — a dated journal of "
+  + 'work, study and side projects, newest first. Updated when something changes.';
+
 const seoData = [
-  profilePage(latestDate ? new Date(latestDate).toISOString() : undefined),
+  webPage({
+    url: '/now/',
+    name: 'Now',
+    description,
+    dateModified: latestDate ? new Date(latestDate).toISOString() : undefined,
+  }),
   breadcrumbs([
     { name: 'Home', url: '/' },
     { name: 'Now', url: '/now/' },
   ]),
+  person(),
 ];
 ---
 
 <BaseLayout
   title="Now"
-  description="What I'm focused on, building, and learning right now."
+  description={description}
   ogImage="/og/now.png"
 >
   <JsonLd data={seoData} slot="head" />

@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import JsonLd from '../../components/JsonLd.astro';
-import { course, breadcrumbs, faqPage } from '../../lib/schema';
+import { course, breadcrumbs, faqPage, person } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const courses = await getCollection('courses');
@@ -18,6 +18,14 @@ const path = `/workshops/${entry.id}/`;
 // Carry the course into the landing form so arriving at #enquire preselects it.
 const enquireHref = `/workshops/?enquire=${encodeURIComponent(c.title)}#enquire`;
 
+// T30/A5. The tagline alone shipped as the meta description — 48–78 chars on
+// the four most commercially important pages on the site. The tagline stays
+// the tagline (it is display copy); the meta description composes it with the
+// facts a reader actually wants from a search result. Kept under 160.
+const metaDescription =
+  `${c.tagline} A ${c.duration} session for ${c.whoFor}, ${c.formatLabel}. ` +
+  `Manila or remote, ${c.priceSignal.toLowerCase()}.`;
+
 const seoData = [
   course({ title: c.title, description: c.tagline, url: path }),
   breadcrumbs([
@@ -26,6 +34,10 @@ const seoData = [
     { name: c.title, url: path },
   ]),
   ...(c.faq && c.faq.length ? [faqPage(c.faq)] : []),
+// T30/A2. `person()` rides along so the `@id` this page references actually
+// resolves here. Google parses structured data per-document, so without it the
+// reference dangles and the page publishes an entity with no name.
+  person(),
 ];
 
 const meta = [
@@ -36,7 +48,7 @@ const meta = [
 ];
 ---
 
-<BaseLayout title={c.title} description={c.tagline} ogImage={`/og/workshops-${entry.id}.png`}>
+<BaseLayout title={c.title} description={metaDescription} ogImage={`/og/workshops-${entry.id}.png`}>
   <JsonLd data={seoData} slot="head" />
 
   <section class="page-head" data-hero>

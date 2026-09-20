@@ -7,7 +7,7 @@ import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { lightboxWidth } from '../../lib/gallery';
 import { formatDate } from '../../lib/dates';
-import { imageGallery, breadcrumbs } from '../../lib/schema';
+import { imageGallery, breadcrumbs, person } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const allItems = await getCollection('gallery');
@@ -96,6 +96,11 @@ const seoData = [
     { name: 'Gallery', url: '/gallery/' },
     { name: item.data.title, url: `/gallery/${item.id}/` },
   ]),
+  // T30/A2. `person()` rides along so the `@id` referenced by the gallery's
+  // author and every frame's creator resolves on this page rather than
+  // dangling — these photographs should stay attributed once an image index
+  // lifts them out of the page.
+  person(),
 ];
 ---
 

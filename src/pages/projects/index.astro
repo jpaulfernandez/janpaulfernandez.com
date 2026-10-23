@@ -1,23 +1,37 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import JsonLd from '../../components/JsonLd.astro';
-import { breadcrumbs } from '../../lib/schema';
+import { breadcrumbs, person, webPage } from '../../lib/schema';
 import { getProjects, groupProjectsByYear } from '../../lib/projects';
+
+import developHeroShot from '../../assets/projects/oddhalls/develop-hero.png';
 
 const projects = await getProjects();
 const groups = groupProjectsByYear(projects);
 
+const description =
+  "Projects by Paul Fernandez — things I've built, shipped, and tinkered with, indexed by year.";
+
 const seoData = [
+  webPage({
+    url: '/projects/',
+    name: 'Projects',
+    description,
+  }),
   breadcrumbs([
     { name: 'Home', url: '/' },
     { name: 'Projects', url: '/projects/' },
   ]),
+  person(),
 ];
+
+const featuredProject = projects.find((p) => p.id === 'oddhalls');
 ---
 
 <BaseLayout
   title="Projects"
-  description="Projects by Paul Fernandez — things I've built, shipped, and tinkered with, indexed by year."
+  description={description}
   ogImage="/og/projects.png"
 >
   <JsonLd data={seoData} slot="head" />
@@ -33,57 +47,194 @@ const seoData = [
   </section>
 
   <div class="shell pb-24 md:pb-32">
-    {groups.length > 0 ? (
-      <div aria-label="Projects by year">
-        {groups.map((group) => (
-          <section class="mt-16 first:mt-0">
-            <h2 class="kicker tabular-nums">{group.year}</h2>
-            <ul class="rows mt-8" data-reveal-stagger>
-              {group.items.map((project) => {
-                const body = (
-                  <span class="min-w-0">
-                    <span class="row-title block">{project.data.title}</span>
-                    <span class="block mt-2 subtext max-w-[62ch]">
-                      {project.data.description}
-                    </span>
-                  </span>
-                );
-                return (
-                  <li data-reveal="up">
-                    {project.data.link ? (
-                      <a
-                        href={project.data.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="row-link"
-                      >
-                        {body}
-                        <span class="row-meta" aria-hidden="true">↗</span>
-                      </a>
-                    ) : (
-                      <div class="row-link">{body}</div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        ))}
-      </div>
-    ) : (
-      <div class="panel p-10 md:p-16 text-center" data-reveal="up">
-        <p class="statement-sm m-0">Nothing on the shelf… yet.</p>
-        <a href="/work-with-me/#contact" class="btn btn-ghost mt-8">
-          Ask me what I'm building
-        </a>
-      </div>
+    {/* Featured project spotlight: Oddhalls */}
+    {featuredProject && (
+      <section class="section-tight" aria-labelledby="featured-heading">
+        <div class="flex items-end justify-between gap-6 border-b border-[var(--line)] pb-4 mb-10">
+          <h2 id="featured-heading" class="kicker m-0">Featured Project</h2>
+          <a href="/projects/oddhalls/" class="link-arrow shrink-0">
+            Read full breakdown
+          </a>
+        </div>
+
+        <div class="space-y-10">
+          <div>
+            <div class="flex flex-wrap items-center gap-3 mb-4" data-reveal="up">
+              <span class="tag">Beta v0.1.0</span>
+              <span class="mono-micro text-paper-400">macOS Apple Silicon</span>
+              <span class="mono-micro text-paper-400">·</span>
+              <span class="mono-micro text-paper-400">2026</span>
+            </div>
+
+            <h3 class="display-sm text-paper-50 m-0" data-reveal="up">
+              Oddhalls
+            </h3>
+
+            <p class="lead mt-4 max-w-[56ch]" data-reveal="up">
+              A local-first, non-destructive photo editor and photobook designer
+              built for the whole post-shoot pipeline — from culling raw cards
+              to published zines and reels.
+            </p>
+          </div>
+
+          {/* Screenshot */}
+          <figure class="shot-figure" data-reveal="up">
+            <div class="shot-frame">
+              <Image
+                src={developHeroShot}
+                alt="The Oddhalls Develop stage on a Lisbon rooftop photo, showing Light, Color, and Curves sliders."
+                class="w-full h-auto block"
+                loading="eager"
+              />
+            </div>
+            <figcaption class="shot-caption">
+              <span class="shot-caption-label">Develop Stage</span>
+              <span class="shot-caption-text">
+                32-bit floating point GPU pipeline on a Lisbon rooftop capture, featuring real-time tonal adjustments, tone curves, and looks shelf.
+              </span>
+            </figcaption>
+          </figure>
+
+          {/* Objective Summary Write-up */}
+          <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 items-start" data-reveal="up">
+            <div class="space-y-4 subtext">
+              <p>
+                Modern photography has a fragmented post-shoot workflow. Photographers
+                routinely bounce between four separate applications: a fast culling tool, a
+                heavy subscription-based RAW catalog editor, graphic layout software for zines
+                or social carousels, and a video editor for before-and-after reels.
+              </p>
+              <p>
+                <strong>Oddhalls</strong> consolidates this entire pipeline into four sequential stages:
+                <strong>Cull · Develop · Design · Publish</strong>. Operating directly on your folders
+                in place with no catalog database to corrupt and no account required, it processes RAWs
+                on a 32-bit float GPU pipeline and runs neural segmentation models (SAM 2, BiRefNet, Depth Anything)
+                locally on Apple Silicon with zero cloud telemetry.
+              </p>
+            </div>
+
+            <div class="panel p-6 space-y-4" data-reveal="up">
+              <p class="mono-micro text-paper-400 m-0">The Four Stages</p>
+              <ul class="stage-list">
+                <li>
+                  <strong class="text-paper-50 font-medium">01 · Cull:</strong>
+                  <span class="text-paper-200"> Burst clustering, 7 diagnostic lenses, 1v1 Decide duels, and local SFace face matching.</span>
+                </li>
+                <li>
+                  <strong class="text-paper-50 font-medium">02 · Develop:</strong>
+                  <span class="text-paper-200"> 870+ RAW cameras, tone curves, 3-way color wheels, 12 film looks, and local AI masks.</span>
+                </li>
+                <li>
+                  <strong class="text-paper-50 font-medium">03 · Design:</strong>
+                  <span class="text-paper-200"> Photobook spreads, 300 DPI print PDFs with bleed, social carousels, and animated reels.</span>
+                </li>
+                <li>
+                  <strong class="text-paper-50 font-medium">04 · Publish:</strong>
+                  <span class="text-paper-200"> Direct deploy to personal Cloudflare R2 bucket with a touch-friendly mobile zine reader.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-3 pt-2" data-reveal="up">
+            <a href="/projects/oddhalls/" class="btn btn-primary">
+              Read full case study &amp; feature breakdown →
+            </a>
+            <a
+              href="https://oddhalls.janpaulfernandez.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-arrow"
+            >
+              Visit oddhalls.janpaulfernandez.com
+            </a>
+          </div>
+        </div>
+      </section>
     )}
+
+    {/* All projects grouped by year */}
+    <section class="section section-ruled" aria-labelledby="all-projects-heading">
+      <div class="flex items-end justify-between gap-6 border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="all-projects-heading" class="kicker m-0">All Projects</h2>
+        <span class="mono-micro text-paper-400 tabular-nums">
+          {projects.length} {projects.length === 1 ? 'project' : 'projects'}
+        </span>
+      </div>
+
+      {groups.length > 0 ? (
+        <div aria-label="Projects by year">
+          {groups.map((group) => (
+            <div class="mt-12 first:mt-0">
+              <h3 class="mono-micro tabular-nums text-paper-400">{group.year}</h3>
+              <ul class="rows mt-6" data-reveal-stagger>
+                {group.items.map((project) => {
+                  const detailHref = `/projects/${project.id}/`;
+                  return (
+                    <li data-reveal="up">
+                      <div class="row-link flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div class="min-w-0">
+                          <a
+                            href={detailHref}
+                            class="row-title block hover:text-wine-400 transition-colors"
+                          >
+                            {project.data.title}
+                          </a>
+                          <span class="block mt-2 subtext max-w-[62ch]">
+                            {project.data.description}
+                          </span>
+                        </div>
+
+                        <div class="flex items-center gap-4 shrink-0 mt-2 sm:mt-0">
+                          <a
+                            href={detailHref}
+                            class="link-arrow"
+                          >
+                            Case study
+                          </a>
+                          {project.data.link && (
+                            <a
+                              href={project.data.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="mono-micro text-paper-400 hover:text-wine-400 transition-colors inline-flex items-center gap-1"
+                              aria-label={`Visit ${project.data.title} website`}
+                            >
+                              <span>Site</span>
+                              <span aria-hidden="true">↗</span>
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="panel p-10 md:p-16 text-center" data-reveal="up">
+          <p class="statement-sm m-0">Nothing on the shelf… yet.</p>
+          <a href="/work-with-me/#contact" class="btn btn-ghost mt-8">
+            Ask me what I'm building
+          </a>
+        </div>
+      )}
+    </section>
   </div>
 </BaseLayout>
 
 <style>
   .page-head {
     padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  }
+  .display-sm {
+    font-family: var(--font-display);
+    font-size: var(--text-h1);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
   }
   .statement-sm {
     font-family: var(--font-display);
@@ -92,5 +243,62 @@ const seoData = [
     line-height: 1.1;
     letter-spacing: -0.03em;
     color: var(--color-paper-50);
+  }
+
+  /* --- Screenshot frame ------------------------------------------------- */
+  .shot-figure {
+    margin: 0;
+  }
+  .shot-frame {
+    position: relative;
+    border: 1px solid var(--line);
+    background-color: var(--color-ink-950);
+    overflow: hidden;
+  }
+  .shot-caption {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  @media (min-width: 48rem) {
+    .shot-caption {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 1rem;
+    }
+  }
+  .shot-caption-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-paper-400);
+    white-space: nowrap;
+  }
+  .shot-caption-text {
+    font-size: var(--text-small);
+    color: var(--color-paper-200);
+    line-height: 1.5;
+  }
+
+  /* --- Stage list in panel ---------------------------------------------- */
+  .stage-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .stage-list li {
+    font-size: var(--text-small);
+    line-height: 1.5;
+    border-top: 1px solid var(--line);
+    padding-top: 0.625rem;
+  }
+  .stage-list li:first-child {
+    border-top: 0;
+    padding-top: 0;
   }
 </style>

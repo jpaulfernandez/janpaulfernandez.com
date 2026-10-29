@@ -52,7 +52,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 32.2 Program copy entered from doc 09 / doc 07
 - [x] (2026-10-29) 32.3 Service + FAQPage structured data
 - [x] (2026-10-29) 32.4 `/work-with-me/` rewrite
-- [ ] 32.5 Program overview + tier pages
+- [x] (2026-10-29) 32.5 Program overview + tier pages
 - [ ] 32.6 Retire `/workshops` (courses, services, redirects)
 - [ ] 32.7 llms.txt, HTML sitemap, OG, meta descriptions
 - [ ] 32.8 Verify

@@ -1,0 +1,237 @@
+---
+// The AI-Resilient Organisation overview — rebuild-plan §5.6, task 32.5.
+// Section order and rhythm are fixed by the task file. No prices anywhere
+// (R5): tiers, add-ons and bundles say "Enquire". The founding box is the
+// page's one .panel-tint. Zero client JS.
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import JsonLd from '../../../components/JsonLd.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ProgramSteps from '../../../components/ProgramSteps.astro';
+import TierTable from '../../../components/TierTable.astro';
+import { service, webPage, breadcrumbs, person } from '../../../lib/schema';
+
+const entry = await getEntry('programPage', 'program');
+if (!entry) throw new Error('programPage singleton is missing.');
+const p = entry.data;
+const tiers = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
+
+const PAGE_URL = '/work-with-me/ai-resilient-organisation/';
+const ENQUIRE = '/work-with-me/#enquire';
+const title = 'AI-Resilient Organisation';
+const description =
+  'AI-Resilient Organisation: a vendor-neutral AI program for Philippine organisations. Measure how staff use AI, set the rules, train every team. Enquire.';
+
+const trail = [
+  { name: 'Home', url: '/' },
+  { name: 'Work with me', url: '/work-with-me/' },
+  { name: title, url: PAGE_URL },
+];
+
+const seoData = [
+  webPage({ url: PAGE_URL, name: title, description }),
+  service({ title, description: p.sub, url: PAGE_URL, areaServed: 'Philippines' }),
+  breadcrumbs(trail),
+  person(),
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <JsonLd data={seoData} slot="head" />
+
+  <div class="shell">
+    {/* Head */}
+    <section class="section">
+      <Breadcrumbs items={trail} />
+      <p class="kicker mt-12">{title}</p>
+      <h1 class="headline mt-6">{p.headline}</h1>
+      <p class="lead mt-8 mb-0 max-w-[52ch]">{p.sub}</p>
+      {/* Hairline, not red: the header already carries the one red fill
+          above the fold (rebuild-plan §3.1). */}
+      <a href={ENQUIRE} class="btn btn-ghost mt-10">Book a 20-minute scoping call</a>
+    </section>
+
+    {/* The problem — four sourced figures, sponsor named on each. */}
+    <section class="section section-ruled" aria-labelledby="problem-heading">
+      <h2 id="problem-heading" class="kicker">The problem</h2>
+      <ol class="stats mt-10">
+        {p.stats.map((s) => (
+          <li class="stat">
+            <span class="stat-figure">{s.figure}</span>
+            <p class="stat-claim">{s.claim}</p>
+            <p class="stat-source">
+              Source: <a href={s.sourceUrl} rel="noopener" class="link">{s.sponsor}</a>
+            </p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    {/* The promise + how it works — continues the problem. */}
+    <section class="section-tight" aria-labelledby="promise-heading">
+      <h2 id="promise-heading" class="kicker">The promise</h2>
+      <p class="promise mt-8">{p.promise}</p>
+
+      <h3 class="kicker mt-16">How it works</h3>
+      <div class="mt-6">
+        <ProgramSteps steps={p.steps} />
+      </div>
+    </section>
+
+    {/* Five tiers */}
+    <section class="section section-ruled" aria-labelledby="tiers-heading">
+      <h2 id="tiers-heading" class="kicker">Five tiers</h2>
+      <div class="mt-8">
+        <TierTable
+          id="program-tiers"
+          tiers={tiers}
+          caption="The five tiers of the AI-Resilient Organisation program"
+          linkTitles
+          enquireHref={ENQUIRE}
+        />
+      </div>
+    </section>
+
+    {/* Add-ons and bundles — continues the tiers. */}
+    <section class="section-tight" aria-labelledby="extras-heading">
+      <h2 id="extras-heading" class="sr-only">Add-ons and bundles</h2>
+
+      <h3 class="kicker">Add-ons</h3>
+      <p class="mt-6 mb-0">
+        {p.addOns.join(' · ')}.
+        <a href={ENQUIRE} class="link">Enquire<span class="sr-only"> about add-ons</span></a>
+      </p>
+
+      <h3 id="bundles" class="kicker mt-16">Bundles</h3>
+      <div class="table-wrap mt-6" role="region" aria-labelledby="bundles-caption" tabindex="0">
+        <table class="data-table">
+          <caption id="bundles-caption" class="sr-only">Program bundles</caption>
+          <thead>
+            <tr>
+              <th scope="col">Bundle</th>
+              <th scope="col">Contents</th>
+              <th scope="col">Who it's for</th>
+            </tr>
+          </thead>
+          <tbody>
+            {p.bundles.map((b) => (
+              <tr>
+                <th scope="row">{b.name}</th>
+                <td>{b.contents}</td>
+                <td>{b.whoFor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="subtext mt-6 mb-0">
+        <a href={ENQUIRE} class="link">Enquire about a bundle</a>
+      </p>
+    </section>
+
+    {/* Founding clients — the page's one tinted block. */}
+    <section class="section section-ruled" aria-labelledby="founding-heading">
+      <div class="panel-tint founding">
+        <h2 id="founding-heading" class="founding-heading m-0">{p.foundingHeading}</h2>
+        <p class="subtext mt-6 mb-0 max-w-[60ch]">{p.foundingIntro}</p>
+        <p class="mt-4 mb-0 font-semibold">{p.foundingDiscount}</p>
+
+        <div class="founding-cols mt-10">
+          <div>
+            <h3 class="kicker">What you give</h3>
+            <ul class="ticks mt-4">
+              {p.foundingGive.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+          <div>
+            <h3 class="kicker">Terms</h3>
+            <ul class="ticks mt-4">
+              {p.foundingTerms.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* Who is teaching */}
+    <section class="section section-ruled" aria-labelledby="teacher-heading">
+      <h2 id="teacher-heading" class="kicker">Who is teaching</h2>
+      <div class="proof mt-10">
+        {p.proofPoints.map((pp) => (
+          <div class="proof-item">
+            <h3 class="proof-label">{pp.label}</h3>
+            <p class="subtext mt-4 mb-0">{pp.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* CTA — continues the facilitator section. */}
+    <section class="section-tight" aria-labelledby="cta-heading">
+      <h2 id="cta-heading" class="statement-sm max-w-[26ch]">Start with a 20-minute scoping call.</h2>
+      <a href={ENQUIRE} class="btn btn-primary mt-10">Book a 20-minute scoping call</a>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .headline {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    max-width: 20ch;
+    margin-bottom: 0;
+  }
+
+  .stats {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 2.5rem 3rem;
+  }
+  .stat { border-top: 1px solid var(--line); padding-top: 1.25rem; }
+  .stat-figure {
+    display: block;
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-size: var(--text-h1);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--color-ink-900);
+  }
+  .stat-claim { margin: 1rem 0 0; max-width: 40ch; }
+  .stat-source {
+    margin: 0.75rem 0 0;
+    font-size: var(--text-small);
+    color: var(--color-ink-600);
+    max-width: 52ch;
+  }
+
+  .promise {
+    font-size: var(--text-lead);
+    line-height: 1.5;
+    max-width: 44ch;
+    margin-bottom: 0;
+  }
+
+  .founding-heading {
+    font-size: var(--text-h2);
+    max-width: 24ch;
+  }
+  .founding-cols { display: grid; gap: 2rem 3rem; }
+  .ticks { padding-left: 1.25rem; list-style: square; color: var(--color-ink-600); }
+  .ticks li + li { margin-top: 0.625rem; }
+  .ticks li::marker { color: var(--color-ink-400); }
+
+  .proof { display: grid; gap: 2.5rem 3rem; }
+  .proof-item { border-top: 1px solid var(--line); padding-top: 1.25rem; }
+  .proof-label { font-size: var(--text-body); margin: 0; }
+
+  @media (min-width: 48rem) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .founding-cols { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 64rem) {
+    .proof { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

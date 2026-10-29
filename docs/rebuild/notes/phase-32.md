@@ -101,7 +101,7 @@ Course markup. Tests were written first and failed 3/3 before the change.
   for the program (`url` = overview), `FAQPage` (6), `BreadcrumbList`, one
   `Person`. `areaServed: 'Philippines'` on all four (copy says "Philippine
   organisations"; Text is valid per 32.3).
-- Meta description drafted now (150 chars); 32.7 still owns the 140–160 check.
+- Meta description drafted now (163 chars, 3 over); 32.7 owns the 140–160 fix.
 - BaseLayout: the header-CTA comment ("#enquire lands in 32.4") updated; no
   markup change.
 - Done-when: one `<h1>`, one `.panel-tint`, ids `enquire` / `with-you` /
@@ -111,3 +111,42 @@ Course markup. Tests were written first and failed 3/3 before the change.
 - **Not done:** the Web3Forms test submission → `/thanks/`. It must run on a
   Vercel preview and sends Paul an email; there is no preview (work is on
   `main`, unpushed). Left for 32.8 / Paul.
+
+## 32.5 Program overview and tier pages
+
+- Rhythm exactly as the task file fixes it (overview: Head `.section` → Problem
+  ruled → Promise + how it works tight → Five tiers ruled → Add-ons and bundles
+  tight → Founding ruled (the one `.panel-tint`) → Who is teaching ruled → CTA
+  tight; tier: Head → Problem tight → What happens ruled → Outcomes/Artefacts
+  tight → FAQ ruled → Part of + CTA tight).
+- **Red fills.** The overview's head button "Book a 20-minute scoping call" is
+  `.btn-ghost` (hairline): the header's red button is already above the fold
+  (§3.1, same call as README's note for the Home hero in 34.2). The closing CTA
+  on the overview and "Enquire for pricing" on tier pages are `.btn-primary` —
+  bottom of page, the header is out of view. Paul to confirm with the 34.2 one.
+- Stats: `<ol>`, figure in Fraunces at h1 size (ink, not red), claim, then
+  "Source: <sponsor>" as the link to `sourceUrl` (`rel="noopener"`). 4 stats, 4
+  hrefs, every one with a named sponsor.
+- Add-ons: one line, names joined by " · ", then "Enquire". Bundles: `<table>`
+  Bundle · Contents · Who it's for, `id="bundles"` on its heading, then one
+  "Enquire about a bundle" link. The add-ons/bundles section has an sr-only
+  `h2` so its two `h3` kickers don't sit under the tiers' `h2`.
+- `src/components/Breadcrumbs.astro` (new; overview + tier pages): a visible
+  trail built from the same array passed to `breadcrumbs()`, so the page and the
+  JSON-LD cannot drift. Separators trail each item so wrapped lines at 375px
+  never start with "/".
+- Tier kicker is `{label} · {duration}` (e.g. "Tier 1 · 1 day"). `entry.id` is
+  the bare file slug (pulse, leadership-day, fluency, champions, agent-sprint).
+- Microcopy written here (not from the spec, no facts): overview CTA heading
+  "Start with a 20-minute scoping call."; tier CTA heading "Prices are by
+  quote." — flag for Paul with the other drafted copy.
+- Tier meta description is derived (`tagline` + label + audience); several
+  exceed 160 chars (156–215) — 32.7 owns the 140–160 fix. The overview's is 152. No
+  `ogImage` passed yet (32.7 adds the program cards).
+- Done-when: overview + five tier HTML files exist; one `<h1>` each; overview
+  has one `.panel-tint` (tier pages none); `<script>` tags = `.js` + two GA4 +
+  JSON-LD; JSON-LD parses on all seven (`node`): overview `WebPage, Service,
+  BreadcrumbList, Person`; tiers `WebPage, BreadcrumbList, FAQPage, Person`. No
+  `₱`/`PHP `, banned-word grep clean over `dist/client/work-with-me`. axe 0
+  violations on `/work-with-me/`, the overview and all five tiers. Viewed at
+  1280 and 375; no horizontal page scroll.

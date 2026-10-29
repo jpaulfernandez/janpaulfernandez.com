@@ -1,0 +1,179 @@
+---
+// One page per tier of the AI-Resilient Organisation program — rebuild-plan
+// §5.6, task 32.5. Section order and rhythm are fixed by the task file. No
+// prices, no run-of-show times, no Course or per-tier Service markup.
+// Zero client JS.
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import JsonLd from '../../../components/JsonLd.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import { webPage, breadcrumbs, faqPage, person } from '../../../lib/schema';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
+  // entry.id is the file slug without extension (pulse, leadership-day, …).
+  return all.map((entry) => ({ params: { tier: entry.id }, props: { entry, all } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'program'>;
+  all: CollectionEntry<'program'>[];
+}
+
+const { entry } = Astro.props;
+const t = entry.data;
+
+const programPage = await getEntry('programPage', 'program');
+if (!programPage) throw new Error('programPage singleton is missing.');
+const partOf = programPage.data.bundles.filter((b) => b.tiers.includes(entry.id));
+
+const PROGRAM_URL = '/work-with-me/ai-resilient-organisation/';
+const PAGE_URL = `${PROGRAM_URL}${entry.id}/`;
+const ENQUIRE = '/work-with-me/#enquire';
+const description = `${t.tagline} ${t.label} of the AI-Resilient Organisation program, for ${t.audience.charAt(0).toLowerCase()}${t.audience.slice(1)}.`;
+
+const trail = [
+  { name: 'Home', url: '/' },
+  { name: 'Work with me', url: '/work-with-me/' },
+  { name: 'AI-Resilient Organisation', url: PROGRAM_URL },
+  { name: t.title, url: PAGE_URL },
+];
+
+const seoData = [
+  webPage({ url: PAGE_URL, name: t.title, description }),
+  breadcrumbs(trail),
+  faqPage(t.faq),
+  person(),
+];
+---
+
+<BaseLayout title={t.title} description={description}>
+  <JsonLd data={seoData} slot="head" />
+
+  <div class="shell">
+    {/* Head: kicker, title, tagline, the two-item fact strip. */}
+    <section class="section">
+      <Breadcrumbs items={trail} />
+      <p class="kicker mt-12">{t.label} · {t.duration}</p>
+      <h1 class="title mt-6">{t.title}</h1>
+      <p class="lead mt-8 mb-0 max-w-[48ch]">{t.tagline}</p>
+
+      <dl class="facts mt-12">
+        <div>
+          <dt class="mono-micro">For</dt>
+          <dd>{t.audience}</dd>
+        </div>
+        <div>
+          <dt class="mono-micro">You leave with</dt>
+          <dd>
+            <ul class="ticks">
+              {t.leavesWith.map((item) => <li>{item}</li>)}
+            </ul>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    {/* The problem — continues the head. */}
+    <section class="section-tight" aria-labelledby="problem-heading">
+      <h2 id="problem-heading" class="kicker">The problem</h2>
+      <p class="reading mt-8 mb-0">{t.problem}</p>
+    </section>
+
+    {/* What happens */}
+    <section class="section section-ruled" aria-labelledby="happens-heading">
+      <h2 id="happens-heading" class="kicker">What happens</h2>
+      <ul class="ticks reading mt-8">
+        {t.happens.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    {/* Outcomes and artefacts — continue what happens. */}
+    <section class="section-tight" aria-labelledby="outcomes-heading">
+      <div class="pair">
+        <div>
+          <h2 id="outcomes-heading" class="kicker">Outcomes</h2>
+          <p class="mt-8 mb-0">{t.outcomes}</p>
+        </div>
+        <div>
+          <h2 class="kicker">Artefacts</h2>
+          <ul class="ticks mt-8">
+            {t.artefacts.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    {/* FAQ */}
+    <section class="section section-ruled" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" class="kicker">Questions</h2>
+      <div class="faq-list mt-4">
+        {t.faq.map((item) => (
+          <details class="faq">
+            <summary>
+              <span>{item.q}</span>
+              <span class="faq-mark" aria-hidden="true">+</span>
+            </summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    {/* Part of + CTA — continue the questions. */}
+    <section class="section-tight" aria-labelledby="next-heading">
+      {partOf.length > 0 && (
+        <>
+          <h2 class="kicker">Part of</h2>
+          <ul class="bundles mt-6">
+            {partOf.map((b) => (
+              <li>
+                <a href={`${PROGRAM_URL}#bundles`} class="link">{b.name}</a>
+                <span class="subtext"> — {b.contents}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <h2 id="next-heading" class="statement-sm mt-16 max-w-[20ch]">Prices are by quote.</h2>
+      <a href={ENQUIRE} class="btn btn-primary mt-8">Enquire for pricing</a>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .title {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    max-width: 18ch;
+    margin-bottom: 0;
+  }
+
+  .facts {
+    display: grid;
+    gap: 1.5rem 3rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .facts dd { margin: 0.5rem 0 0; }
+
+  .reading { max-width: var(--measure); }
+
+  .ticks { padding-left: 1.25rem; list-style: square; }
+  .ticks li + li { margin-top: 0.625rem; }
+  .ticks li::marker { color: var(--color-ink-400); }
+  .ticks.reading li + li { margin-top: 1rem; }
+
+  .pair { display: grid; gap: 3rem 4rem; }
+  .pair p, .pair ul { max-width: var(--measure); }
+
+  .faq-list { max-width: 48rem; }
+
+  .bundles { list-style: none; padding: 0; }
+  .bundles li + li { margin-top: 0.5rem; }
+
+  @media (min-width: 64rem) {
+    .facts { grid-template-columns: 1fr 1.4fr; }
+    .pair { grid-template-columns: 1fr 1fr; }
+  }
+</style>

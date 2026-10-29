@@ -1,0 +1,51 @@
+---
+// Visible breadcrumb trail. Takes the same items the `breadcrumbs()` JSON-LD
+// builder does, so the trail on the page and the one in the graph cannot drift.
+// The last item is the current page and is not a link.
+import type { BreadcrumbItem } from '../lib/schema';
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb">
+  <ol class="crumbs mono-micro">
+    {items.map((item, i) => (
+      <li>
+        {i < items.length - 1 ? (
+          <a href={item.url} class="crumb-link">{item.name}</a>
+        ) : (
+          <span aria-current="page">{item.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .crumbs li:not(:last-child)::after {
+    content: '/';
+    padding-inline: 0.625rem;
+    color: var(--color-ink-400);
+  }
+  .crumb-link {
+    color: var(--color-ink-600);
+    text-decoration: none;
+  }
+  .crumb-link:hover {
+    color: var(--color-ink-900);
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+</style>

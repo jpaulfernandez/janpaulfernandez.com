@@ -1,7 +1,7 @@
 import { OGImageRoute } from 'astro-og-canvas';
 import { getCollection } from 'astro:content';
 import { getPublishedThoughts } from '../../lib/thoughts';
-import { getProjects } from '../../lib/projects';
+import { getProjects, hasPage } from '../../lib/projects';
 
 // Published only — a raw getCollection() here would emit OG cards for drafts at
 // guessable /og/<slug>.png URLs, leaking unpublished titles and excerpts.
@@ -78,7 +78,7 @@ tiers.forEach((t) => {
 
 // Each project page gets its own card, keyed projects-<slug>.
 const projectsList = await getProjects();
-projectsList.forEach((p) => {
+projectsList.filter(hasPage).forEach((p) => {
   pagesObj[`projects-${p.id}`] = {
     title: p.data.title,
     description: p.data.metaDescription ?? p.data.summary,

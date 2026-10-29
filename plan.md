@@ -69,7 +69,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 33.3 Generic project page template
 - [x] (2026-10-29) 33.4 Projects index with kind filter
 - [x] (2026-10-29) 33.5 Seed entries (list, Rappler year, Anakloud role pending Paul; AIM not seeded — see Blocked)
-- [ ] 33.6 Structured data, llms.txt, sitemap
+- [x] (2026-10-29) 33.6 Structured data, llms.txt, sitemap
 - [ ] 33.7 Verify
 - [ ] **Phase 33 Definition of Done**
 

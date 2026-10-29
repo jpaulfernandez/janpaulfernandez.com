@@ -7,12 +7,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { breadcrumbs, person, webPage } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
-import { getProjects } from '../lib/projects';
+import { getProjects, hasPage } from '../lib/projects';
 import { formatDate } from '../lib/dates';
 
 const thoughts = await getPublishedThoughts();
 const tiers = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
-const projects = await getProjects();
+const projects = (await getProjects()).filter(hasPage);
 const gallerySets = (await getCollection('gallery')).sort(
   (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
 );
@@ -221,7 +221,7 @@ const seoData = [
     <section aria-labelledby="heading-projects">
       <div class="flex items-baseline justify-between border-b border-[var(--line)] pb-4 mb-8">
         <h2 id="heading-projects" class="kicker m-0">Projects</h2>
-        <span class="mono-micro text-ink-400">{projects.length} {projects.length === 1 ? 'project' : 'projects'}</span>
+        <span class="mono-micro text-ink-400">{projects.length} {projects.length === 1 ? 'case study' : 'case studies'}</span>
       </div>
 
       <div class="grid gap-6 sm:grid-cols-2">

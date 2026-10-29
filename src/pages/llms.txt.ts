@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection, getEntry } from 'astro:content';
 import { getPublishedThoughts } from '../lib/thoughts';
+import { getProjects, hasPage } from '../lib/projects';
 
 export const GET: APIRoute = async ({ site }) => {
   const siteUrl = site ? site.origin : 'https://www.janpaulfernandez.com';
@@ -9,6 +10,8 @@ export const GET: APIRoute = async ({ site }) => {
   const wwm = await getEntry('workWithMe', 'workWithMe');
   const modes = wwm?.data.modes ?? [];
   const tiers = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
+
+  const projectPages = (await getProjects()).filter(hasPage);
 
   const thoughts = await getPublishedThoughts();
   const recentThoughts = thoughts.slice(0, 10);
@@ -37,7 +40,8 @@ ${tiers.map((t) => `- [${t.data.title}](${siteUrl}/work-with-me/ai-resilient-org
 - [Writing](${siteUrl}/thoughts/): Essays and notes on technology, economics, and psychology.
 - [Now](${siteUrl}/now/): Public journal and timeline of what Paul is currently focused on, building, and learning.
 - [Gallery](${siteUrl}/gallery/): Concert and live music photography in Manila.
-- [Projects](${siteUrl}/projects/): Things Paul has built, shipped, and tinkered with, including Oddhalls.
+- [Projects](${siteUrl}/projects/): Things Paul has built, shipped, and tinkered with, indexed by year.
+${projectPages.map((p) => `  - [${p.data.title}](${siteUrl}/projects/${p.id}/): ${p.data.summary}`).join('\n')}
 - [Work With Me](${siteUrl}/work-with-me/): Three ways to work together, the AI-Resilient Organisation program, and the enquiry form.
 
 ## Recent Thoughts & Articles

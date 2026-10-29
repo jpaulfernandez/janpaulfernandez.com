@@ -5,10 +5,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import ProjectRow from '../../components/ProjectRow.astro';
-import { breadcrumbs, person, webPage } from '../../lib/schema';
+import { breadcrumbs, collectionPage, person } from '../../lib/schema';
 import {
   getProjects,
   groupProjectsByYear,
+  hasPage,
   KIND_LABEL,
   PROJECT_KINDS,
   projectsByKind,
@@ -20,10 +21,17 @@ const groups = groupProjectsByYear(all);
 const kinds = PROJECT_KINDS.filter((k) => projectsByKind(all, k).length > 0);
 
 const description =
-  "Projects by Paul Fernandez — things I've built, shipped, and tinkered with, indexed by year.";
+  'Projects by Paul Fernandez: products, client work and side projects, indexed by year, with a write-up where one exists. Filter by kind of project.';
+
+// An ItemList entry needs a URL: the case study if there is one, else the
+// outside link, else the row is left out.
+const items = all.flatMap((p) => {
+  const url = hasPage(p) ? `/projects/${p.id}/` : p.data.link;
+  return url ? [{ name: p.data.title, url }] : [];
+});
 
 const seoData = [
-  webPage({ url: '/projects/', name: 'Projects', description }),
+  collectionPage({ title: 'Projects', description, url: '/projects/', items }),
   breadcrumbs([
     { name: 'Home', url: '/' },
     { name: 'Projects', url: '/projects/' },

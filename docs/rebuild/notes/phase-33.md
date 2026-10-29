@@ -44,3 +44,11 @@ Six files added under `src/content/projects/` (frontmatter only, no body, so `ha
 
 Not seeded: the AIM capstone (name unsourced; `about.md:11` mentions the Master's only), every talk (no list exists). No metrics, client names or outcomes added. The Eyelicium and PHVote summaries are my wording of the cited sources, not verbatim quotes.
 Logged in plan.md "Blocked-on-Paul": seed-list confirmation, Rappler year, Anakloud role, AIM, Oddhalls `<title>`.
+
+## 33.6
+- Index: `webPage` replaced by the existing `collectionPage` (no `schema.ts` change, no new builder) plus `breadcrumbs` and `person()`. Items: `hasPage` → `/projects/{id}/`, else `link`, else skipped; today 2 (Oddhalls page, Eyelicium external link). Meta description is now 146 characters.
+- Project page: unchanged (`webPage` + `breadcrumbs` + `person()`); built JSON-LD on `/projects/oddhalls/` is one WebPage, one BreadcrumbList, one Person (`@id` `https://janpaulfernandez.com/#person`). The index has one CollectionPage, one BreadcrumbList, one Person.
+- OG: loop filtered to `hasPage`; `dist/client/og/projects-oddhalls.png` is the only `projects-*` card (plus the index's `projects.png`).
+- `llms.txt`: the Projects line now links the index with one indented bullet per `hasPage` project (Oddhalls). `llms-full.txt.ts` has no projects reference; unchanged.
+- HTML sitemap: only `hasPage` projects, count reads "1 case study".
+- `astro.config.mjs` `contentLastmod()` read, not changed: it has no `/projects/` entries.

@@ -256,6 +256,34 @@ describe('JSON-LD schema library', () => {
     expect(() => JSON.stringify(sv)).not.toThrow();
   });
 
+  it('should give Service a name and an absolute url when provided', () => {
+    const sv = service({
+      title: 'With you',
+      description: 'We build it together.',
+      url: '/work-with-me/#with-you',
+    });
+    expect(sv.name).toBe('With you');
+    expect(sv.url).toBe(`${SITE_URL}/work-with-me/#with-you`);
+    expect(sv.serviceType).toBe('With you');
+    expect(sv.provider['@id']).toBe(PERSON_ID);
+  });
+
+  it('should emit areaServed as given, string or array', () => {
+    expect(
+      service({ title: 'T', description: 'D', areaServed: 'Philippines' }).areaServed
+    ).toBe('Philippines');
+    expect(
+      service({ title: 'T', description: 'D', areaServed: ['Metro Manila', 'Cebu'] }).areaServed
+    ).toEqual(['Metro Manila', 'Cebu']);
+  });
+
+  it('should omit url and areaServed keys when not provided', () => {
+    const sv = service({ title: 'T', description: 'D' });
+    expect('url' in sv).toBe(false);
+    expect('areaServed' in sv).toBe(false);
+    expect(sv.name).toBe('T');
+  });
+
   it('should generate ImageGallery with ImageObject entries and absolute URLs', () => {
     const g = imageGallery({
       title: 'HONNE at Wanderland',

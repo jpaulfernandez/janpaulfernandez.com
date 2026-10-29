@@ -65,3 +65,11 @@ stats[0..3] yes (D-01, D-02, D-06, D-09) · promise yes · steps yes · proofPoi
 (trimmed, see above) · addOns yes · bundles yes · founding* yes · pulse / leadership-day /
 fluency / champions / agent-sprint yes · tier faq[] yes (price answers rewritten) ·
 workWithMe.modes yes (§5.5) · intro yes · faq yes (drafted).
+
+## 32.3 service()
+
+`ServiceInput` gains `url?` (resolved via `abs()`) and `areaServed?: string | string[]`
+(schema.org/Service `areaServed` accepts Text, Place, AdministrativeArea, GeoShape;
+Text kept as the simplest). `name` is always emitted (= title, existing
+`serviceType` unchanged); `url` / `areaServed` only when given. No Offer, price or
+Course markup. Tests were written first and failed 3/3 before the change.

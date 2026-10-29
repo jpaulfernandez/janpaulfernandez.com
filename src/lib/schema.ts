@@ -253,14 +253,21 @@ export function faqPage(questions: FAQItem[]) {
 export interface ServiceInput {
   title: string;
   description: string;
+  /** Site-relative canonical path, e.g. `/work-with-me/#for-you`. */
+  url?: string;
+  /** Free text per schema.org/Service `areaServed` (Text is valid), e.g. `Metro Manila`. */
+  areaServed?: string | string[];
 }
 
 export function service(s: ServiceInput) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
+    name: s.title,
     serviceType: s.title,
     description: s.description,
+    ...(s.url ? { url: abs(s.url) } : {}),
+    ...(s.areaServed ? { areaServed: s.areaServed } : {}),
     provider: {
       '@id': PERSON_ID,
     },

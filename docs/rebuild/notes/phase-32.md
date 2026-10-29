@@ -227,3 +227,13 @@ Course markup. Tests were written first and failed 3/3 before the change.
 - **Not run:** Web3Forms submission, live redirects, validator.schema.org / Rich Results,
   manual keyboard pass. All logged in plan.md Blocked. The Phase 32 DoD box is left
   unchecked for that reason.
+
+## Keyboard pass on /work-with-me/ (run in 34.6, 2026-10-29, local build at 1280)
+
+- Tab order follows the DOM: skip link → nav (8) → three "Enquire about this: …" links → the tier table's scroll region (`div[role=region][tabindex=0]`, labelled by its caption) → five tier "Enquire about …" links → "See the program" → email → name, email, organisation, interested in, message → "Send it" → six FAQ `<summary>`s → footer. 47 stops, no traps, no stop on the `display:none` honeypot.
+- Every stop shows the 2px `red-700` outline.
+- Every field has a `<label>`; required fields are name, email, message (native `required`, the form is not `novalidate`).
+- The select changes value by keyboard type-ahead. The FAQ `<details>` open on Enter and close on Space, focus ring around the summary row.
+- Not exercised: submitting the form (it posts to Web3Forms and would email Paul). That stays Blocked item (a).
+- Minor, not a failure: the FAQ marker stays "+" when an item is open.
+- Result: pass. Removed item (d) from plan.md Blocked.

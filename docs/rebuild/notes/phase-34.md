@@ -54,3 +54,23 @@
 - `seoData`, `latestDate`, description and page lead untouched. Built `dateModified` is `2026-10-23T00:00:00.000Z`, the newest entry (`released-oddhalls-beta.md`).
 - In `<main>`, the only red fill or red border is `.tl-item.is-current::before`; the other red is three inline prose links in `red-700` (allowed: links). Header's red button is outside `<main>`.
 - Checks: build/check/test green; one h1; scripts are `.js` class, GA4, JSON-LD; `git diff v2-final -- src/content/now` empty; no horizontal scroll at 375/1280.
+
+## 34.6 Verify
+
+- Gates: `npm test` 63/63, `npx astro check` 0 errors 0 warnings, `npm run build` complete.
+- `git diff v2-final -- src/content/pages/about.md src/content/now src/content/thoughts src/assets/thoughts` → empty. `git grep "heroGreeting\|heroIntro" -- src` → nothing.
+- `"ProfilePage"`: Home 0, About 1. One `h1` on Home, About, Now. Home: one `panel-tint`; `btn-primary` inside `<main>`: Home 1 (closing CTA), About 0, Now 0 (the built files count 2 more each from the header's desktop and mobile button).
+- Scripts on Home, About, Now: the inline `.js` class script, GA4 (two tags), JSON-LD; no `/_astro/*.js`. No `.js`-gated styles on the three pages, so JS-off renders the same.
+- `grep "data-reveal|data-hero|data-brighten|gsap|wine-"` on the three pages → nothing. Home imports nothing from gallery or workshops.
+- Home meta description 160 characters. No `₱`/`PHP ` anywhere in `dist/client`. Banned words: one hit, "honestly" in `about.md` (frozen v2 copy, not new copy); none in the new Home/About copy.
+- Portrait: Home `<img>` has `fetchpriority="high"`, srcset 320–800w, `width=800`; About has `fetchpriority="high"` (it is About's LCP); `.portrait` is a hairline border, no grayscale.
+- Axe 4.14 (`@axe-core/cli`, chromedriver 156): 0 violations on `/`, `/about/`, `/now/`, `/work-with-me/`.
+- Browser (local build): 375, 768, 1280 on Home, About and Now; no horizontal scroll at any width. Now's only red fill is the newest node.
+- Keyboard pass, Home at 1280: 35 stops in DOM order, all with a visible 2px outline (`PostListItem` titles use an `ink-900` outline, the rest `red-700`; 36.2 owns PostListItem). The projects list has two stops, not three: Anakloud has no page and no link, so its row is an inert `div` (33.4 behaviour). At 375 the "Menu" `<summary>` opens on Enter and its links are in order before the hero.
+- "See the program" appears twice on Home (hero, then the program band's closing link), same target. They sit in different sections with the program content between them, so it reads as a reprise, not a duplicate. Kept.
+- The three Now rows all link to `/now/` with distinct titles. Not confusing, but three stops to one page; Now entries have no anchors to link to. Option for Paul or 36: make only "Full timeline" a link and the three titles plain text.
+- At 768 the Home portrait is vertically centred beside the h1; Paul may prefer it top-aligned. Left as is, logged.
+- About's career rail (global `.rail`) paints the first entry's dot `red-500`, below the fold. Left for Phase 36 (global CSS, written for the old Now rail).
+- Phase 32's manual keyboard pass on `/work-with-me/` run here: pass (details in `notes/phase-32.md`); its Blocked item removed.
+- Copy read against `voice.md`: How I work lines and the Connect sentence are plain, first person, no funnel words; flagged for Paul anyway.
+- Phase 34 DoD box left unchecked: every automated item passes, but the copy approvals (34.1, 34.2, 34.4) and the visual review (hero button, portrait crop) are pending Paul.

@@ -76,11 +76,11 @@ const seoData = [
 
           {allTopics.length > 0 && (
             <div class="mt-5 flex flex-wrap gap-2" data-filter-group="topic">
-              <button class="filter-chip tag" aria-pressed="true" data-value="all">
+              <button class="filter-chip chip" aria-pressed="true" data-value="all">
                 All topics
               </button>
               {allTopics.map((topic) => (
-                <button class="filter-chip tag" aria-pressed="false" data-value={topic}>
+                <button class="filter-chip chip" aria-pressed="false" data-value={topic}>
                   {topic}
                 </button>
               ))}
@@ -164,16 +164,7 @@ const seoData = [
     color: var(--color-paper);
   }
 
-  /* Topic filter — reuses the global .tag chip; only the pressed state and
-   * the cursor differ from the read-only version. */
-  .filter-chip.tag { cursor: pointer; }
-  /* Matches .tag[data-active] in global.css: the selected chip is a red-500
-   * fill carrying ink-900 (§3.1). */
-  .filter-chip.tag[aria-pressed='true'] {
-    color: var(--color-ink-900);
-    background-color: var(--color-red-500);
-    border-color: var(--color-red-500);
-  }
+  /* Topic chips use the global .chip (global.css, @layer components). */
 
   .rows > .post-row { border-bottom: 1px solid var(--line); }
 

@@ -363,8 +363,9 @@ a.card:hover, .card-interactive:hover { border-top-color: var(--color-ink-400); 
   padding: var(--space-m);
 }
 
-/* Label chip — topic tags, tool names. */
-.tag {
+/* Label chip — topic tags, tool names. `.chip` is the same look on a filter
+ * <button> (Thoughts topics, Projects kinds); aria-pressed carries its state. */
+.tag, .chip {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-mono);
@@ -383,8 +384,9 @@ a.tag:hover {
   color: var(--color-ink-900);
   border-color: var(--color-ink-400);
 }
+.chip { cursor: pointer; background: transparent; }
 /* The selected filter chip is a red fill carrying ink-900 (5.0:1). */
-.tag[data-active="true"] {
+.tag[data-active="true"], .chip[aria-pressed="true"] {
   color: var(--color-ink-900);
   background-color: var(--color-red-500);
   border-color: var(--color-red-500);

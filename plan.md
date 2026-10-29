@@ -92,7 +92,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 35.3 Library grid
 - [x] (2026-10-29) 35.4 Density control (buttons, wheel, keys, pinch)
 - [x] (2026-10-29) 35.5 Viewer with pinch-zoom
-- [ ] 35.6 Set pages re-skin
+- [x] (2026-10-29) 35.6 Set pages re-skin
 - [ ] 35.7 Verify (Paul: real iPhone + Android)
 - [ ] **Phase 35 Definition of Done**
 

@@ -114,31 +114,31 @@ const seoData = [
   <article>
     <header class="page-head">
       <div class="shell">
-        <a href="/gallery/" class="mono-micro no-underline hover:text-ink-900">
-          ← Gallery
-        </a>
+        <p class="mono-micro set-meta">
+          <time datetime={item.data.publishedDate}>{dateFormatted}</time>
+          <span aria-hidden="true">·</span>
+          <span>{photoList.length} photos</span>
+          {item.data.tags.map((tag) => (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{tag}</span>
+            </>
+          ))}
+        </p>
 
         <h1 class="display mt-6 max-w-[16ch]">
           {item.data.title}
         </h1>
 
         {item.data.description && (
-          <p class="lead mt-8 max-w-[52ch]">
+          <p class="subtext mt-8 max-w-[52ch]">
             {item.data.description}
           </p>
         )}
 
-        <p class="mono-micro mt-8">
-          <time datetime={item.data.publishedDate}>{dateFormatted}</time>
-          <span class="mx-2 text-ink-400" aria-hidden="true">/</span>
-          <span>{photoList.length} photos</span>
+        <p class="mt-6">
+          <a href="/gallery/" class="link">← All photographs</a>
         </p>
-
-        {item.data.tags && item.data.tags.length > 0 && (
-          <ul class="mt-6 list-none m-0 p-0 flex flex-wrap gap-2">
-            {item.data.tags.map((tag) => <li class="tag">{tag}</li>)}
-          </ul>
-        )}
       </div>
     </header>
 
@@ -181,9 +181,16 @@ const seoData = [
     padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(2.5rem, 2rem + 3vw, 4rem);
   }
 
+  .set-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+  }
+
+  /* Frames shown whole (true aspect ratios), laid out by CSS columns. */
   .gallery-masonry {
     columns: 1;
-    column-gap: 1rem;
+    column-gap: 0.5rem;
   }
   @media (min-width: 640px) {
     .gallery-masonry { columns: 2; }
@@ -191,20 +198,14 @@ const seoData = [
   @media (min-width: 1024px) {
     .gallery-masonry { columns: 3; }
   }
-  /* An <a> now, not a <button>: the href is the full-size image, so the wall
-     still works with JS off. These reset the anchor back to a bare frame. */
+  /* An anchor whose href is the full-size image, so the set still works with
+     JS off. These reset it to a bare frame. */
   .gallery-masonry-item {
     display: block;
-    text-decoration: none;
-    color: inherit;
     width: 100%;
-    margin: 0 0 1rem;
-    padding: 0;
-    border: 0;
-    border-radius: var(--radius-sm);
+    margin: 0 0 0.5rem;
     background: var(--color-paper-100);
     cursor: zoom-in;
-    overflow: hidden;
     break-inside: avoid;
     -webkit-column-break-inside: avoid;
   }
@@ -212,17 +213,5 @@ const seoData = [
     display: block;
     width: 100%;
     height: auto;
-    /* Matches the wall on /gallery: held back until hovered, so one frame at
-     * a time carries the stage colour instead of all of them at once. */
-    filter: grayscale(0.7) brightness(0.85);
-    transition: filter 0.4s var(--ease-out-quint);
-  }
-  .gallery-masonry-item:hover .gallery-masonry-img,
-  .gallery-masonry-item:focus-visible .gallery-masonry-img {
-    filter: grayscale(0) brightness(1);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .gallery-masonry-img { filter: none; }
   }
 </style>

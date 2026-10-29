@@ -1,0 +1,27 @@
+---
+// ProseImage.astro — the `img` override for Markdown images in MDX bodies.
+// @astrojs/mdx hands a local `![alt](./x.jpg)` to `components.img` with `src`
+// already imported as ImageMetadata. The default renders one full-size file;
+// this adds a srcset so a phone fetches ~800w instead of 1600w (36.3).
+// Image-only paragraphs get the full 58rem .shell-narrow container (36.1), so
+// `sizes` is the container, not the 38rem text measure.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+type Props = { src: ImageMetadata | string; alt?: string; [key: string]: unknown };
+const { src, alt = '', ...rest } = Astro.props;
+---
+
+{typeof src === 'string' ? (
+  <img src={src} alt={alt} loading="lazy" decoding="async" {...rest} />
+) : (
+  <Image
+    src={src}
+    alt={alt}
+    widths={[480, 800, 1200, 1600]}
+    sizes="(min-width: 58rem) 58rem, 100vw"
+    loading="lazy"
+    decoding="async"
+    {...rest}
+  />
+)}

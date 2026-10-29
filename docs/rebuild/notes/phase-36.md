@@ -43,3 +43,19 @@ CLS is 0 on every run, so the metric-matched fallback `@font-face` remedy is not
 axe (`@axe-core/cli` 4.14 via npx, chromedriver 156.0.8078.73): 0 violations on `/thoughts/what-is-a-token-anyway/`, `/thoughts/if-ai-takes-all-the-jobs-what-do-we-actually-do/`, `/thoughts/`, `/topics/ai/`, `/404.html`, `/sitemap/`, `/about/`, `/thanks/`, `/colophon/`.
 
 JS: articles ship only the 45 B `.js` class script + gtag + JSON-LD (0 KB module JS); `/thoughts/` filter inline module 984 B / 492 B gzip.
+
+### 36.3 follow-up: responsive srcset for article body images
+Fix (a) above, the narrow way. `src/components/ProseImage.astro` is passed as `img` in the `<Content components>` map on `thoughts/[slug].astro` and `projects/[slug].astro` (one-line reuse). @astrojs/mdx 4.3 rewrites a local `![alt](./x.jpg)` to an `astro-image` element whose component is `components.img ?? __AstroImage__`, with `src` already imported as `ImageMetadata` (read from `node_modules/@astrojs/mdx/dist/rehype-images-to-component.js` + `vite-plugin-mdx-postprocess.js`). The override renders `astro:assets` `<Image>` with `widths={[480, 800, 1200, 1600]}` (widths above the original are dropped, so the 1400w diagrams top out at 1400), `sizes="(min-width: 58rem) 58rem, 100vw"` (image-only paragraphs take the full 58rem `.shell-narrow` container per 36.1, not the 38rem measure), `loading="lazy"`, `decoding="async"`; alt and any other Markdown attributes pass through; a string `src` (remote) falls back to a plain `<img>`. No `image.layout` config, so nothing else on the site changes (no inline style, no `data-astro-image`). There is no figure/caption plugin, so no caption behaviour to preserve. Content diff vs `v2-final` on `src/content/thoughts` + `src/assets/thoughts`: empty.
+
+Built HTML: all 8 body images on the jobs article carry a 4-candidate `srcset` (the cover keeps its own 800/1200/1600 set); the 5 LLM-map diagrams and the 6 Oddhalls screenshots likewise. Diagrams measured at full container width (856 px of an 856 px `.prose` at 1024 px; 335/335 at 375 px mobile, DPR 2 picks the 800w file) and remain legible.
+
+Lighthouse 12.8.2 mobile, `serve dist/client -l 4400`, reports `$SCRATCHPAD/lh/srcset-{jobs,token}-{1,2,3}.report.{json,html}`:
+
+| URL | Before (median of 3) | After |
+|---|---|---|
+| `/thoughts/if-ai-takes-all-the-jobs-what-do-we-actually-do/` | 93 (93, 93, 93), LCP 3.15 s, 851 KB | two triples: 97, 94, 95 and 94, 98, 94 → **median 94.5**; LCP 3.08 s (2.33 s on the 97/98 runs), 617 KB |
+| `/thoughts/what-is-a-token-anyway/` | — | **99** (99, 99, 99), LCP 2.1 s |
+
+A / BP / SEO 100 on every run. The first triple overlapped a concurrent `npm run build` by another agent (one token run 404'd and was rerun); the second triple ran on a stable `dist`. Page weight −234 KB; the three images inside Chrome's lazy-load margin now fetch the 800w files (67 + 26 + 22 KB vs 178 KB for 02 alone). The score now sits on the 95 line rather than clearly over it: what remains is LCP render delay (~1.9 s simulated) behind the four font files (Fraunces opsz 66 KB, Inter 47 KB, Fraunces italic 45 KB, JetBrains Mono 40 KB) and the 177 KB gtag on the 1.6 Mbps Lantern link — not images. Still local numbers; the Vercel preview run (HTTP/2, compression) is what the phase records.
+
+axe 4.14: 0 violations on the jobs article, `/thoughts/a-quick-map-on-large-language-models/`, `/projects/oddhalls/`. `npm run build`, `astro check` (0 errors), `npm test` (64/64) green.

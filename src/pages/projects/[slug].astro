@@ -11,6 +11,7 @@ import KeyTakeaway from '../../components/blocks/KeyTakeaway.astro';
 import Callout from '../../components/blocks/Callout.astro';
 import PullQuote from '../../components/blocks/PullQuote.astro';
 import Embed from '../../components/blocks/Embed.astro';
+import ProseImage from '../../components/ProseImage.astro';
 import { breadcrumbs, person, webPage } from '../../lib/schema';
 import { getProjects, hasPage, KIND_NOUN, relatedProjects } from '../../lib/projects';
 
@@ -25,7 +26,7 @@ export async function getStaticPaths() {
 const { project, related } = Astro.props;
 const p = project.data;
 const { Content } = await render(project);
-const components = { KeyTakeaway, Callout, PullQuote, Embed };
+const components = { KeyTakeaway, Callout, PullQuote, Embed, img: ProseImage };
 const description = p.metaDescription ?? p.summary;
 const url = `/projects/${project.id}/`;
 const host = p.link ? new URL(p.link).hostname : null;

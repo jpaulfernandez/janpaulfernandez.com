@@ -8,6 +8,7 @@ import KeyTakeaway from '../../components/blocks/KeyTakeaway.astro';
 import Callout from '../../components/blocks/Callout.astro';
 import PullQuote from '../../components/blocks/PullQuote.astro';
 import Embed from '../../components/blocks/Embed.astro';
+import ProseImage from '../../components/ProseImage.astro';
 
 export async function getStaticPaths() {
   const allPosts = await getPublishedThoughts();
@@ -36,6 +37,7 @@ const components = {
   Callout,
   PullQuote,
   Embed,
+  img: ProseImage,
 };
 ---
 

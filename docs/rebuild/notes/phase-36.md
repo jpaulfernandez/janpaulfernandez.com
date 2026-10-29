@@ -59,3 +59,49 @@ Lighthouse 12.8.2 mobile, `serve dist/client -l 4400`, reports `$SCRATCHPAD/lh/s
 A / BP / SEO 100 on every run. The first triple overlapped a concurrent `npm run build` by another agent (one token run 404'd and was rerun); the second triple ran on a stable `dist`. Page weight −234 KB; the three images inside Chrome's lazy-load margin now fetch the 800w files (67 + 26 + 22 KB vs 178 KB for 02 alone). The score now sits on the 95 line rather than clearly over it: what remains is LCP render delay (~1.9 s simulated) behind the four font files (Fraunces opsz 66 KB, Inter 47 KB, Fraunces italic 45 KB, JetBrains Mono 40 KB) and the 177 KB gtag on the 1.6 Mbps Lantern link — not images. Still local numbers; the Vercel preview run (HTTP/2, compression) is what the phase records.
 
 axe 4.14: 0 violations on the jobs article, `/thoughts/a-quick-map-on-large-language-models/`, `/projects/oddhalls/`. `npm run build`, `astro check` (0 errors), `npm test` (64/64) green.
+
+## 36.5 Whole-rebuild DoD (2026-10-29, fresh `npm run build`)
+Gates: `npm run build` ok, `npx astro check` 0 errors / 0 warnings, `npm test` 64/64. All automated §9 items pass:
+- Seven pages: all built (`/`, `/about/`, `/now/`, `/projects/`, `/work-with-me/`, `/thoughts/`, `/gallery/`) plus 5 program pages, 7 projects-index rows, 6 thoughts, 9 topics, 4 sets. 37 HTML files, one `h1` each.
+- Rule 2 content diff vs `v2-final`: empty. Peso grep over `dist/client`: nothing. `wine-` / `data-reveal|hero|brighten|parallax` in `src`: 0; `gsap` in `package.json` and lockfile: 0.
+- Colour grep: no `#000`, no white/black type; the only `#FFF` hits are the paper ground token, the `theme-color` meta and the OG background. `.btn-primary` / selected chip carry `ink-900` on `red-500`.
+- Banned-word grep over built pages: v3 copy clean. The only hits are inside frozen content (`about.md`: "honestly"; two thoughts), which rule 2 forbids editing.
+- JS per page (inline-aware gzip): 0 on Home, About, Now, Work with me, program pages, articles; `/thoughts/` 492 B; `/projects/` 345 B; `/gallery/` 2.1 KB and set pages 2.1 KB (budget 6 KB).
+- JSON-LD: 0 parse errors; one `@id` for Paul, `https://janpaulfernandez.com/#person` (apex on purpose, `PERSON_ID` in `schema.ts` pins it while `SITE_URL` is www); defined at most once per page; no dangling `@id`; one `ProfilePage` (`/about/`). Topics, colophon, gallery index and thanks/404 carry no Person reference because they have no author to name; not treated as a defect.
+- Redirects in `.vercel/output/config.json`: `/workshop`, `/workshops`, and the three `/workshops/*` pages point straight at final built routes; no target is itself a source, so no chains. Internal links: 1,900 `href`/`src`/`action` values across all built HTML, 0 unresolved.
+- axe 4.14 (`@axe-core/cli`, chromedriver 156): 0 violations on 28 URLs (all route types: home, about, now, work-with-me, overview, five tiers, projects index and Oddhalls, thoughts index, six articles, two topics, gallery index and two sets, colophon, sitemap, thanks, 404).
+- Phase 31-35 DoD boxes that are greppable were re-run (wine/gsap/Switzer/Courier gone, one `@layer components`, no shadow/gradient/backdrop in `global.css` or Lightbox/gallery pages, `masonryLayout` gone, `featured`/`licensingAvailable` gone from gallery, `heroGreeting|heroIntro` gone from code, Home has no `ProfilePage` and one `.panel-tint`, exactly one body `.btn-primary`, meta descriptions 160/147/152 chars, 95 `photo-trigger` anchors). No bugs found; no source changes made.
+- The phase DoD boxes in `plan.md` stay unticked: each still has a Paul item (listed below).
+- Open concern for the preview, not fixable locally: the generated 301 rules are slash-less (`^/workshops/ai-fluency$`) and sit after the adapter's slash-adding 308 rule. If the slashed forms (`/workshops/`, `/workshops/ai-fluency/`) 404 or hop twice on the preview, add a slashed source per entry.
+
+## Launch checklist for Paul
+
+### Needs a Vercel preview (or production)
+- [ ] Redirects: `/workshop`, `/workshops`, `/workshops/`, `/workshops/ai-fluency/`, `/workshops/leadership-ai/`, `/workshops/ai-for-business/`, `/workshops/vibe-coding/` each return one 301 to the target in `astro.config.mjs` (`#advise` survives); see the slash-form concern above.
+- [ ] Lighthouse mobile >= 95 on `/`, `/work-with-me/`, `/work-with-me/ai-resilient-organisation/`, the jobs thought, `/gallery/` (record in the PR). Local numbers: `/` 87 (99 with GA4 blocked), jobs thought about 94.5, gallery 94-95, the rest 100.
+- [ ] Web3Forms test submission on `/work-with-me/` lands on `/thanks/` (sends one email to you).
+- [ ] Paste `/work-with-me/` and one tier page into validator.schema.org and Google's Rich Results Test (Service x4, FAQPage).
+- [ ] Visual review of Phase 31 (whole site), Home hero hairline button and portrait crop at 375/768/1280 (768 portrait is vertically centred; top-align is one line), `/thoughts/` red fills above the fold, the Phase 31-35 PR previews.
+- [ ] Keyboard pass on the preview for the Work-with-me form and FAQ, if not already done locally.
+
+### Needs a real device
+- [ ] Gallery grid pinch (3/5/7 and 4/6/8/12 levels) and the viewer (swipe, pinch 1-4x, double-tap 2x, close, focus return) on a real iPhone (Safari) and a real Android phone (Chrome).
+- [ ] Confirm the white viewer ground looks right on a phone.
+
+### Needs a copy or decision from you
+- [ ] GA4 keep or replace (R8): it alone costs `/` mobile about 12 Lighthouse points; spec section 8 asked for Plausible/Umami.
+- [ ] Phase 32 copy: founding-offer terms text; the facilitator proof points (the MMDC "former IT Manager" and Master's lines were left out because `about.md` contradicts them); the six FAQ answers and mode copy (drafted, not yours).
+- [ ] Phase 33 seeds: the seven-entry list and whether PHVote 2019 and 2022 stay two entries; Rappler CMS migration year (placeholder `2023`; the entry ships only if you accept it); Anakloud role "Tech lead"; the AIM capstone name (not seeded); Oddhalls `<title>` now "Oddhalls — Paul Fernandez" (or put the descriptor back).
+- [ ] Phase 34 copy: `heroStatement` / `heroWho` ("eleven years", "a college of working students", delivery areas "Metro Manila, Clark, Cebu and online"; spec doc 09 says Angeles City, you said Manila); closing CTA wording "Book a scoping call"; the closing sentence "Not sure which of these you need? That's what the first call is for."; the three "How I work" lines and the Connect sentence on About; About h1 kept as the name; hairline vs red hero button.
+- [ ] GitHub profile URL for the footer (omitted; suggested `https://github.com/jpaulfernandez`, one line in `BaseLayout.astro`).
+- [ ] Thanks-page line "probably mid-session".
+- [ ] voice.md example swap (36.4) and the Thoughts "Notes" chip, which filters to zero rows today.
+- [ ] Whether to give every Markdown image a `srcset` site-wide (`image: { layout: 'constrained' }`) or keep the narrow `ProseImage` override; whether the FAQ `+` should stop rotating like the TOC.
+- [ ] Unconsumed CMS fields: render or delete `thoughts.stage` and the `seo` singleton (both config files together).
+- [ ] Merge decisions: `main` is local-only and nothing is pushed; merging deploys production.
+
+### Off-site
+- [ ] BIR registration and official receipts before the first corporate invoice; written MMDC employer clearance. Required before the program is announced or invoiced (pages may be live first).
+- [ ] After deploy: `curl -sI https://www.janpaulfernandez.com/workshops/` expects 301; resubmit `https://www.janpaulfernandez.com/sitemap-index.xml` in Search Console; request indexing for `/`, `/work-with-me/`, `/work-with-me/ai-resilient-organisation/`.
+- [ ] One week later: Search Console Pages report, no 404s for old `/workshops/*`.
+- [ ] Wikidata item (add the Q-ID to `sameAs`); `git push origin v2-final`; Cloudflare Images migration for the gallery (needs account ID and token; out of scope for the rebuild).

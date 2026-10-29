@@ -104,7 +104,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 36.2 Thoughts index, topics, remaining pages (+ global career `.rail` first dot no longer red-500: only About uses it; see notes)
 - [ ] 36.3 Lighthouse ≥ 95 ×4 on five URLs
 - [x] (2026-10-29) 36.4 spec.md, CLAUDE.md, voice.md, memory updated
-- [ ] 36.5 Whole-rebuild Definition of Done (rebuild-plan §9)
+- [x] (2026-10-29) 36.5 Whole-rebuild DoD (automated items pass; Paul items in launch checklist)
 - [ ] 36.6 Launch (Paul)
 - [ ] **Phase 36 Definition of Done**
 

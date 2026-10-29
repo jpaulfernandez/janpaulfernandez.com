@@ -24,24 +24,24 @@ const label = labels[variant] ?? labels.note;
   .callout {
     margin-block: 2.5rem;
     padding: 1.5rem;
-    border: 1px solid var(--line);
+    border: 1px solid var(--color-blue-200);
     border-left-width: 2px;
     border-radius: var(--radius-md);
   }
-  .callout[data-variant='idea'] { border-left-color: var(--color-ink-900); }
-  .callout[data-variant='warning'] { border-left-color: var(--color-red-700); }
+  .callout[data-variant='idea'] { border-left-color: var(--color-ink-600); }
+  .callout[data-variant='warning'] { border-left-color: var(--color-red-500); }
 
   .label {
     margin: 0 0 0.75rem;
     font-family: var(--font-mono);
     font-size: var(--text-micro);
     text-transform: uppercase;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.14em;
     color: var(--color-ink-400);
   }
   .callout[data-variant='warning'] .label { color: var(--color-red-700); }
-  .callout[data-variant='idea'] .label { color: var(--color-ink-900); }
 
+  .body { color: var(--color-ink-900); }
   .body :global(> p) { margin: 0; }
   .body :global(> * + *) { margin-top: 1rem; }
 </style>

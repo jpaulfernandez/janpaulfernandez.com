@@ -1,7 +1,5 @@
 ---
-// KeyTakeaway.astro — after Phase 21, the ONLY place on the site where wine
-// appears as a field rather than as a link. It survived the de-SaaS pass on
-// purpose: it is a semantic block inside long-form prose, not page chrome.
+// KeyTakeaway.astro — the block the v3 blue tint exists for.
 ---
 <aside class="key-takeaway">
   <p class="label">Key takeaway</p>
@@ -12,7 +10,9 @@
   .key-takeaway {
     margin-block: 3rem;
     padding: 1.75rem;
-    border: 1px solid var(--line);
+    border: 1px solid var(--color-blue-200);
+    /* The red rule is a fill, not text, so red-500 is allowed here. */
+    border-left: 3px solid var(--color-red-500);
     border-radius: var(--radius-md);
     background-color: var(--color-blue-100);
   }
@@ -21,8 +21,8 @@
     font-family: var(--font-mono);
     font-size: var(--text-micro);
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--color-red-700);
+    letter-spacing: 0.14em;
+    color: var(--color-red-700); /* 5.27:1 on blue-100 */
   }
   .body { color: var(--color-ink-900); }
   .body :global(> p) { margin: 0; }

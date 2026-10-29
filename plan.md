@@ -98,7 +98,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 
 ### Phase 36 — Thoughts re-skin + launch · [phase file](docs/rebuild/phase-36-thoughts-launch.md)
 
-- [ ] 36.1 Article blocks + ArticleLayout
+- [x] (2026-10-29) 36.1 Article blocks + ArticleLayout
 - [ ] 36.2 Thoughts index, topics, remaining pages
 - [ ] 36.3 Lighthouse ≥ 95 ×4 on five URLs
 - [ ] 36.4 spec.md, CLAUDE.md, voice.md, memory updated

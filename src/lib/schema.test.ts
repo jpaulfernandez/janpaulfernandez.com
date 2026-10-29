@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   PERSON_ID,
+  PERSON_SUMMARY,
   SITE_URL,
   person,
   webSite,
@@ -386,5 +387,10 @@ describe('JSON-LD schema library', () => {
     expect(c.provider).toEqual({ '@id': PERSON_ID });
 
     expect(() => JSON.stringify(c)).not.toThrow();
+  });
+
+  it('exports a one-line Person summary that opens the Person description', () => {
+    expect(PERSON_SUMMARY.trim().length).toBeGreaterThan(0);
+    expect(person().description.startsWith(PERSON_SUMMARY)).toBe(true);
   });
 });

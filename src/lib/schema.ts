@@ -29,8 +29,11 @@ export interface PersonOverrides {
  * surrounding context, so it carries the verifiable career record and none of
  * the voice that belongs on /about/.
  */
+/** The description's first sentence, reused verbatim as the footer's one-line summary. */
+export const PERSON_SUMMARY = 'Paul Fernandez is a technologist in Manila, Philippines.';
+
 const PERSON_DESCRIPTION =
-  'Paul Fernandez is a technologist in Manila, Philippines. He built ' +
+  PERSON_SUMMARY + ' He built ' +
   'account-opening software as a systems analyst at PSBank, led digital ' +
   'transformation and tech operations at Rappler — running election-night ' +
   'results through the 2019 and 2022 national votes — and is now IT Manager ' +

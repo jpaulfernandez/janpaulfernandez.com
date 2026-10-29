@@ -262,3 +262,44 @@ typefaces. (The GSAP stack row was already removed in 31.4.)
   theme to maintain").
 - `grep -n "Switzer\|Courier\|GSAP" src/pages/colophon.astro` → 0.
 - `grep -rniE "switzer|courier|gsap" src package.json` → 0.
+
+## 31.8 BaseLayout chrome
+
+- **Nav** (§4 order and wording): Work with me · Projects · Thoughts · Gallery ·
+  About · Now; wordmark is the Home link. Workshops left the nav (pages stay
+  until 32.6). `isNavActive` unchanged (Thoughts already covers `/topics/`).
+- **Button:** "Book a scoping call" → `/work-with-me/#enquire`, `.btn
+  .btn-primary`, in the header from 48rem up. The anchor lands in 32.4.
+- **Mobile sheet:** native `<details class="mobile-nav"><summary>Menu</summary>`
+  with the six links and the button (the sheet's copy of the button is hidden
+  from 48rem, where the header shows its own). The sheet is absolutely
+  positioned under the bar on a paper ground with a `--line` rule — no shadow.
+  The `aria-expanded` toggle and the inline menu script are deleted.
+  Breakpoints are `@media` in the scoped `<style>`: desktop links ≥ 64rem,
+  `<details>` < 64rem, header button ≥ 48rem.
+- **Footer** (§4): the one-line Person summary, then Email · LinkedIn ·
+  Instagram · RSS, Sitemap · Colophon · llms.txt, and `© {year} Paul
+  Fernandez`. The summary is `PERSON_SUMMARY`, newly exported from
+  `src/lib/schema.ts` as the first sentence of the Person description (the
+  description is built from it, so it is byte-identical; test written first:
+  non-empty and `person().description` starts with it). **GitHub omitted** —
+  Blocked on Paul (plan.md).
+- **Removed from the footer, decision for Paul's review:** the Phase 21
+  statement ("Figuring out what to build, with the people who have to build
+  it."), its "Work with me" red button, and the "Explore" column repeating the
+  nav. §4 lists none of them, and the red button was a second red fill in the
+  chrome. Restoring the statement is one `<p>`.
+- **Also fixed here:** `<meta name="theme-color">` was the dark build's
+  `#050505` and `color-scheme` was `dark`; now `#FFFFFF` / `light`. The unused
+  scoped `.sr-only` rule went with the old style block.
+- **Nav link colour** is ink-900 (CLAUDE.md: nav is ink-900), hover/current
+  underlined; footer links ink-600.
+
+**Done-when.** Built `dist/client/index.html`: `<script` tags are the `.js`
+class script and the two GA4 tags (plus the `application/ld+json` data block,
+which is not JS); `grep -c aria-expanded` → 0. Browser pane: 1280px shows the
+wordmark, six links and the red button; 820px shows wordmark, button, Menu;
+375px shows wordmark + Menu, and the open sheet lists six links and the
+button. Keyboard: Tab goes skip link → wordmark → six links → button (1280)
+and skip link → wordmark → summary (375); `Enter` opens and `Space` closes the
+summary; focus outline is `rgb(164, 64, 47)` = red-700.

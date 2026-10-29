@@ -86,7 +86,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 
 ### Phase 35 — Gallery · [phase file](docs/rebuild/phase-35-gallery.md)
 
-- [ ] 35.1 `libraryOrder()`, tests first; masonry packer removed
+- [x] (2026-10-29) 35.1 `libraryOrder()`, tests first; masonry packer removed
 - [ ] 35.2 Gallery schema: `photos[].date`, dead fields deleted
 - [ ] 35.3 Library grid
 - [ ] 35.4 Density control (buttons, wheel, keys, pinch)

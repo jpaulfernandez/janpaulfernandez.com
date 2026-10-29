@@ -5,7 +5,7 @@ import Lightbox from '../../components/Lightbox.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { lightboxWidth, masonryLayout } from '../../lib/gallery';
+import { lightboxWidth } from '../../lib/gallery';
 import { collectionPage, breadcrumbs } from '../../lib/schema';
 
 const sets = (await getCollection('gallery')).sort(
@@ -78,13 +78,10 @@ shots.sort((a, b) => a.spread - b.spread);
 // packing, so the wall reads as a scatter of sizes, not a 3-col grid. (88 of
 // the 95 shots are the same 4:3 crop — equal-width columns can't break the
 // grid.) The browser just flexes the three columns that come out of here.
-const slots = masonryLayout(
-  shots.map((s) => ({ id: s.key, width: s.image.width, height: s.image.height })),
-  3
-);
-slots.forEach((slot, i) => {
-  shots[i].column = slot.column;
-  shots[i].widthFactor = slot.widthFactor;
+// TEMP (35.1): masonryLayout is gone; 35.3 rewrites this page. Round-robin columns.
+shots.forEach((shot, i) => {
+  shot.column = i % 3;
+  shot.widthFactor = 1;
 });
 const wallColumns = [0, 1, 2].map((c) => shots.filter((s) => s.column === c));
 

@@ -18,43 +18,62 @@ export function lightboxWidth(
     : Math.min(Math.round((long * image.width) / image.height), image.width);
 }
 
-export type MasonryInput = { id: string; width: number; height: number };
-export type MasonrySlot = { column: number; widthFactor: number };
+type PhotoImage = { src: string; width: number; height: number };
+
+/** The slice of a gallery collection entry that libraryOrder reads. */
+export type LibrarySet<I extends PhotoImage = PhotoImage> = {
+  id: string;
+  data: {
+    title: string;
+    publishedDate: string;
+    cover?: I;
+    photos: { image: I; caption?: string; date?: string }[];
+  };
+};
+
+export type LibraryPhoto<I extends PhotoImage = PhotoImage> = {
+  image: I;
+  caption: string;
+  setSlug: string;
+  setTitle: string;
+  /** YYYY-MM-DD: the photo's own date, else its set's publishedDate. */
+  date: string;
+};
 
 /**
- * The gallery wall is 95 photos, 88 of them the same 4:3 crop — equal-width
- * columns can only tile into a grid. This breaks the grid by varying each
- * photo's width (0.75 / 1 / 1.25 of the column) and packing everything into
- * columns of roughly equal height before the page is built. Every dimension
- * comes from image metadata and a string hash, never randomness, so the wall
- * is identical on every build. The browser merely flexes the buckets.
+ * Every photo of every set as one list, newest first. Sorts by
+ * `photo.date ?? set.publishedDate` (string compare is correct for
+ * YYYY-MM-DD). Ties go to the set slug ascending, so a rebuild never
+ * reshuffles the wall and a set stays contiguous; within a set the authored
+ * order is kept. The cover is emitted once (dedupe on `image.src`) and
+ * inherits the caption of its matching photos[] entry.
  */
-export function masonryLayout(
-  items: MasonryInput[],
-  columnCount: number
-): MasonrySlot[] {
-  const columns = Math.max(1, columnCount);
-  const heights = new Array<number>(columns).fill(0);
-  return items.map((item) => {
-    const factor = widthFactor(item.id);
-    let column = 0;
-    for (let c = 1; c < columns; c++) {
-      if (heights[c] < heights[column]) column = c;
+export function libraryOrder<I extends PhotoImage>(
+  sets: LibrarySet<I>[]
+): LibraryPhoto<I>[] {
+  const out: LibraryPhoto<I>[] = [];
+  const sorted = [...sets].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  for (const set of sorted) {
+    const seen = new Set<string>();
+    const add = (image: I | undefined, caption: string, date?: string) => {
+      if (!image || seen.has(image.src)) return;
+      seen.add(image.src);
+      out.push({
+        image,
+        caption,
+        setSlug: set.id,
+        setTitle: set.data.title,
+        date: date ?? set.data.publishedDate,
+      });
+    };
+    const { cover, photos } = set.data;
+    if (cover) {
+      const match = photos.find((p) => p.image.src === cover.src);
+      add(cover, match?.caption || '', match?.date);
     }
-    heights[column] += factor * (item.height / item.width);
-    return { column, widthFactor: factor };
-  });
-}
-
-/** Pseudo-random width factor for a shot id: FNV-1a hash bucketed 30/40/30. */
-export function widthFactor(id: string): number {
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < id.length; i++) {
-    hash ^= id.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
+    for (const p of photos) add(p.image, p.caption || '', p.date);
   }
-  const r = hash >>> 0;
-  if (r % 100 < 30) return 0.75;
-  if (r % 100 < 70) return 1;
-  return 1.25;
+  // Array.prototype.sort is stable: equal dates keep the slug-then-authored
+  // order built above.
+  return out.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }

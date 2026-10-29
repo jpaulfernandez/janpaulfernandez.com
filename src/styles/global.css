@@ -7,88 +7,27 @@
 @import "@fontsource-variable/jetbrains-mono";
 
 /* ============================================================================
- * Phase 20 (2026-09-05) — "NOCTURNE". Full visual reset.
+ * v3 (Phase 31, 2026-10-29) — white ground, cherry type, red/blue accents.
+ * Spec: rebuild-plan.md §3. Every token below is measured on #FFFFFF:
  *
- * Direction taken from midu.design, adapted rather than copied: a near-black
- * ground, glass surfaces built from white alpha, one enormous tightly-tracked
- * display face, and motion that is scroll-driven rather than decorative.
+ *   ink-900    #351E28  15.35:1  headings, body, nav, text on red-500 (5.0:1)
+ *   ink-600    #594C57   8.09:1  secondary reading copy — subtext, lead, FAQ
+ *   ink-400    #6B6470   5.71:1  METADATA ONLY — dates, counters, kickers
+ *   red-700    #A4402F   6.26:1  inline links, small accent text, focus ring
+ *   red-500    #FF5C34   3.07:1  NON-BODY: fills, display words ≥ 24px, rules
+ *   blue-100   #D7EFFF   ground  .panel-tint, KeyTakeaway, code/kbd
+ *   blue-200   #BAC9D8   1.69:1  NON-TEXT: hairlines (--line), input borders
+ *   paper      #FFFFFF   ground  the page
+ *   paper-100  #F7F8FA   ground  alternate section ground, once per page
  *
- * What changed from Phase 9–19 ("WINE", light):
- *   • Ground inverted. paper-* stopped meaning "surface" and now means "type";
- *     ink-* stopped meaning "type" and now means "ground". The names follow
- *     the ink-on-paper metaphor, which survives the inversion — dark ink,
- *     light paper, we are simply looking at it from the other side.
- *   • Wine was lifted two stops. #8E1B3F scores 2.0:1 on #050505 and was
- *     unusable as text; the ramp now runs #F0658A (6.5:1) / #E0446F (4.9:1)
- *     for type and keeps #B02A52 as a solid fill that carries white at 6.4:1.
- *   • Two families instead of one. Switzer (Fontshare, self-hosted) carries
- *     display, headings and prose; Courier Prime survives for kickers, dates,
- *     counters and code — every place the old site's mono voice was doing
- *     real work rather than just being the only option.
- *   • Type scale un-compressed. Phase 14 pulled display down to 56px because
- *     the light layout could not carry it. On black it can: display now runs
- *     48 → 104 at -4% tracking, which is the single largest change here.
- *
- * Contrast: see the Phase 29 table below — these figures were remeasured when
- * the ground moved off #050505 and pure white left the palette.
+ * A hairline is the only surface: 1px --line, radius ≤ 4px, no shadow, no
+ * backdrop-filter, no gradient. Red never carries white text.
  * ========================================================================= */
-
-/* ---------------------------------------------------------------------------
- * Phase 29 (2026-09-09) — legibility pass.
- *
- * Paul's report: "hard to read", "the pitch black and white feels strange in
- * my eyes", "I am being overwhelmed by the text", "no visual break", "the
- * subtexts and paragraphs feel so small". Four causes, all measurable:
- *
- *   1. Over-contrast, not under. #FFFFFF on #050505 is 20.4:1 — near the sRGB
- *      maximum — and display type ran it at 104px/500. That blooms on an OLED
- *      panel and the eye never stops correcting for it. The ground came up to
- *      #0B0B0C and pure white left the palette entirely (paper-50 → #F4F1EE).
- *      Peak contrast is now 17.5:1, still far past AAA.
- *   2. No mid-tone. The ramp went 20.4 → 17 → *cliff* → 6.8:1, so anything
- *      that was not a heading or body copy fell into metadata grey. paper-200
- *      (#C7C1BC, 11.0:1) is that missing tier.
- *   3. Subtext was literally styled as metadata. `text-small text-paper-400`
- *      — 13px at 6.8:1, the date-stamp treatment — was carrying sentence-length
- *      descriptive copy in 20 places across five pages. Those are now body
- *      size in paper-200; small went 13 → 14 and is metadata again.
- *   4. Flatness. ink-900/800/700 were defined and unused: the whole site was
- *      one value. And .section-tight was used 22 times against .section's 3,
- *      so every section had identical padding and an identical top hairline —
- *      six of them on the homepage. Fixed by rhythm, not by fills (see the
- *      SHELL block): major sections breathe, subordinate ones do not, and a
- *      rule is drawn where the argument turns rather than every 800px.
- *
- * Contrast, remeasured on the #0B0B0C ground:
- *   paper-50   #F4F1EE   17.5:1   display type, headings
- *   paper-100  #EDEAE7   16.4:1   body + prose
- *   paper-200  #C7C1BC   11.0:1   subtext, .lead, card descriptions (AA ✓)
- *   paper-400  #9B9490    6.6:1   metadata, dates, kickers         (AA ✓)
- *   wine-300   #F0658A    6.5:1   focus ring only                  (AA ✓)
- *   wine-400   #E0446F    4.9:1   links, hover, accent type        (AA ✓)
- *   paper-600  #6B6663    3.5:1   NON-TEXT ONLY — rules, icons, dividers
- *   white on wine-500 (#B02A52)   6.4:1   the solid CTA            (AA ✓)
- * ------------------------------------------------------------------------- */
-
-/* ---------------------------------------------------------------------------
- * Phase 21 (2026-09-05) — de-SaaS pass.
- *
- * NOCTURNE read as "too SaaS, too AI". The ground, the face and the scale were
- * never the problem; the problem was the product-marketing furniture that came
- * with them. Removed here: pill radii, glass card fills, the glowing kicker
- * dot, the hero radial bloom, the footer wine gradient, the hover wash on row
- * links, the marquee, and every decorative use of wine.
- *
- * The rule that replaces all of it: **a hairline is the only surface**. If a
- * block needs to be distinguished from the page, it gets a 1px --line rule and
- * nothing else — no fill, no radius, no shadow, no blur. Wine is now allowed
- * in exactly three places: an inline link, a focus ring, and Key Takeaway.
- * ------------------------------------------------------------------------- */
 
 @theme {
   /* Reset Tailwind's expanding spacing scale, then declare only the 8-pt grid
    * with 4-pt sub-cells. Off-grid keys (1.5/2.5/3.5/…) stay unreferenceable.
-   * Carried forward unchanged from Phase 8b — it was never the problem. */
+   * Carried forward unchanged from Phase 8b — utilities depend on it. */
   --spacing-*: initial;
   --spacing: 0;
   --spacing-px: 1px;
@@ -114,135 +53,147 @@
   --spacing-80: 20rem;         /* 320              */
   --spacing-96: 24rem;         /* 384              */
 
-  /* ---- Ground ---------------------------------------------------------- */
-  --color-ink-950: #0B0B0C;    /* page ground                              */
-  --color-ink-900: #0A0A0A;    /* section ground, one stop up              */
-  --color-ink-800: #121212;    /* raised card, opaque                      */
-  --color-ink-700: #1A1A1A;    /* input wells, hover fills                 */
-  --color-ink: #0B0B0C;
-
-  /* ---- Type ------------------------------------------------------------ */
-  --color-paper-50: #F4F1EE;   /* brightest type — display, headings       */
-  --color-paper-100: #EDEAE7;  /* warm off-white — body                    */
-  --color-paper-200: #C7C1BC;  /* secondary reading copy — subtext, .lead  */
-  --color-paper-400: #9B9490;  /* metadata ONLY — dates, counters, kickers */
-  --color-paper-600: #6B6663;  /* NON-TEXT: rules, disabled glyphs         */
-
-  /* ---- Accent ---------------------------------------------------------- */
-  --color-wine-300: #F0658A;   /* focus ring only                          */
-  --color-wine-400: #E0446F;   /* links, hover, accent type                */
-  --color-wine-500: #B02A52;   /* solid fill (carries white at 6.4:1)      */
-  --color-wine-600: #8E1B3F;   /* deep fill, borders                       */
+  /* ---- Colour ----------------------------------------------------------
+   * Reset the whole namespace so Tailwind's own red, blue, white and black
+   * cannot resolve: an off-palette `bg-red-400` must be a dead class, not a
+   * silent near-miss. transparent/current/inherit are built in outside the
+   * namespace and survive. Exactly nine tokens. */
+  --color-*: initial;
+  --color-red-500: #FF5C34;    /* fills, display words ≥ 24px, rules — never body text */
+  --color-red-700: #A4402F;    /* inline links, small accent text, focus ring */
+  --color-blue-100: #D7EFFF;   /* tinted ground: .panel-tint, KeyTakeaway, code */
+  --color-blue-200: #BAC9D8;   /* non-text: hairlines, table rules, input borders */
+  --color-ink-900: #351E28;    /* headings, body, nav, text on red-500 */
+  --color-ink-600: #594C57;    /* secondary reading copy — subtext, lead, FAQ */
+  --color-ink-400: #6B6470;    /* metadata only — dates, counters, kickers */
+  --color-paper: #FFFFFF;      /* page ground */
+  --color-paper-100: #F7F8FA;  /* alternate section ground, once per page */
 
   /* ---- Typography ------------------------------------------------------ */
-  --font-display: "Switzer", "Switzer Fallback", ui-sans-serif, system-ui,
-                  -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-body: "Switzer", "Switzer Fallback", ui-sans-serif, system-ui,
-               -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: "Courier Prime", ui-monospace, "SFMono-Regular",
-               Menlo, Monaco, Consolas, monospace;
+  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
+  --font-body: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+               "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular",
+               Menlo, Consolas, monospace;
 
-  /* Scale. Clamps interpolate across 375px → 1440px.
-   *   micro     11 (fixed)        — mono eyebrow, counters
-   *   small     14 (fixed)        — dates, captions, counters ONLY
-   *   body      17 (fixed)        — UI + subtext + prose
-   *   lead      18 →  20          — hero sub-paragraph, article standfirst
-   *   h3        24 →  28          — card titles, inline headings
-   *   h2        32 →  48          — section headings
-   *   h1        40 →  64          — page title
-   *   display   48 →  88          — one hero statement per page
-   *
-   * Phase 29 moved small 13 → 14 and body 16 → 17, and pulled display's
-   * ceiling 104 → 88. The old display:body ratio was 6.5:1 — an enormous
-   * headline over small print, with the whole middle of the scale unused.
-   * 88:17 is 5.2:1, which still reads as a hero without making everything
-   * under it look like a footnote. */
-  --text-micro: 0.6875rem;
-  --text-small: 0.875rem;
+  /* Semantic sizes, re-pointed at the Oddhalls step ladder in :root so the
+   * text-h2 / text-small / … utilities keep working with zero churn.
+   *   micro    → step--2
+   *   small    → step--1
+   *   body     → 17px fixed (§3.2; step-0 is 16→18)
+   *   lead     → step-1
+   *   h3       → step-2
+   *   h2       → step-3
+   *   h1       → step-4
+   *   display  → step-5  (= §3.2's clamp(2.6rem, 1.7rem + 4.6vw, 6rem)) */
+  --text-micro: var(--step--2);
+  --text-small: var(--step--1);
   --text-body: 1.0625rem;
-  --text-lead: clamp(1.125rem, 1.0632rem + 0.2632vw, 1.25rem);
-  --text-h3: clamp(1.5rem, 1.3764rem + 0.5263vw, 1.75rem);
-  --text-h2: clamp(2rem, 1.6289rem + 1.5789vw, 3rem);
-  --text-h1: clamp(2.5rem, 1.7578rem + 3.1579vw, 4rem);
-  --text-display: clamp(3rem, 2.1197rem + 3.7559vw, 5.5rem);
+  --text-lead: var(--step-1);
+  --text-h3: var(--step-2);
+  --text-h2: var(--step-3);
+  --text-h1: var(--step-4);
+  --text-display: var(--step-5);
 
-  /* ---- Surfaces, rules, radii ------------------------------------------
-   * Phase 21: collapsed to 2px, and --radius-pill deleted outright. Soft
-   * 16–24px corners and pill buttons are the signature of a product UI kit.
-   * 2px rather than 0 only so a focus ring and a code chip do not read as
-   * accidentally sharp against otherwise square type. */
+  /* ---- Radii -----------------------------------------------------------
+   * 2px everywhere (the cap is 4px). No pills. */
   --radius-sm: 2px;
   --radius-md: 2px;
   --radius-lg: 2px;
 
   /* ---- Motion ----------------------------------------------------------
-   * One easing curve for the whole site. GSAP's own eases are used for the
-   * scroll timelines; this is for CSS transitions, and the two are tuned to
-   * read as the same hand. */
+   * One easing curve for CSS transitions (hover colour, focus). */
   --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Non-@theme custom properties. These are alpha compositions rather than flat
- * colours, so Tailwind has no utility namespace to put them in — they are
- * referenced through the component classes below and through arbitrary values. */
+/* Non-@theme custom properties: the Oddhalls ladders (rebuild-plan §3.2),
+ * copied verbatim from oddhalls.janpaulfernandez.com's served :root. Plain
+ * custom properties — no utility namespace, never tree-shaken. */
 :root {
-  --surface-1: rgba(255, 255, 255, 0.045);
-  --surface-2: rgba(255, 255, 255, 0.075);
-  --surface-3: rgba(255, 255, 255, 0.11);
-  --line: rgba(255, 255, 255, 0.10);
-  --line-strong: rgba(255, 255, 255, 0.18);
+  /* Type steps */
+  --step--2: clamp(.72rem, .7rem + .1vw, .78rem);
+  --step--1: clamp(.82rem, .8rem + .12vw, .9rem);
+  --step-0: clamp(1rem, .96rem + .2vw, 1.125rem);
+  --step-1: clamp(1.17rem, 1.08rem + .42vw, 1.42rem);
+  --step-2: clamp(1.4rem, 1.22rem + .9vw, 1.95rem);
+  --step-3: clamp(1.75rem, 1.4rem + 1.75vw, 2.9rem);
+  --step-4: clamp(2.2rem, 1.6rem + 3vw, 4.1rem);
+  --step-5: clamp(2.6rem, 1.7rem + 4.6vw, 6rem);
+
+  /* Space steps — .section / .shell rhythm */
+  --space-3xs: clamp(.25rem, .23rem + .1vw, .31rem);
+  --space-2xs: clamp(.5rem, .46rem + .2vw, .62rem);
+  --space-xs: clamp(.75rem, .7rem + .25vw, .94rem);
+  --space-s: clamp(1rem, .93rem + .35vw, 1.25rem);
+  --space-m: clamp(1.5rem, 1.39rem + .55vw, 1.88rem);
+  --space-l: clamp(2rem, 1.85rem + .75vw, 2.5rem);
+  --space-xl: clamp(3rem, 2.6rem + 2vw, 4.5rem);
+  --space-2xl: clamp(4rem, 3.2rem + 4vw, 7rem);
+  --space-3xl: clamp(5.5rem, 4rem + 7.5vw, 11rem);
+
+  --measure: 38rem;                     /* ≈ 68ch at 17px Inter */
+  --line: var(--color-blue-200);        /* the hairline — the only surface */
   --shell-x: clamp(1.25rem, 0.6rem + 2.6vw, 2.5rem);
 }
 
 @layer base {
   html {
-    background-color: var(--color-ink-950);
+    background-color: var(--color-paper);
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background-color: var(--color-ink-950);
-    color: var(--color-paper-100);
+    background-color: var(--color-paper);
+    color: var(--color-ink-900);
     font-family: var(--font-body);
     font-size: var(--text-body);
     font-weight: 400;
     line-height: 1.6;
-    letter-spacing: -0.011em;
-    font-feature-settings: "kern" 1, "ss01" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
   }
 
   ::selection {
-    background-color: var(--color-wine-500);
-    color: var(--color-paper-50);
+    background-color: var(--color-blue-100);
+    color: var(--color-ink-900);
   }
 
   h1, h2, h3, h4 {
-    font-family: var(--font-display);
-    color: var(--color-paper-50);
-    font-weight: 500;
-    line-height: 1.05;
+    color: var(--color-ink-900);
+    line-height: 1.1;
     text-wrap: balance;
   }
-  h1 { font-size: var(--text-h1); letter-spacing: -0.035em; }
-  h2 { font-size: var(--text-h2); letter-spacing: -0.03em; }
-  h3 { font-size: var(--text-h3); letter-spacing: -0.02em; line-height: 1.15; }
-  h4 { font-size: var(--text-body); letter-spacing: -0.01em; }
+  h1, h2 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  h3, h4 {
+    font-family: var(--font-body);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  h1 { font-size: var(--text-h1); }
+  h2 { font-size: var(--text-h2); }
+  h3 { font-size: var(--text-h3); line-height: 1.2; }
+  h4 { font-size: var(--text-body); }
 
   h1 em, h2 em, h3 em { font-style: italic; }
 
   small { font-size: var(--text-small); }
 
   a {
-    color: inherit;
-    text-decoration: none;
+    color: var(--color-red-700);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
     transition: color 0.22s var(--ease-out-quint), opacity 0.22s var(--ease-out-quint);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-wine-300);
+    outline: 2px solid var(--color-red-700);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -252,11 +203,6 @@
   [id] { scroll-margin-top: 2rem; }
 
   img, svg, video { display: block; max-width: 100%; }
-
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-track { background: var(--color-ink-950); }
-  ::-webkit-scrollbar-thumb { background: var(--surface-3); }
-  ::-webkit-scrollbar-thumb:hover { background: var(--color-paper-600); }
 }
 
 /* ----------------------------------------------------------------------------

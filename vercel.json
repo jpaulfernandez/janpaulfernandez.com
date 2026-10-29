@@ -1,0 +1,69 @@
+{
+  "redirects": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-index.xml",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshop",
+      "destination": "/work-with-me/ai-resilient-organisation/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshop/",
+      "destination": "/work-with-me/ai-resilient-organisation/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops",
+      "destination": "/work-with-me/ai-resilient-organisation/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/",
+      "destination": "/work-with-me/ai-resilient-organisation/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/ai-fluency",
+      "destination": "/work-with-me/ai-resilient-organisation/fluency/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/ai-fluency/",
+      "destination": "/work-with-me/ai-resilient-organisation/fluency/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/leadership-ai",
+      "destination": "/work-with-me/ai-resilient-organisation/leadership-day/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/leadership-ai/",
+      "destination": "/work-with-me/ai-resilient-organisation/leadership-day/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/ai-for-business",
+      "destination": "/work-with-me/#advise",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/ai-for-business/",
+      "destination": "/work-with-me/#advise",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/vibe-coding",
+      "destination": "/work-with-me/",
+      "statusCode": 301
+    },
+    {
+      "source": "/workshops/vibe-coding/",
+      "destination": "/work-with-me/",
+      "statusCode": 301
+    }
+  ]
+}

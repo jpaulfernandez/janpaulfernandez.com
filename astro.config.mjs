@@ -84,16 +84,8 @@ export default defineConfig({
   // Canonical URLs carry the trailing slash, so the bare form must redirect to
   // it rather than serve a second 200 at a URL the page tells Google to ignore.
   trailingSlash: 'always',
-  redirects: {
-    '/sitemap.xml': '/sitemap-index.xml',
-    // Retired /workshops/* stack (Phase 32.6). Every target is final: no chains.
-    '/workshop': '/work-with-me/ai-resilient-organisation/',
-    '/workshops/': '/work-with-me/ai-resilient-organisation/',
-    '/workshops/ai-fluency/': '/work-with-me/ai-resilient-organisation/fluency/',
-    '/workshops/leadership-ai/': '/work-with-me/ai-resilient-organisation/leadership-day/',
-    '/workshops/ai-for-business/': '/work-with-me/#advise',
-    '/workshops/vibe-coding/': '/work-with-me/',
-  },
+  // Redirects live in vercel.json, not here: the adapter emits them AFTER its
+  // trailing-slash 308, so slashed URLs of redirected paths 404 (Phase 32 bug).
   adapter: vercel(),
   security: {
     allowedDomains: [

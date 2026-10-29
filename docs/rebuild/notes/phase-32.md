@@ -159,13 +159,17 @@ Course markup. Tests were written first and failed 3/3 before the change.
   collections in both `keystatic.config.ts` and `src/content.config.ts`.
   `global.css` had no class used only by the deleted pages (checked class by class),
   so nothing to remove there.
-- **Redirects** (`astro.config.mjs`; `/workshop` retargeted, no chains):
+- **Redirects** (now `vercel.json`, see fix below; `/workshop` retargeted, no chains):
   `/workshop`, `/workshops/` -> `/work-with-me/ai-resilient-organisation/`;
   `/workshops/ai-fluency/` -> `.../fluency/`; `/workshops/leadership-ai/` ->
   `.../leadership-day/`; `/workshops/ai-for-business/` -> `/work-with-me/#advise`;
-  `/workshops/vibe-coding/` -> `/work-with-me/`. Built config emits slash-less
-  sources behind the adapter's 308 trailing-slash rule; live check is Blocked
-  (needs a preview).
+  `/workshops/vibe-coding/` -> `/work-with-me/`. **Live bug found and fixed:** with
+  `trailingSlash: 'always'` the adapter emitted slash-less sources AFTER its 308
+  slash-adding rule, so `/workshops` -> 308 -> `/workshops/` -> 404. The redirects were
+  moved out of `astro.config.mjs` into `vercel.json` (one source of truth), one entry per
+  slash and no-slash form, `statusCode: 301`. `vercel build` merges them ahead of the
+  adapter's 308 (routes 0-12 of `.vercel/output/config.json`); simulated route matching
+  gives one 301 hop for all 12 URLs plus `/sitemap.xml` -> `/sitemap-index.xml`.
 - **Outside the task text (plan.md 32.6a):**
   - `index.astro`: workshop block rewritten as a short "The program" section
     (no cards, no peso, no availability), hero button -> program, "What I do" now
@@ -222,8 +226,7 @@ Course markup. Tests were written first and failed 3/3 before the change.
   diff empty; every `href` on Home, the program pages, `/thanks/` and `/sitemap/` resolves
   in `dist/client`. Stats: 4 `sourceUrl`s, 4 linked sources on the overview.
 - Redirects read from `.vercel/output/config.json`: six 301 routes, targets exactly as
-  in 32.6 (the `/workshops/` form folds into the `^/workshops$` source). Live one-hop
-  check not possible without a preview.
+  in 32.6 (superseded: now in `vercel.json`, 13 rules incl. sitemap).
 - **Not run:** Web3Forms submission, live redirects, validator.schema.org / Rich Results,
   manual keyboard pass. All logged in plan.md Blocked. The Phase 32 DoD box is left
   unchecked for that reason.

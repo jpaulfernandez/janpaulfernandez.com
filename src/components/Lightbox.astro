@@ -57,13 +57,13 @@
     margin: 0;
     padding: 0;
     border: 0;
-    background: rgba(5, 5, 5, 0.94);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    color: var(--color-paper-100);
+    /* The one dark surface on the v3 site: a photo viewer needs a dark scrim.
+     * ink-900 at 0.94, paper type. Rebuilt in 35.5. */
+    background: color-mix(in srgb, var(--color-ink-900) 94%, transparent);
+    color: var(--color-paper);
     z-index: 9999;
   }
-  .lightbox-dialog::backdrop { background: rgba(5, 5, 5, 0.94); }
+  .lightbox-dialog::backdrop { background: color-mix(in srgb, var(--color-ink-900) 94%, transparent); }
 
   .lightbox-inner {
     display: flex;
@@ -82,10 +82,10 @@
     place-items: center;
     min-width: 2.75rem;
     min-height: 2.75rem;
-    background: var(--surface-1);
+    background: transparent;
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    color: var(--color-paper-100);
+    color: var(--color-paper);
     padding: 0.5rem 0.875rem;
     cursor: pointer;
     font-family: var(--font-body);
@@ -93,14 +93,13 @@
   }
   .lightbox-close:hover,
   .lightbox-btn:hover {
-    border-color: var(--line-strong);
-    background: var(--surface-2);
-    color: var(--color-paper-50);
+    border-color: var(--color-paper);
+    color: var(--color-paper);
   }
   .lightbox-close:focus-visible,
   .lightbox-btn:focus-visible,
   .lightbox-link:focus-visible {
-    outline: 2px solid var(--color-paper-100);
+    outline: 2px solid var(--color-paper);
     outline-offset: 2px;
   }
   .lightbox-close {
@@ -140,15 +139,15 @@
     text-align: center;
     flex-shrink: 0;
   }
-  .lightbox-caption { color: var(--color-paper-400); }
+  .lightbox-caption { color: var(--color-blue-200); }
   .lightbox-link {
-    color: var(--color-paper-100);
+    color: var(--color-paper);
     text-decoration: none;
-    border-bottom: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--color-blue-200);
   }
   .lightbox-link:hover {
-    color: var(--color-wine-400);
-    border-bottom-color: var(--color-wine-400);
+    color: var(--color-red-500);
+    border-bottom-color: var(--color-red-500);
   }
   .lightbox-link[hidden] { display: none; }
 
@@ -161,7 +160,7 @@
     flex-shrink: 0;
   }
   .lightbox-counter {
-    color: var(--color-paper-400);
+    color: var(--color-blue-200);
     font-family: var(--font-mono);
     min-width: 5rem;
     text-align: center;

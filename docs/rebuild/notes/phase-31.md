@@ -147,3 +147,52 @@ Phases 32/34/36. Deliberate exception to "every class has ≥ 1 usage".
   `.js` files in `_astro/` belong to the Keystatic admin). Built articles have
   4 `<script` tags: the `.js` class script, two GA4, and the mobile-menu
   inline script that 31.8 deletes.
+
+## 31.5 Utility sweep
+
+**Method.** A perl pass for the unambiguous text mappings (`text-paper-50/100`
+→ `text-ink-900`, `-200` → `ink-600`, `-400`/`-600` → `ink-400`,
+`text-wine-400` → `text-red-700`, and the same for `color: var(--color-…)`
+in scoped styles), then every fill, border, rail, gradient and surface by
+hand. Old meanings were inverted case by case: a `paper-*` *fill* became
+`ink-900` (dots, pressed segment) or `blue-200` (quiet markers); an `ink-950`
+*fill* became `paper` / `paper-100`.
+
+**Checklist** (re-derived with the phase file's grep):
+- [x] `src/styles/global.css` (finished in 31.2–31.3, untouched)
+- [x] `src/layouts/BaseLayout.astro` — scoped nav/footer colours only; chrome left for 31.8
+- [x] `src/layouts/ArticleLayout.astro` — TOC loses `--surface-1` fill, hairline `--line`; byline link ink-900 with a blue-200 underline
+- [x] `src/components/PostListItem.astro` — title link ink-900, no underline
+- [x] `Timeline.astro`
+- [x] `Lightbox.astro` — the one dark exception, commented: scrim `color-mix(ink-900 94%)`, paper type, blue-200 metadata, red-500 link hover; `backdrop-filter` blur deleted
+- [x] `blocks/Embed.astro` — `bg-ink-800` → `bg-paper-100`
+- [x] `blocks/Callout.astro` — surface fill removed (hairline only)
+- [x] `blocks/KeyTakeaway.astro` — wine gradient → `blue-100` tint, `--line` border, red-700 label
+- [x] `blocks/PullQuote.astro` — rule `--line-strong` → `--line`
+- [x] `src/pages/index.astro` — Now-list title links ink-900/no underline; `.statement` tracking −0.02em; kicker rule `bg-blue-200`
+- [x] `about.astro` — scoped `.statement-sm` tracking −0.02em
+- [x] `now.astro` — rail gradient → flat `--line`; nodes paper + blue-200 border; live node red-500; year node ink-900; `.tl-prose` → ink-600 (it is reading copy)
+- [x] `colophon.astro` — `text-paper-600` dash → ink-400 (copy "near-black ground" is 31.7's)
+- [x] `sitemap.astro` — card links ink-900/no underline; meta links ink-600; card hover borders removed (no `border-ink` utilities allowed)
+- [x] `404.astro` · [x] `thanks.astro` — no old tokens; checked in browser
+- [x] `src/pages/projects/index.astro` — `display-sm` kept as its scoped class (tracking −0.02em); row title ink-900; screenshot frame `paper-100`
+- [x] `projects/[slug].astro` — `.eyebrow-back` gets `text-decoration: none`; frame `paper-100`
+- [x] `gallery/index.astro` · [x] `gallery/[slug].astro` — tile placeholder `--surface-2` → `paper-100`
+- [x] `thoughts/index.astro` — pressed segment ink-900 fill / paper type; pressed topic chip red-500 / ink-900 (matches `.tag[data-active]`)
+- [x] `thoughts/[slug].astro` — no old tokens (uses ArticleLayout)
+- [x] `topics/[topic].astro`
+- [x] `src/pages/work-with-me.astro` — no old tokens; checked in browser
+- [x] `workshops.astro` · [x] `workshops/[slug].astro` — rails flattened; seven reading-copy selectors (`.thesis__note`, `.avail__note`, `.stat__body`, `.why-prose p:last-child`, `.arc__desc`, `.caveat`, `.ladder__detail`) → ink-600
+- [x] `src/content/**/*.mdx` — grep shows no classes; not edited
+
+**Remaining `ink-400`.** Every hit reviewed: dates, counters, kickers, type
+labels, separators, back-links, nav/footer links (31.8) — metadata only.
+
+**Links.** Base `a` is red-700/underlined, so a computed-style scan over 16
+routes listed every non-`.prose`, non-`.link` `<a>` in `<main>` that was red or
+underlined. Remaining: the image-only gallery strip on Home (no text) and the
+article TOC/byline (ink, underlined on purpose).
+
+**Grep exception.** `grep -rn "wine-" src` still prints one line: a comment in
+`src/pages/og/[...route].ts` naming the old OG colours. That file is task
+31.6's and is re-themed there.

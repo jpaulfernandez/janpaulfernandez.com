@@ -27,10 +27,9 @@ const label = labels[variant] ?? labels.note;
     border: 1px solid var(--line);
     border-left-width: 2px;
     border-radius: var(--radius-md);
-    background-color: var(--surface-1);
   }
-  .callout[data-variant='idea'] { border-left-color: var(--color-paper-100); }
-  .callout[data-variant='warning'] { border-left-color: var(--color-wine-400); }
+  .callout[data-variant='idea'] { border-left-color: var(--color-ink-900); }
+  .callout[data-variant='warning'] { border-left-color: var(--color-red-700); }
 
   .label {
     margin: 0 0 0.75rem;
@@ -38,10 +37,10 @@ const label = labels[variant] ?? labels.note;
     font-size: var(--text-micro);
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: var(--color-paper-400);
+    color: var(--color-ink-400);
   }
-  .callout[data-variant='warning'] .label { color: var(--color-wine-400); }
-  .callout[data-variant='idea'] .label { color: var(--color-paper-50); }
+  .callout[data-variant='warning'] .label { color: var(--color-red-700); }
+  .callout[data-variant='idea'] .label { color: var(--color-ink-900); }
 
   .body :global(> p) { margin: 0; }
   .body :global(> * + *) { margin-top: 1rem; }

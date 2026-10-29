@@ -36,7 +36,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 31.2 Tokens: `@theme` rewrite
 - [x] (2026-10-29) 31.3 `global.css` rewrite
 - [x] (2026-10-29) 31.4 Remove GSAP and `motion.ts`
-- [ ] 31.5 Utility sweep (old ink/paper/wine → v3 tokens)
+- [x] (2026-10-29) 31.5 Utility sweep (old ink/paper/wine → v3 tokens)
 - [ ] 31.6 OG route re-theme
 - [ ] 31.7 CLAUDE.md constraints + colophon updated to v3
 - [ ] 31.8 BaseLayout nav and footer

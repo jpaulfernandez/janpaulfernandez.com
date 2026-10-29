@@ -114,7 +114,7 @@ const seoData = [
   <article>
     <header class="page-head">
       <div class="shell">
-        <a href="/gallery/" class="mono-micro hover:text-paper-50">
+        <a href="/gallery/" class="mono-micro no-underline hover:text-ink-900">
           ← Gallery
         </a>
 
@@ -130,7 +130,7 @@ const seoData = [
 
         <p class="mono-micro mt-8">
           <time datetime={item.data.publishedDate}>{dateFormatted}</time>
-          <span class="mx-2 text-paper-600" aria-hidden="true">/</span>
+          <span class="mx-2 text-ink-400" aria-hidden="true">/</span>
           <span>{photoList.length} photos</span>
         </p>
 
@@ -197,7 +197,7 @@ const seoData = [
     padding: 0;
     border: 0;
     border-radius: var(--radius-sm);
-    background: var(--surface-2);
+    background: var(--color-paper-100);
     cursor: zoom-in;
     overflow: hidden;
     break-inside: avoid;

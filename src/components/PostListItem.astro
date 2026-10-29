@@ -20,12 +20,12 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
 <article class="post-row-inner group">
   <div class="min-w-0 flex flex-col gap-3">
     <p class="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 mono-micro">
-      <span class="text-paper-400">{type}</span>
-      <span aria-hidden="true" class="text-paper-400">/</span>
+      <span class="text-ink-400">{type}</span>
+      <span aria-hidden="true" class="text-ink-400">/</span>
       <time datetime={date}>{formatDate(date)}</time>
       {readingTime !== undefined && (
         <>
-          <span aria-hidden="true" class="text-paper-400">/</span>
+          <span aria-hidden="true" class="text-ink-400">/</span>
           <span>{readingTime} min</span>
         </>
       )}
@@ -34,7 +34,7 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
     {/* h2, not h3: both callers (/thoughts, /topics/[topic]) render this
         directly under the page h1, and h1 -> h3 is a heading-level skip. */}
     <h2 class="m-0 text-h3 leading-tight">
-      <a href={url} class="post-link group-hover:text-wine-400 transition-colors">
+      <a href={url} class="post-link text-ink-900 no-underline group-hover:text-red-700 transition-colors">
         {title}
       </a>
     </h2>

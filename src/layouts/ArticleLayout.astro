@@ -63,14 +63,14 @@ const breadcrumbsSchema = breadcrumbs([
         same. */}
     <header class="page-head">
       <div class="shell-narrow">
-        <a href="/thoughts/" class="mono text-paper-400 hover:text-paper-50">
+        <a href="/thoughts/" class="mono text-ink-400 no-underline hover:text-ink-900">
           ← Writing
         </a>
 
         <h1 class="mt-6 text-h1">{title}</h1>
 
         {excerpt && (
-          <p class="lead mt-6 max-w-none text-paper-100">
+          <p class="lead mt-6 max-w-none text-ink-900">
             {excerpt}
           </p>
         )}
@@ -78,21 +78,21 @@ const breadcrumbsSchema = breadcrumbs([
         <div
           class="mt-8 pt-6 border-t border-[var(--line)] flex flex-wrap items-center gap-x-4 gap-y-2 mono text-small"
         >
-          <span class="text-paper-400 uppercase tracking-widest text-micro">{type}</span>
-          <span aria-hidden="true" class="text-paper-400">/</span>
-          <span class="text-paper-100">
-            By <a href="/about/" rel="author" class="hover:text-paper-50 underline decoration-[var(--line-strong)] underline-offset-2">Paul Fernandez</a>
+          <span class="text-ink-400 uppercase tracking-widest text-micro">{type}</span>
+          <span aria-hidden="true" class="text-ink-400">/</span>
+          <span class="text-ink-900">
+            By <a href="/about/" rel="author" class="text-ink-900 hover:text-red-700 underline decoration-[var(--line)] underline-offset-2">Paul Fernandez</a>
           </span>
-          <span aria-hidden="true" class="text-paper-400">/</span>
-          <time class="text-paper-100" datetime={publishedDate}>{formatDate(publishedDate)}</time>
+          <span aria-hidden="true" class="text-ink-400">/</span>
+          <time class="text-ink-900" datetime={publishedDate}>{formatDate(publishedDate)}</time>
           {updatedDate && (
             <>
-              <span aria-hidden="true" class="text-paper-400">/</span>
-              <span class="text-paper-100">Updated {formatDate(updatedDate)}</span>
+              <span aria-hidden="true" class="text-ink-400">/</span>
+              <span class="text-ink-900">Updated {formatDate(updatedDate)}</span>
             </>
           )}
-          <span aria-hidden="true" class="text-paper-400">/</span>
-          <span class="text-paper-100">{readingTime} min</span>
+          <span aria-hidden="true" class="text-ink-400">/</span>
+          <span class="text-ink-900">{readingTime} min</span>
         </div>
 
         {topics && topics.length > 0 && (
@@ -146,7 +146,7 @@ const breadcrumbsSchema = breadcrumbs([
           {prevPost ? (
             <a href={`/thoughts/${prevPost.id}/`} class="card card-interactive pt-5 pb-2">
               <span class="mono-micro">← Previous</span>
-              <span class="block mt-3 text-paper-50 font-medium leading-snug">
+              <span class="block mt-3 text-ink-900 font-medium leading-snug">
                 {prevPost.data.title}
               </span>
             </a>
@@ -156,7 +156,7 @@ const breadcrumbsSchema = breadcrumbs([
           {nextPost && (
             <a href={`/thoughts/${nextPost.id}/`} class="card card-interactive pt-5 pb-2 sm:text-right">
               <span class="mono-micro">Next →</span>
-              <span class="block mt-3 text-paper-50 font-medium leading-snug">
+              <span class="block mt-3 text-ink-900 font-medium leading-snug">
                 {nextPost.data.title}
               </span>
             </a>
@@ -194,9 +194,8 @@ const breadcrumbsSchema = breadcrumbs([
    * column is 46rem and a rail beside it would either crowd the text or push
    * it off-centre, and native <details> costs nothing. */
   .toc {
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--line);
     border-radius: var(--radius-md);
-    background-color: var(--surface-1);
     padding: 1rem 1.25rem;
   }
   .toc summary {
@@ -205,11 +204,11 @@ const breadcrumbsSchema = breadcrumbs([
     justify-content: space-between;
     cursor: pointer;
     list-style: none;
-    color: var(--color-paper-100);
+    color: var(--color-ink-900);
   }
   .toc summary::-webkit-details-marker { display: none; }
   .toc-mark {
-    color: var(--color-paper-100);
+    color: var(--color-ink-900);
     transition: transform 0.3s var(--ease-out-quint);
     font-size: 1.125rem;
     line-height: 1;
@@ -226,9 +225,9 @@ const breadcrumbsSchema = breadcrumbs([
     font-size: var(--text-small);
   }
   .toc-list li::marker {
-    color: var(--color-paper-400);
+    color: var(--color-ink-400);
     font-family: var(--font-mono);
   }
-  .toc-list a { color: var(--color-paper-100); }
-  .toc-list a:hover { color: var(--color-wine-400); }
+  .toc-list a { color: var(--color-ink-900); }
+  .toc-list a:hover { color: var(--color-red-700); }
 </style>

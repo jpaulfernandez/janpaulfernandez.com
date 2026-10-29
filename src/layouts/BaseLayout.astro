@@ -212,7 +212,7 @@ const isNavActive = (href: string) => {
                 {...(link.href.startsWith('http')
                   ? { target: '_blank', rel: 'noopener noreferrer' }
                   : {})}
-                class="mono-micro hover:text-paper-50"
+                class="mono-micro hover:text-ink-900"
               >
                 {link.label}
               </a>
@@ -299,18 +299,18 @@ const isNavActive = (href: string) => {
         font-family: var(--font-display);
         font-weight: 500;
         letter-spacing: -0.02em;
-        color: var(--color-paper-50);
+        color: var(--color-ink-900);
       }
 
       .nav-link {
         font-size: var(--text-small);
-        color: var(--color-paper-400);
+        color: var(--color-ink-400);
       }
-      .nav-link:hover { color: var(--color-paper-50); }
+      .nav-link:hover { color: var(--color-ink-900); }
       /* The current section is marked by an underline rather than a filled
        * chip. A chip is a tab in an app; an underline is a marked-up word. */
       .nav-link[aria-current='page'] {
-        color: var(--color-paper-50);
+        color: var(--color-ink-900);
         text-decoration: underline;
         text-decoration-thickness: 1px;
         text-underline-offset: 0.4em;
@@ -318,8 +318,8 @@ const isNavActive = (href: string) => {
 
       /* Phase 21: the two-bar hamburger is gone — an icon that has to animate
        * into an X to explain itself, when the word fits in the same space. */
-      .menu-toggle { color: var(--color-paper-400); }
-      .menu-toggle:hover { color: var(--color-paper-50); }
+      .menu-toggle { color: var(--color-ink-400); }
+      .menu-toggle:hover { color: var(--color-ink-900); }
       .menu-toggle[aria-expanded='true']::after { content: ' ×'; }
 
       /* Not `lg:hidden`: Astro scopes this block's selectors with an attribute,
@@ -336,9 +336,9 @@ const isNavActive = (href: string) => {
         font-size: var(--text-h3);
         font-weight: 500;
         letter-spacing: -0.02em;
-        color: var(--color-paper-100);
+        color: var(--color-ink-900);
       }
-      .mobile-link[aria-current='page'] { color: var(--color-paper-50); }
+      .mobile-link[aria-current='page'] { color: var(--color-ink-900); }
 
       /* ---- Footer ------------------------------------------------------- */
       /* Phase 21: the wine radial gradient bleeding down from the top edge is
@@ -354,15 +354,15 @@ const isNavActive = (href: string) => {
         font-weight: 500;
         line-height: 1.05;
         letter-spacing: -0.035em;
-        color: var(--color-paper-50);
+        color: var(--color-ink-900);
         margin: 0;
         max-width: 20ch;
       }
       .footer-link {
         font-size: var(--text-small);
-        color: var(--color-paper-400);
+        color: var(--color-ink-400);
       }
-      .footer-link:hover { color: var(--color-paper-50); }
+      .footer-link:hover { color: var(--color-ink-900); }
 
       .sr-only {
         position: absolute;

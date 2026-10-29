@@ -61,12 +61,12 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
           <div>
             <div class="flex flex-wrap items-center gap-3 mb-4">
               <span class="tag">Beta v0.1.0</span>
-              <span class="mono-micro text-paper-400">macOS Apple Silicon</span>
-              <span class="mono-micro text-paper-400">·</span>
-              <span class="mono-micro text-paper-400">2026</span>
+              <span class="mono-micro text-ink-400">macOS Apple Silicon</span>
+              <span class="mono-micro text-ink-400">·</span>
+              <span class="mono-micro text-ink-400">2026</span>
             </div>
 
-            <h3 class="display-sm text-paper-50 m-0">
+            <h3 class="display-sm text-ink-900 m-0">
               Oddhalls
             </h3>
 
@@ -114,23 +114,23 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
             </div>
 
             <div class="panel p-6 space-y-4">
-              <p class="mono-micro text-paper-400 m-0">The Four Stages</p>
+              <p class="mono-micro text-ink-400 m-0">The Four Stages</p>
               <ul class="stage-list">
                 <li>
-                  <strong class="text-paper-50 font-medium">01 · Cull:</strong>
-                  <span class="text-paper-200"> Burst clustering, 7 diagnostic lenses, 1v1 Decide duels, and local SFace face matching.</span>
+                  <strong class="text-ink-900 font-medium">01 · Cull:</strong>
+                  <span class="text-ink-600"> Burst clustering, 7 diagnostic lenses, 1v1 Decide duels, and local SFace face matching.</span>
                 </li>
                 <li>
-                  <strong class="text-paper-50 font-medium">02 · Develop:</strong>
-                  <span class="text-paper-200"> 870+ RAW cameras, tone curves, 3-way color wheels, 12 film looks, and local AI masks.</span>
+                  <strong class="text-ink-900 font-medium">02 · Develop:</strong>
+                  <span class="text-ink-600"> 870+ RAW cameras, tone curves, 3-way color wheels, 12 film looks, and local AI masks.</span>
                 </li>
                 <li>
-                  <strong class="text-paper-50 font-medium">03 · Design:</strong>
-                  <span class="text-paper-200"> Photobook spreads, 300 DPI print PDFs with bleed, social carousels, and animated reels.</span>
+                  <strong class="text-ink-900 font-medium">03 · Design:</strong>
+                  <span class="text-ink-600"> Photobook spreads, 300 DPI print PDFs with bleed, social carousels, and animated reels.</span>
                 </li>
                 <li>
-                  <strong class="text-paper-50 font-medium">04 · Publish:</strong>
-                  <span class="text-paper-200"> Direct deploy to personal Cloudflare R2 bucket with a touch-friendly mobile zine reader.</span>
+                  <strong class="text-ink-900 font-medium">04 · Publish:</strong>
+                  <span class="text-ink-600"> Direct deploy to personal Cloudflare R2 bucket with a touch-friendly mobile zine reader.</span>
                 </li>
               </ul>
             </div>
@@ -157,7 +157,7 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
     <section class="section section-ruled" aria-labelledby="all-projects-heading">
       <div class="flex items-end justify-between gap-6 border-b border-[var(--line)] pb-4 mb-8">
         <h2 id="all-projects-heading" class="kicker m-0">All Projects</h2>
-        <span class="mono-micro text-paper-400 tabular-nums">
+        <span class="mono-micro text-ink-400 tabular-nums">
           {projects.length} {projects.length === 1 ? 'project' : 'projects'}
         </span>
       </div>
@@ -166,7 +166,7 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
         <div aria-label="Projects by year">
           {groups.map((group) => (
             <div class="mt-12 first:mt-0">
-              <h3 class="mono-micro tabular-nums text-paper-400">{group.year}</h3>
+              <h3 class="mono-micro tabular-nums text-ink-400">{group.year}</h3>
               <ul class="rows mt-6">
                 {group.items.map((project) => {
                   const detailHref = `/projects/${project.id}/`;
@@ -176,7 +176,7 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
                         <div class="min-w-0">
                           <a
                             href={detailHref}
-                            class="row-title block hover:text-wine-400 transition-colors"
+                            class="row-title block text-ink-900 no-underline hover:text-red-700 transition-colors"
                           >
                             {project.data.title}
                           </a>
@@ -197,7 +197,7 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
                               href={project.data.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              class="mono-micro text-paper-400 hover:text-wine-400 transition-colors inline-flex items-center gap-1"
+                              class="mono-micro text-ink-400 no-underline hover:text-red-700 transition-colors inline-flex items-center gap-1"
                               aria-label={`Visit ${project.data.title} website`}
                             >
                               <span>Site</span>
@@ -234,15 +234,15 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
     font-size: var(--text-h1);
     font-weight: 500;
     line-height: 1.05;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.02em;
   }
   .statement-sm {
     font-family: var(--font-display);
     font-size: var(--text-h2);
     font-weight: 500;
     line-height: 1.1;
-    letter-spacing: -0.03em;
-    color: var(--color-paper-50);
+    letter-spacing: -0.02em;
+    color: var(--color-ink-900);
   }
 
   /* --- Screenshot frame ------------------------------------------------- */
@@ -252,7 +252,7 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
   .shot-frame {
     position: relative;
     border: 1px solid var(--line);
-    background-color: var(--color-ink-950);
+    background-color: var(--color-paper-100);
     overflow: hidden;
   }
   .shot-caption {
@@ -273,12 +273,12 @@ const featuredProject = projects.find((p) => p.id === 'oddhalls');
     font-size: var(--text-micro);
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: var(--color-paper-400);
+    color: var(--color-ink-400);
     white-space: nowrap;
   }
   .shot-caption-text {
     font-size: var(--text-small);
-    color: var(--color-paper-200);
+    color: var(--color-ink-600);
     line-height: 1.5;
   }
 

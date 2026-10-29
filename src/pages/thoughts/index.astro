@@ -116,7 +116,7 @@ const seoData = [
         </div>
 
         <div id="empty-state" class="hidden panel text-center py-16 mt-8">
-          <p class="text-paper-100 m-0">No thoughts match this combo.</p>
+          <p class="text-ink-900 m-0">No thoughts match this combo.</p>
           <p class="mono-micro mt-3">Reset the filters to "all"</p>
         </div>
       </>
@@ -152,27 +152,27 @@ const seoData = [
     border-radius: var(--radius-sm);
     font-size: var(--text-small);
     font-weight: 500;
-    color: var(--color-paper-400);
+    color: var(--color-ink-400);
     cursor: pointer;
     background: transparent;
     border: 0;
     transition: background-color 0.22s var(--ease-out-quint), color 0.22s var(--ease-out-quint);
   }
-  .seg:hover { color: var(--color-paper-50); }
+  .seg:hover { color: var(--color-ink-900); }
   .seg[aria-pressed='true'] {
-    background-color: var(--color-paper-50);
-    color: var(--color-ink-950);
+    background-color: var(--color-ink-900);
+    color: var(--color-paper);
   }
 
   /* Topic filter — reuses the global .tag chip; only the pressed state and
    * the cursor differ from the read-only version. */
   .filter-chip.tag { cursor: pointer; }
-  /* Phase 21: matches the inverted .tag[data-active] in global.css — a filter
-   * that is ON should be unmissable without spending the accent on it. */
+  /* Matches .tag[data-active] in global.css: the selected chip is a red-500
+   * fill carrying ink-900 (§3.1). */
   .filter-chip.tag[aria-pressed='true'] {
-    color: var(--color-ink-950);
-    background-color: var(--color-paper-100);
-    border-color: var(--color-paper-100);
+    color: var(--color-ink-900);
+    background-color: var(--color-red-500);
+    border-color: var(--color-red-500);
   }
 
   .rows > .post-row { border-bottom: 1px solid var(--line); }

@@ -109,7 +109,7 @@ const seoData = [
       <div class="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:items-start">
         <div>
           <p class="mono-micro flex items-center gap-3">
-            <span class="h-px w-8 bg-[var(--line-strong)]"></span>
+            <span class="h-px w-8 bg-blue-200"></span>
             Technologist · Philippines
           </p>
 
@@ -143,7 +143,7 @@ const seoData = [
                   {formatDate(entry.data.date)}
                 </time>
                 <h3 class="m-0">
-                  <a href="/now/" class="hover:text-wine-400 transition-colors">
+                  <a href="/now/" class="text-ink-900 no-underline hover:text-red-700 transition-colors">
                     {entry.data.title || entry.id}
                   </a>
                 </h3>
@@ -181,8 +181,8 @@ const seoData = [
           </p>
         </div>
         <div class="border-t border-[var(--line)] pt-6 lg:border-t-0 lg:pt-0">
-          <p class="mono-micro text-paper-400">Open schedule</p>
-          <p class="mt-2 text-small text-paper-100 font-medium">{availability.window}</p>
+          <p class="mono-micro text-ink-400">Open schedule</p>
+          <p class="mt-2 text-small text-ink-900 font-medium">{availability.window}</p>
           <p class="mt-1 mb-0 subtext max-w-[44ch]">
             {availability.note}
           </p>
@@ -201,15 +201,15 @@ const seoData = [
             <p class="mt-3 subtext">
               1-on-1 or a small group you bring — an interactive workshop on the work you actually do.
             </p>
-            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-paper-200 list-none p-0">
+            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-ink-600 list-none p-0">
               <li class="flex items-center gap-2">
-                <span class="text-paper-600">↳</span> Understand how AI works, and how to spot fakes online
+                <span class="text-ink-400">↳</span> Understand how AI works, and how to spot fakes online
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-paper-600">↳</span> Explore where AI realistically fits in your business
+                <span class="text-ink-400">↳</span> Explore where AI realistically fits in your business
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-paper-600">↳</span> Vibe coding &amp; web basics — build your own idea, shipped live
+                <span class="text-ink-400">↳</span> Vibe coding &amp; web basics — build your own idea, shipped live
               </li>
             </ul>
           </div>
@@ -225,15 +225,15 @@ const seoData = [
             <p class="mt-3 subtext">
               Your people are already using AI tools. Where's the line, and how do you keep the company safe from misuse?
             </p>
-            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-paper-200 list-none p-0">
+            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-ink-600 list-none p-0">
               <li class="flex items-center gap-2">
-                <span class="text-paper-600">↳</span> Leadership AI training + the policy-making exercise
+                <span class="text-ink-400">↳</span> Leadership AI training + the policy-making exercise
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-paper-600">↳</span> AI fluency for the whole team, to one standard
+                <span class="text-ink-400">↳</span> AI fluency for the whole team, to one standard
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-paper-600">↳</span> Something specific to a department, or a speaker slot
+                <span class="text-ink-400">↳</span> Something specific to a department, or a speaker slot
               </li>
             </ul>
           </div>
@@ -418,7 +418,7 @@ const seoData = [
 
         <a
           href="/gallery/"
-          class="mt-12 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6"
+          class="mt-12 grid grid-cols-2 gap-2 no-underline sm:grid-cols-3 lg:grid-cols-6"
           aria-label="Browse the gallery"
         >
           {stripShots.slice(0, 6).map((shot) => (
@@ -460,7 +460,7 @@ const seoData = [
     font-size: clamp(1.3rem, 1.05rem + 1.1vw, 1.9rem);
     font-weight: 500;
     line-height: 1.32;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
     max-width: 46ch;
     margin: 0;
     text-wrap: pretty;

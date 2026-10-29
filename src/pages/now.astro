@@ -150,7 +150,7 @@ const seoData = [
     top: 0.5rem;
     bottom: 0.6875rem;
     width: 1px;
-    background: linear-gradient(180deg, var(--line-strong), var(--line) 70%, transparent);
+    background-color: var(--line);
   }
 
   /* Year: a milestone on the rail with a rule running to the right edge —
@@ -168,7 +168,7 @@ const seoData = [
     font-weight: 700;
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
-    color: var(--color-paper-50);
+    color: var(--color-ink-900);
   }
   .tl-year:not(:first-child) { margin-top: 2rem; }
   .tl-year::before {
@@ -180,7 +180,7 @@ const seoData = [
     width: 0.75rem;
     height: 0.75rem;
     border-radius: 50%;
-    background-color: var(--color-paper-50);
+    background-color: var(--color-ink-900);
   }
   .tl-year::after {
     content: '';
@@ -202,21 +202,21 @@ const seoData = [
     width: 0.4375rem;
     height: 0.4375rem;
     border-radius: 50%;
-    background-color: var(--color-ink-950);
-    box-shadow: inset 0 0 0 1px var(--color-paper-600);
+    background-color: var(--color-paper);
+    border: 1px solid var(--color-blue-200);
   }
   /* The live entry is the only filled node. Phase 21 removed its wine halo:
    * a glowing dot is a status light, and this is a list of dates. */
   .tl-item.is-current::before {
-    background-color: var(--color-paper-50);
-    box-shadow: none;
+    background-color: var(--color-red-500);
+    border-color: var(--color-red-500);
   }
 
   .tl-date {
     display: block;
     font-family: var(--font-mono);
     font-size: var(--text-micro);
-    color: var(--color-paper-400);
+    color: var(--color-ink-400);
     font-variant-numeric: tabular-nums;
     text-transform: uppercase;
     letter-spacing: 0.16em;
@@ -235,20 +235,20 @@ const seoData = [
     font-size: var(--text-micro);
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    color: var(--color-paper-100);
-    border: 1px solid var(--line-strong);
+    color: var(--color-ink-900);
+    border: 1px solid var(--line);
   }
 
   .tl-title {
     margin: 0;
     font-size: var(--text-h3);
     line-height: 1.15;
-    color: var(--color-paper-50);
+    color: var(--color-ink-900);
   }
 
   .tl-prose {
     margin-top: 1rem;
-    color: var(--color-paper-400);
+    color: var(--color-ink-600);
     max-width: 62ch;
   }
 
@@ -259,7 +259,7 @@ const seoData = [
     padding-left: 2rem;
     font-family: var(--font-mono);
     font-size: var(--text-small);
-    color: var(--color-paper-600);
+    color: var(--color-ink-400);
   }
   .tl-end::before {
     content: '';
@@ -269,7 +269,7 @@ const seoData = [
     width: 0.4375rem;
     height: 0.4375rem;
     border-radius: 50%;
-    background-color: var(--color-paper-600);
+    background-color: var(--color-blue-200);
   }
 
   @media (min-width: 768px) {

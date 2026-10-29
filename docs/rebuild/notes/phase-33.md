@@ -29,3 +29,18 @@
 - Today the index has one row and two chips (All, Products): the seven-row count is 33.5's Done-when.
 - The selected chip is a red fill below the header's red CTA: two red fills can share a screen here, as on Thoughts. rebuild-plan §3.1 names the selected chip as a red fill explicitly; flag for Paul if it reads as too much.
 - Meta description and JSON-LD on the index are unchanged (33.6).
+
+## 33.5
+Six files added under `src/content/projects/` (frontmatter only, no body, so `hasPage` is false). `/projects/` now has 7 rows (1 product, 1 side, 5 work) under 2026 / 2023 / 2022 / 2019 / 2018, no empty year.
+
+| Entry | Facts and where they come from |
+|---|---|
+| anakloud | work, 2026, order 2. Summary: `now/officially-joined-anakloud.md:6` (capstone, parents track children's developmental goals, "help with all things tech"); date 2026-09-13 at `:4`. Role `Tech lead`: **only** `rebuild-plan.md:139` ("capstone tech lead"); flagged with a TODO in the frontmatter. |
+| eyelicium | side, 2026, order 3. `now/eyelicium-ai-project.md:6` (thumbnail click likelihood, "not scientific yet", URL); date `:4`. Tag `ai` from the Now entry's wording. |
+| phvote-2022 | work, 2022. `about.md:5` (PHVote, Rappler's election-monitoring platform, 2022 presidential race); `career/rappler.md:11` (results tracking and canvassing coverage). Tags `rappler`, `elections`. |
+| phvote-2019 | work, 2019. Same sources, "2019 senatorial" (`about.md:5`). |
+| rappler-cms-migration | work, **2023 is a placeholder** (TODO comment in the frontmatter); period `2018–2023` is `career/rappler.md:7`. Summary: `about.md:5` and `career/rappler.md:11` (new CMS, ontology, knowledge graph). Tag `rappler` only (the `elections` tag would be wrong here). |
+| psbank-account-opening | work, 2018, period `2015–2018`, role `Systems Analyst`: `career/psbank.md:4-7`, `:11` (account-opening solution, three branches). Year 2018 is the period end, per the phase file's "year it shipped or last worked on" convention. |
+
+Not seeded: the AIM capstone (name unsourced; `about.md:11` mentions the Master's only), every talk (no list exists). No metrics, client names or outcomes added. The Eyelicium and PHVote summaries are my wording of the cited sources, not verbatim quotes.
+Logged in plan.md "Blocked-on-Paul": seed-list confirmation, Rappler year, Anakloud role, AIM, Oddhalls `<title>`.

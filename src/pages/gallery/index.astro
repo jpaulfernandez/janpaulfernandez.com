@@ -142,7 +142,8 @@ const seoData = [
 </BaseLayout>
 
 <script>
-  import { initDensity } from '../../scripts/gallery';
+  import { initViewer, initDensity } from '../../scripts/gallery';
+  initViewer();
   initDensity(document.getElementById('library'));
 </script>
 

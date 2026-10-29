@@ -1,18 +1,14 @@
 ---
 /**
- * Lightbox.astro — full-screen photo viewer.
+ * Lightbox.astro — full-screen photo viewer (markup + CSS only).
  *
- * Second use (the flat /gallery masonry and the individual set pages), so it
- * lives here rather than inline in either page.
+ * Used by /gallery/ and the set pages. The behaviour lives in
+ * src/scripts/gallery.ts (`initViewer()`), which each page imports in its own
+ * two-line <script>; this file has no script of its own.
  *
- * It binds to every `a.photo-trigger` in the page. Triggers are anchors whose
- * href is the full-resolution image, so with JS off the wall still works — the
- * lightbox is an enhancement layered on top (preventDefault below).
- *
- * The list is rebuilt from the *visible* triggers on every open. /gallery
- * renders two walls (a mobile flow and a desktop masonry) and hides one with
- * CSS, so binding everything in DOM order would double the counter and make
- * prev/next cycle each photo twice.
+ * initViewer() binds every `a.photo-trigger` on the page. Triggers are
+ * anchors with a real href (the set page on /gallery/, the full image on a
+ * set page), so with JS off every thumbnail still goes somewhere.
  *
  * Each trigger carries:
  *   data-src         full-resolution image URL          (required)
@@ -20,17 +16,20 @@
  *   data-caption     caption line under the image       (optional)
  *   data-href        link rendered after the caption    (optional)
  *   data-href-label  label for that link                (optional)
+ *
+ * The ground is white like the rest of the site (a viewer is not a dark
+ * theme). No blur, no scrim, no motion: a hairline is the only surface.
  */
 ---
 
 <dialog id="photo-modal" class="lightbox-dialog" aria-label="Photo viewer">
   <div class="lightbox-inner">
-    <button id="modal-close" type="button" class="lightbox-close" aria-label="Close lightbox">
+    <button id="modal-close" type="button" class="lightbox-btn lightbox-close" aria-label="Close viewer">
       ✕
     </button>
 
     <div class="lightbox-image-wrap">
-      <img id="modal-img" src="" alt="" class="lightbox-img" />
+      <img id="modal-img" src="" alt="" class="lightbox-img" draggable="false" />
     </div>
 
     <div class="lightbox-meta">
@@ -47,87 +46,83 @@
 </dialog>
 
 <style>
+  /* The page underneath does not scroll while the viewer is open. */
+  :global(html:has(dialog[open])) { overflow: hidden; }
+
+  /* dvw/dvh so iOS Safari's moving toolbars never crop the controls. */
   .lightbox-dialog {
     position: fixed;
     inset: 0;
-    width: 100vw;
-    height: 100vh;
-    max-width: 100vw;
-    max-height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
+    max-width: 100dvw;
+    max-height: 100dvh;
     margin: 0;
     padding: 0;
     border: 0;
-    /* The one dark surface on the v3 site: a photo viewer needs a dark scrim.
-     * ink-900 at 0.94, paper type. Rebuilt in 35.5. */
-    background: color-mix(in srgb, var(--color-ink-900) 94%, transparent);
-    color: var(--color-paper);
-    z-index: 9999;
+    background: var(--color-paper);
+    color: var(--color-ink-900);
   }
-  .lightbox-dialog::backdrop { background: color-mix(in srgb, var(--color-ink-900) 94%, transparent); }
+  .lightbox-dialog::backdrop { background: var(--color-paper); }
 
   .lightbox-inner {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     width: 100%;
     height: 100%;
-    padding: 1rem;
+    padding: 4rem 1rem 1rem;
     box-sizing: border-box;
   }
 
-  .lightbox-close,
   .lightbox-btn {
     display: grid;
     place-items: center;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--color-ink-900);
     background: transparent;
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    color: var(--color-paper);
-    padding: 0.5rem 0.875rem;
     cursor: pointer;
-    font-family: var(--font-body);
-    transition: background-color 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint), color 0.22s var(--ease-out-quint);
   }
-  .lightbox-close:hover,
-  .lightbox-btn:hover {
-    border-color: var(--color-paper);
-    color: var(--color-paper);
-  }
-  .lightbox-close:focus-visible,
-  .lightbox-btn:focus-visible,
-  .lightbox-link:focus-visible {
-    outline: 2px solid var(--color-paper);
-    outline-offset: 2px;
-  }
+  .lightbox-btn:hover { border-color: var(--color-ink-400); }
   .lightbox-close {
     position: absolute;
     top: 1rem;
     right: 1rem;
   }
 
+  /* The stage. touch-action: none here only, so the viewer's own pinch and
+   * pan get every pointer; page zoom stays available everywhere else. */
   .lightbox-image-wrap {
     flex: 1;
+    min-height: 0;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 0;
-    width: 100%;
-    max-height: calc(100vh - 8rem);
+    overflow: hidden;
+    touch-action: none;
   }
   .lightbox-img {
-    border-radius: var(--radius-sm);
     max-width: 100%;
-    max-height: calc(100vh - 8rem);
+    max-height: 100%;
     width: auto;
     height: auto;
     object-fit: contain;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    cursor: zoom-in;
   }
 
-  /* Caption + provenance. On the flat gallery this is what tells you which
-   * set a photo came from, so the set pages stay one click away. */
+  /* Caption + provenance. On the library this is what tells you which set a
+   * photo came from, so the set pages stay one click away. */
   .lightbox-meta {
     display: flex;
     flex-wrap: wrap;
@@ -139,16 +134,8 @@
     text-align: center;
     flex-shrink: 0;
   }
-  .lightbox-caption { color: var(--color-blue-200); }
-  .lightbox-link {
-    color: var(--color-paper);
-    text-decoration: none;
-    border-bottom: 1px solid var(--color-blue-200);
-  }
-  .lightbox-link:hover {
-    color: var(--color-red-500);
-    border-bottom-color: var(--color-red-500);
-  }
+  .lightbox-caption { color: var(--color-ink-600); }
+  .lightbox-link { color: var(--color-red-700); }
   .lightbox-link[hidden] { display: none; }
 
   .lightbox-controls {
@@ -160,96 +147,11 @@
     flex-shrink: 0;
   }
   .lightbox-counter {
-    color: var(--color-blue-200);
-    font-family: var(--font-mono);
     min-width: 5rem;
     text-align: center;
+    font-family: var(--font-mono);
     font-size: var(--text-small);
     font-variant-numeric: tabular-nums;
-  }
-
-  .lightbox-dialog[open] { animation: lightbox-in 0.2s ease-out; }
-  @keyframes lightbox-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lightbox-dialog[open] { animation: none; }
+    color: var(--color-ink-400);
   }
 </style>
-
-<script>
-  const modal = document.getElementById('photo-modal') as HTMLDialogElement | null;
-  const modalImg = document.getElementById('modal-img') as HTMLImageElement | null;
-  const modalCaption = document.getElementById('modal-caption');
-  const modalLink = document.getElementById('modal-link') as HTMLAnchorElement | null;
-  const modalCounter = document.getElementById('modal-counter');
-  const modalClose = document.getElementById('modal-close');
-  const modalPrev = document.getElementById('modal-prev');
-  const modalNext = document.getElementById('modal-next');
-  const allTriggers = Array.from(
-    document.querySelectorAll<HTMLElement>('.photo-trigger')
-  );
-
-  // Only the wall the viewport is actually showing. `offsetParent` is null for
-  // anything inside a `display: none` ancestor, which is how the walls hide.
-  const visibleTriggers = () =>
-    allTriggers.filter((t) => t.offsetParent !== null);
-
-  let triggers: HTMLElement[] = allTriggers;
-  let currentIndex = 0;
-
-  function showPhoto(index: number) {
-    const total = triggers.length;
-    if (total === 0) return;
-    currentIndex = (index + total) % total;
-    const trigger = triggers[currentIndex];
-    if (!trigger) return;
-
-    const { src = '', alt = '', caption = '', href = '', hrefLabel = '' } = trigger.dataset;
-
-    if (modalImg) {
-      modalImg.src = src;
-      modalImg.alt = alt;
-    }
-    if (modalCaption) modalCaption.textContent = caption;
-    if (modalLink) {
-      if (href) {
-        modalLink.href = href;
-        modalLink.textContent = hrefLabel || 'view set →';
-        modalLink.hidden = false;
-      } else {
-        modalLink.hidden = true;
-      }
-    }
-    if (modalCounter) modalCounter.textContent = `${currentIndex + 1} / ${triggers.length}`;
-  }
-
-  allTriggers.forEach((trigger) => {
-    trigger.addEventListener('click', (e) => {
-      // Without JS the anchor just opens the full-size image; with JS we take
-      // over and show it in the lightbox instead.
-      e.preventDefault();
-      const list = visibleTriggers();
-      triggers = list.length > 0 ? list : allTriggers;
-      const idx = triggers.indexOf(trigger);
-      showPhoto(idx === -1 ? 0 : idx);
-      modal?.showModal();
-    });
-  });
-
-  modalClose?.addEventListener('click', () => modal?.close());
-  modalPrev?.addEventListener('click', () => showPhoto(currentIndex - 1));
-  modalNext?.addEventListener('click', () => showPhoto(currentIndex + 1));
-
-  // Clicking the backdrop (the dialog element itself) closes.
-  modal?.addEventListener('click', (e) => {
-    if (e.target === modal) modal.close();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (!modal?.open) return;
-    if (e.key === 'ArrowLeft') showPhoto(currentIndex - 1);
-    if (e.key === 'ArrowRight') showPhoto(currentIndex + 1);
-  });
-</script>

@@ -23,6 +23,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - **Cloudflare Images migration for the gallery (not started — needs credentials).** `src/assets/gallery` is 68 MB; `.git` is 310 MB. Blocked on a Cloudflare account ID + API token. Out of scope for the rebuild.
 - **Before the program is announced (not before it is merged):** BIR registration and official receipts before the first corporate invoice; written MMDC employer clearance covering outside work and public use of title and history.
 - **Wikidata item** (Phase 30 B2): create it and add the Q-ID to `sameAs`. Off-site, no code.
+- Phase 31 visual review (31.9 last box / Phase 31 DoD) — main is local-only, nothing pushed; review on a preview before pushing.
 - **GitHub profile URL for the footer (31.8).** No profile URL exists in the repo; the footer omits GitHub until Paul confirms `https://github.com/jpaulfernandez` (one line in `elsewhere` in `BaseLayout.astro`).
 
 ## v3 rebuild (approved 2026-10-29)
@@ -41,7 +42,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 31.6 OG route re-theme
 - [x] (2026-10-29) 31.7 CLAUDE.md constraints + colophon updated to v3
 - [x] (2026-10-29) 31.8 BaseLayout nav and footer
-- [ ] 31.9 Verify + Paul's visual review
+- [x] (2026-10-29) 31.9 Verify (Paul's visual review pending — see Blocked)
 - [ ] **Phase 31 Definition of Done**
 
 ### Phase 32 — Work with me + program · [phase file](docs/rebuild/phase-32-work-with-me-program.md)

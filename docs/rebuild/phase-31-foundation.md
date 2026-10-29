@@ -197,16 +197,16 @@ KeyTakeaway / PullQuote / Callout only need to be *legible* here (map applied); 
 
 ## Definition of Done
 
-- [ ] `v2-final` tag exists; content-diff command (README rule 2) is empty (`git diff v2-final -- src/content/pages/about.md src/content/now src/content/thoughts src/assets/thoughts`)
-- [ ] `npm run build`, `npx astro check`, `npm test` green
-- [ ] `grep -rEn "data-(reveal|hero|brighten|parallax)|gsap|motion\.ts" src package.json` → 0; `src/scripts/motion.ts` gone; `gsap` not in `package.json`
-- [ ] `grep -rn "wine-" src` → 0; all other 31.5 grep gates clean (Lightbox scrim the one commented exception)
-- [ ] `@theme` defines exactly the nine v3 colours; `global.css` has one `@layer components`, no `box-shadow`/`backdrop-filter`/gradient
-- [ ] No `switzer`/`courier` in `src`, `public`, `package.json`; fonts are the three `@fontsource-variable/*` packages; two font preloads on the home page
-- [ ] OG cards re-themed; three PNGs checked by eye
-- [ ] CLAUDE.md and `colophon.astro` describe v3; the nav and footer match §4 (GitHub link pending Paul)
-- [ ] `npx @axe-core/cli` clean on every route type listed in 31.9; token-pair contrast numbers recorded, all text pairs ≥ 4.5
-- [ ] No `<script` in built article HTML beyond the `.js` class script and the GA4 tags
+- [x] `v2-final` tag exists; content-diff command (README rule 2) is empty (`git diff v2-final -- src/content/pages/about.md src/content/now src/content/thoughts src/assets/thoughts`)
+- [x] `npm run build`, `npx astro check`, `npm test` green
+- [x] `grep -rEn "data-(reveal|hero|brighten|parallax)|gsap|motion\.ts" src package.json` → 0; `src/scripts/motion.ts` gone; `gsap` not in `package.json`
+- [x] `grep -rn "wine-" src` → 0; all other 31.5 grep gates clean (Lightbox scrim the one commented exception)
+- [x] `@theme` defines exactly the nine v3 colours; `global.css` has one `@layer components`, no `box-shadow`/`backdrop-filter`/gradient
+- [x] No `switzer`/`courier` in `src`, `public`, `package.json`; fonts are the three `@fontsource-variable/*` packages; two font preloads on the home page
+- [x] OG cards re-themed; three PNGs checked by eye
+- [x] CLAUDE.md and `colophon.astro` describe v3; the nav and footer match §4 (GitHub link pending Paul)
+- [x] `npx @axe-core/cli` clean on every route type listed in 31.9; token-pair contrast numbers recorded, all text pairs ≥ 4.5
+- [x] No `<script` in built article HTML beyond the `.js` class script and the GA4 tags
 - [ ] Paul has reviewed the PR's Vercel preview
 
 ## Verification

@@ -303,3 +303,111 @@ wordmark, six links and the red button; 820px shows wordmark, button, Menu;
 button. Keyboard: Tab goes skip link → wordmark → six links → button (1280)
 and skip link → wordmark → summary (375); `Enter` opens and `Space` closes the
 summary; focus outline is `rgb(164, 64, 47)` = red-700.
+
+## 31.9 Verify
+
+Stands in for the PR description (work is on `main`, nothing pushed, so there
+is no Vercel preview). The 31.2 step↔name table, 31.3 usage counts and the
+three 31.6 OG PNGs are in the sections above.
+
+**Gates.** `npm run build` ✓ · `npx astro check` 0 errors, 0 warnings ✓ ·
+`npm test` 68/68 ✓.
+
+**Axe** (`@axe-core/cli` 4.14.0 via `npx`, not in `package.json`; built site
+served with `npx serve dist/client -l 4400` — 4321 was held by a dev server.
+The CLI's bundled ChromeDriver only supports Chrome 152 and the installed Chrome
+is 156, so a matching `chromedriver@156.0.1` was installed in the session
+scratchpad and passed with `--chromedriver-path`; nothing in the repo changed.)
+
+| Route | First run | Final |
+|---|---|---|
+| `/` | 0 | 0 |
+| `/about/` | 0 | 0 |
+| `/now/` | 0 | 0 |
+| `/projects/` | 1 — `label-content-name-mismatch` | 0 |
+| `/projects/oddhalls/` | 1 — `definition-list` | 0 |
+| `/work-with-me/` | 0 | 0 |
+| `/workshops/` | 0 | 0 |
+| `/workshops/ai-fluency/` | 0 | 0 |
+| `/thoughts/` | 0 | 0 |
+| `/thoughts/what-is-a-token-anyway/` | 0 | 0 |
+| `/topics/ai/` | 0 | 0 |
+| `/gallery/` | 0 | 0 |
+| `/gallery/daniel-caesar-at-wanderland/` | 0 | 0 |
+| `/colophon/` | 0 | 0 |
+| `/sitemap/` | 0 | 0 |
+| `/thanks/` | 0 | 0 |
+| `/no-such-page/` (serves `404.html`) | 0 | 0 |
+
+Fixes (both pre-existing v2 markup, fixed rather than suppressed):
+- `projects/index.astro` — the external "Site ↗" link had
+  `aria-label="Visit {title} website"`, which doesn't contain its visible
+  label. Now `aria-label="Site: {title}"`.
+- `projects/[slug].astro` — the Oddhalls fact grid had a `<p class="meta__sub">`
+  inside a `<dl>` group (only `dt`/`dd` are allowed). It is now a second `<dd>`;
+  `.meta__sub` sets its own margins, so the layout is unchanged.
+
+"One thought that uses all four blocks": none does — no thought uses `Embed`.
+`what-is-a-token-anyway` uses the other three (KeyTakeaway, PullQuote,
+Callout) and is the one tested.
+
+**Keyboard pass** — see 31.8 (skip link → wordmark → nav → button; `<details>`
+Menu with Enter/Space; red-700 focus ring).
+
+**Client JS per page** (built `dist/client`). No public page references a
+`/_astro/*.js` file; every page script is inlined.
+- Articles (`thoughts/*/index.html`): 3 `<script>` tags each — the `.js` class
+  script and the two GA4 tags (plus an `application/ld+json` data block, not JS).
+- Home, About, Now, Work with me, Projects index, project pages, topics,
+  colophon, sitemap, thanks, 404: same three, nothing else.
+- Extra inline scripts, all pre-existing:
+  - `/thoughts/` — filter module, 984 B (≤ 2 KB budget).
+  - `/gallery/` and every `/gallery/<set>/` — lightbox module, 1,197 B (≤ 6 KB).
+  - `/workshops/` — 655 B enquire-target script (page deleted in 32.6).
+  - `/projects/` has no filter script yet (Phase 33 adds it).
+
+**Contrast** (WCAG relative luminance, computed with a throwaway script in the
+session scratchpad):
+
+| Pair | Ratio | Use |
+|---|---|---|
+| `ink-900` on `paper` | 15.35:1 | text |
+| `ink-600` on `paper` | 8.09:1 | text |
+| `ink-400` on `paper` | 5.70:1 | text (metadata) |
+| `red-700` on `paper` | 6.26:1 | text (links) |
+| `red-700` on `paper-100` | 5.89:1 | text |
+| `ink-900` on `red-500` | 5.00:1 | text (button) |
+| `ink-900` on `blue-100` | 12.93:1 | text |
+| `ink-600` on `blue-100` | 6.81:1 | text |
+| `ink-400` on `paper-100` | 5.37:1 | text (metadata) |
+| `ink-400` on `blue-100` | 4.80:1 | text (metadata) — closest to 4.5 |
+| `red-700` on `blue-100` | 5.27:1 | text (KeyTakeaway label) |
+| `ink-900` / `ink-600` on `paper-100` | 14.45 / 7.61:1 | text |
+| `paper` / `blue-200` on `ink-900` (Lightbox scrim) | 15.35 / 9.09:1 | text, the commented dark exception |
+| `red-500` on `paper` | 3.07:1 | non-text only (fills, rules) |
+| `blue-200` on `paper` | 1.69:1 | non-text only (hairlines) |
+
+Every text pair ≥ 4.5. `ink-400` on `blue-100` is 4.80, above the line, so the
+"forbid `ink-400` inside `.panel-tint`" fallback was not triggered (31.5's rule
+— reading copy in a tint uses `ink-600` — still stands).
+
+**Off-palette red/blue.** `grep -rnoE "(red|blue)-[0-9]{2,3}" src` minus
+red-500/700, blue-100/200 → one hit, the `red-400` *example* in the
+`global.css` comment explaining the namespace reset. Built CSS contains only
+red-500, red-700, blue-100, blue-200.
+
+**Content and grep gates.** README rule-2 content diff: empty (and
+`git diff v2-final -- src/content` is empty). 31.3, 31.4, 31.5, 31.6, 31.7 and
+31.1 gates re-run: all clean (CLAUDE.md's hits are the two intentional
+negations recorded in 31.7). `@theme` lists exactly the nine colours; one
+`@layer components`; home page has the two `/_astro/…woff2` preloads.
+
+**For Phase 32/34.** Rule 8 (`grep -rn "₱\|PHP " dist/client`) still finds the
+v2 workshop prices: the Home workshops block (`index.astro`), `llms.txt` and
+the `/workshops/*` pages. None is a v3 page yet; Phase 32 (workshops retired,
+`llms.txt` sections) and Phase 34 (Home) must clear them. The `/thoughts/`
+`<title>` still says "Writing" while the nav says "Thoughts" (page copy, not
+chrome — left for 36).
+
+**Not done:** Paul's visual review. `main` is local-only and nothing is pushed,
+so there is no preview; logged under Blocked-on-Paul in `plan.md`.

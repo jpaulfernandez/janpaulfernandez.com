@@ -1,0 +1,985 @@
+> **Archived 2026-10-29.** Phases 1–30 of the v1/v2 tracker, moved verbatim out of `plan.md` when the v3 rebuild started. Unchecked boxes below were left as they were (mostly "Paul's visual review" on designs the rebuild replaces); the items still open were carried into `plan.md`. Links resolve from this folder.
+
+# janpaulfernandez.com — Implementation Plan
+
+Source of truth for build order and completion status. Derived from [spec.md](../../spec.md).
+
+## How to use this file (for any coding agent: Claude, Gemini, GPT)
+
+1. Find the first unchecked task below. Tasks within a phase run in order; do not start a phase before the previous one is checked off.
+2. Open the linked task file in `tasks/`. It contains full context, steps, and a **Definition of Done**.
+3. Do only what the task file says. If a task seems to require work not listed, stop and flag it — don't expand scope.
+4. When every Definition of Done item passes, mark the checkbox here `[x]` and append the completion date, e.g. `[x] (2026-07-08)`.
+5. Never check a box with failing builds, failing tests, or partial work.
+
+Phases are vertical slices: each ends with a deployable, visibly-improved site — never a pile of disconnected scaffolding.
+
+---
+
+## Phase 1 — Foundation
+
+**Slice delivered:** branded site shell (tokens, fonts, nav, footer) live on Vercel at janpaulfernandez.com.
+
+- [x] (2026-07-05) [T01 — Scaffold Astro 5 + Tailwind 4](tasks/task-01-scaffold.md)
+- [x] (2026-07-05) [T02 — Design tokens & typography](tasks/task-02-tokens-typography.md)
+- [x] (2026-07-05) [T03 — Base layout, nav, footer, SEO head](tasks/task-03-base-layout.md)
+- [x] (2026-07-05) [T04 — Keystatic setup](tasks/task-04-keystatic.md)
+- [ ] [T05 — Deploy pipeline, robots.txt, sitemap](tasks/task-05-deploy.md)
+
+## Phase 2 — Core pages
+
+**Slice delivered:** Home, About, and Now pages live with real content, all CMS-editable, with Person/WebSite/ProfilePage JSON-LD.
+
+- [x] (2026-07-05) [T06 — Core content collections (career, now, pages)](tasks/task-06-core-collections.md)
+- [x] (2026-07-05) [T07 — JSON-LD schema library](tasks/task-07-schema-jsonld.md)
+- [x] (2026-07-05) [T08 — Home page](tasks/task-08-home.md)
+- [x] (2026-07-05) [T09 — About & Now pages](tasks/task-09-about-now.md)
+
+## Phase 3 — Thoughts
+
+**Slice delivered:** full publishing system — filterable index, article pages with custom blocks, topic archives, RSS, OG images, seed posts.
+
+- [x] (2026-07-05) [T10 — Thoughts collection & custom blocks](tasks/task-10-thoughts-collection-blocks.md)
+- [x] (2026-07-05) [T11 — Article layout & BlogPosting schema](tasks/task-11-article-layout.md)
+- [x] (2026-07-05) [T12 — Thoughts index, topic archives, filters](tasks/task-12-thoughts-index.md)
+- [x] (2026-07-05) [T13 — RSS feed & OG image generation](tasks/task-13-rss-og.md)
+- [x] (2026-07-05) [T14 — Seed content (2–3 posts)](tasks/task-14-seed-content.md)
+
+## Phase 4 — Work with me + launch
+
+**Slice delivered:** lead-gen page with form, FAQ schema, accessibility pass, Lighthouse ≥ 95, launched.
+
+- [x] (2026-07-05) [T15 — Work with me page](tasks/task-15-work-with-me.md)
+- [x] (2026-07-05) [T16 — Polish, accessibility, launch](tasks/task-16-launch.md)
+
+---
+
+## Blocked-on-Paul items (spec §10)
+
+- [x] **RESOLVED (verified live 2026-09-20) — Cloudflare is no longer blocking AI crawlers.** The 2026-09-04 review found a Cloudflare managed block injected *above* the repo's rules, disallowing `GPTBot`, `ClaudeBot`, `CCBot`, `Google-Extended`, `meta-externalagent`, `Amazonbot`, `Applebot-Extended`, `Bytespider`, plus `Content-Signal: ai-train=no`. Re-verified on 2026-09-20 by fetching the served file and headers: `https://www.janpaulfernandez.com/robots.txt` now returns **200 with exactly the repo's content** — no managed block, no injected disallows. Response headers carry **no** `Content-Signal` and **no** `X-Robots-Tag`, and the apex still 308s to www. Spec §1 / §7.1 are satisfied: GPTBot, ClaudeBot, PerplexityBot and Google-Extended are all served `Allow: /`. Paul appears to have cleared this in the Cloudflare dashboard. **Optional follow-up:** the repo file names only four crawlers explicitly — `meta-externalagent`, `Applebot-Extended`, `CCBot` and `OAI-SearchBot` fall through to `User-agent: *` (which allows them), so this is cosmetic, not a defect.
+
+- **GA4 vs. spec §8 (decision needed, not a bug).** `BaseLayout` ships the gtag script on every page. Added deliberately in Phase 6, but spec §8 calls for Plausible/Umami with "no cookie banner", it conflicts with the zero-client-JS stance, and GA4 technically wants consent under ePrivacy/GDPR. Left in place pending Paul's call; the colophon copy was corrected to describe what actually ships.
+- **Unconsumed CMS fields (content-model decision, not a bug).** `services.icon`, `gallery.featured`, `gallery.licensingAvailable`, and `thoughts.stage` (passed to `PostListItem`, then ignored) are authored but never rendered, and the `seo` singleton is read by nothing. Each should be either rendered or deleted from `keystatic.config.ts` and `src/content.config.ts` **together** — schema parity is a hard constraint.
+
+- **Cloudflare Images migration for the gallery (not started — needs credentials).** `src/assets/gallery` is 68 MB across 100 files and `.git` is 310 MB; every future photo permanently inflates clone time. Recommended target is Cloudflare **Images** rather than plain R2, so the `/w=800,f=auto` transform pipeline replaces the build-time optimisation Astro currently does. Blocked on Paul supplying a Cloudflare account ID and an API token (`wrangler` is installed globally but not authenticated, and there are no Cloudflare keys in `.env`). Touches `keystatic.config.ts` and `src/content.config.ts` together — the gallery `image` field becomes an image ID — so both schemas must change in the same commit.
+
+- **/workshops launch blockers (Phase 22, 2026-09-06) — the page is built but these gate announcing it.** Straight from `business/workshops-gtm.md` §6/§7/§16, all of which are Paul's calls, not code:
+  1. **The availability window is a placeholder.** `src/pages/workshops.astro` publishes "September – October 2026" in the `availability` const. It came from the request, not from a calendar. Confirm or replace — it is one string in one file.
+  2. **Publishing corporate prices was decided by §12, not by Paul.** §16 still lists "publish the corporate band or keep it to enquiry only" as open; §12's two-block layout only makes sense if both bands are shown, so the page publishes the full "from" ladder. Say the word and the right-hand column becomes "on enquiry" — one edit to the `inHouse` array.
+  3. **BIR registration, official receipts, and accountant sign-off on tax language** (§6). Corporate procurement will not release ₱140k to an unregistered individual, and the page now names ₱140k publicly. No tax wording is on the page, deliberately.
+  4. **Written employer clearance from MMDC** covering outside work, schedule, and public use of title and history. The page names Rappler, PHVote, MMDC and PSBank factually — the same claims already public on `/about` since T06, so this is not new exposure, but it is now attached to a commercial offer.
+  5. **Prices are hypotheses.** §4 says every number is untested against real delivery hours. The page states them as fixed for open seats and "from" for corporate, which is what §4 specifies, but nothing has been validated by a paid engagement yet.
+- **Stats deliberately held back from /workshops (2026-09-06).** §5 lists eight adoption figures; only three are on the page — the ones whose exact wording, source URL and population §13 actually pins down (65%/92% Philippine AI Report, 78%/35% Sprout State of HR 2026, 28% Reuters DNR via VERA Files). "86% bring their own tools", "42% pay personally", "12% have a governance officer" and "57% name skills as the top barrier" are **not** on the page because §5 groups them without individual attribution and §13 requires a URL and population per claim. Give me the source for each and they go on.
+
+Track here; tasks note where these are needed. Use placeholders until provided, never invent real data.
+
+- [x] Social profile URLs for `sameAs` (needed by T07)
+- [x] Contact email for form (needed by T15)
+- [x] Exact PSBank / RightCrowd / Rappler dates (needed by T06)
+- [x] Topics for seed essays (needed by T14)
+- [ ] **BOOKKEEPING (spotted 2026-09-20): T05's checkbox in Phase 1 is still `[ ]`** even though its deploy wiring is recorded as DONE below and prod has been verified repeatedly since. Left unchecked deliberately — per rule 5 nobody should tick a box they have not walked the DoD for. Someone should open [tasks/task-05-deploy.md](tasks/task-05-deploy.md), confirm each item, and either check it or record what is genuinely outstanding. Right now Phase 1 reads as incomplete and the "work the first unchecked task" rule points any agent at a task that is probably already done.
+- [x] **Deploy wiring for T05** — DONE (2026-09-02). Repo lives at `github.com:jpaulfernandez/janpaulfernandez.com`; Vercel project `janpaulfernandez-com` is Git-connected — push-to-main triggers a production deploy (verified with Phase 13: commit `c20c9f0` deployed and aliased to janpaulfernandez.com + www in ~2 min). Prod checks: all routes 200, robots 200, sitemap 200, apex → www 308 (single canonical host: **www**, note this supersedes the original "www→apex" note). `/keystatic` serves 200 in prod **by intent** — `KEYSTATIC_URL` + `KEYSTATIC_GITHUB_CLIENT_ID/SECRET` + `KEYSTATIC_SECRET` were configured on 2026-07-06, making it the live git-based CMS dashboard; the earlier "keystatic should 404" expectation is superseded. A `SKIP_KEYSTATIC=1` production env var was briefly added by mistake and removed after confirming the auth setup.
+
+Social profiles
+Linkedin - https://www.linkedin.com/in/jpaulfernandez/
+Instagram - https://www.instagram.com/goofffball/
+Contact email - jpaul.fernandez18@gmail.com
+Dates - Psbank, 2015 - 2018, Rightgrowd, 2018, Rappler 2018 - 2023
+
+Topic Seeds
+AI (artificial intelligence)
+Technology
+Economics
+Psychology
+
+## Phase 5 — UI/UX redesign (Paul's direct request, 2026-07-05)
+
+Requested by Paul via Cowork session; supersedes parts of T03/T08/T12/T15 visuals. Build + astro check + vitest all pass.
+
+- [x] (2026-07-05) Notch nav: fixed header docked as a "MacBook notch" at page top, detaches into a floating pill on scroll (vanilla JS toggle + CSS transitions, reduced-motion safe)
+- [x] (2026-07-05) Brand logo: ouroboros-vine mark (death of self / renewal / plants) — `src/components/LogoMark.astro`, 3 drafts in `public/logo-ouroboros-{1,2,3}.svg`, favicon updated
+- [x] (2026-07-05) Hero: conversational intro ("Hi, I'm Paul.") + "Invite me to coffee" CTA → /work-with-me#contact; home singleton fields renamed heroGreeting/heroIntro (Keystatic + content.config kept field-identical)
+- [x] (2026-07-05) Now on homepage: one-liner inside hero pulled from latest now entry (standalone section removed)
+- [x] (2026-07-05) Thoughts listing: PostCard grid → PostListItem rows (title, excerpt, date, tags, optional cover) on home, /thoughts, /topics; PostCard deleted
+- [x] (2026-07-05) Services: consulting-only lineup (Product Consultation / Talks & Workshops / Fractional Product Owner), rendered as sticky stacking color cards (`ServiceStack.astro`); dev services + "What I bring to the table" removed; ServiceCard deleted
+- [x] (2026-07-05) Employment history removed from homepage (Timeline stays on /about)
+- [x] (2026-07-05) Bento footer: tiled grid on green gradient + SVG grain
+- [x] (2026-07-05) /thoughts filters: boxed 3-group panel → compact toolbar (type segmented control + topic chips; stage filter dropped, stage badge kept on rows)
+- [x] (2026-07-06) Article page redesign: screenshot-inspired header, centralized left-margin TOC with subtle hover states, mobile bottom pill TOC accordion, smooth scroll animations, solid terracotta/color callouts, generous prose line-height and kerning
+
+## Phase 6 — Photo Gallery & Visual Extensions (Paul's direct request, 2026-07-07)
+
+Requested by Paul via chat; adds photo gallery with tag filtering, licensing CTA, and dynamic Bento footer.
+
+- [x] [T17 — Photo Gallery (/gallery), Licensing CTA, & Bento Footer Integration](tasks/task-17-gallery.md)
+- [x] (2026-07-07) Now timeline end node: added a quirky "End of timeline" node to `/now` that displays at the bottom of the timeline or when the timeline is empty.
+- [x] (2026-07-07) Thoughts cleanup & zero states: removed seed/test articles in `src/content/thoughts/` and added quirky, cohesive zero states to both `/thoughts` and Home (`/`).
+- [x] (2026-07-07) Google Analytics (gtag.js) integration: integrated Google tag G-KJX3LCC0SZ into BaseLayout.astro head section.
+
+## Phase 7 — Minimalist redesign: sidebar shell (Paul's direct request, 2026-08-12)
+
+Requested by Paul via chat; supersedes the Phase 5 notch nav / bento footer / service cards visuals site-wide. Direction: text-minimal in the spirit of luyuhang.net / paco.me / sive.rs, but with a fixed sidebar instead of single-column. Decisions confirmed by Paul: whole-site shell, new /projects page + Keystatic collection, "Work" = /work-with-me, full text-only strip (no photo strips, no magenta theme, no stacking cards).
+
+- [x] (2026-08-12) [T18 — Sidebar shell: nav, footer, zero-JS](tasks/task-18-sidebar-shell.md)
+- [x] (2026-08-12) [T19 — Projects collection & /projects page](tasks/task-19-projects.md)
+- [x] (2026-08-12) [T20 — Text-minimal homepage](tasks/task-20-home-redesign.md)
+- [x] (2026-08-12) [T21 — Remaining pages adoption & cleanup](tasks/task-21-adoption-cleanup.md)
+
+## Phase 8 — Courier + B/W + green/magenta accents (Paul's direct request, 2026-08-12)
+
+Requested by Paul via chat. Direction: merge Madhurima Chatterjee's centered, text-minimal chrome with the existing luhuyang-style sidebar — but flip the palette to white & black with green + magenta as accents only, replace Archivo Black / Lato with Courier Prime (single mono family), drop the favicon to a plain magenta square, soften the sidebar (no hard rail, centered), and remove decorative microcopy. Supersedes Phase 7 visuals (palette + typography only; sidebar IA preserved).
+
+- [x] (2026-08-12) Courier Prime `400` + `700` via `@fontsource`; preload both woff2; theme tokens (`--font-display`/`--font-body`) repointed
+- [x] (2026-08-12) `src/styles/global.css`: token palette rewritten — moss/beige/citrus names kept for class compatibility but values shifted to near-black / off-white / magenta; `--color-green-500/700` added (Jamaican-green family, AA-compliant)
+- [x] (2026-08-12) `public/favicon.svg` replaced with a single magenta `<rect>` (no logo, no curve, no grain)
+- [x] (2026-08-12) `src/layouts/BaseLayout.astro`: sidebar loses `border-r border-moss-200`, gains centering (`md:flex md:flex-col md:items-center`), nav ticks lowercase, secondary links + `site-meta` ("technologist · philippines") sit inside the sidebar; footer collapsed to one row
+- [x] (2026-08-12) Active page marker repainted to magenta `●`; link colour shifts from moss to magenta on hover
+- [x] (2026-08-12) `src/pages/index.astro`: section headings reduced to lowercase mono kickers (`writing`, `projects`, `work`); chrome tightened (less prose around lists)
+- [x] (2026-08-12) About / Now / Work / Projects / Thoughts index / Thoughts topic / Gallery index / Gallery slug / Article / Thanks / Timeline / PostListItem / KeyTakeaway / Callout / PullQuote all rewritten to mono + new palette + minimal text
+- [x] (2026-08-12) OG image generator (`src/pages/og/[...route].ts`) repointed to Courier Prime + new palette RGB values
+- [x] (2026-08-12) `npm run build` ✓ · `npx astro check` 0 errors / 0 warnings (4 pre-existing keystatic deprecation hints) · `npm test` 13/13 pass · favicon file confirmed `<rect fill="#FF006E">` · `<h1>` on every page renders with new tokens
+
+## Phases 11–13 REVERTED — live design is the Phase 10 state, commit `31e2448` (Paul's direct request, 2026-09-02)
+
+Paul asked to go back from the Phase 13 look, initially to the pre-Phase-9 site
+(`e76ec2a`), then settled two commits forward: the live design is now the
+**Phase 10 state** — Phase 8 sidebar shell + wine palette / display type /
+Mobbin structure (Phase 9) + the `/now` timeline and flat `/gallery` photo
+wall (Phase 10), i.e. commit `31e2448`. Phase 14 (below) tunes that look —
+type scale and motion only — without changing its structure. The phase
+records below are kept as history. Phases 9–10 code was restored from `31e2448`; Phases 11–13 (swipeable
+work cards/left-edge rail, top-nav bold-minimalist skin, ruled-ledger skin)
+remain reverted — their code lives only in git history `31e2448..899041a`.
+Content was untouched throughout — every Now/thoughts/gallery entry survived.
+Do not treat the Phase 11–13 checked boxes below as the current design; to
+revive any of it, pull from that range.
+
+## Phase 9 — Wine palette, display type, Mobbin-informed page structure (Paul's direct request, 2026-09-01)
+
+Requested by Paul via chat after a Mobbin inspiration pass. Direction: keep the
+text-minimal spirit of Phase 8, but (a) repaint to a wine / red-wine shade,
+(b) introduce a genuinely huge + bold display step so hierarchy is a jump rather
+than a nudge, and (c) let the accent appear as sparse "flares" rather than
+uniform colour. Page structure follows specific Mobbin references, noted per
+task. Supersedes Phase 8 palette + type scale; sidebar IA preserved.
+
+Mobbin references used: MOUTHWASH Studio (mono chrome), Claude Type (centred
+prose), Gumroad + Intercom (hairline row index), Instrument + Aino Agency
+(service rows), Stripe + Notion (changelog rail), Studio Freight (dense photo
+grid).
+
+- [x] (2026-09-01) Token families renamed to match what they are: `moss-*`→`ink-*`, `beige-*`→`paper-*`, `citrus-*`→`wine-*`; legacy `dark-plum-*` / `alert-*` aliases dropped (nothing referenced them). 20 files, mechanical.
+- [x] (2026-09-01) `src/styles/global.css`: wine palette (paper `#FAF6F4`, ink `#1C0A10`, wine `#8E1B3F`); every colour used at or below body size verified ≥ 4.5:1 (measured values documented in the token block)
+- [x] (2026-09-01) Type scale gains `--text-display` (56 → 112) and h1 grows 40 → 72; both endpoints stay on the 8-pt grid
+- [x] (2026-09-01) Shared primitives extracted (each ≥ 4 uses): `.display`, `.flare`, `.kicker` (wine bullet + trailing rule), `.rows`/`.row-link`/`.row-meta` (hairline index), `.rail`/`.rail-item`/`.rail-date` (timeline gutter)
+- [x] (2026-09-01) Blanket `prefers-reduced-motion: reduce` guard neutralising all transitions/transforms (the gallery image scale and row nudge are decorative)
+- [x] (2026-09-01) Home: display hero with the greeting's last word as the flare (derived from the Keystatic value, not hardcoded); writing + projects as hairline rows; single wine CTA block
+- [x] (2026-09-01) Work: services as full-width Instrument-style rows — wine numeral, h2-scale name left, description right
+- [x] (2026-09-01) Now + About career history: shared `.rail` timeline; newest entry gets a wine halo
+- [x] (2026-09-01) Gallery: tag filter and its client script removed (4 collections don't earn a filter UI); dense 2/3-col square grid, captions cut to title + year
+- [x] (2026-09-01) Gallery promoted from the footer's secondary links into the primary nav — it was previously reachable on mobile only by scrolling to the page bottom
+- [x] (2026-09-01) New `/colophon` page (stack, rules, source); takes gallery's old slot in the secondary links
+- [x] (2026-09-01) Active nav marker changed from `●` to `■` to match the kicker bullet
+- [x] (2026-09-01) `npm run build` ✓ · `npx astro check` 0 errors · `npm test` 13/13 ✓ · all 11 routes return 200 with exactly one `<h1>` each · verified in-browser at 375px and 1280px
+
+### Considered and rejected
+
+- **Prev/next on articles** — already shipped; `ArticleLayout.astro:115` renders it.
+- **Corner metadata chrome (MOUTHWASH-style `INDEX` / version stamps)** — decorative only, and the sidebar already carries identity + section state. Would have cost a11y noise for no information gain.
+
+## Phase 10 — /now as a real timeline, /gallery as one flat photo wall (Paul's direct request, 2026-09-01)
+
+Requested by Paul via chat after a second Mobbin pass. Two targeted redesigns:
+(a) /now should *read* as a timeline rather than a stack of posts, and
+(b) /gallery should show the photographs themselves — one masonry wall, not a
+grid of set covers.
+
+Mobbin references used: Plain + Slack API changelog (date gutter, quiet prose,
+one node per entry), Stripe changelog (period as a chapter marker), Campsite
+(terminal node closing the rail), Cosmos (dense ungrouped image wall).
+
+- [x] (2026-09-01) `/now`: entries grouped into year sections; each year is a solid wine milestone on the rail with a trailing hairline. Entry nodes are hollow; only the newest is filled + haloed and carries a "right now" badge. Heading order fixed to h1 → h2 (year) → h3 (entry) — entry titles were h2 before. Rail closes on a terminal node. Styles are scoped to the page; shared `.rail` is left to `Timeline.astro` (/about).
+- [x] (2026-09-01) `/gallery`: set covers replaced by every photograph in one CSS-columns masonry (95 shots, 2 cols → 3 at 640px). Sets are interleaved by a deterministic even-spread key so a 50-shot set and a 12-shot set both run the length of the wall instead of sitting as blocks. Set pages stay reachable from a hairline "Sets" index at the foot and from the lightbox.
+- [x] (2026-09-01) `Lightbox.astro` extracted (second use: gallery index + set pages). Binds to any `.photo-trigger`; shows caption, an optional "view set →" link, counter, arrows, Esc.
+- [x] (2026-09-01) `src/lib/gallery.ts` `lightboxWidth()` + vitest: lightbox now loads a 1600px-long-edge variant instead of the ~1.5 MB original (wanderland-41: 1165 kB → 61 kB). Grid images dropped their forced 800×600 crop, so photos show at their true aspect ratio.
+- [x] (2026-09-01) `npm run build` ✓ · `npx astro check` 0 errors · `npm test` 18/18 ✓ · verified in-browser at 375px and 1280px
+
+## Phase 11 — Swipeable work cards, black colophon, left-edge nav rail (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat. Four targeted changes to the home page, the
+colophon, and the site shell:
+
+- [x] (2026-09-02) Home "work" section: the single CTA block becomes three service cards pulled from the same `services` collection as `/work-with-me`. Mobile: native swipe carousel — CSS `scroll-snap` with the scrollbar suppressed, one 85%-wide card per view with the next card peeking, so the document never grows a horizontal scrollbar. `lg+`: plain three-column grid. Cards link to `/work-with-me`; the wine CTA button is kept below. Zero JS (rung 3).
+- [x] (2026-09-02) `/colophon` inverts to pure black: new `dark` prop on `BaseLayout` sets `.dark` on `<body>`; Tailwind 4 `@custom-variant dark` is class-based. Global overrides in `global.css` flip the shared primitives (headings, links, `.display`, `.flare`, `.kicker`, active nav marker). Wine accents step up to `wine-300` on black — `wine-500` only reaches 2.4:1 there; `wine-300` measures 4.8:1 (AA).
+- [x] (2026-09-02) Navigation shell: at `lg+` the header is now `fixed` to the left viewport edge (`w-52`, `xl:w-64`), vertically centered, left-aligned — no longer attached to the content column. Content column stays `max-w-3xl`, centered in the remaining width via `lg:pl-52 xl:pl-64`.
+- [x] (2026-09-02) Mobile nav redesign: name + meta left-aligned; the six primary links form a 3×2 grid with padded tap rows (~42px) instead of the old right-aligned wrapped rows. Secondary links stay in the mobile footer.
+- [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · built HTML verified: 3 work cards + snap CSS on `/`, `dark` body class + `#000`/wine-300 rules on `/colophon` only, `lg:fixed` rail in the shell.
+
+## Phase 12 — Bold minimalist skin: top nav bar, numbered work rows, prominent NOW (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat: fix the navigation and the work section, make NOW
+more prominent, and revamp the skin — bold but minimalist, wine-led with four
+complements over neutrals. Mobbin references used: Coda / Handshake / Bird /
+Affinity (slim sticky bar, wordmark left, small-caps links, one accented block
+right), OFF+BRAND / Koto / Vucko (numbered hairline service rows with a serial
+number and a heavy title, no cards).
+
+- [x] (2026-09-02) Navigation: the Phase 11 left-edge rail is replaced by a sticky top bar on every breakpoint — wordmark left, five small-caps mono links right, `/now` as a solid wine block at the end. Active page and hover both draw a wine rule that wipes in from the left. `< md`: wordmark + NOW + a zero-JS `<details>` menu whose panel spans the bar. Content column widens `max-w-3xl` → `max-w-4xl` now that the rail no longer eats 256px.
+- [x] (2026-09-02) NOW is promoted twice: a wine block in the nav bar with a pulsing square, and a full-width solid wine slab on the home page directly under the hero carrying the latest entry's title and date. `/now` gains a `live · <date>` badge above the h1. The old truncated grey one-liner (and its 12 lines of markdown-stripping) is gone.
+- [x] (2026-09-02) Work section: the Phase 11 swipe-card deck is replaced by `.num-rows` — serial number, heavy title, one line of copy, hovering floods the row with that row's accent. Drops the scroll-snap carousel and its ~45 lines of scoped CSS. `/work-with-me` services use the identical rows, so a service keeps its colour across both pages.
+- [x] (2026-09-02) Type: one monospace family becomes three faces, three jobs — Archivo Black (display/h1/h2/h3), Lato (body + prose), Courier Prime (kickers, labels, metadata, numerals). All three were already dependencies; no new packages. `font-synthesis: none` so Archivo Black is never faux-bolded. Display top end drops 112 → 96 because Archivo Black is far wider than Courier.
+- [x] (2026-09-02) Palette: wine stays primary; four muted complements join as section accents — clay `#A24A22` (5.5:1), ochre `#7E6220` (5.4:1), olive `#40563C` (7.5:1), slate `#2F4858` (8.9:1) on paper, each ≥4.5:1 under `paper-50` text when used as a fill. Driven by one `--accent` custom property that `.kicker`, `.flare`, `.row-link`, `.num-row`, `.btn` and `.more-link` all read, so a section sets its colour in one place. Wine is still never body text.
+- [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · verified in-browser at 390px and 1280px on `/`, `/now`, `/work-with-me`, `/about`, `/colophon` (dark shell) and an article page.
+
+## Phase 13 — Ruled ledger: wine + two, line-drawn, quiet type (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat: revise the entire UI/UX with wine + up to four complementary colours, minimalist text-based UI/UX, lines as the visualization, same pages. Confirmed direction: ruled-ledger line language, quieter type hierarchy, complement set trimmed. Supersedes Phase 12 visuals (fills → lines). Decisions path: brainstorming skill, bounded-classified (whole-site skin, no IA change), design approved in chat before implementation.
+
+- [x] (2026-09-02) Palette trimmed to wine + two complements: slate (writing), olive (projects); clay and ochre retired. Tokens rewritten in oklch(); paper-50 shifted off #FFF to #FCFAF9; dark shell shifted off #000 to a wine-tinted near-black (--color-night) with AA re-measured (wine-300 4.6, slate-300 9.1, olive-300 9.9). Contrast table in the token block updated.
+- [x] (2026-09-02) Quieter type: --text-display (48→96) and the .display class removed; h1 32→48, h2 24→32 clamps re-derived for a 375–1280 viewport. Three faces and their jobs unchanged (Archivo Black / Lato / Courier Prime).
+- [x] (2026-09-02) Lines carry every structural moment: solid NOW slab → ruled band (2px wine top rule + hairline bottom); num-row accent-flood hover → drawn title rule that wipes in from the left on hover; filled .btn → 1px outlined box; side-stripe callout/prose blockquote borders → full or top/bottom hairlines.
+- [x] (2026-09-02) Ledger header rule: new .kicker-meta element sits past the kicker's trailing rule carrying real metadata (service/thought/project counts, steps, questions, roles, sets). Applied on home, /work-with-me, /about, /projects, /gallery, article "related".
+- [x] (2026-09-02) Nav bar: backdrop blur removed (solid paper + hairline); NOW tab redrawn as a 1px wine outline with the pulsing dot; dark-shell variants re-tinted via --color-night and color-mix hairlines.
+- [x] (2026-09-02) PostListItem rows + /thoughts filter chips: active/pressed states are drawn (accent ink + 2px rule or accent underline), not filled. Writing/topic pages set --accent to slate via the existing --accent mechanism.
+- [x] (2026-09-02) Callout block: stale Phase-8 green classes replaced with olive (idea variant) / wine (warning) / ink (note), full-border boxes. KeyTakeaway full wine box, PullQuote framed with top/bottom hairlines.
+- [x] (2026-09-02) `npm run build` ✓ · `npx astro check` 0 errors (4 pre-existing keystatic deprecation hints) · `npm test` 18/18 ✓ · all 9 shell routes return 200 with exactly one `<h1>` · rendered-browser verification at 390px and 1280px on /, /work-with-me, /thoughts, /colophon (dark shell).
+
+## Phase 14 — Quieter pass: type compression, decorative motion removed (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat ("make it less loud"). Offered four levers —
+display type, wine density, solid fills, motion; Paul chose **display type +
+motion**, applied substantially. Wine density and solid fills are untouched
+on purpose. The Phase 10 structure (sidebar shell, hairline rows, rail
+timelines, gallery wall, flare words) is unchanged — only the volume came
+down. Supersedes the Phase 9 type scale.
+
+- [x] (2026-09-02) Type scale compressed in `src/styles/global.css`, still on the 8-pt grid and ≥1.25 between steps: `--text-display` 56→112 becomes 40→56, `--text-h1` 40→72 becomes 32→40, `--text-h2` 24→40 becomes 24→32; h3/body/small untouched. Every `.display` h1 (all 11 pages) and every prose h2 quiets with the tokens. `.display` leading relaxes 1.02→1.1 and tracking -0.03em→-0.02em, retuned for the new size range.
+- [x] (2026-09-02) Decorative motion removed: the `.row-link` hover-nudge (padding-left shift), the gallery hover zoom (`scale(1.04)` on the `/gallery` wall and set pages), and the `.fade-rise` intro animation (deleted outright — nothing referenced it). Hover colour on rows/links and the gallery hover dim stay as the only feedback; the lightbox fade and disclosure-chevrons remain, still covered by the blanket `prefers-reduced-motion` guard.
+- [x] (2026-09-02) Deployed to prod: commit `8345b77` pushed to main, Vercel build live within ~1 min — new stylesheet (compressed display clamp) served on www, all 8 main routes 200 (`/`, about, work-with-me, thoughts, projects, gallery, now, colophon)
+- [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
+
+## Phase 15 — Now rail on the homepage (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat: NOW was barely visible on the homepage (a truncated
+grey one-liner under the hero), and nothing hinted that /now is a timeline.
+Direction confirmed in chat: **mini timeline section** — chosen over a
+featured-entry block and a ruled band above the hero (too loud post-Phase-14).
+
+- [x] (2026-09-02) `src/pages/index.astro`: the hero one-liner (and its ~12 lines of markdown-stripping) is removed. In its place, a `now` kicker section directly under the hero: the 3 latest entries rendered on the existing `.rail` primitive — date gutter, wine node per entry, halo on the newest, same flare /now gives the live entry. Each title links to /now; the section closes with a "see the full timeline →" link. Zero new CSS, zero JS (rendering-ladder rung 1). Writing section spacing steps down to the standard `mt-16 md:mt-20` now that `now` takes the post-hero gap.
+- [x] (2026-09-02) Deployed to prod: commit `5e5fa25` pushed to main, Vercel build live within ~1 min — new `now` rail section served on www with `see the full timeline →` link, all 8 main routes 200 (`/`, about, work-with-me, thoughts, projects, gallery, now, colophon), exactly one `<h1>` on `/`
+- [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
+
+## Phase 16 — /gallery wall: build-time packed masonry (Paul's direct request, 2026-09-02)
+
+Requested by Paul via chat: the wall read as "just a 3 col grid". Root cause
+found by measuring the source: **88 of 95 photos are the identical 2731×2048
+(4:3) crop** — equal-width columns can only tile into a grid, and no fill
+order fixes that. Fix: vary each photo's width and pack the columns **at
+build time** from image metadata — zero JS, zero cropping (Phase 10's true
+aspect ratios preserved).
+
+- [x] (2026-09-02) `src/lib/gallery.ts`: new `masonryLayout()` — each shot gets a deterministic pseudo-random width factor (0.75 / 1 / 1.25 of column width, FNV-1a hash of the shot id → stable across builds), then a shortest-column-first pass packs everything into 3 near-equal-height columns. Pure function, vitest-covered (`masonryLayout` + `widthFactor` describe blocks: determinism, coverage, balance, factor set, empty, clamp).
+- [x] (2026-09-02) `src/pages/gallery/index.astro`: the single CSS-columns wall becomes two trees at the 640px cutover — mobile keeps the original 2-col flow untouched (`sm:hidden`), desktop (`hidden sm:flex`) renders the packer's three columns as flex columns with per-shot `width: 75–125%` inline. Sets still interleave via the spread key; lightbox markup unchanged; `display` deliberately left to Tailwind so the scoped stylesheet can't leak the wall onto mobile.
+- [x] (2026-09-02) Deployed to prod: commit `cf6e221` pushed to main, Vercel build live within ~1 min — `/gallery` serves the packed wall (43 full / 26 wide / 26 narrow shots across 3 columns), all 8 main routes 200, exactly one `<h1>` on `/gallery`
+- [ ] Paul's visual review in-browser (build/check/tests deliberately not run, per Paul's manual-review workflow)
+
+## Phase 17 — SEO / GEO / a11y remediation from the 2026-09-04 review
+
+Source: `code-review-2026-09-04.md` (full-site review + SEO/GEO audit). Each
+finding was re-verified against the source and live production before being
+actioned; three were rejected as incorrect or not worth the churn (noted at the
+bottom). Build, `astro check`, and vitest all pass.
+
+- [x] (2026-09-04) **Canonical host → www.** Prod 308s apex → www, so `site`, `SITE_URL`, the sitemap, `og:url`, all `llms.txt` links, the Web3Forms redirect, and the RSS fallback pointed at the host that redirects. All now emit www. `PERSON_ID` is deliberately **pinned to the apex literal** (`https://janpaulfernandez.com/#person`) and decoupled from `SITE_URL` — it is the entity key knowledge graphs consolidate on, and CLAUDE.md makes it a hard constraint. Covered by a new schema test.
+- [x] (2026-09-04) **`og:image` 404 on 10 of 14 routes.** `BaseLayout` fell back to `/og-default.png`, which does not exist. Fallback is now `/og/home.png` (real, build-generated, 1200×630); `/about`, `/now`, `/work-with-me` wired to their own already-generated cards; articles use `/og/<slug>.png`.
+- [x] (2026-09-04) **Person JSON-LD `image` was a dead URL.** `/assets/paul.webp` 404s (the file lives in `src/assets/` and nothing imported it). Added `public/paul.jpg` — the source 4128×6192 downscaled to 800×1200, 157 KB — at a stable URL that will not move with content hashes.
+- [x] (2026-09-04) **`/thanks/` removed from the sitemap** — it is `noindex`, so listing it was a contradictory signal. The `/styleguide` filter was dropped at the same time; that page does not exist.
+- [x] (2026-09-04) **Article JSON-LD gained `image`, `url`, and `mainEntityOfPage`** — Google Article rich results require an image, and no post has a cover, so the per-post OG card is used. Two new schema tests cover present/absent `url`.
+- [x] (2026-09-04) **Branded `src/pages/404.astro`** — prod was serving Vercel's bare `NOT_FOUND` body with an internal region ID.
+- [x] (2026-09-04) **`/gallery` lightbox double-binding fixed.** The page renders both walls (mobile flow + desktop masonry) and hides one with CSS, so binding every `.photo-trigger` in DOM order gave **190 triggers for 95 photos** — counter read 2×, prev/next cycled each image twice. Verified live before the fix. The list is now rebuilt from visible triggers (`offsetParent !== null`) on each open; verified in-browser at both breakpoints — reads `4 / 95` on desktop, `1 / 95` on mobile.
+- [x] (2026-09-04) **Draft leakage in the OG route.** `src/pages/og/[...route].ts` used raw `getCollection('thoughts')`, publishing OG cards for drafts at guessable URLs. Now uses `getPublishedThoughts()`; `rss.xml.ts` had the same rule violation filtered inline and now shares the helper.
+- [x] (2026-09-04) **Gallery photos work with JS off.** Triggers were `<button>`s, so nothing on the wall opened without JS. They are now `<a href={fullSrc}>` with `preventDefault()` in the lightbox — progressive enhancement, rung 2 → 4.
+- [x] (2026-09-04) **Article covers use `<Image>`** rather than a raw `<img>` with no dimensions, and `og:image` no longer derives from `cover.src` (arbitrary ratio). Latent today — no post has a cover.
+- [x] (2026-09-04) **Heading anchors.** Classes were `text-moss-200 hover:text-moss-500`, dead since the Phase 9 token rename, so the anchors were completely unstyled; and the literal `#` was a text node, so anything extracting heading text read "My Heading#". The glyph moved to `.anchor-icon::after` in CSS and real `.anchor-link` styles were added (ink-200, hidden until hover/focus, reduced-motion respected).
+- [x] (2026-09-04) **`h1 → h3` heading skip** on `/thoughts` and `/topics/[topic]` — `PostListItem` hardcoded `<h3>` with no `<h2>` between. Now `<h2>`; verified in-browser that the level sequence has no skip and there is still exactly one `h1`.
+- [x] (2026-09-04) **Trailing-slash consistency.** Breadcrumb JSON-LD, RSS item links, and `llms.txt` links now carry the slash that canonicals and the sitemap use.
+- [x] (2026-09-04) **OG/meta gaps filled:** `og:site_name`, `og:locale`, `og:image:alt`, `og:image:width/height`, `twitter:image:alt`, `theme-color`.
+- [x] (2026-09-04) **RSS items gained `categories` (from topics) and `author`.**
+- [x] (2026-09-04) **Timezone-fragile dates.** `new Date('2026-09-04')` parses as UTC midnight, so west of UTC every content date rendered one day early. New `src/lib/dates.ts` (`parseDateSafe` / `formatDate` / `formatDateLong`, vitest-covered, 6 tests) generalises the noon pin `/now` already used; adopted in `ArticleLayout`, `PostListItem`, `gallery/[slug]`, and `now`.
+- [x] (2026-09-04) **Contact form `autocomplete`** on name/email (WCAG 1.3.5 Identify Input Purpose, AA).
+- [x] (2026-09-04) **GEO: `llms-full.txt`** — the whole corpus (28 KB) inline in one fetch, linked from `llms.txt`, discoverable via `<link rel="alternate">` and a robots.txt comment. Also a **visible byline** on articles (`rel="author"` → `/about`), which previously existed only in JSON-LD.
+- [x] (2026-09-04) **Cleanup:** off-palette `green-*` in the Callout "idea" variant → ink; gallery set titles no longer double the suffix ("BINI: Asiya — Gallery — Paul Fernandez"); colophon's "zero client JS" claim corrected (GA4 ships on every page); deleted `src/assets/gallery/bini/bini-01.webp.tmp.jpg`; removed the unused `@fontsource/archivo-black` and `@fontsource/lato` deps (dead since the Phase 11–13 revert to Courier Prime only).
+
+**Rejected findings** (verified as incorrect or not worth the churn):
+- *"Honeypot is `display:none` but keyboard-focusable"* — false. `display: none` removes an element from the tab order entirely; `tabindex="-1"` would add nothing. Only the `autocomplete` half of that finding was valid.
+- *"`cover.src` isn't a public URL"* — imprecise. `image()` fields resolve to `/_astro/…` in the build and would serve fine. The real defects (unoptimised raw `<img>`, arbitrary-ratio OG image) were fixed instead.
+- *"Both inline scripts exceed the ~40-line budget"* — the review itself calls this "a budget breach, not a ladder break". Rewriting working enhancement code to hit a line count is churn.
+
+- [ ] Paul's visual review in-browser
+- [ ] Deploy to prod + verify
+
+## Phase 18 — SEO audit remediation (2026-09-04, second pass)
+
+Source: a fresh technical SEO audit run against the live site and a clean build
+(27 pages parsed for title/description/canonical/robots/OG/heading structure/
+alt coverage/JSON-LD, cross-checked against production redirects and headers).
+14 findings; 13 actioned here, one deliberately deferred. Build, `astro check`
+and vitest all pass; a scripted re-audit of the new build reports zero issues.
+
+- [x] (2026-09-04) **Cloudflare's managed robots.txt was blocking the AI crawlers the repo welcomes.** Production served a Cloudflare-injected block (`Content-Signal: ai-train=no` plus `Disallow: /` for GPTBot, ClaudeBot, CCBot, Google-Extended, Amazonbot, Applebot-Extended, Bytespider, meta-externalagent) *above* `public/robots.txt`, which then allowed those same agents — two contradictory groups per user-agent, and the pessimistic reading is the one a first-match parser takes. It also silently defeated the `llms.txt` work. **Fixed by Paul in the Cloudflare dashboard**; production now serves the repo's file only. Not a code change — nothing in this repo could have overridden it.
+- [x] (2026-09-04) **Every internal link pointed at a non-canonical URL.** Canonicals declared `/about/`; every nav and post link used `/about`, and both served 200 with no redirect between them — so the entire link graph landed one hop short of the indexed URL. `trailingSlash: 'always'` in `astro.config.mjs` (the Vercel adapter now emits 308s for the bare form, leaving file extensions alone) and every internal href updated to the slash form. `isNavActive()` rewritten as a prefix match now that each href ends in `/`.
+- [x] (2026-09-04) **Gallery structured data.** Five pages and ~95 photographs carried no JSON-LD at all — not even the BreadcrumbList every other section had. New `imageGallery()` builder emits `ImageGallery` + per-frame `ImageObject` (contentUrl, caption, dimensions, `creator`/`creditText` → `PERSON_ID`) on each set; `collectionPage()` indexes the sets on `/gallery`. Both TDD'd in `schema.test.ts`.
+- [x] (2026-09-04) **Blog-index and topic structured data.** `/thoughts` — the hub every post's breadcrumb points back to — declared nothing; nor did the nine `/topics/*` archives. New `blog()` and `collectionPage()` builders, plus BreadcrumbList on both. Site-wide JSON-LD blocks went 13 → 25.
+- [x] (2026-09-04) **All 95 gallery photos had generated boilerplate alt text** (`"HONNE at Wanderland photo 14"`) because every caption in the content files was empty. Real per-frame captions written for all 95 across the four sets; they feed the `alt`, the lightbox label, and the `ImageObject` markup from one `altFor()` helper. **These are drafted captions, not Paul's own words — worth a read-through in Keystatic.**
+- [x] (2026-09-04) **Bug found while captioning: photo 1 of every set silently lost its caption.** The cover is pushed into `photoList` with a hardcoded `caption: ''`, and the matching `photos[0]` entry is then dropped by the dedupe — so the first frame could never show a caption. The cover now inherits its own photo entry's caption, in both `gallery/[slug].astro` and `gallery/index.astro`.
+- [x] (2026-09-04) **OG cards for the 15 pages sharing the site-wide fallback.** `/og/[...route].ts` now generates cards for the four gallery sets, `/gallery`, `/thoughts`, `/projects` and `/colophon`, all wired through. (Photo-backed cards for the sets were considered and skipped — a legibility problem for another day.)
+- [x] (2026-09-04) **Thin, near-duplicate topic archives.** All nine shipped the same templated "Posts tagged #x by Paul Fernandez." Each now carries a hand-written one-line intro, used as both the meta description and a visible lead. **Chosen over `noindex`-ing the five single-post topics deliberately:** the noindex route needs the sitemap filter to know post counts, and `astro.config.mjs` cannot reach `astro:content` — the coupling was worse than the problem. Revisit if the archives stay thin.
+- [x] (2026-09-04) **Sitemap `lastmod`.** All 25 URLs were bare `<loc>`s. A `serialize` hook now attaches content-derived dates to posts, gallery sets, the two hubs and the topic archives (newest tagged post). Static pages get none on purpose — a build timestamp on every URL is a worse signal than none.
+- [x] (2026-09-04) **Titles over the ~60-char SERP cut.** Two posts truncated mid-headline. `BaseLayout` now drops the ` — Paul Fernandez` suffix when it is what pushes a title past 60, keeping the headline — which is what earns the click — intact.
+- [x] (2026-09-04) **Descriptions over the ~160-char snippet limit** on `/` (175) and the Wanderland set (168), both cut mid-clause. Rewritten to 147 and 133.
+- [x] (2026-09-04) **The two most important `h1`s did not carry the name.** Home was "Hi, I'm Paul." and `/about` was "Me" — both competing for "Jan Paul Fernandez" with neither containing it. Home is now "Hi, I'm Paul Fernandez." (greeting rhythm and the trailing wine flare both preserved); `/about` is "Jan Paul Fernandez", which is the site's only on-page use of the full name. **A taste call as much as an SEO one — easy to revert if Paul prefers the old voice.**
+- [x] (2026-09-04) **404 declared a canonical URL** (`/404/`). Harmless while noindexed, but an error page should not nominate itself as the canonical version of anything. New `noCanonical` prop on `BaseLayout`.
+- [x] (2026-09-04) **Essay cover images were unconditionally decorative** (`alt=""`), so each post's lead image contributed nothing to image search. New optional `coverAlt` field — added to **both** `content.config.ts` and `keystatic.config.ts` (field-identical, per CLAUDE.md) — falling back to `alt=""` when absent, so an undescribed cover stays decorative rather than repeating the `h1` to a screen reader. Written for the one post that currently has a cover.
+
+**Deferred:**
+- *`/projects` is an empty page that is indexable and in the sitemap* — 56 words including chrome, "Nothing on the shelf… yet.", in the primary nav: a textbook soft 404. Paul asked to leave it. The fix when wanted is `noindex` on the page plus `/projects` in the sitemap `filter`, reversed the moment the first project lands.
+
+- [x] (2026-09-04) **Deployed to prod:** commit `2d9ee1c` pushed to main, Vercel build live in ~50s. Verified against production, not just the build: apex still 308s to www; the bare form of all nine section URLs now 308s to the canonical trailing-slash form, while `/rss.xml`, `/llms.txt`, `/sitemap-index.xml` and the OG PNGs are untouched by the rule; an unknown path costs one normalising redirect and then returns a real 404. `robots.txt` serves our file alone. Sitemap carries 19 `<lastmod>` entries across 25 URLs (the six dateless ones are the static pages, by design). A scripted sweep of all 25 live pages: 25 JSON-LD blocks, BreadcrumbList on every page, 306 images with zero boilerplate alt, no title over 60 chars, no description over 160, exactly one `h1` each, and no internal link pointing at a non-canonical URL.
+- [ ] Paul's visual review in-browser (deployed ahead of it at Paul's request — the two `h1` changes and the 95 drafted gallery captions are the parts most worth a look)
+
+## Phase 19 — no AI-generated imagery on the site (2026-09-04)
+
+Paul's call, applied to the one post that had it. Not a build phase; logged
+here so the tracker stays truthful about what is live.
+
+- [x] (2026-09-04) **The nine illustrations on "If AI Takes All the Jobs" were AI-generated** — shipped with `b374ea3` and given away by the batch fingerprint: nine files, all exactly 1376x768 at 300 DPI. Replaced with nine Unsplash photographs, each opened and checked individually (no AI-generated flag; real EXIF camera data on seven of nine), selection biased toward pre-2023 uploads since Unsplash's recent intake carries generated work of its own. Alt text rewritten against the frame that actually shipped. Body images normalised to 3:2 so the column keeps one rhythm. Source set 7.9MB -> 2.3MB.
+- [x] (2026-09-04) **The Maslow pyramid is gone rather than replaced.** It was a diagram, and no stock photograph can be one. The slot moved down one paragraph to a station-platform shot, which sits against "our identity is now welded to our work… What do you do?" — the claim that passage is actually making. **If a Maslow pyramid is wanted back it needs a hand-drawn SVG, not a photo.**
+- [x] (2026-09-04) **New "Photographs" credit section** naming all nine photographers. Unsplash does not require attribution; the essay already cites its sources, and on this subject the "none of these are AI-generated" line earns its place. **Easy to cut if Paul disagrees.**
+- [x] (2026-09-04) **Footer copyright line removed** at Paul's request. It was the footer's only content at lg+ (the secondary links beside it are `lg:hidden`, the sidebar owns them there), so removing it alone would have left an empty ruled band with 32px of padding under every desktop page. The footer is now `lg:hidden` too and survives below lg, where it still carries the links.
+
+- [ ] Paul's visual review in-browser — the nine photographs and the dropped Maslow diagram are the parts worth a look
+
+## Phase 20 — "NOCTURNE": full visual redesign (2026-09-05)
+
+Branch `redesign/midu-dark`. Paul's brief: redesign the whole site based on
+[midu.design](https://midu.design/), free to start from scratch, with GSAP
+motion. Three calls made up front and confirmed by Paul: **dark ground with
+wine kept as the accent** (not pure monochrome), **Switzer for display + prose
+with Courier Prime retained for metadata**, and **"loose inspiration"** — take
+midu's mood and motion, design the page flow from Paul's content rather than
+from midu's studio-shaped outline (no invented pricing, testimonials, or
+client logos).
+
+What midu.design actually is, for the record: a Framer site on `#050505`,
+Switzer 500 at −4% tracking on 82px display type, `rgba(255,255,255,.05–.07)`
+glass surfaces, 16–24px radii, a floating pill nav with a live clock, one
+inverted `#E6E6E6` section, Lenis smooth scroll, and scroll-driven word-by-word
+text brightening. The inverted light section is the one signature move
+deliberately **not** taken — it belongs to a studio site with case studies to
+frame, and this site has essays.
+
+- [x] (2026-09-05) **Design system rewritten** (`src/styles/global.css`). Ground inverted: `ink-*` now means surfaces and `paper-*` means type, the reverse of Phase 9–19. Wine lifted two stops for the dark ground — `#8E1B3F` scores 2.0:1 on `#050505` and was unusable as text; the ramp is now `wine-300 #F0658A` (6.5:1) and `wine-400 #E0446F` (4.9:1) for type, with `wine-500 #B02A52` as a fill carrying white at 6.4:1. Every colour used at body size is measured in the file header. Type scale un-compressed: Phase 14 pulled display down to 56px because the light layout could not carry it; on black it runs 48 → 104 at −4% tracking.
+- [x] (2026-09-05) **Switzer self-hosted** from Fontshare (ITF, free for commercial use) — 400/500 upright + italic and 600, five faces, 92KB total in `public/fonts`. No 700: the design leans on 500/600 and a fifth weight was 20KB for nothing. Courier Prime survives for `.kicker`, `.mono`, dates, counters and code — every place the old site's mono voice was doing real work rather than just being the only option.
+- [x] (2026-09-05) **Motion runtime** (`src/scripts/motion.ts`) — GSAP + ScrollTrigger + SplitText + Lenis behind a small `data-*` vocabulary (`data-reveal`, `data-reveal-stagger`, `data-split`, `data-parallax`, `data-hero`, `data-lenis-stop`). One file owns every animation on the site; nothing else imports GSAP. Lenis drives ScrollTrigger rather than the reverse, so scrubbed timelines read the eased scroll position. Chose Lenis over GSAP's own ScrollSmoother (also free since 3.13) because ScrollSmoother needs a wrapper/content DOM structure that fights the fixed nav and the lightbox `<dialog>`.
+- [x] (2026-09-05) **Shell replaced.** The Phase 8 sidebar is gone — it worked at a 736px reading column but capped the page there forever, and a 104px display face needs the viewport. Now a floating pill nav (wordmark + live Manila clock + CTA), a full-screen mobile menu, and a statement footer. Full-bleed sections can run edge to edge underneath.
+- [x] (2026-09-05) **Every page rebuilt**: home (hero → scroll-brightened bio → writing → services → now → projects → full-bleed photo marquee), about (portrait beside the display name), thoughts index (segmented type filter + topic chips), article layout, topic archives, now, projects, gallery index + sets, work-with-me, colophon, 404, thanks, and the four MDX blocks.
+
+**Bugs found and fixed during the redesign** (all three are cascade traps that
+would have shipped silently):
+
+- [x] (2026-09-05) **Unlayered component CSS was defeating Tailwind utilities.** `global.css` declared `.btn`, `.card`, `.display` etc. outside any cascade layer, and an unlayered rule beats a layered one *regardless of specificity* — so `.btn { display: inline-flex }` silently overrode `hidden sm:inline-flex`, and the "Work with me" button would not hide on mobile. Everything from `SHELL` down is now inside `@layer components`, deliberately excluding the `prefers-reduced-motion` block, which has to beat utilities too. Recorded as a hard constraint in CLAUDE.md — this is a whole class of bug, not one button.
+- [x] (2026-09-05) **The same trap in Astro scoped styles.** Astro scopes a component `<style>` with a `[data-astro-cid-*]` attribute, giving `.menu-toggle[data-astro-cid]` specificity (0,2,0) against `.lg\:hidden`'s (0,1,0) — so the hamburger stayed visible at 1280px next to the desktop nav. Those elements now hide with a media query in the scoped block rather than a utility class.
+- [x] (2026-09-05) **`.prose p { margin: 0 }` outranked `.prose > * + *`** (0,1,1 vs 0,1,0), so every paragraph in every article collapsed against the next with zero gap. Rewritten as flow spacing: `.prose > *` resets, `.prose > * + *` sets the gap, and the more specific heading/list rules override it on purpose.
+- [x] (2026-09-05) **The mobile menu could open invisible-but-focusable.** The fade used `requestAnimationFrame` to get a start frame after un-hiding, but rAF is throttled to nothing in a backgrounded tab — leaving the panel at `opacity: 0` with `hidden` removed and every link still in the tab order. Now forces a synchronous reflow instead.
+- [x] (2026-09-05) **GSAP cannot interpolate `var()` colours.** The word-brightening scrub was tweening `color: 'var(--color-paper-600)'` → `var(--color-paper-50)`; GSAP interpolates channel by channel and cannot read through a custom property. Now literal hex, with a comment tying the two values back to the tokens they mirror.
+
+**Verified, not assumed:**
+
+- `npm run build`, `npx astro check` (0 errors), and `npm test` (38 tests) all pass.
+- **JS-off contract holds.** Removing the `.js` class the head script sets leaves every `[data-reveal]` and `[data-split]` at `opacity: 1`, `visibility: visible`, no transform — confirmed in-browser. The hidden states are CSS-owned and `.js`-gated precisely so a failed or blocked bundle cannot make the site unreadable.
+- **A scripted audit of all 27 built pages**: exactly one `h1` each, 25 JSON-LD blocks, 331 images with **zero** missing alt (309 described, 22 deliberately decorative), no title over 60 chars, no description over 160, canonical on every indexable page, and no internal link pointing at a non-canonical URL. The Phase 18 SEO work survived the rebuild intact.
+- **React still never reaches the public site** — grepped the build: no public page references the Keystatic or React chunks.
+- Lightbox verified live: 95 visible triggers out of 190 in the DOM (the Phase 18 double-binding fix still holds), counter reads `4 / 95`, and `data-lenis-stop` correctly parks smooth scroll while the dialog is open.
+- Thoughts filters verified functionally: 4 → 0 (notes) → 4 (essays) → 1 (essays + #philosophy), with the counter tracking.
+- Mobile (375px) verified: nav collapses to wordmark + hamburger, full-screen menu opens opaque with the five links and the CTA.
+
+**Worth Paul's attention:**
+
+- **The motion bundle is 54KB gzip on every page** (GSAP core + ScrollTrigger + SplitText + Lenis). The site previously shipped almost nothing. This is the real price of the brief and it is not reducible by much — GSAP core + ScrollTrigger alone is ~45KB. Dropping Lenis for native scroll saves ~7KB; hand-rolling the word split saves SplitText. Say the word if the trade isn't worth it.
+- **Home-page hero copy is new and unreviewed.** "I help teams work out what to build — then make sure the people building it and the people asking for it are describing the same thing." replaced nothing — the old hero had only the Keystatic bio under it. The `heroGreeting`/`heroIntro` singletons are untouched and still drive the `h1` and the scroll-brightened statement.
+- **The footer statement is new copy too**: "Figuring out what to build, with the people who have to build it."
+- **The colophon was rewritten because the old one had become false** — it claimed one typeface and "two small vanilla enhancement scripts" of client JS. It now names Switzer + Courier Prime and the GSAP/Lenis layer honestly.
+- Nav labels went from lowercase (`me`, `work`, `thoughts`) to sentence case (`About`, `Writing`, `Projects`). URLs are unchanged. Easy to revert if the lowercase voice mattered.
+
+**Follow-up pass (2026-09-05), on Paul's note — "remove the Manila time and
+other unnecessary text, smoothen and fasten the animation":**
+
+- [x] (2026-09-05) **Clock removed** from the nav and the footer; the footer's "Local time" column went with it (four columns -> three). The pulsing status dot beside the wordmark went too — it read as a "live" signal paired with the clock and announced nothing without it. The dot survives as a mark, the pulse does not.
+- [x] (2026-09-05) **"Scroll to explore" marquee cut.** It labelled a gesture the page already invites and was the only thing above the fold that said nothing.
+- [x] (2026-09-05) **All nine page-head kickers cut** — each restated the h1 directly beneath it ("Writing" over "Thoughts", "Photography" over "Gallery", "Dead end" over "404"). Section kickers further down each page are untouched: those label content that is otherwise unlabelled, which is what the class is for. **This one was my judgement call on "other unnecessary text" — easy to restore individually.**
+- [x] (2026-09-05) **Motion retuned.** Reveals 0.9s -> 0.55s on power2.out instead of power3.out (power3 decelerates hard and long, so it reads sluggish even at a short duration); travel 2rem -> 1.25rem; stagger 0.08 -> 0.045; hero 1.1s -> 0.7s; line splits 1s -> 0.7s; triggers at 92% rather than 85–88%. The word scrub now finishes at 70% of the viewport instead of 55%, so a sentence is fully lit while you are reading it rather than as it leaves.
+- [x] (2026-09-05) **Lenis switched from `duration` + easing to `lerp: 0.14`.** A timed tween restarts on every wheel event, so a burst of scrolling stacked eases and felt rubbery; lerp chases the target continuously — smoother under fast scrolling and tighter overall.
+- [x] (2026-09-05) **Hover transitions retuned per property** rather than by one blanket number: 0.22s for colour/border/background, 0.3s for transforms, 0.4s for the image grayscale-to-colour filters, which cover a far larger perceptual change and look abrupt any faster. (First attempt at this was a bug — a dict-based find/replace chained its own substitutions, 0.5s -> 0.3s -> 0.2s -> 0.15s, collapsing every duration to near-nothing. Redone as a single pass that picks the duration from the property being transitioned.)
+- Re-audited after the cuts: 27 pages, 25 JSON-LD blocks, one h1 each, 331 images with zero missing alt, no over-length titles or descriptions.
+
+- [x] (2026-09-05) Paul's visual review in-browser — verdict: "too SaaS, too AI". See Phase 21.
+- [x] (2026-09-05) Decide: keep the 54KB motion bundle, or trim Lenis/SplitText — trimmed in Phase 21.
+- [x] (2026-09-05) Merge to main + deploy
+
+## Phase 21 — de-SaaS pass (Paul's direct request, 2026-09-05)
+
+Paul liked NOCTURNE but read it as "too SaaS, too AI". The diagnosis was that
+the dark ground and the display type were never the problem — the problem was
+roughly ten pieces of **product-marketing furniture** that arrived with the
+aesthetic, plus the fact that the home page is shaped like a **funnel**
+(hero → proof → services → gallery → CTA) rather than an **index**.
+
+Reference direction, from Mobbin: OpenAI's *Index* (year in the margin, plain
+rows, hairlines, no cards), In Common With's press list (a table, not a grid),
+MOUTHWASH Studio (dark chrome as small corner labels, not a floating glass
+pill). Deliberately **not** taken: Linear's "Designed in California" — the
+word-by-word scroll brightening was a near-copy of it, and Linear is the origin
+of the dark-SaaS look, so the borrowed move imported the whole association.
+
+Paul chose, from three options each: **strip the furniture** (keep the ground,
+the face and the scale), **demote wine to links only**, **cut the scrub and
+keep quiet reveals**.
+
+- [x] (2026-09-05) **Chrome.** The floating, blurred, glass pill nav that solidified on scroll and hid itself on the way down is now a masthead: static, in normal flow, a rule underneath, name left and sections right. "Work with me" stopped being a filled CTA pinned top-right and became the sixth nav item. The hamburger became the word "Menu". `initNav()` deleted — there is no scroll state left to track.
+- [x] (2026-09-05) **Buttons.** `--radius-pill` deleted outright, everything to 2px. `.btn-primary` went from a solid white pill to an outline that fills on hover; `.btn-wine` deleted (nothing referenced it). The hero's white-pill + ghost-pill pair became two `.link-arrow` links — a personal site has places to go, not a primary and secondary conversion action.
+- [x] (2026-09-05) **Surfaces.** `.card` went from a white-alpha fill with a 16px radius and a 1px border to a single hairline above the block; `.panel` kept its border and lost its fill. New house rule, recorded in CLAUDE.md: **a hairline is the only surface.**
+- [x] (2026-09-05) **Accent.** All 15 `.flare` spans stripped and the class deleted. Also gone: the kicker's glowing wine dot, the timeline's wine milestone and haloed live node, the wine "live" badge, the wine `::marker` and blockquote rule, the wine em-dash on /colophon, the wine step counters and section labels, the wine pull-quote bar, and the wine active-filter chip (now inverted paper-on-ink). Wine survives on inline links, the focus ring, and `KeyTakeaway` — which carries its own literal rgba now that `--wine-glow` is deleted.
+- [x] (2026-09-05) **Glow.** `.hero__glow` and the footer's wine radial gradient both deleted. An ambient coloured bloom behind a section is the most legible "AI-generated page" tell there is.
+- [x] (2026-09-05) **Services.** The 3-up numbered glass-card grid became the same ruled list the writing and projects indexes use. The framing line above it ("Three ways in, depending on how deep you need me") was cut rather than rewritten. On /work-with-me the three steps stayed in three columns but became a ruled spread rather than a card grid.
+- [x] (2026-09-05) **Gallery teaser.** The full-bleed infinite marquee — the logo-wall pattern, pointed at concert photographs — became a static six-frame contact sheet inside the page column, square-cornered and in colour at rest. The old strip desaturated every frame and gave the colour back only on hover.
+- [x] (2026-09-05) **Motion.** The word-by-word scroll brightening and the line-mask splits are gone, and with them SplitText and the `fonts.ready` race that gated real copy. Lenis went too — smooth scroll is the strongest "template" signal left, and it overrides a preference the reader set in their OS. `data-parallax` was dead code and is deleted. Bundle: **54KB → 45.7KB gzip** (40.9KB brotli). GSAP core + ScrollTrigger is the floor.
+- [x] (2026-09-05) **Hero shape.** Dropped `min-height: 88svh`. A hero sized to hold the fold is a landing page; without it the page opens as a document.
+- [x] (2026-09-05) **Copy.** Hero intro rewritten off the consultant register. Colophon corrected — it claimed "GSAP + Lenis … split-text statements, and smooth scrolling", all of which is now false.
+- [x] (2026-09-05) **Verified.** `npm run build`, `npx astro check` (0 errors), `npm test` (38 tests) all pass. Re-audited all 27 built pages: exactly one `h1` each, 25 JSON-LD blocks, 313 images with **zero** missing alt (303 described, 10 deliberately empty), no title over 60 chars, no description over 160, and no public page referencing the React/Keystatic chunks. JS-off contract re-confirmed in-browser: with `.js` removed, 0 of 23 `[data-reveal]` elements stay hidden. Mobile menu verified at 375px.
+
+**Worth Paul's attention:**
+
+- **The hero copy is new again.** "I help teams figure out what to build. Most of that work turns out to be getting everyone to agree on what the words mean." The Phase 20 line was flagged as reading like a landing page — it did, because it was built like one. This is a first pass in a plainer register and it is still my words, not Paul's.
+- **Removing Lenis was my call**, not one of the three options Paul picked; the option text said "possibly Lenis". It is a one-line revert plus reinstating `data-lenis-stop` on the lightbox, but the modal `<dialog>` blocks background scroll natively so nothing needs it back.
+- **`.claude/launch.json` gained `"autoPort": true`** so a second session can start a dev server while port 4321 is taken. Unrelated to the design; revert freely.
+- **Section spacing was left alone.** With the cards and glass gone, the Phase 20 vertical rhythm now reads as more empty space than it used to. That may want tightening once Paul has seen it — it is a one-token change (`.section` / `.section-tight`).
+
+- [x] (2026-09-05) Paul's visual review of the de-SaaS pass — approved via chat; merged to main and deployed.
+
+## Phase 22 — /workshops offer page + homepage highlight (Paul's direct request, 2026-09-06)
+
+Built from `business/workshops-gtm.md` (internal, gitignored). §12 of that doc had
+already decided the shape, so this phase mostly executed it rather than designing
+it: the `rows` pattern instead of a card grid, **Open sessions** and **For your
+team** in separate blocks so a ₱1,500 seat cannot anchor a ₱140k negotiation, the
+talk leading the corporate block, and one CTA — "Start a conversation", never
+"Book now".
+
+Mobbin was used for direction. Taken: Dropbox's ruled course lists (a named group
+heading over hairline rows with the action on the right — the house `rows` pattern
+almost exactly), Stripe's newsroom date-in-the-margin, YLLW's "aimed specifically
+at" qualification list. Deliberately **not** taken: Mailchimp's illustrated
+three-up register grid, MasterClass's filled cards, and the Ada / Sana / UGLYCASH
+closers, which are all pill-button conversion blocks — the Phase 21 furniture,
+back under a different name.
+
+- [x] (2026-09-06) **`src/pages/workshops.astro`** — ten sections: head, availability,
+      who books these, open sessions, for your team, how a booking runs, what I will
+      not do, your data in the room, who is running it, why this keeps coming up,
+      questions, enquiry form. Every editable fact (prices, caps, formats, the
+      availability window) sits in four typed consts at the top of the file.
+- [x] (2026-09-06) **Not a Keystatic collection.** A new collection means a new schema
+      kept field-identical across `keystatic.config.ts` and `src/content.config.ts`,
+      which is the hard constraint most expensive to get wrong, for copy that has to
+      be reviewed line by line anyway. One editable file is the smaller thing that
+      works. Promote it if the dates start moving weekly.
+- [x] (2026-09-06) **Lead qualification in the form.** Name, email and message are the
+      only required fields; organisation, session interest, headcount and timeline are
+      optional and exist because §10 stage 2 qualifies on exactly those. Nine "Reserve
+      a seat" / "Enquire" links carry a `data-enquire` value that preselects the
+      matching `<option>` — eight lines of vanilla JS, rung 6 of the ladder, and with
+      JS off the anchor still jumps to the form and the reader picks from the same
+      `<select>`. Verified: all 9 trigger values resolve to real options.
+- [x] (2026-09-06) **Claims discipline.** Three statistics on the page, each with §13's
+      exact wording, an attributed source and a linked URL. Five more were held back —
+      see Blocked-on-Paul. The NPC line uses §13's *corrected* wording ("remain
+      accountable under the Data Privacy Act") rather than the original draft's "strictly
+      liable", and carries "not legal advice" in the same paragraph. No press-freedom
+      or spokesperson framing anywhere, per §1's caution.
+- [x] (2026-09-06) **"What I will not do" is a section, not a footnote.** Five scope
+      boundaries at the same type scale as the offer: I do not author your policy,
+      prototypes are demos, no ROI guarantee, estimates are ranges, and sometimes the
+      answer is you do not need this. §3 and §10 both argue this converts the burned
+      buyer; it also stops the offer from over-promising in writing.
+- [x] (2026-09-06) **Homepage highlight** — a `section-tight` between the hero and
+      "Who I am", shaped like every other section on that page (kicker + link-arrow,
+      then a `.statement-sm` and a supporting line). Explicitly *not* an announcement
+      bar: a strip with a fill and a dismiss button is growth furniture and would have
+      undone Phase 21 in the first 100 pixels of the site.
+- [x] (2026-09-06) **Wiring** — `/workshops/` added to the masthead nav (7th item;
+      verified single-line at 1024px with 354px of slack), to `llms.txt`, and to the
+      OG card route. Sitemap picks it up automatically. `Service` + `FAQPage` +
+      `BreadcrumbList` JSON-LD.
+- [x] (2026-09-06) **CSS extraction.** `.faq*`, `.field*` and `.statement-sm` were
+      pasted into scoped `<style>` blocks on `/work-with-me` and the home page. This
+      page is their second and third use, so they moved into `global.css` under
+      `@layer components` and came out of both pages — the house rule is extract on the
+      second use. `select.field` was added there (explicit `appearance: auto` and
+      `color-scheme: dark`, because a select with no affordance on a dark ground is
+      unusable, and drawing a chevron in CSS is a component kit's job).
+- [x] (2026-09-06) **Verified.** `npm run build`, `npx astro check` (0 errors) and
+      `npm test` (38 tests) pass. 28 pages built, exactly one `h1` each, no title over
+      60 chars, no description over 160, no page missing alt text that did not already
+      lack it. `/workshops/` renders with zero horizontal overflow at 1440, 1024 and
+      375px. Motion vocabulary is `data-reveal` / `data-reveal-delay` /
+      `data-reveal-stagger` / `data-hero` only, no new CSS start state, so the JS-off
+      contract holds by construction — confirmed by rendering the whole page under
+      forced `prefers-reduced-motion`, where every section is fully legible.
+
+**Worth Paul's attention:**
+
+- **Read the five launch blockers above before this page is announced anywhere.**
+  The page itself is safe to have live — §14 explicitly rejected "do not publish the
+  offer ladder yet" — but the dates are a placeholder and the tax and employer items
+  are real.
+- **The copy is mine, not yours.** Every line on that page is my compression of the
+  GTM doc into the site's register. The buyer quotes under "Who books these" are §2's
+  jobs-to-be-done almost verbatim because they were already the best writing in the
+  document; everything else is a first pass and should be read as one.
+- **The `.section` rhythm shows more on this page than anywhere else.** It is the
+  longest page on the site, and the Phase 21 note about vertical spacing reading as
+  emptiness applies double here. One-token change if you want it tighter.
+- **Open decision left open.** §16 asks whether "Talks & Workshops" stays one of three
+  services or folds into this page. I changed nothing — the service still appears on
+  the home page and `/work-with-me`, and now there is a second, deeper page saying
+  more. That duplication is intentional until you decide.
+
+## Phase 23 — Language review audit implementation (2026-09-06)
+
+Source: `language-review.md` (comprehensive copy audit against researched rubrics, removing robotic tells and B2B vendor jargon, aligning on Paul's authentic voice).
+
+- [x] (2026-09-06) **First-person voice everywhere a human reads (F1):** `home.json` `heroIntro` rewritten to first person with authentic career milestones and rhythmic punch; meta descriptions on `/`, `/about/`, `/now/`, `/projects/`, `/thanks/`, and `/work-with-me/` unified into first person.
+- [x] (2026-09-06) **Canonical bio & machine surfaces (F6, §8.9, §8.10):** Single canonical bio written for `seo.json`, home meta, `llms.txt.ts`, and `rss.xml.ts`. Corporate buzzwords ("engineering bandwidth", "practical capability") removed. Corrected `/gallery/` description in `llms.txt.ts` to concert photography.
+- [x] (2026-09-06) **Microcopy humanization (F7, §8.3, §8.4):** `/thanks` rewritten with a genuine 2-day reply commitment and permission to nudge; `/404` rewritten with a personal admission ("Either I moved it and forgot to leave a note...").
+- [x] (2026-09-06) **Authentic gallery captions (F5, §8.8):** Replaced four templated PR-style set descriptions in `src/content/gallery/*.json` with tactile photographer observations (gear, lighting, crowd vantage).
+- [x] (2026-09-06) **Availability single source of truth (F10, §8.11):** Extracted `availability` into `src/lib/workshops.ts`, imported into both `index.astro` and `workshops.astro`. Dropped artificial scarcity ("strictly limited to") in favor of honest capacity phrasing.
+- [x] (2026-09-06) **Offer pages & services voice pass (F2, F3, F4, §8.5–8.7):** Converted 10 instances of negative parallelism ("X, not Y") to positive statements, keeping only the high-conviction boundary in the enquiry form. Rewrote `/workshops/` lead and bio ("I've been on the other side of this"), process steps in sentence case, and `product-consultation.json` / `talks-workshops.json` descriptions to focus on concrete outcomes.
+- [x] (2026-09-06) **Craft polish & consistency (F9):** Straightened all curly apostrophes in `workshops.astro`; standardized on en-US (`Organization`, `Inquire`, `optimized`); updated `/workshops/` headings to sentence case and "Frequently Asked Questions" → "Questions"; standardized the writing section chrome name to `Writing`; dropped `★` glyph from `KeyTakeaway.astro`.
+- [x] (2026-09-06) **Verified:** `npm run build`, `npx astro check` (0 errors, 0 warnings), `npm test` (38 tests) all pass. 29 built pages audited: exactly one `h1` each, 0 meta descriptions over 160 characters.
+
+## Phase 24 — "Demystifying AI": /workshops restructured around two doors (Paul's direct request, 2026-09-06)
+
+Paul's brief: lead with *Demystifying AI*, speak to three audiences (personal
+upskiller, leadership implementing AI, companies needing fluency training), fork
+the offer into **Personal** (1-on-1 or group; AI fluency & media literacy, vibe
+coding + web basics) and **Enterprise** (team fluency, leadership + policy
+exercise, "have something in mind? talk to me"), add a "who is this for" and a
+simplified learning-outcome section — and fix the fact that the page had no
+visual. Talks and keynotes stay on this page (Paul's call). No session photos
+exist yet; Paul has not launched.
+
+- [x] (2026-09-06) **Repriced against fresh PH market research**, not against the
+      previous page. Anchors verified 2026-09-06: Nexacu PH *AI for Business
+      Leaders and Managers* ₱32,600/person (1 day, max 8, live); LOKAL public AI
+      workshop from ₱3,500/seat; AIM *AI for Business Leaders* ₱80,000–₱200,000+
+      per person (3–5 days); PH norms ₱2,500–₱15,000 per participant per day
+      (public) and ₱40,000–₱280,000 per in-house session; PH executive coaching
+      ₱5,000–₱250,000 per programme. Changes and why:
+      - **Fluency open seat ₱1,500 → ₱2,500.** ₱1,500 sat *below* the PH public
+        floor and 57% under LOKAL. At 2.5 hrs, ₱2,500 pro-rates to ~₱7,500/day —
+        mid-band, which is where an 11-year practitioner belongs. No early bird
+        is advertised, because there is no end date to attach to one (§4).
+      - **New: 1-on-1 and private-group prices** (fluency ₱7,500 / ₱30,000 flat;
+        vibe coding ₱15,000 / ₱60,000 flat). No PH market price exists for
+        1-on-1 AI coaching, so these are derived: a group flat rate never prices
+        below the equivalent open seat per head (enforced by test), and the
+        1-on-1 sits above a seat and far below Nexacu's per-head day rate.
+      - **Leadership half-day ₱120,000 → ₱150,000.** The brief merges the
+        policy exercise into it, absorbing scope that used to be the separate
+        ₱250,000 two-session engagement. ₱150k for up to 12 is ₱12,500/head
+        against Nexacu's ₱32,600. The full two-session standard stays at
+        ₱250,000 as the step-up.
+      - **Full day ₱140,000 → ₱160,000.** §4 flagged that a ₱50k step over a
+        half day does not track the extra prep. ₱70k does, and it stays inside
+        the PH in-house band.
+      - Unchanged: half-day team ₱90,000, keynote ₱45,000, disinformation
+        keynote ₱75,000, owners' table ₱6,500, vibe-coding seat ₱7,500.
+      - **Every price is still a hypothesis** until paid delivery tests it
+        against real hours (§4). Log actual hours on the first three.
+- [x] (2026-09-06) **`src/lib/workshops.ts` restructured** from
+      `openSessions`/`teamSessions` into one `offerings` array carrying a
+      `track`, a format ladder, and outcomes. TDD: 41 tests written first,
+      including the market-positioning assertions above so a future price edit
+      that falls out of the PH band fails the suite rather than shipping.
+- [x] (2026-09-06) **The catalogue became a fork.** Eight SKUs across two
+      process ladders and nine FAQs collapsed to two columns split by a single
+      vertical hairline. The owners' table moved under Enterprise as the
+      "explore first" open seat, which is where a leader browsing actually
+      wants it. One "How it works" ladder replaced two.
+- [x] (2026-09-06) **The visual problem, solved without a fill.** Phase 21 bans
+      glass, radius, shadow and glow, and the Phase 19 note is explicit that a
+      diagram needs a hand-drawn SVG rather than a photograph. So the page's
+      three visuals are structural: the two-word `h1` at up to 8.5rem (the only
+      element allowed past the site-wide 6.5rem `.display` cap, because here the
+      type *is* the illustration); the vertical hairline splitting Personal from
+      Enterprise; and **"The two halves"** — a for-you/at-you diagram built from
+      one hairline and two `<ul>`s rather than an SVG, so it stays legible at
+      360px, reads correctly to a screen reader, and needs no asset.
+- [x] (2026-09-06) **The three sourced stats came back**, condensed. They were
+      removed in `1f34ff6` for length, not for accuracy; each still carries a
+      URL and a stated population per §13, and they now render as three figures
+      at `--text-h2` in a hairline grid rather than the old verbose block.
+      **Easy to cut again if Paul disagrees with the reversal.**
+- [x] (2026-09-06) **"What I will not do" is back as the right-hand half of
+      "Who this is for"** — no certificate, I do not build it for you, no
+      guaranteed ROI, no tools tour. Per-offering `caveat` lines carry the rest:
+      a prototype is a demo, a keynote produces no artifact, and I do not author
+      your policy.
+- [x] (2026-09-06) **Form regression caught and fixed.** Rebuilding the select
+      from offering ids would have emailed Paul `ship-the-idea` instead of a
+      session name, and both tracks carry an offering titled "AI fluency &
+      media literacy". `enquiryValue()` renders "Personal — …" / "Enterprise — …",
+      unique and readable, and is asserted unique by test.
+- [x] (2026-09-06) **Wiring:** homepage highlight rewritten to the two tracks
+      and the new anchors (`#personal` / `#enterprise` replace `#open-sessions` /
+      `#team-sessions`), plus `llms.txt`, the OG card copy, and the
+      `talks-workshops` service description.
+
+## Phase 25 — Overwhelm pass: scope trim + honesty + section spine (Paul's request, 2026-09-06)
+
+Paul still felt the page was overwhelming and ran an adversary review against it.
+Chosen depth: **moderate** cut (both doors kept, not the review's single-offer
+version) plus the honesty items his own tracker already flagged.
+
+- [x] (2026-09-06) **Dropped the "Vibe coding & web basics" offering** (`ship-the-idea`).
+      The personal track now leads with the single ₱2,500 fluency offer. Removed
+      from `offerings[]`, SEO `service()` copy, and the two personal-track tests.
+- [x] (2026-09-06) **Folded the standalone "What you leave with" section into each
+      offer card** (`.offer__take`). Each SKU is now self-contained — price ladder
+      and outcomes in one block — and the page loses a whole repeated section.
+- [x] (2026-09-06) **Honesty pass, grounded in the blocked list below.** The FAQ no
+      longer claims official receipts "can be issued" (they can't yet — BIR is still
+      blocked); it states plainly that no BIR OR can be issued and to raise finance
+      needs up front. `availability.note` softened from "one or two a month" (an
+      invented cadence) to "a limited number." Locked both with tests.
+- [x] (2026-09-06) **FAQ trimmed 10 → 7** — merged refunds into the payment answer,
+      dropped the IT-blocks and competitor-in-the-Zoom items.
+- [x] (2026-09-06) **Visual breakers, in-system (hairline only).** A mono numeral
+      spine (01–08) on every section kicker turns a uniform stack into numbered
+      movements; one full-bleed statement breaker ("The test isn't the session…")
+      sits between the price ladder and the fit boundary. No fills, no accent.
+- [x] (2026-09-06) **Verified:** `npx astro check` (0 errors), `npm run build`, and
+      `npm test` (74 tests) all pass. Content and computed CSS confirmed in-browser;
+      the pixel look still wants Paul's eye (below).
+
+## Phase 23 — Now timeline beside homepage hero (Paul's direct request, 2026-09-07)
+
+- [x] (2026-09-07) `src/pages/index.astro`: Hero restructured into a 2-column responsive layout (`lg:grid-cols-[1.15fr_0.85fr]`). Latest 3 items from the `now` collection placed beside the hero bio and CTAs; only the first (latest) entry displays a clean sentence-aligned snippet of its body. Redundant standalone Now section at the bottom of the page removed.
+- [x] (2026-09-07) `src/styles/global.css`: Added `.rail-compact` modifier in `@layer components` to preserve the clean stacked layout and avoid gutter crowding within multi-column containers.
+- [x] (2026-09-07) `src/scripts/motion.ts`: Guarded hero descendants in `initReveals()` to prevent ScrollTrigger conflict with `initHero()` load animation.
+- [x] (2026-09-07) **Verified:** `npx astro check` (0 errors), `npm test` (74 tests passed), `npm run build` clean static generation.
+
+## Phase 26 — Homepage section visual breaks (Paul's direct request, 2026-09-08)
+
+- [x] (2026-09-08) `src/pages/index.astro`: Added full-bleed 1px hairline dividers (`border-t border-[var(--line)]`) to all major sections below the hero (Workshops, Who I am, Writing, What I do, Projects, Gallery). Unified section vertical rhythm on `.section-tight` (`clamp(3rem, 5rem)`) for consistent, balanced spacing above and below every hairline rule.
+- [x] (2026-09-08) **Verified:** `npx astro check` (0 errors), `npm test` (74 tests passed), `npm run build` clean static generation.
+
+### Blocked / needs Paul
+
+- **The 1-on-1 and private-group prices are the least evidenced numbers on the
+  page.** There is no PH comparable for either; they were derived from the
+  group economics. Expect to move them after the first three sales.
+- The Phase 22 launch blockers all still stand and now cover larger numbers:
+  BIR registration and official receipts, accountant sign-off on tax language,
+  written MMDC employer clearance, and the fact that the availability window
+  ("September – October 2026") is still a placeholder from the original request
+  rather than a calendar.
+- **Jerry Ilao (jerryilao.com) is now a direct positional competitor** — his
+  corporate AI training page promises "your company's AI policy written…
+  and a 30-day plan they built themselves", which is this offer almost verbatim.
+  He does not publish prices. Publishing a floor is the differentiator; the FAQ
+  now explains why the corporate number is a "from".
+
+- [ ] Paul's visual review in-browser — the hero scale, the fork hairline, and
+      "The two halves" are the parts worth a look
+
+
+## Phase 27 — Workshops revamp: personal reframe + course pages (Paul's direct request, 2026-09-08)
+
+Plan lives in [tasks/workshops-revamp/](tasks/workshops-revamp/00-overview.md) — one
+overview + five independent page briefs, each with an ASCII layout and its own DoD.
+Two moves: (1) reframe the personal side from per-seat cohort to 1-on-1 / small group;
+(2) split the landing (pitch + two-audience router) from the catalog (four
+`/workshops/[course]` detail pages driven by a new `courses` collection).
+
+- [x] (2026-09-08) [Overview — architecture, `courses` collection, routing, research](tasks/workshops-revamp/00-overview.md)
+- [x] (2026-09-08) [`courses` collection + `[slug].astro` route + `course()` JSON-LD](tasks/workshops-revamp/00-overview.md) (infra, per overview build-order §1)
+- [x] (2026-09-08) [Revised `/workshops` landing (router replaces the fork)](tasks/workshops-revamp/01-page-workshops.md)
+- [x] (2026-09-08) [Course — AI Fluency & Digital Media Literacy](tasks/workshops-revamp/02-course-ai-fluency.md)
+- [x] (2026-09-08) [Course — AI Business Application Consultation](tasks/workshops-revamp/03-course-ai-for-business.md)
+- [x] (2026-09-08) [Course — Vibe Coding with Basic Web Development](tasks/workshops-revamp/04-course-vibe-coding.md)
+- [x] (2026-09-08) [Course — Leadership AI Training + Policy Making Exercise](tasks/workshops-revamp/05-course-leadership-ai.md)
+- [x] (2026-09-08) Migrate `offerings[]` out of `src/lib/workshops.ts`; trim cohort/seat copy; update `workshops.test.ts`
+
+**How it shipped:**
+
+- [x] (2026-09-08) **New `courses` collection**, field-identical in `keystatic.config.ts`
+      and `src/content.config.ts` (slug, title, tagline, audiences, duration, formatLabel,
+      whoFor, approach, approachNote, outcomes[], outline[], formats[], priceSignal,
+      caveat?, order). Four seeded entries in `src/content/courses/*.json`.
+- [x] (2026-09-08) **One shared route** `src/pages/workshops/[slug].astro` renders every
+      course via `getStaticPaths()` — kicker meta line, hairline meta strip (Duration /
+      Format / Who / Approach), outcomes rows, numbered outline + approach note, optional
+      caveat, from-price ladder, and CTAs to `/workshops/#enquire` + back to the landing.
+      Emits `Course` + `BreadcrumbList` JSON-LD (new `course()` builder in `schema.ts`,
+      TDD'd). Each course gets its own OG card (`workshops-<slug>.png`).
+- [x] (2026-09-08) **Landing reframed + split.** `src/pages/workshops.astro` lost the
+      price-ladder fork; in its place a two-audience **router** (For you & business owners /
+      For your organization), plain hairline door rows, the only prices being the two
+      section signals (from ₱2,500 / ask for our minimum). Per-seat cohort framing removed
+      everywhere — hero sub-CTA, availability, and two FAQs reframed to 1-on-1 / small group.
+      Form "interested in" options now generate from the `courses` collection; course-page
+      CTAs preselect it via a `?enquire=` param (rung 6, JS-off still jumps to the form).
+- [x] (2026-09-08) **`src/lib/workshops.ts` reshaped** — `offerings[]`, tracks, `trackIntro`,
+      `enquiryValue`, `findOffering`, `audienceRoutes` removed; `landingSections` added; kept
+      `fit`, `process`, `marketStats`, `faqItems`, reframed `availability`. `workshops.test.ts`
+      rewritten to the new shape.
+- [x] (2026-09-08) **Downstream wiring:** homepage highlight anchors → `#for-you`/`#for-orgs`
+      and cohort/₱45,000 language dropped; `llms.txt` workshop line rewritten; `og/[...route].ts`
+      seeds the four course cards.
+- [x] (2026-09-08) **Verified:** `npx astro check` (0 errors), `npm test` (59 tests), and
+      `npm run build` all pass. In-browser (dev server): four course routes each render exactly
+      one `h1` with valid Course + BreadcrumbList JSON-LD; landing router is two columns at
+      1440px / one column at 375px with zero horizontal overflow; meta strip 4→2 cols on mobile;
+      muted text ≥ 6.8:1 (AA); no "seat"/"cohort"/"25 seats" anywhere on the landing; the
+      `?enquire=` preselect confirmed live. Prices remain the placeholders flagged below.
+- [ ] Paul's visual review in-browser — the router, the shared course-page template, and the
+      vibe-coding placeholder price are the parts worth a look
+
+### Blocked / needs Paul (Phase 27)
+
+- **All course from-prices are placeholders.** Personal fluency/business carry the
+  ₱2,500 signal; vibe coding (4 hrs) and any real 1-on-1 numbers need Paul's call; org
+  leadership is "ask for our minimum" (prior floor ₱150k). These were already the least-
+  evidenced numbers on the site (Phase 22 note).
+
+## Phase 28 — Home + workshops copy pass (Paul's direct request, 2026-09-08)
+
+- [x] (2026-09-08) **Homepage AI section reworded.** Hero CTA → "See the AI Workshop";
+      kicker "Featured workshop · Demystifying AI" → "Featured workshop"; statement →
+      "Getting lost in all the AI noise?"; plain-language subtext; "Booking status" →
+      "Open schedule"; cards retitled **Personal** / **Enterprise / Org**; org signal
+      "Ask for our minimum" → "Message to quote"; topic bullets reworded; org card copy
+      → the misuse-protection question; both card footer CTAs removed; bottom CTA →
+      "Explore the AI workshop".
+- [x] (2026-09-08) **"Who I am" bio replaced** in `src/content/pages/home.json` — Manila,
+      fintech-for-a-bank → Rappler (digital transformation + tech ops, two elections) →
+      digital college; "money" → "economics". Two inline markdown links (Rappler bio,
+      mmdc.mcl.edu.ph) render via a small `withInlineLinks` helper in `index.astro`
+      (Keystatic field stays plain text; no markdown pipeline added).
+- [x] (2026-09-08) **Section headers.** "Writing" → "Thoughts" + a tightened one-line
+      intro; "What I do" gains the line "Interested in working together?"; gallery
+      "Gallery" → "I also shoot" with the "right side of my brain" subtext.
+- [x] (2026-09-08) **/workshops carried the AI-section changes** — page title + hero
+      eyebrow → "AI Workshop", h1 → "Getting lost in all the AI noise?", "Booking now" →
+      "Open schedule", router org signal + course `price`/`priceSignal` → "Message to
+      quote", two personal door labels reworded. `availability.note` trimmed of the
+      "fixed public schedule is not up yet" line (shared with the homepage card).
+      "Demystifying AI" also dropped from `og/[...route].ts`, `llms.txt.ts`, and the
+      `talks-workshops` service blurb.
+- [x] (2026-09-08) **Verified:** `npx astro check` (0 errors), `npm test` (59 pass —
+      one `workshops.test.ts` assertion moved from `/minimum/` to `/quote/`), and
+      `npm run build` all pass. Both pages checked in the dev server: copy renders as
+      intended and the two bio links resolve with clean surrounding whitespace.
+- [x] (2026-09-08) **Bio statement resized + brighten restored** (Paul's follow-up).
+      `.statement` in `index.astro` now `clamp(1.3rem, 1.05rem + 1.1vw, 1.9rem)` (was
+      →2.5rem) at `max-width: 46ch` (was 30ch) — smaller, wider, fewer wrap points.
+      New `data-brighten` motion primitive: resting state `.js [data-brighten] {
+      opacity: 0.5 }` in `global.css` (a legible grey, never invisible — unlike
+      `[data-reveal]`), scrubbed to full opacity by a ScrollTrigger in `motion.ts`
+      (`start: top 80%`, `end: top 35%`, `scrub: true`). `prefers-reduced-motion`
+      forces opacity 1 in both CSS (`!important`) and the JS bail branch. Applied once,
+      on the homepage bio. This deliberately walks back part of the Phase 21 cut — the
+      plainer whole-block form, from grey not near-black, so a reader who stops mid-
+      scroll still gets readable copy.
+- [x] (2026-09-08) **Wine accent darkened site-wide.** `wine-300` (#F0658A, pink) →
+      `wine-400` (#E0446F) for every reader-visible accent: `.link` + `.prose a`
+      (colour + underline), `.link-arrow:hover`, `KeyTakeaway`, `Callout` warning
+      label, `Lightbox` link hover, TOC hover, and the `hover:text-wine-*` on Now /
+      PostListItem rows. `wine-300` is now the `:focus-visible` ring only (keeps the
+      higher 6.5:1 contrast where it matters). `@theme` comments + CLAUDE.md updated.
+- [x] (2026-09-08) **Re-verified:** `astro check` / `npm test` (59) / `npm run build`
+      all green; built bundle confirmed to carry `data-brighten` + `scrub`, the
+      `opacity:.5` resting rule, the reduced-motion override, and `.link` → wine-400.
+      (Live paint not screenshot-verified — the in-app browser pane was not rendering
+      this session; logic mirrors the existing reveal pattern and degrades safely.)
+- [x] (2026-09-08) **Brighten made line-by-line** (Paul's follow-up). `data-brighten`
+      now uses SplitText (`type: 'lines'`, `autoSplit`, `onSplit` returns the scrubbed
+      tween) — each wrapped line staggers from 0.28 → 1 opacity as it scrolls up
+      through the reading zone (`start: top 78%`, `end: top 25%`). SplitText re-added
+      to `motion.ts` (free in GSAP 3.13+, no new dep; +~3KB gzip → bundle ~49KB) and
+      registered alongside ScrollTrigger; it also sets `aria-label` to the original
+      text so screen readers get one clean sentence. CSS: `.js [data-brighten]`
+      fallback opacity 0.55, `.brighten-line { will-change: opacity }`.
+      DOM-verified in the dev server: bio splits to 10 lines, Thoughts intro to 2;
+      mid-scroll sample showed lines 1–5 lit, line 6 mid, 7–10 still dim.
+- [x] (2026-09-08) **Thoughts section hierarchy.** The "I'm no writer…" line dropped
+      from `.statement-sm` (→3rem display) to `.lead` (~1.25rem, paper-400) so the
+      "Thoughts" kicker reads as the section title and the sentence as its subtext;
+      it also carries `data-brighten` now.
+
+## Phase 29 — legibility pass (2026-09-09)
+
+Paul's report, unprompted, on the live site: "some of it feels like it's hard to
+read", "the pitch black and white feels strange in my eyes", "I am being
+overwhelmed by the text", "I don't feel there's a visual break happening", "the
+subtexts and paragraphs feel so small". Reviewed against the running dev server
+and the token usage counts; four separate causes, none of them a WCAG failure —
+the site passed AA everywhere and was still tiring to read.
+
+- [x] (2026-09-09) **A. Lower the ceiling, raise the floor.** Ground `ink-950` #050505 →
+      #0B0B0C; `paper-50` #FFFFFF → #F4F1EE — pure white leaves the palette.
+      Peak contrast 20.4:1 → 17.5:1 (still past AAA). New `paper-200` #C7C1BC
+      (11.0:1) fills the gap in the ramp, which ran 20.4 → 17 → *cliff* → 6.8:1.
+      Re-verify wine-400 (4.9:1) and paper-400 (6.6:1) still clear AA on the new
+      ground.
+- [x] (2026-09-09) **B. Subtext stops being metadata.** `text-small text-paper-400` — 13px at
+      6.8:1, the date-stamp treatment — was carrying sentence-length descriptive
+      copy in 20 places across index / workshops / work-with-me / projects /
+      gallery / colophon / now / PostListItem. New `.subtext` class (body size,
+      paper-200, 1.65). `.lead` off paper-400 → paper-200. `--text-small` 13 → 14
+      and restricted to genuine metadata.
+- [x] (2026-09-09) **C. Compress the scale.** `--text-display` ceiling 104 → 88px,
+      `--text-body` 16 → 17. Display:body ratio 6.5:1 → 5.2:1. `.prose` 17 → 18px
+      at line-height 1.7, and `.shell-narrow` 46rem → 44rem so the measure lands
+      at ~69 characters instead of ~77.
+- [x] (2026-09-09) **D1. Rhythm, not fills.** `.section-tight` was used 22 times against
+      `.section`'s 3, every one with a `border-t` — identical padding and an
+      identical rule on every section of every page. New `.section-ruled` class;
+      major sections that open an argument get `.section .section-ruled`, ones
+      that continue the previous thought get a bare `.section-tight`. Applied to
+      index (6), workshops (9), workshops/[slug] (4), work-with-me.
+      **Chose D1 over D2 deliberately** — D2 was a one-stop ground shift
+      (#101011) on alternating sections, which would break the argument up more
+      decisively but bends "a hairline is the only surface" and edges back
+      toward the tinted-panel look Phase 21 cut. Rhythm first; revisit only if
+      D1 proves insufficient.
+- [x] (2026-09-09) **E. Metric-matched font fallback.** Both stacks named "Switzer Fallback"
+      and nothing defined it, so with `font-display: swap` the page reflowed
+      unmetered when Switzer landed. Defined it against Switzer's real metrics
+      (read from the woff2: upem 1000, ascent 980, descent 250, lineGap 90,
+      xHeight 531) — size-adjust 103% to match Helvetica Neue's x-height, with
+      the ascent/descent overrides pre-scaled by that factor.
+- [x] (2026-09-09) **Caught in review:** `text-paper-300` on the homepage's two
+      workshop lists was a dangling class — `--color-paper-300` was never
+      defined, so Tailwind emitted nothing and they silently inherited body
+      colour. Now `text-paper-200`, which is what they were reaching for.
+- [x] (2026-09-09) **Verify:** `astro check` / `npm test` / `npm run build` green; contrast
+      ratios remeasured on the new ground; no `#FFFFFF` left as a type colour;
+      no `text-paper-400` left on a full sentence.
+- [x] (2026-09-20) **Fix article reading column:** Widened `.shell-narrow` from 44rem → 58rem (928px).
+      The 44rem target overlooked `.shell-narrow`'s `padding-inline: var(--shell-x)` (80px total
+      on desktop), which squeezed the usable column to 39rem (624px). This crushed article titles
+      into 4 lines, squeezed 4-column tables, and shrunk architecture diagrams below legible size.
+      58rem yields 848px inner width, giving diagrams, tables, and headlines breathing room.
+
+## Phase 30 — SEO/GEO correctness & entity pass (planned 2026-09-20)
+
+Full audit in [seo-strategy.md](seo-strategy.md); task detail in
+[T30](tasks/task-30-seo-entity.md). Scored **SEO A− / GEO C+** — technical hygiene
+is already excellent, the gap is entity thinness. Three defects were verified
+against built output in `dist/client/`, not inferred from source, which is how they
+survived earlier reviews.
+
+**Part A — correctness. Unblocked; ship on its own.**
+
+- [x] (2026-09-20) **A1. ProfilePage URL collision.** `profilePage()` hardcodes `url: SITE_URL`
+      and is called from *both* `index.astro` and `about.astro`, so two documents
+      claim to be the ProfilePage for the same URL. Give it `url` + `name` params,
+      drop the call from the homepage (a hub, not a profile), emit it on `/about/`
+      only — which is the use case Google's docs actually name.
+- [x] (2026-09-20) **A2. Dangling `@id` references.** Article pages emit only `Article` +
+      `BreadcrumbList`, so `author: {"@id": …#person}` resolves to nothing and every
+      post publishes an author with **no name**. Same on `Course.provider`,
+      `Service.provider`, `ImageGallery.author`, `Blog.author`. Define `person()`
+      on those pages too — same `@id`, so the graph still collapses to one entity.
+- [x] (2026-09-20) **A3. `Article.image` is the OG card, not the photograph.** `ArticleLayout`
+      sets `/og/{id}.png` unconditionally; two posts have real covers with authored
+      `coverAlt` being overridden by a 1200×630 text card. Prefer the cover, fall
+      back to the card. `ogImage` stays the card.
+- [x] (2026-09-20) **A4. Nine topic titles are slugs** — `<title>#ai — Paul Fernandez</title>`.
+      Not a phrase anyone types. Needs a display-name map (`ai` → `AI`). `<title>`
+      only; the visible `h1` treatment stays if it is deliberate.
+- [x] (2026-09-20) **A5. Seven thin meta descriptions** (48–82 chars), four of them commercial
+      workshop pages. Rewrite to 140–160 — the article descriptions (129–148) are
+      already the right register. `/thanks/` is noindexed, leave it.
+- [x] (2026-09-20) **A6. Sitemap `lastmod` covers 21/32 URLs.** Extend `contentLastmod()` to the
+      `now` collection (has a real `date`). **Skip `courses`** — no date field, and
+      inventing one defeats the purpose. Keep `/`, `/about/`, `/colophon/`,
+      `/projects/` bare: the existing "a build-time timestamp is a worse signal than
+      none" reasoning is correct and must survive the change.
+
+**Part B — entity. Needs Paul's input first (see Blocked-on-Paul).**
+
+- [x] (2026-09-20) **B1. Enrich the `Person` node.** The highest-leverage item in the audit: the
+      Person node and its `sameAs` chain is the mechanism 2026 E-E-A-T runs on, and
+      it is currently a stub — no `description`, two `sameAs` (one a personal
+      Instagram), `jobTitle: 'Tech Leader'` contradicting `/about/` and `llms.txt`
+      which both say IT Manager at MMDC, five generic `knowsAbout` nouns, and
+      `worksFor`/`alumniOf` as bare unlinkable strings.
+- [ ] **B2. Create a Wikidata item** and add the Q-ID to `sameAs`. Off-site, no
+      code, and the single highest-leverage action available — Wikidata is the
+      canonical graph Google resolves knowledge panels against, and roughly half of
+      personal panels no longer need Wikipedia.
+
+**Part C — Course `offers`. Specified in T30 §4, deliberately NOT authorised.**
+
+- [ ] **C1. `hasCourseInstance` + `offers` on workshop pages — HOLD.** Two
+      corrections to the audit: the data already exists (`duration`, `formatLabel`,
+      `formats[].price` are all in the `courses` collection, so this needs **no**
+      config change and carries no schema-parity risk) — but it escalates an
+      uncleared commercial claim. BIR registration, official receipts and MMDC
+      employer clearance are still open below, and every price is recorded there as
+      an untested hypothesis. Prices sit in prose today; `offers` makes them
+      machine-readable and rich-result eligible. Business decision, not an SEO one.
+      **Do not build until those blockers clear.**
+
+**What the build surfaced that the audit missed.** Both were caught by rebuilding
+and re-parsing every `ld+json` block, not by reading source — the same method that
+found the originals.
+
+- [x] (2026-09-20) **There were THREE ProfilePage emitters, not two.** `/now/` was the
+      third, also pointed at the home page's URL; the audit sampled four pages and
+      missed it. Its intent was right — `dateModified` from the newest entry — so
+      rather than deleting the node it moved to a new `webPage()` builder, which is
+      what the page actually is. Found by the type checker after A1 changed the
+      signature.
+- [x] (2026-09-20) **`/about/` was pinned to the pre-fix values.** It called
+      `person({ knowsAbout: [...] })` with the five generic nouns inline, so the
+      strongest entity page on the site would have kept shipping them after B1.
+      Overrides removed; `person()` defaults are the single source. Caught only
+      because the built Person node was re-read after the change.
+- [x] (2026-09-20) **`/workshops/` (the hub) had a dangling `@id` too** — `Service.provider`,
+      not in A2's original five-file list.
+- [x] (2026-09-20) **`/thoughts/` was an eighth thin description** (78 chars) that the audit
+      table under-reported. Fixed with the other seven; now 156.
+
+**Known and deliberately left:** `/about/` (95), `/projects/` (90) and
+`/work-with-me/` (90) sit under the 140–160 target but were not in scope and are
+defensible as-is. The LLM post's `<title>` is 74 chars — over Google's ~60 cut, but
+that is the post's own title and renaming Paul's work is not a mechanical fix.
+
+- [x] (2026-09-20) **Verified:** `npx astro check` 0 errors · `npm test` 67 passing (was 59;
+      8 new, all written before implementation per CLAUDE.md) · `npm run build`
+      green. Built output re-audited across all 34 pages: **exactly one
+      ProfilePage**, on `/about/`, with `url` = `/about/`; **zero dangling `@id`
+      references** sitewide; no duplicated singleton nodes; sitemap `lastmod`
+      21 → 22 with `/now/` gained and `/`, `/about/`, `/colophon/`, `/projects/`
+      still deliberately bare.
+
+**Explicitly not doing: anything further with `llms.txt`.** The audit found ~408
+targeted fetches across ~500M AI bot visits, Google confirmed non-support on the
+record in July 2025, and one citation model *improved* when the variable was
+dropped. The implementation here is good and costs nothing to keep — so keep it,
+change nothing, add nothing. It was a correct decision that turned out not to matter.
+

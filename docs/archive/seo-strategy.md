@@ -4,7 +4,7 @@
 
 This is an audit and a plan, not a changelog. Nothing in the codebase was modified.
 Fixes worth doing should be logged as tasks in `plan.md` before anyone writes code
-(see [CLAUDE.md](CLAUDE.md) — plan.md is the tracker).
+(see [CLAUDE.md](../../CLAUDE.md) — plan.md is the tracker).
 
 **Update 2026-09-20:** now tracked as **Phase 30** in [plan.md](plan.md), with full
 implementation detail in [tasks/task-30-seo-entity.md](tasks/task-30-seo-entity.md).

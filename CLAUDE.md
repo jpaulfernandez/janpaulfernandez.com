@@ -7,7 +7,7 @@ These rules apply to any coding agent (Claude, Gemini, GPT) and to humans.
 ## Workflow — plan.md is the tracker
 
 1. **Always start at plan.md.** Work the first unchecked task, in order. Don't skip ahead or parallelize phases.
-2. Read the task's file in `tasks/` completely before writing code. It has context, steps, and a **Definition of Done**.
+2. Read the task's phase file in `docs/rebuild/` completely before writing code (finished v1/v2 task files are in `docs/archive/`). It has context, steps, and a **Definition of Done**.
 3. A task is complete ONLY when every DoD checkbox passes. Then mark it in plan.md: `[x] (YYYY-MM-DD)`. Never check a box with failing builds/tests or partial work.
 4. If a task is blocked (missing info from Paul, upstream bug), don't improvise around it silently: log it under "Blocked-on-Paul items" in plan.md, use an obvious placeholder, and say so.
 5. If you discover necessary work no task covers, don't just do it — add it to plan.md (new checkbox + task file if non-trivial) so the tracker stays truthful.

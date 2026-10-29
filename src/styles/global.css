@@ -1,4 +1,10 @@
 @import "tailwindcss";
+/* v3 type trio (31.1), self-hosted via @fontsource-variable. Fraunces uses the
+ * opsz entry (opsz 9–144 + wght 100–900) for optical sizing; Inter and
+ * JetBrains Mono use the default wght entry. */
+@import "@fontsource-variable/fraunces/opsz.css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
 
 /* ============================================================================
  * Phase 20 (2026-09-05) — "NOCTURNE". Full visual reset.
@@ -78,57 +84,6 @@
  * nothing else — no fill, no radius, no shadow, no blur. Wine is now allowed
  * in exactly three places: an inline link, a focus ring, and Key Takeaway.
  * ------------------------------------------------------------------------- */
-
-/* Switzer — Fontshare (ITF), self-hosted from public/fonts. 400/500 upright +
- * italic and 600 for bold; no 700, because the whole design leans on 500/600
- * and a fifth face is 20KB for nothing. */
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer-400.woff2") format("woff2");
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer-400-italic.woff2") format("woff2");
-  font-weight: 400; font-style: italic; font-display: swap;
-}
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer-500.woff2") format("woff2");
-  font-weight: 500; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer-500-italic.woff2") format("woff2");
-  font-weight: 500; font-style: italic; font-display: swap;
-}
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer-600.woff2") format("woff2");
-  font-weight: 600; font-style: normal; font-display: swap;
-}
-
-@import "@fontsource/courier-prime/400.css";
-@import "@fontsource/courier-prime/700.css";
-
-/* Metric-matched fallback. Phase 29: both font stacks named "Switzer Fallback"
- * but nothing ever defined it, so it was a dead entry — and with
- * `font-display: swap`, the page reflowed unmetered when Switzer landed.
- *
- * Switzer's own metrics (read from the woff2: upem 1000, hhea ascent 980,
- * descent 250, lineGap 90, xHeight 531) against Helvetica Neue's xHeight of
- * ~517/1000. size-adjust 103% matches the two x-heights, so the swap changes
- * letterforms without changing apparent size. The ascent/descent overrides are
- * Switzer's own, divided by that same 1.03 — the spec applies size-adjust
- * first, so they have to be pre-scaled to land on the same absolute metrics. */
-@font-face {
-  font-family: "Switzer Fallback";
-  src: local("Helvetica Neue"), local("Helvetica"), local("Arial");
-  size-adjust: 103%;
-  ascent-override: 95%;
-  descent-override: 24%;
-  line-gap-override: 9%;
-}
 
 @theme {
   /* Reset Tailwind's expanding spacing scale, then declare only the 8-pt grid

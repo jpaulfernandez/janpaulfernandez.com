@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import frauncesUrl from '@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2?url';
+import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -115,10 +117,10 @@ const isNavActive = (href: string) => {
     <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
     <link rel="alternate" type="text/plain" href="/llms-full.txt" title="llms-full.txt" />
 
-    <!-- Critical font preloads. Switzer 500 draws every heading above the fold;
-         400 draws the body under it. The other three faces load on demand. -->
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/switzer-500.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/switzer-400.woff2" crossorigin />
+    <!-- Critical font preloads: Fraunces draws the headings above the fold,
+         Inter the body under it. JetBrains Mono and other subsets load on demand. -->
+    <link rel="preload" as="font" type="font/woff2" href={frauncesUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={interUrl} crossorigin />
 
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-KJX3LCC0SZ"></script>

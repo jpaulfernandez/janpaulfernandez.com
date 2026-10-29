@@ -61,6 +61,7 @@ const seoData = [
             widths={[480, 720]}
             sizes="(min-width: 1024px) 400px, 100vw"
             loading="eager"
+            fetchpriority="high"
           />
         </figure>
       </div>
@@ -76,23 +77,55 @@ const seoData = [
       </div>
     </section>
 
-    <section aria-labelledby="contact-heading">
+    {/* How I work — continues the Experience argument: the habits behind it.
+        Copy from program spec doc 09 (§1 proof points, §4 About), first
+        person; hard-coded here because about.md stays byte-identical
+        (docs/rebuild README, departure 5). */}
+    <section class="section-tight" aria-labelledby="how-heading">
+      <h2 id="how-heading" class="kicker">How I work</h2>
+      <ul class="rows how mt-8">
+        <li>
+          <h3 class="m-0">Simplify, then do.</h3>
+          <p class="subtext m-0">
+            I simplify until someone can retell it at dinner, then put them to
+            work on their own documents. People forget slides. They remember
+            what they did.
+          </p>
+        </li>
+        <li>
+          <h3 class="m-0">Artefacts leave the room.</h3>
+          <p class="subtext m-0">
+            Every session produces something you keep: a draft AI policy,
+            process maps, vendor scorecards, prompt libraries, a working
+            automation, a tested prototype agent.
+          </p>
+        </li>
+        <li>
+          <h3 class="m-0">Vendor-neutral.</h3>
+          <p class="subtext m-0">
+            I build with Claude and Codex but teach the concepts rather than a
+            product. You get the same advice whichever tools you choose.
+          </p>
+        </li>
+      </ul>
+    </section>
+
+    {/* Connect — the turn to action. Text links only: the header's red
+        button is the one red fill in view. */}
+    <section class="section section-ruled pb-0" aria-labelledby="contact-heading">
       <h2 id="contact-heading" class="kicker">Connect</h2>
-      <p class="statement-sm mt-10 max-w-[22ch]">
-        Available for consultation, talks, and
-        fractional product ownership.
+      <p class="statement-sm mt-10 max-w-[24ch]">
+        I work with teams three ways: with you, for you, or as an adviser.
       </p>
-      <div class="mt-10 flex flex-wrap gap-3">
-        <a href="/work-with-me/" class="btn btn-primary">Work with me</a>
+      <p class="mt-8 mb-0 flex flex-wrap gap-x-8 gap-y-3">
+        <a href="/work-with-me/" class="link">Work with me</a>
         <a
           href="https://www.linkedin.com/in/jpaulfernandez/"
           target="_blank"
           rel="noopener noreferrer"
-          class="btn btn-ghost"
-        >
-          LinkedIn ↗
-        </a>
-      </div>
+          class="link"
+        >LinkedIn<span class="sr-only"> (opens in a new tab)</span> ↗</a>
+      </p>
     </section>
   </div>
 </BaseLayout>
@@ -102,13 +135,20 @@ const seoData = [
     padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
   }
 
-  .statement-sm {
-    font-family: var(--font-display);
-    font-size: var(--text-h2);
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: var(--color-ink-900);
-    margin: 0;
+  /* How I work: label left, sentence right from 768px; stacked below. */
+  .how > li {
+    display: grid;
+    gap: 0.75rem;
+    padding-block: var(--space-m);
   }
+  @media (min-width: 768px) {
+    .how > li {
+      grid-template-columns: 16rem minmax(0, 1fr);
+      gap: 2rem;
+      align-items: baseline;
+    }
+  }
+  /* Connect's rule closes the list; a second hairline would double it. */
+  .how > li:last-child { border-bottom: 0; }
+  .how .subtext { max-width: 60ch; }
 </style>

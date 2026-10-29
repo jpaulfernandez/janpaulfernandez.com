@@ -31,3 +31,17 @@
 - Bytes: 320w 13 KB, 480w 26 KB, 640w 42 KB, 800w 59 KB (Home); About 480w 26 KB, 720w 51 KB. The 799 KB original is still emitted to `_astro/` by the build but referenced by no page.
 - `object-position: 50% 18%` checked at 375, 768 and 1280: the face sits in the upper third at all three. Paul's visual review on the preview still stands (Blocked).
 - Checks: build/check/test green; axe 0 violations on `/` and `/about/`; no horizontal scroll at 375/1280; Home scripts are the `.js` class script, GA4 and JSON-LD only.
+
+## 34.4 About
+
+- Order: page head (h1, `about.md` prose, portrait) → Experience `.section` (no rule) → How I work `.section-tight` → Connect `.section.section-ruled`. `about.md`, the Timeline, `ProfilePage`, `person()` and breadcrumbs untouched.
+- h1 stays "Jan Paul Fernandez", not "About": step 2 says h1 "About" but the phase file's Risks note relies on the name living in the About h1 (Home's h1 has no name), and the Done-when asks that About render the same sentences as before. One-word change if Paul prefers "About".
+- Portrait is About's LCP element at 1024 and 1280 (PerformanceObserver), so it got `fetchpriority="high"`; `widths`/`sizes`/`width` unchanged.
+- How I work: three `.rows` items, h3 label + `.subtext` sentence (label left of sentence from 768px). Copy, for Paul's review:
+  - "Simplify, then do." / "I simplify until someone can retell it at dinner, then put them to work on their own documents. People forget slides. They remember what they did." (label: doc 09 §1 proof point "Method"; sentence: doc 09 §4 "Why I teach it this way", unchanged apart from "I").
+  - "Artefacts leave the room." / "Every session produces something you keep: a draft AI policy, process maps, vendor scorecards, prompt libraries, a working automation, a tested prototype agent." (label: rebuild-plan §5.2, not verbatim in doc 09; sentence: doc 09 §1 proof point "Artefacts", verbatim).
+  - "Vendor-neutral." / "I build with Claude and Codex but teach the concepts rather than a product. You get the same advice whichever tools you choose." (doc 09 §4, third person turned first; "The program is" became "You get").
+- Connect: "Available for consultation, talks, and fractional product ownership." replaced by "I work with teams three ways: with you, for you, or as an adviser." (phase file's wording; matches the `workWithMe` modes With you / For you / Advising). The two buttons (red `btn-primary` "Work with me", ghost LinkedIn) became two `.link` text links; LinkedIn carries an sr-only "(opens in a new tab)". `<main>` has no `.btn-primary`: the header's is the only red fill.
+- Scoped `.statement-sm` deleted (the global one in `@layer components` is identical). The last How I work row drops its bottom border so it doesn't double Connect's rule.
+- Left for Phase 36: the career `.rail` (global) paints its first dot `red-500`, so About's MMDC entry has a small red node below the fold; it was written for the Now rail, which now uses its own `.tl` styles. Not touched (global, outside 34.4's files).
+- Checks: build/check/test green; one h1; `ProfilePage` ×1; scripts are `.js` class, GA4, JSON-LD; `grep "paper-\|ink-9\|wine-\|data-reveal"` → nothing; no banned words; no horizontal scroll at 375/1280.

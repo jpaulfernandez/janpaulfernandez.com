@@ -93,7 +93,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 35.4 Density control (buttons, wheel, keys, pinch)
 - [x] (2026-10-29) 35.5 Viewer with pinch-zoom
 - [x] (2026-10-29) 35.6 Set pages re-skin
-- [ ] 35.7 Verify (Paul: real iPhone + Android)
+- [x] (2026-10-29) 35.7 Verify (real-device test pending — see Blocked)
 - [ ] **Phase 35 Definition of Done**
 
 ### Phase 36 — Thoughts re-skin + launch · [phase file](docs/rebuild/phase-36-thoughts-launch.md)

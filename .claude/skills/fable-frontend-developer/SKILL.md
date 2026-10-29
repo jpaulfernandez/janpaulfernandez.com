@@ -51,9 +51,9 @@ This ladder exists because the site's value proposition (Lighthouse ≥ 95, zero
 
 ### Styling
 
-- Tailwind utilities in markup; design tokens only from the `@theme` block (moss/beige/citrus/ink, font vars). A hardcoded hex or px font-size in a component is a defect.
+- Tailwind utilities in markup; design tokens only from the `@theme` block (paper, ink, red, blue and the font vars). A hardcoded hex or px font-size in a component is a defect.
 - If a utility string needs the same 6+ classes in many places, that's a component signal, not an `@apply` signal.
-- Respect the palette contract: beige = canvas, moss = workhorse, citrus = scarce (CTAs, Key Takeaway, one hero accent — never body text).
+- Respect the palette contract in CLAUDE.md: `paper` is the ground, `ink-900/600/400` is the type ramp (`ink-400` metadata only), `red-500` is for fills and display words (never body-size text), `red-700` for links and the focus ring, `blue-100/200` for grounds and hairlines (never type).
 - Mobile-first: write the 375px layout, then add `md:`/`lg:` upward. Check both extremes before calling it done.
 
 ### Client-side JS (when the ladder reaches rung 4)
@@ -67,7 +67,7 @@ This ladder exists because the site's value proposition (Lighthouse ≥ 95, zero
 - Keyboard first: everything interactive is reachable and operable via keyboard, with visible focus.
 - Semantic elements before ARIA; ARIA only to fill real gaps (`aria-pressed` on filter chips, `aria-current` on nav, `aria-live` for dynamic counts).
 - One `h1` per page; heading levels never skip; landmarks (`header`/`nav`/`main`/`footer`) once each.
-- Motion inside `prefers-reduced-motion: no-preference`. Contrast AA minimum — verify, don't eyeball, whenever creating a new text/bg pairing.
+- No client motion; the only scripts are the index filters and the gallery. Contrast AA minimum — verify, don't eyeball, whenever creating a new text/bg pairing.
 
 ### SEO / structured data
 
@@ -77,7 +77,7 @@ This ladder exists because the site's value proposition (Lighthouse ≥ 95, zero
 
 ### Dependencies
 
-Walk CLAUDE.md's YAGNI ladder before any `npm install`. Additionally: prefer packages already blessed by spec §8 (astro integrations, fontsource, keystatic); anything else needs a one-line justification comment in the commit. A dependency for something expressible in ≤10 lines of code is the wrong trade.
+Walk CLAUDE.md's YAGNI ladder before any `npm install`. Additionally: prefer packages already blessed by spec.md's Stack section (astro integrations, fontsource, keystatic); anything else needs a one-line justification comment in the commit. A dependency for something expressible in ≤10 lines of code is the wrong trade.
 
 ### Testing & verification
 

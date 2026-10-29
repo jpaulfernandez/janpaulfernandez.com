@@ -1,7 +1,7 @@
 # janpaulfernandez.com v3 — rebuild plan
 
-**Owner:** Jan Paul Fernandez · **Drafted:** 2026-10-29 · **Status:** approved by Paul 2026-10-29 (answers folded into §11); Phase 31 may start
-**Supersedes, once approved:** `spec.md` (v1, July 2026) and the visual rules in `CLAUDE.md` that describe the Phase 20–29 dark build. `plan.md` stays the tracker; Phase 31 points here.
+**Owner:** Jan Paul Fernandez · **Drafted:** 2026-10-29 · **Status:** built (Phases 31–36, 2026-10-29; approved by Paul 2026-10-29, answers folded into §11); launch is Paul's call, task 36.6 (see [docs/rebuild/](docs/rebuild/README.md))
+**Superseded:** `spec.md` (v1, July 2026) was rewritten as the v3 spec in 36.4, and the visual rules in `CLAUDE.md` that described the Phase 20–29 dark build were replaced in 31.7. `plan.md` stays the tracker.
 **Source material:** the AI-Resilient Organisation program spec (`~/Downloads/ai-program-spec/00–09`), the current repo, oddhalls.janpaulfernandez.com, and a Mobbin pass (references in §12).
 
 ---

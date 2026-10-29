@@ -17,8 +17,8 @@ the same. Write like a person who has done the work, not a landing page selling 
 Paul Fernandez. Filipino technologist — eleven years shipping things that broke in
 public when they broke. Built account-opening software at a bank, ran election-night
 results at Rappler through two national votes, now keeps the systems standing at a
-college full of working students. Teaches AI workshops while being openly
-ambivalent about AI. Has a dry, honest, slightly self-deprecating register and
+college full of working students. Helps organisations decide what to build with
+AI, and builds it with them, while being openly ambivalent about AI. Has a dry, honest, slightly self-deprecating register and
 nothing to sell you afterward.
 
 The voice follows from that: **plain, specific, a little blunt, quietly funny, and
@@ -28,8 +28,8 @@ allergic to hype.** It trusts the reader. It would rather under-claim than overs
 
 ## The seven house rules
 
-1. **Say the true, specific thing.** "PHVote had to publish results live while the
-   country watched" beats "delivered high-stakes, mission-critical systems."
+1. **Say the true, specific thing.** "a bank, two election nights at Rappler, a
+   college of working students" beats "delivered high-stakes, mission-critical systems."
    Concrete nouns, real numbers, named places. If you can't point at it, cut it.
 
 2. **Short words, short sentences — then vary.** Use *use*, not *utilize*; *help*,
@@ -37,12 +37,12 @@ allergic to hype.** It trusts the reader. It would rather under-claim than overs
    against a long one. Uniform rhythm is the clearest tell of machine prose.
 
 3. **Have a point of view.** The copy is allowed to be ambivalent, irritated, or
-   funny. "My relationship with AI is complicated. I teach it anyway." Neutral,
+   funny. "I build with Claude and Codex, and I'll say so." Neutral,
    opinion-free copy reads as assembled, not written.
 
 4. **Admit the limit.** The site's most persuasive move is naming what it *won't*
-   do: "This makes you dangerous, not a software engineer." "There is no
-   certificate, and I would not trust a two-hour one either." Keep the caveats.
+   do: "I won't sell you a tool." "If it doesn't fit, I'll tell you who might
+   fit better." Keep the caveats.
    They are the voice, not a disclaimer to smooth over.
 
 5. **No funnel language.** No "unlock," "elevate," "transform your business," "take
@@ -78,11 +78,12 @@ Scan new or edited copy for these and rewrite the hits:
 - **Negative parallelism** — "It's not just X, it's Y." "It's not merely a tool,
   it's a partner." Almost always deletable. Say the Y.
 - **Vague authority** — "experts say," "studies show," "industry reports suggest."
-  On this site a stat needs a named source and a URL (see `marketStats` in
-  [src/lib/workshops.ts](src/lib/workshops.ts)) or it doesn't appear.
-- **Inflated vocabulary** — delve, robust, leverage, harness, seamless, vibrant,
-  landscape (figurative), tapestry, realm, myriad, bespoke, curated, cutting-edge,
-  game-changing. If one shows up, you're writing like the tool, not like Paul.
+  On this site a stat needs a named source, the sponsor who paid for it, and a URL
+  (see `stats[].sourceUrl` in [src/content/pages/program.json](src/content/pages/program.json))
+  or it doesn't appear.
+- **Inflated vocabulary** — delve, robust, leverage, unlock, empower, genuinely,
+  honestly, straightforward, harness, seamless, vibrant, landscape (figurative),
+  tapestry, realm, myriad, bespoke, curated, cutting-edge, game-changing. If one shows up, you're writing like the tool, not like Paul.
 - **Em-dash note** — the site uses em dashes deliberately and they are fine. The
   tell isn't the dash, it's the *breathless* rhythm it props up. Keep the dash,
   lose the hype.
@@ -97,25 +98,34 @@ Scan new or edited copy for these and rewrite the hits:
 
 These are the register, pulled from copy that already lives on the site.
 
-> **Slop:** "In today's rapidly evolving landscape, our groundbreaking AI workshops
-> empower you to unlock your full potential and take your business to the next level."
+> **Slop:** "In today's rapidly evolving landscape, our groundbreaking AI program
+> empowers you to unlock your full potential and take your business to the next level."
 >
-> **House:** "You already use AI. This is where you get good at it. A few hours on
-> the work you actually have open, until it stops feeling like a magic trick and
-> starts doing something useful."
+> **House:** "Your people are already using AI. Make it safe, then make it useful."
+> (the program page headline, `src/content/pages/program.json`)
 
 > **Slop:** "With a proven track record of delivering robust, scalable solutions,
 > I leverage cutting-edge technology to drive transformative outcomes."
 >
-> **House:** "Eleven years shipping things that broke in public when they broke.
-> PHVote had to publish results live while the country watched."
+> **House:** "Eleven years shipping under pressure: a bank, two election nights at
+> Rappler, a college of working students." (Home, `src/content/pages/home.json`)
 
 > **Slop:** "Our comprehensive program offers innovation, inspiration, and
 > industry-leading insights, ensuring a seamless learning journey for all."
 >
-> **House:** "This makes you dangerous, not a software engineer. You'll ship real
-> things and you'll also hit walls where you need someone who actually writes
-> code — knowing that line is part of the point."
+> **House:** "Work goes badly when the brief is a slide and the reality is a
+> spreadsheet nobody mentions." (Work with me FAQ, `src/content/pages/workWithMe.md`)
+
+---
+
+## Offer and program copy
+
+The Work with me and program pages add a few rules on top of the above:
+
+- Cite a URL for every factual claim and name who sponsored the survey behind it.
+- Say "aligned to PSF-AAI", never "certified". Say "not legal advice" out loud on Tier 1.
+- No peso figures anywhere: prices are "Message for a quote" or "Enquire".
+- Paul is based in Manila. Delivery areas (Metro Manila, Clark, Cebu, online) may be named.
 
 ---
 

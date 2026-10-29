@@ -1,6 +1,6 @@
 # CLAUDE.md — how to work on janpaulfernandez.com
 
-Personal site for Jan Paul Fernandez: Astro 5 + Tailwind 4 + Keystatic (git-based CMS), fully static, deployed on Vercel. The v3 rebuild is specified in **rebuild-plan.md** (what and why); build order lives in **plan.md**; task detail lives in `docs/rebuild/phase-NN-*.md`. `spec.md` is the v1 spec and is rewritten in task 36.4; where it disagrees with rebuild-plan.md, rebuild-plan.md wins.
+Personal site for Jan Paul Fernandez: Astro 5 + Tailwind 4 + Keystatic (git-based CMS), fully static, deployed on Vercel. The v3 rebuild (phases 31–36) is built. **spec.md** is the short current spec (purpose, stack, content model, constraints); **rebuild-plan.md** records what was decided and why and wins where the two disagree; **plan.md** is the tracker and the Blocked-on-Paul list; `docs/rebuild/phase-NN-*.md` hold task detail and `docs/rebuild/notes/` record what was actually built. The v1 spec is in git history (tag `v2-final`).
 
 These rules apply to any coding agent (Claude, Gemini, GPT) and to humans.
 
@@ -11,6 +11,7 @@ These rules apply to any coding agent (Claude, Gemini, GPT) and to humans.
 3. A task is complete ONLY when every DoD checkbox passes. Then mark it in plan.md: `[x] (YYYY-MM-DD)`. Never check a box with failing builds/tests or partial work.
 4. If a task is blocked (missing info from Paul, upstream bug), don't improvise around it silently: log it under "Blocked-on-Paul items" in plan.md, use an obvious placeholder, and say so.
 5. If you discover necessary work no task covers, don't just do it — add it to plan.md (new checkbox + task file if non-trivial) so the tracker stays truthful.
+6. **Branches and deploys.** The v3 rebuild was worked directly on local `main` at Paul's choice, not branch-per-phase. Nothing is pushed until he says so: pushing or merging to `main` deploys production on Vercel, and that is Paul's call.
 
 ## YAGNI — the decision ladder
 
@@ -36,7 +37,7 @@ Only after all six: add the minimum that works. Concrete house examples: reading
 ## Hard constraints (from spec — violating these is a bug)
 
 - Fully static output. React exists ONLY for the Keystatic admin and must never ship to the public site.
-- **Client JS: zero by default.** The public site ships no JavaScript except the Thoughts and Projects index filters and the Gallery (density control + viewer), each within its budget: 0 KB on Home, About, Now, Work with me, program pages and articles; ≤ 2 KB on the Thoughts and Projects indexes; ≤ 6 KB on the Gallery. The inline `.js` class script in `<head>` and the GA4 tag are the only exceptions. Everything else climbs the YAGNI ladder: vanilla before a framework, CSS before JS, static HTML before an island. There is no animation library (GSAP and the `data-reveal` vocabulary are gone) and none comes back. Any hidden resting state lives only behind the `.js` ancestor class, so the page reads fully with scripts blocked.
+- **Client JS: zero by default.** The public site ships no JavaScript except the Thoughts and Projects index filters (inline in their pages) and the Gallery (`src/scripts/gallery.ts`: density control + viewer, imported only by the gallery pages), each within its budget: 0 KB on Home, About, Now, Work with me, program pages and articles; ≤ 2 KB on the Thoughts and Projects indexes; ≤ 6 KB on the Gallery. The inline `.js` class script in `<head>` and the GA4 tag are the only exceptions. Everything else climbs the YAGNI ladder: vanilla before a framework, CSS before JS, static HTML before an island. There is no animation library and no scroll-triggered motion, and none comes back. Any hidden resting state lives only behind the `.js` ancestor class, so the page reads fully with scripts blocked.
 - One `h1` per page. Semantic landmarks. WCAG AA contrast.
 - **Component CSS in `global.css` must sit inside `@layer components`.** Tailwind emits utilities in `@layer utilities`, and an unlayered rule beats any layered one regardless of specificity — an unlayered `.btn { display: inline-flex }` silently defeats `hidden sm:inline-flex` in the markup. Same trap in Astro `<style>` blocks, which scope selectors with an attribute and so outrank a single utility class: hide with a media query there, not with `lg:hidden`.
 - **Palette is white (v3), nine tokens and no others.** `paper` `#FFFFFF` is the ground (`paper-100` `#F7F8FA` an alternate section ground, at most once per page). Type is `ink-900` (headings, body, nav) → `ink-600` → `ink-400`. `red-500` is for fills, display words ≥ 24px and rules — never body-size text; `red-700` is for inline links, small accent text and the focus ring. `blue-100` / `blue-200` are grounds and hairlines only: blue is a ground, not a type colour, so no blue text. Tailwind's default colours are reset, so an off-palette class is a dead class.
@@ -55,8 +56,10 @@ Only after all six: add the minimum that works. Concrete house examples: reading
 npm run dev        # dev server + /keystatic admin
 npm run build      # static build to dist/
 npx astro check    # type-check .astro files
-npm test           # vitest (from T07 onward)
+npm test           # vitest run (pure logic in src/lib/)
 ```
+
+`npm run preview` does not work with the Vercel adapter. To look at the built site, serve the static output: `npx serve dist/client -l 4321`. Redirects only exist on a Vercel preview.
 
 Definition of done for any code change, beyond the task's own DoD: build passes, check passes, tests pass.
 

@@ -2,12 +2,43 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type ProjectEntry = CollectionEntry<'projects'>;
 
+export const PROJECT_KINDS = ['product', 'work', 'talk', 'side'] as const;
+export type ProjectKind = (typeof PROJECT_KINDS)[number];
+
+/** Plural, for filter chips. */
+export const KIND_LABEL: Record<ProjectKind, string> = {
+  product: 'Products',
+  work: 'Work',
+  talk: 'Talks',
+  side: 'Side projects',
+};
+
+/** Singular, for rows and kickers. */
+export const KIND_NOUN: Record<ProjectKind, string> = {
+  product: 'Product',
+  work: 'Work',
+  talk: 'Talk',
+  side: 'Side project',
+};
+
 /**
- * Retrieves all projects sorted by year desc (stable within a year).
+ * Year desc; within a year `order` asc with undefined last; other ties keep
+ * input order. Returns a new array.
  */
+export function sortProjects(projects: ProjectEntry[]): ProjectEntry[] {
+  return [...projects].sort((a, b) => {
+    const byYear = b.data.year.localeCompare(a.data.year);
+    if (byYear !== 0) return byYear;
+    const ao = a.data.order ?? Infinity;
+    const bo = b.data.order ?? Infinity;
+    if (ao === bo) return 0;
+    return ao < bo ? -1 : 1;
+  });
+}
+
+/** Retrieves all projects, sorted with sortProjects. */
 export async function getProjects(): Promise<ProjectEntry[]> {
-  const projects = await getCollection('projects');
-  return projects.sort((a, b) => b.data.year.localeCompare(a.data.year));
+  return sortProjects(await getCollection('projects'));
 }
 
 /**
@@ -24,4 +55,25 @@ export function groupProjectsByYear(
     groups.set(project.data.year, items);
   }
   return [...groups.entries()].map(([year, items]) => ({ year, items }));
+}
+
+export function projectsByKind(projects: ProjectEntry[], kind: ProjectKind): ProjectEntry[] {
+  return projects.filter((p) => p.data.kind === kind);
+}
+
+/** An entry has a case-study page only when its body has content. */
+export function hasPage(entry: ProjectEntry): boolean {
+  return (entry.body ?? '').trim().length > 0;
+}
+
+/** Same-kind entries other than `entry`, sorted, at most n. */
+export function relatedProjects(entry: ProjectEntry, all: ProjectEntry[], n = 3): ProjectEntry[] {
+  return sortProjects(all.filter((p) => p.id !== entry.id && p.data.kind === entry.data.kind)).slice(0, n);
+}
+
+/** Featured first, then the rest, each group via sortProjects; first n. */
+export function recentProjects(all: ProjectEntry[], n: number): ProjectEntry[] {
+  const featured = sortProjects(all.filter((p) => p.data.featured));
+  const rest = sortProjects(all.filter((p) => !p.data.featured));
+  return [...featured, ...rest].slice(0, n);
 }

@@ -62,7 +62,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 
 ### Phase 33 — Projects · [phase file](docs/rebuild/phase-33-projects.md)
 
-- [ ] 33.1 `src/lib/projects.ts` helpers, tests first
+- [x] (2026-10-29) 33.1 `src/lib/projects.ts` helpers, tests first (`astro check` deferred to 33.2 per the phase file: types need the new schema)
 - [ ] 33.2 Projects schema replaced; Oddhalls migrated to MDX
 - [ ] 33.3 Generic project page template
 - [ ] 33.4 Projects index with kind filter

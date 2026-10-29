@@ -1,91 +1,62 @@
 ---
+// index.astro — rebuild-plan §5.1, task 34.2. Home is a router: what Paul
+// does for people, then the ways in, the proof, and the way out to a call.
+// Zero client JS (README rule 7): no <script>, no data-* motion attributes.
+//
+// Section rhythm (a rule marks a turn in the argument, CLAUDE.md):
+//
+// | # | Section            | Class                   | Why                                          |
+// |---|--------------------|-------------------------|----------------------------------------------|
+// | 1 | Hero               | .hero (no rule)         | opens the page                               |
+// | 2 | Three ways to work | .section-tight          | continues the hero's argument: what I do     |
+// | 3 | Program band       | .section.section-ruled  | new argument: the packaged offer; the page's |
+// |   |                    |                         | only .panel-tint                             |
+// | 4 | Recent projects    | .section.section-ruled  | new argument: proof                          |
+// | 5 | Latest thoughts    | .section-tight          | continues the proof: the thinking behind it  |
+// | 6 | Now, briefly       | .section-tight          | continues it: what is live this month        |
+// | 7 | Closing CTA        | .section.section-ruled  | the turn to action                           |
+//
+// Red fills: the header's "Book a scoping call" is the one above the fold, so
+// the hero's primary action is a hairline .btn (rebuild-plan §3.1 over §5.1;
+// Paul to confirm). The closing CTA's .btn-primary is the only one in <main>.
 import { getCollection, getEntry } from 'astro:content';
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
+import PostListItem from '../components/PostListItem.astro';
+import ProgramSteps from '../components/ProgramSteps.astro';
+import ProjectRow from '../components/ProjectRow.astro';
 import { person, webSite, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
-import { getProjects } from '../lib/projects';
+import { getProjects, recentProjects } from '../lib/projects';
 import { formatDate } from '../lib/dates';
 
 const homeEntry = await getEntry('home', 'home');
-if (!homeEntry) {
-  throw new Error('Home page singleton is missing. Run the seed scripts first.');
+const workWithMe = await getEntry('workWithMe', 'workWithMe');
+const programPage = await getEntry('programPage', 'program');
+if (!homeEntry || !workWithMe || !programPage) {
+  throw new Error('home, workWithMe or programPage singleton is missing.');
 }
 const { heroStatement, heroWho } = homeEntry.data;
+const { modes } = workWithMe.data;
+const program = programPage.data;
 
-function cleanSnippet(raw?: string, max = 160) {
-  if (!raw) return '';
-  const text = raw
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-    .replace(/[*_`>#]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (text.length <= max) return text;
-  const sub = text.slice(0, max);
-  const lastPeriod = Math.max(sub.lastIndexOf('.'), sub.lastIndexOf('!'), sub.lastIndexOf('?'));
-  if (lastPeriod > 60) {
-    return sub.slice(0, lastPeriod + 1);
-  }
-  const lastSpace = sub.lastIndexOf(' ');
-  return `${sub.slice(0, lastSpace > 0 ? lastSpace : max).trimEnd()}…`;
-}
+const PROGRAM_URL = '/work-with-me/ai-resilient-organisation/';
+const EMAIL = 'jpaul.fernandez18@gmail.com';
 
-// The bio is a Keystatic plain-text field, but it carries a couple of markdown
-// links. Split each paragraph into plain strings and { label, href } links so
-// the statement can render them as real anchors without a markdown pipeline.
-function withInlineLinks(text: string) {
-  const parts: Array<string | { label: string; href: string }> = [];
-  const re = /\[([^\]]+)\]\(([^)]+)\)/g;
-  let last = 0;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(text))) {
-    if (m.index > last) parts.push(text.slice(last, m.index));
-    parts.push({ label: m[1], href: m[2] });
-    last = m.index + m[0].length;
-  }
-  if (last < text.length) parts.push(text.slice(last));
-  return parts;
-}
+const projects = recentProjects(await getProjects(), 3);
 
-const latestNowEntries = [...(await getCollection('now'))]
+const thoughts = (await getPublishedThoughts()).slice(0, 3).map((post) => {
+  const words = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
+  return { post, readingTime: Math.max(1, Math.ceil(words / 200)) };
+});
+
+const nowEntries = [...(await getCollection('now'))]
   .sort((a, b) => b.data.date.localeCompare(a.data.date))
-  .slice(0, 3)
-  .map((entry, index) => ({
-    ...entry,
-    snippet: index === 0 ? cleanSnippet(entry.body) : undefined,
-  }));
+  .slice(0, 3);
 
-const latestThoughts = (await getPublishedThoughts()).slice(0, 4);
-const latestProjects = (await getProjects()).slice(0, 3);
-
-// Phase 32.6 minimum repair: "What I do" reads the three Work with me modes
-// (the old `services` collection is gone). Home's real rewrite is Phase 34.
-const modes = (await getEntry('workWithMe', 'workWithMe'))?.data.modes ?? [];
-
-// A contact sheet for the gallery teaser. Frames are interleaved across sets
-// so the row never shows the same concert twice in a row.
-const gallerySets = (await getCollection('gallery')).sort(
-  (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
-);
-const stripShots = gallerySets
-  .flatMap((set, setIndex) =>
-    set.data.photos.slice(1, 4).map((photo, i) => ({
-      image: photo.image as unknown as ImageMetadata,
-      caption: photo.caption || set.data.title,
-      setTitle: set.data.title,
-      // Interleave: order by frame position first, set second.
-      order: i * 10 + setIndex,
-    }))
-  )
-  .sort((a, b) => a.order - b.order);
-
-const photoCount = gallerySets.reduce((n, set) => n + set.data.photos.length, 0);
-
-// No ProfilePage here — this page is a hub (now-feed, recent writing,
-// program teaser), not a profile. That node lives on /about/, which is the
-// case Google's docs actually name. Emitting it from both pages made two
-// documents claim to be the ProfilePage for the same URL.
+// No ProfilePage here — this page is a hub, not a profile. That node lives on
+// /about/ (Phase 30 A1); emitting it from both pages made two documents claim
+// to be the ProfilePage for the same person.
 const seoData = [
   webSite(),
   person(),
@@ -95,124 +66,39 @@ const seoData = [
 
 <BaseLayout
   title="Paul Fernandez"
-  description="Technologist from the Philippines. Shipped banking systems, ran election results at Rappler, and now build for higher ed. I help teams figure out what to build."
+  description="Paul Fernandez helps Philippine organisations decide what to build with AI, then builds it with them or for them. Consulting, building and advising from Manila."
   isHome
 >
   <JsonLd data={seoData} slot="head" />
 
-  {/* ---------------------------------------------------------------------
-      HERO.
-     --------------------------------------------------------------------- */}
+  {/* 1 — Hero. Opens the page; no rule. */}
   <section class="hero">
     <div class="shell">
-      <div class="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:items-start">
-        <div>
-          <p class="mono-micro flex items-center gap-3">
-            <span class="h-px w-8 bg-blue-200"></span>
-            Technologist · Philippines
-          </p>
-
-          <h1 class="display mt-8 max-w-[16ch]">
-            {heroStatement}
-          </h1>
-
-          <p class="lead mt-8 max-w-[46ch]">
-            {heroWho}
-          </p>
-
-          {/* Hero actions: the program is the featured offer */}
-          <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
-            <a href="/work-with-me/ai-resilient-organisation/" class="btn btn-primary">See the program →</a>
-            <a href="/thoughts/" class="link-arrow">Read the writing</a>
-            <a href="/work-with-me/" class="link-arrow">Work with me</a>
-          </div>
-        </div>
-
-        <div class="mt-6 lg:mt-0">
-          <div class="flex items-end justify-between gap-6 border-b border-[var(--line)] pb-4 mb-8">
-            <h2 id="hero-now-heading" class="kicker m-0">Now</h2>
-            <a href="/now/" class="link-arrow shrink-0">Full timeline</a>
-          </div>
-
-          <div class="rail rail-compact">
-            {latestNowEntries.map((entry, index) => (
-              <article class="rail-item">
-                <time class="rail-date" datetime={entry.data.date}>
-                  {formatDate(entry.data.date)}
-                </time>
-                <h3 class="m-0">
-                  <a href="/now/" class="text-ink-900 no-underline hover:text-red-700 transition-colors">
-                    {entry.data.title || entry.id}
-                  </a>
-                </h3>
-                {index === 0 && entry.snippet && (
-                  <p class="mt-3 mb-0 subtext max-w-[44ch]">
-                    {entry.snippet}
-                  </p>
-                )}
-              </article>
-            ))}
-          </div>
+      <div class="hero-text">
+        <h1 class="display hero-statement">{heroStatement}</h1>
+        <p class="subtext mt-8 mb-0 max-w-[52ch]">{heroWho}</p>
+        <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <a href="/work-with-me/" class="btn btn-ghost">Work with me</a>
+          <a href={PROGRAM_URL} class="link">See the program</a>
         </div>
       </div>
     </div>
   </section>
 
-  {/* ---------------------------------------------------------------------
-      PROGRAM. Minimum repair in 32.6 (the old stack is retired, and no
-      prices are published). Home's real rewrite is Phase 34.2.
-     --------------------------------------------------------------------- */}
-  <section class="section section-ruled" aria-labelledby="program-heading">
-    <div class="shell">
-      <div class="flex items-end justify-between gap-6">
-        <h2 id="program-heading" class="kicker flex-1">The program</h2>
-        <a href="/work-with-me/ai-resilient-organisation/" class="link-arrow shrink-0">All five tiers</a>
-      </div>
-
-      <p class="statement-sm mt-10 max-w-[22ch]">
-        Getting lost in all the AI noise?
-      </p>
-      <p class="mt-4 mb-0 subtext max-w-[52ch]">
-        AI-Resilient Organisation is a five-tier program for Philippine organisations whose people are already using AI tools: from an anonymous readiness survey to a hands-on agent sprint.
-      </p>
-
-      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-        <a href="/work-with-me/ai-resilient-organisation/" class="btn btn-primary">Explore the program →</a>
-        <a href="/work-with-me/#enquire" class="link-arrow">Talk to me</a>
-      </div>
-    </div>
-  </section>
-
-
-  {/* ---------------------------------------------------------------------
-      WRITING
-     --------------------------------------------------------------------- */}
-  {latestThoughts.length > 0 && (
-    <section class="section-tight" aria-labelledby="writing-heading">
+  {/* 2 — Three ways to work. Continues the hero; Work with me owns the copy. */}
+  {modes.length > 0 && (
+    <section class="section-tight" aria-labelledby="ways-heading">
       <div class="shell">
-        <div class="flex items-end justify-between gap-6">
-          <h2 id="writing-heading" class="kicker flex-1">Thoughts</h2>
-          <a href="/thoughts/" class="link-arrow shrink-0">All writing</a>
-        </div>
-
-        <p class="lead mt-6 max-w-[54ch]">
-          I'm no writer, but I'm definitely a thinker — sometimes an overthinker.
-          This is where I keep my fascinations and work out what I actually think.
-        </p>
-
-        <ul class="rows mt-10">
-          {latestThoughts.map((post) => (
+        <h2 id="ways-heading" class="kicker">Three ways to work</h2>
+        <ul class="rows mt-6">
+          {modes.map((mode) => (
             <li>
-              <a href={`/thoughts/${post.id}/`} class="row-link">
+              <a href={`/work-with-me/#${mode.anchor}`} class="row-link">
                 <span class="min-w-0">
-                  <span class="row-title block">{post.data.title}</span>
-                  <span class="block mt-2 subtext max-w-[60ch]">
-                    {post.data.excerpt}
-                  </span>
+                  <span class="row-title block font-medium">{mode.name}</span>
+                  <span class="subtext block mt-2 max-w-[60ch]">{mode.line}</span>
                 </span>
-                <time class="row-meta" datetime={post.data.publishedDate}>
-                  {post.data.publishedDate.slice(0, 4)}
-                </time>
+                <span class="row-meta" aria-hidden="true">→</span>
               </a>
             </li>
           ))}
@@ -221,35 +107,60 @@ const seoData = [
     </section>
   )}
 
-  {/* ---------------------------------------------------------------------
-      WHAT I DO.
+  {/* 3 — Program band. A new argument; the page's only tinted block. */}
+  <section class="section section-ruled" aria-labelledby="program-heading">
+    <div class="shell">
+      <div class="panel-tint program-band">
+        <p class="kicker">Program</p>
+        <h2 id="program-heading" class="statement-sm mt-8 max-w-[24ch]">{program.headline}</h2>
+        <p class="subtext mt-6 mb-0 max-w-[60ch]">{program.sub}</p>
+        <div class="mt-10">
+          <ProgramSteps steps={program.steps} />
+        </div>
+        <p class="mt-10 mb-0">
+          <a href={PROGRAM_URL} class="link">See the program</a>
+        </p>
+      </div>
+    </div>
+  </section>
 
-      Phase 21: this was three numbered glass cards in a 3-up grid, which is
-      the shape of a pricing table no matter what the cards say. It is now the
-      same ruled list the writing and the projects use — three things I do,
-      in one column, in the site's own index pattern.
-     --------------------------------------------------------------------- */}
-  {modes.length > 0 && (
-    <section class="section section-ruled" aria-labelledby="services-heading">
+  {/* 4 — Recent projects. A new argument: proof. Featured first, then newest. */}
+  {projects.length > 0 && (
+    <section class="section section-ruled" aria-labelledby="projects-heading">
       <div class="shell">
         <div class="flex items-end justify-between gap-6">
-          <h2 id="services-heading" class="kicker flex-1">What I do</h2>
-          <a href="/work-with-me/" class="link-arrow shrink-0">How we'd work together</a>
+          <h2 id="projects-heading" class="kicker flex-1">Projects</h2>
+          <a href="/projects/" class="link-arrow shrink-0">All projects</a>
         </div>
+        <ul class="rows mt-6">
+          {projects.map((project) => <ProjectRow project={project} />)}
+        </ul>
+      </div>
+    </section>
+  )}
 
-        <p class="statement-sm mt-10 max-w-[24ch]">
-          Interested in working together?
-        </p>
-
-        <ul class="rows mt-8">
-          {modes.map((mode) => (
+  {/* 5 — Latest thoughts. Continues the proof. */}
+  {thoughts.length > 0 && (
+    <section class="section-tight" aria-labelledby="thoughts-heading">
+      <div class="shell">
+        <div class="flex items-end justify-between gap-6">
+          <h2 id="thoughts-heading" class="kicker flex-1">Thoughts</h2>
+          <a href="/thoughts/" class="link-arrow shrink-0">All thoughts</a>
+        </div>
+        <ul class="rows mt-2">
+          {thoughts.map(({ post, readingTime }) => (
             <li>
-              <div class="py-6 md:py-8">
-                <h3 class="m-0">{mode.name}</h3>
-                <p class="mt-3 mb-0 subtext max-w-[60ch]">
-                  {mode.line}
-                </p>
-              </div>
+              <PostListItem
+                title={post.data.title}
+                type={post.data.type}
+                topics={post.data.topics || []}
+                date={post.data.publishedDate}
+                excerpt={post.data.excerpt}
+                url={`/thoughts/${post.id}/`}
+                readingTime={readingTime}
+                stage={post.data.stage}
+                cover={post.data.cover}
+              />
             </li>
           ))}
         </ul>
@@ -257,132 +168,81 @@ const seoData = [
     </section>
   )}
 
-  {/* ---------------------------------------------------------------------
-      PROJECTS. Hidden entirely when the shelf is empty — an empty section
-      with a "nothing here yet" is worse than no section.
-     --------------------------------------------------------------------- */}
-  {latestProjects.length > 0 && (
-    <section class="section-tight" aria-labelledby="projects-heading">
-      <div class="shell">
-        <div class="flex items-end justify-between gap-6">
-          <h2 id="projects-heading" class="kicker flex-1">Projects</h2>
-          <a href="/projects/" class="link-arrow shrink-0">All projects</a>
+  {/* 6 — Now, briefly. Continues it: what is live this month. No snippet, no
+      dot — the dot belongs to the Now page. */}
+  {nowEntries.length > 0 && (
+    <section class="section-tight" aria-labelledby="now-heading">
+      <div class="shell now-brief">
+        <div class="flex items-end justify-between gap-6 md:flex-col md:items-start md:justify-start md:gap-4">
+          <h2 id="now-heading" class="kicker now-kicker">Now</h2>
+          <a href="/now/" class="link-arrow shrink-0">Full timeline</a>
         </div>
-
-        <ul class="rows mt-8">
-          {latestProjects.map((project) => {
-            const body = (
-              <span class="min-w-0">
-                <span class="row-title block">{project.data.title}</span>
-                <span class="block mt-2 subtext max-w-[60ch]">
-                  {project.data.summary}
-                </span>
-              </span>
-            );
-            return (
-              <li>
-                {project.data.link ? (
-                  <a
-                    href={project.data.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="row-link"
-                  >
-                    {body}
-                    <span class="row-meta" aria-hidden="true">↗</span>
-                  </a>
-                ) : (
-                  <div class="row-link">{body}</div>
-                )}
-              </li>
-            );
-          })}
+        <ul class="rows now-list">
+          {nowEntries.map((entry) => (
+            <li class="now-row">
+              <time class="mono-micro" datetime={entry.data.date}>{formatDate(entry.data.date)}</time>
+              <a href="/now/" class="now-title">{entry.data.title || entry.id}</a>
+            </li>
+          ))}
         </ul>
       </div>
     </section>
   )}
 
-  {/* ---------------------------------------------------------------------
-      GALLERY.
-
-      Phase 21: this was a full-bleed infinite marquee — which is the logo-wall
-      pattern, borrowed and pointed at concert photographs. It is now a static
-      contact sheet inside the page's own column: six frames, in colour, that
-      hold still long enough to be looked at.
-     --------------------------------------------------------------------- */}
-  {stripShots.length > 0 && (
-    <section class="section-tight" aria-labelledby="gallery-heading">
-      <div class="shell">
-        <div class="flex items-end justify-between gap-6">
-          <h2 id="gallery-heading" class="kicker flex-1">I also shoot</h2>
-          <a href="/gallery/" class="link-arrow shrink-0">
-            All {photoCount} photographs
-          </a>
-        </div>
-        <p class="statement-sm mt-10 max-w-[28ch]">
-          From time to time, I want to use the right side of my brain.
-        </p>
-
-        <a
-          href="/gallery/"
-          class="mt-12 grid grid-cols-2 gap-2 no-underline sm:grid-cols-3 lg:grid-cols-6"
-          aria-label="Browse the gallery"
-        >
-          {stripShots.slice(0, 6).map((shot) => (
-            <Image
-              src={shot.image}
-              alt={shot.caption}
-              widths={[440]}
-              sizes="(min-width: 64rem) 14rem, (min-width: 40rem) 30vw, 45vw"
-              loading="lazy"
-              class="photo-sheet__frame"
-            />
-          ))}
-        </a>
+  {/* 7 — Closing CTA. The turn to action; the only red fill in <main>. */}
+  <section class="section section-ruled" aria-labelledby="cta-heading">
+    <div class="shell">
+      <h2 id="cta-heading" class="statement-sm max-w-[22ch]">
+        Not sure which of these you need? That's what the first call is for.
+      </h2>
+      <p class="subtext mt-6 mb-0">
+        Or email me: <a href={`mailto:${EMAIL}`} class="link">{EMAIL}</a>
+      </p>
+      <div class="mt-10">
+        <a href="/work-with-me/#enquire" class="btn btn-primary">Book a scoping call</a>
       </div>
-    </section>
-  )}
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  /* ---- Hero ------------------------------------------------------------ */
-  /* Phase 21 dropped two things here.
-   *
-   * The 88svh min-height: a hero sized to the viewport is a landing page
-   * holding the fold. Without it the page opens as a document — the name, the
-   * sentence, and the start of the next section, all at once.
-   *
-   * .hero__glow: a pink radial bloom behind the headline. An ambient coloured
-   * gradient is the most legible "AI-generated" tell on a page, and it was
-   * doing nothing a reader would miss. */
+  /* No viewport-height hero: the page opens as a document, with the start of
+   * the next section in view. */
   .hero {
-    padding-block: clamp(3rem, 2rem + 6vw, 6rem) clamp(3rem, 2rem + 4vw, 5rem);
+    padding-block: clamp(3rem, 2rem + 6vw, 6rem) var(--space-xl);
   }
-  /* ---- Statements ------------------------------------------------------ */
-  /* The bio statement. Bigger than prose, smaller than display — it has to hold 60+
-   * words without turning into a wall, so it runs a touch smaller and a good
-   * deal wider than the hero statement. */
-  .statement {
-    font-family: var(--font-display);
-    font-size: clamp(1.3rem, 1.05rem + 1.1vw, 1.9rem);
+  /* A sentence, not a slogan: one step below the display ladder's top so
+   * seventeen words stay four or five lines on a laptop. */
+  .hero-statement {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    max-width: 20ch;
+  }
+
+  .program-band { padding: var(--space-l); }
+
+  /* Now, briefly: label left, list right from md up. */
+  .now-brief { display: grid; gap: 1.5rem 3rem; }
+  .now-kicker::after { display: none; }
+  .now-row {
+    display: grid;
+    gap: 0.25rem 1.5rem;
+    padding-block: var(--space-s);
+  }
+  .now-row:first-child { border-top: 1px solid var(--line); }
+  .now-title {
+    color: var(--color-ink-900);
     font-weight: 500;
-    line-height: 1.32;
-    letter-spacing: -0.02em;
-    max-width: 46ch;
-    margin: 0;
-    text-wrap: pretty;
+    text-decoration: none;
   }
-  /* ---- Contact sheet ---------------------------------------------------
-   * Square-cropped, square-cornered, and in colour at rest. The old strip
-   * desaturated every frame and gave the colour back on hover, which is a
-   * gallery holding its own content hostage to an interaction. */
-  .photo-sheet__frame {
-    aspect-ratio: 1;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    opacity: 0.85;
-    transition: opacity 0.3s var(--ease-out-quint);
+  .now-title:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
   }
-  .photo-sheet__frame:hover { opacity: 1; }
+
+  @media (min-width: 48rem) {
+    .now-brief { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+    .now-row { grid-template-columns: 8rem minmax(0, 1fr); align-items: baseline; }
+  }
 </style>

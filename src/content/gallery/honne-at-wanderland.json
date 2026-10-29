@@ -4,8 +4,6 @@
   "cover": "../../assets/gallery/honne/honne-01.webp",
   "description": "HONNE at Wanderland. Shot from the front crowd edge under the inflatable clouds, catching the stage wash and crowd silhouettes.",
   "tags": ["concert", "photography", "wanderland", "honne"],
-  "featured": true,
-  "licensingAvailable": false,
   "photos": [
     { "image": "../../assets/gallery/honne/honne-01.webp", "caption": "The stage under an inflatable character and cloud set, the crowd in silhouette." },
     { "image": "../../assets/gallery/honne/honne-02.webp", "caption": "At the mic in a cap, guitar slung, the drummer behind." },

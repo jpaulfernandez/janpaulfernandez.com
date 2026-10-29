@@ -4,8 +4,6 @@
   "cover": "../../assets/gallery/bini/bini-01.webp",
   "description": "BINI at Asiya. Shot through a sea of glowing phone screens right at the rail, tracking fast choreography under shifting stage lights.",
   "tags": ["bini", "philippines", "asiya", "ppop", "concert"],
-  "featured": true,
-  "licensingAvailable": false,
   "photos": [
     { "image": "../../assets/gallery/bini/bini-01.webp", "caption": "Six across the stage mid-routine, phone screens glowing in the pit below." },
     { "image": "../../assets/gallery/bini/bini-02.webp", "caption": "Leaning into the mic, backlit by a single red lamp." },

@@ -4,8 +4,6 @@
   "cover": "../../assets/gallery/daniel/daniel-01.webp",
   "description": "Daniel Caesar at Wanderland. Shot from the back half of the field on a 50mm, which is why most of these are silhouettes and I've made peace with it.",
   "tags": ["concert", "photography", "wanderland", "daniel"],
-  "featured": true,
-  "licensingAvailable": false,
   "photos": [
     { "image": "../../assets/gallery/daniel/daniel-01.webp", "caption": "The band under a bank of white blinders, silhouettes and haze over the crowd." },
     { "image": "../../assets/gallery/daniel/daniel-02.webp", "caption": "Wide from the back of the field — the full stage rig lit cold and white." },

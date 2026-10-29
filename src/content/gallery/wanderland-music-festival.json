@@ -4,8 +4,6 @@
   "cover": "../../assets/gallery/wanderland/wanderland-01.webp",
   "description": "Wanderland across two days in Manila. Walking the grounds between the sound tent and the main stage, catching the afternoon haze and night sets.",
   "tags": ["concert", "photography", "wanderland", "festival"],
-  "featured": true,
-  "licensingAvailable": false,
   "photos": [
     { "image": "../../assets/gallery/wanderland/wanderland-01.webp", "caption": "A brass section in red suits, seen through a swirl of lens flare." },
     { "image": "../../assets/gallery/wanderland/wanderland-02.webp", "caption": "Red suit and a hollow-body guitar, mirrored on the screen behind." },

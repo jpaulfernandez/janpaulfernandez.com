@@ -259,8 +259,6 @@ export default config({
           label: 'Tags',
           itemLabel: (item) => item.value || 'Tag',
         }),
-        featured: fields.checkbox({ label: 'Featured in Footer', defaultValue: false }),
-        licensingAvailable: fields.checkbox({ label: 'Licensing Available', defaultValue: true }),
         photos: fields.array(
           fields.object({
             image: fields.image({
@@ -269,6 +267,7 @@ export default config({
               publicPath: '../../assets/gallery',
             }),
             caption: fields.text({ label: 'Caption' }),
+            date: fields.date({ label: 'Date taken (optional)' }),
           }),
           {
             label: 'Photos in this Collection',

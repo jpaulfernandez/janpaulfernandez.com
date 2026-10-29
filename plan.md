@@ -25,6 +25,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - **Phase 32 copy review (32.2).** Confirm the founding-offer terms text; confirm the facilitator proof points (the MMDC "former IT Manager" and Master's lines from the program spec were left out because `about.md` contradicts them: TODO(Paul)); review the six Work-with-me FAQ answers and the mode copy (drafted, not authored by Paul). See `docs/rebuild/notes/phase-32.md`.
 - **Phase 32 live checks (need a Vercel preview, README rule 9).** (a) Web3Forms test submission on `/work-with-me/` lands on `/thanks/` — sends one email to Paul, tell him first (32.4). (b) The seven old URLs (`/workshop`, `/workshops`, `/workshops/`, `/workshops/ai-fluency/`, `/workshops/leadership-ai/`, `/workshops/ai-for-business/`, `/workshops/vibe-coding/`) each return one-hop 301 to the target in `astro.config.mjs`, `#advise` surviving. (c) Paste `/work-with-me/` and one tier page into validator.schema.org and Google's Rich Results Test (JSON-LD parses locally: Service x4, FAQPage). The built `.vercel/output/config.json` matches the table, but its sources are slash-less (`^/workshops/ai-fluency$`) and sit behind the adapter's no-slash-to-slash 308 rule, so Vercel may need an extra entry per slash form if a hop is added (32.8).
 - **Phase 33 seed entries (33.5).** (a) Confirm the seven-entry list (kind, year, summary), and whether PHVote 2019 and 2022 stay two entries. (b) Rappler CMS migration year is a PLACEHOLDER `2023` (the repo gives only the 2018-2023 tenure); entry ships only if Paul accepts it or supplies the year. (c) Anakloud role `Tech lead` rests on rebuild-plan.md:139 only; confirm. (d) The AIM capstone is NOT seeded: Paul has not named it. (e) Oddhalls `<title>` changed from "Oddhalls — Local-first photo editor & photobook designer" to "Oddhalls — Paul Fernandez" (33.2/33.3); confirm, or put the descriptor back into the frontmatter `title`. See `docs/rebuild/notes/phase-33.md`.
+- **Phase 35 (gallery).** (a) 35.7: pinch on the grid and in the viewer tested on a real iPhone (Safari) and Android (Chrome); also confirm the white viewer ground. (b) Optional: per-photo dates (`photos[].date`) for any new shoot; the 95 existing photos have no date data (EXIF stripped) and use their set's date. See `docs/rebuild/notes/phase-35.md`.
 - **Wikidata item** (Phase 30 B2): create it and add the Q-ID to `sameAs`. Off-site, no code.
 - Phase 31 visual review (31.9 last box / Phase 31 DoD) — main is local-only, nothing pushed; review on a preview before pushing.
 - **GitHub profile URL for the footer (31.8).** No profile URL exists in the repo; the footer omits GitHub until Paul confirms `https://github.com/jpaulfernandez` (one line in `elsewhere` in `BaseLayout.astro`).
@@ -87,7 +88,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 ### Phase 35 — Gallery · [phase file](docs/rebuild/phase-35-gallery.md)
 
 - [x] (2026-10-29) 35.1 `libraryOrder()`, tests first; masonry packer removed
-- [ ] 35.2 Gallery schema: `photos[].date`, dead fields deleted
+- [x] (2026-10-29) 35.2 Gallery schema: `photos[].date`, dead fields deleted
 - [ ] 35.3 Library grid
 - [ ] 35.4 Density control (buttons, wheel, keys, pinch)
 - [ ] 35.5 Viewer with pinch-zoom

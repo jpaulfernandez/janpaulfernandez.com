@@ -219,12 +219,11 @@ const gallery = defineCollection({
     cover: image().optional(),
     description: z.string().optional(),
     tags: z.array(z.string()).default([]),
-    featured: z.boolean().default(false),
-    licensingAvailable: z.boolean().default(true),
     photos: z.array(
       z.object({
         image: image(),
         caption: z.string().optional(),
+        date: dateSchema.optional(),
       })
     ).default([]),
   }),

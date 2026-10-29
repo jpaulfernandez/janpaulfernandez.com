@@ -127,7 +127,7 @@ const seoData = [
       <div class="panel p-10">
         <p class="subtext m-0">
           Nothing here yet — but my
-          <a href="/work-with-me/#contact" class="link">inbox is open</a>.
+          <a href="/work-with-me/#enquire" class="link">inbox is open</a>.
         </p>
       </div>
     )}
@@ -154,8 +154,8 @@ const seoData = [
   }
 
   /* Year: a milestone on the rail with a rule running to the right edge —
-   * the same structural move as .kicker, several sizes up. Phase 21 took the
-   * wine out of the node and flattened the rule's gradient. */
+   * the same structural move as .kicker, several sizes up: mono, ink-400
+   * (metadata), and a hollow node like every past entry (§5.3). */
   .tl-year {
     position: relative;
     display: flex;
@@ -165,10 +165,10 @@ const seoData = [
     padding-left: 2rem;
     font-family: var(--font-mono);
     font-size: var(--text-h3);
-    font-weight: 700;
+    font-weight: 400;
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
-    color: var(--color-ink-900);
+    color: var(--color-ink-400);
   }
   .tl-year:not(:first-child) { margin-top: 2rem; }
   .tl-year::before {
@@ -180,7 +180,8 @@ const seoData = [
     width: 0.75rem;
     height: 0.75rem;
     border-radius: 50%;
-    background-color: var(--color-ink-900);
+    background-color: var(--color-paper);
+    border: 1px solid var(--color-blue-200);
   }
   .tl-year::after {
     content: '';
@@ -205,8 +206,8 @@ const seoData = [
     background-color: var(--color-paper);
     border: 1px solid var(--color-blue-200);
   }
-  /* The live entry is the only filled node. Phase 21 removed its wine halo:
-   * a glowing dot is a status light, and this is a list of dates. */
+  /* The live entry is the only filled node and the page's one red mark:
+   * red-500, no halo, no animation (§5.3). */
   .tl-item.is-current::before {
     background-color: var(--color-red-500);
     border-color: var(--color-red-500);
@@ -219,7 +220,7 @@ const seoData = [
     color: var(--color-ink-400);
     font-variant-numeric: tabular-nums;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     margin-bottom: 0.75rem;
   }
   /* The year already labels the section; the gutter only repeats it on
@@ -234,7 +235,7 @@ const seoData = [
     font-family: var(--font-mono);
     font-size: var(--text-micro);
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     color: var(--color-ink-900);
     border: 1px solid var(--line);
   }
@@ -248,7 +249,7 @@ const seoData = [
 
   .tl-prose {
     margin-top: 1rem;
-    color: var(--color-ink-600);
+    color: var(--color-ink-900);
     max-width: 62ch;
   }
 

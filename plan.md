@@ -80,7 +80,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 34.2 Home page sections (hairline hero button and closing sentence pending Paul — see Blocked)
 - [x] (2026-10-29) 34.3 Portrait crop (crop visual review pending Paul)
 - [x] (2026-10-29) 34.4 About (h1 kept as the name; How I work lines and Connect sentence pending Paul — see Blocked)
-- [ ] 34.5 Now re-skin
+- [x] (2026-10-29) 34.5 Now re-skin
 - [ ] 34.6 Verify
 - [ ] **Phase 34 Definition of Done**
 

@@ -45,3 +45,12 @@
 - Scoped `.statement-sm` deleted (the global one in `@layer components` is identical). The last How I work row drops its bottom border so it doesn't double Connect's rule.
 - Left for Phase 36: the career `.rail` (global) paints its first dot `red-500`, so About's MMDC entry has a small red node below the fold; it was written for the Now rail, which now uses its own `.tl` styles. Not touched (global, outside 34.4's files).
 - Checks: build/check/test green; one h1; `ProfilePage` ×1; scripts are `.js` class, GA4, JSON-LD; `grep "paper-\|ink-9\|wine-\|data-reveal"` → nothing; no banned words; no horizontal scroll at 375/1280.
+
+## 34.5 Now re-skin
+
+- Token audit: every `var(--color-*)` in `now.astro` resolves to a v3 token (`--color-paper` is `#FFFFFF`, still in the `@theme`); nothing was dangling. `Timeline.astro` uses `text-ink-400` only, so it was not touched.
+- Changes, all in the scoped `<style>` of `now.astro`: year headings mono `ink-400` at weight 400 (were `ink-900` bold); year node a hollow `blue-200` ring like the past entries (was a filled `ink-900` dot); entry body `.tl-prose` `ink-900` (was `ink-600`); date and "Right now" tracking 0.14em (was 0.16em). The newest node stays the one filled `red-500` dot, no halo, no animation. Comments updated to §5.3.
+- Markup: the empty-state link pointed at `/work-with-me/#contact`, which does not exist; now `#enquire`. Not visible while entries exist.
+- `seoData`, `latestDate`, description and page lead untouched. Built `dateModified` is `2026-10-23T00:00:00.000Z`, the newest entry (`released-oddhalls-beta.md`).
+- In `<main>`, the only red fill or red border is `.tl-item.is-current::before`; the other red is three inline prose links in `red-700` (allowed: links). Header's red button is outside `<main>`.
+- Checks: build/check/test green; one h1; scripts are `.js` class, GA4, JSON-LD; `git diff v2-final -- src/content/now` empty; no horizontal scroll at 375/1280.

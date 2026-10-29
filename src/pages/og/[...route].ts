@@ -7,6 +7,7 @@ import { getProjects } from '../../lib/projects';
 // guessable /og/<slug>.png URLs, leaking unpublished titles and excerpts.
 const thoughts = await getPublishedThoughts();
 const gallerySets = await getCollection('gallery');
+const tiers = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
 
 const pagesObj: Record<string, { title: string; description: string }> = {
   'home': {
@@ -24,6 +25,10 @@ const pagesObj: Record<string, { title: string; description: string }> = {
   'work-with-me': {
     title: 'Work With Me',
     description: 'Three ways to work together, and the AI-Resilient Organisation program.'
+  },
+  'program': {
+    title: 'AI-Resilient Organisation',
+    description: 'A vendor-neutral AI program for Philippine organisations, in five tiers.'
   },
   'thoughts': {
     title: 'Writing',
@@ -60,6 +65,14 @@ gallerySets.forEach((set) => {
   pagesObj[`gallery-${set.id}`] = {
     title: set.data.title,
     description: set.data.description ?? 'Photography by Paul Fernandez.'
+  };
+});
+
+// Each program tier gets its own card, keyed program-<slug>.
+tiers.forEach((t) => {
+  pagesObj[`program-${t.id}`] = {
+    title: t.data.title,
+    description: t.data.tagline
   };
 });
 

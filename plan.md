@@ -56,7 +56,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 32.5 Program overview + tier pages
 - [x] (2026-10-29) 32.6 Retire `/workshops` (courses, services, redirects)
 - [x] (2026-10-29) 32.6a Not in any task text: Home minimum repair (workshops block, `services` read and peso figures out; points at the program), `thanks.astro` "mid-workshop" wording, Person description "teaches AI workshops" (`schema.ts`), `llms.txt` About line. Home's real rewrite stays 34.2
-- [ ] 32.7 llms.txt, HTML sitemap, OG, meta descriptions
+- [x] (2026-10-29) 32.7 llms.txt, HTML sitemap, OG, meta descriptions
 - [ ] 32.8 Verify
 - [ ] **Phase 32 Definition of Done**
 

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { getCollection, getEntry } from 'astro:content';
 import { getPublishedThoughts } from '../lib/thoughts';
 
 /**
@@ -29,15 +30,46 @@ function toPlainText(body: string): string {
 export const GET: APIRoute = async ({ site }) => {
   const siteUrl = site ? site.origin : 'https://www.janpaulfernandez.com';
   const thoughts = await getPublishedThoughts();
+  const wwm = await getEntry('workWithMe', 'workWithMe');
+  const modes = wwm?.data.modes ?? [];
+  const tiers = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
+
+  // Offer facts only: no prices exist on the site, and the FAQs stay on the pages.
+  const offer = `---
+
+# Work with me
+
+URL: ${siteUrl}/work-with-me/
+
+${modes.map((m) => `## ${m.name}\n${m.line}\nWho it is for: ${m.whoFor}\nHow it runs: ${m.runsAs}\nPrice: ${m.priceSignal}`).join('\n\n')}
+
+---
+
+# AI-Resilient Organisation
+
+URL: ${siteUrl}/work-with-me/ai-resilient-organisation/
+
+${tiers
+  .map(
+    (t) => `## ${t.data.label}: ${t.data.title}
+URL: ${siteUrl}/work-with-me/ai-resilient-organisation/${t.id}/
+${t.data.tagline}
+For: ${t.data.audience}
+Duration: ${t.data.duration}
+You leave with: ${t.data.leavesWith.join('; ')}`
+  )
+  .join('\n\n')}`;
 
   const content = `# Paul Fernandez — full text
 
-> Every published essay and note from ${siteUrl}, inline. The site index with
+> The Work with me offer, and every published essay and note from ${siteUrl}, inline. The site index with
 > services, pages, and contact details lives at ${siteUrl}/llms.txt.
 
 Author: Paul Fernandez (also Jan Paul Fernandez)
 Entity ID: https://janpaulfernandez.com/#person
 Generated: ${new Date().toISOString().slice(0, 10)}
+
+${offer}
 
 ${thoughts
   .map(

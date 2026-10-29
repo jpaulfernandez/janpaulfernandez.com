@@ -11,6 +11,7 @@ import { getProjects } from '../lib/projects';
 import { formatDate } from '../lib/dates';
 
 const thoughts = await getPublishedThoughts();
+const tiers = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
 const projects = await getProjects();
 const gallerySets = (await getCollection('gallery')).sort(
   (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
@@ -44,7 +45,8 @@ const mainPages = [
   { href: '/projects/', title: 'Projects', description: 'Things built, shipped, and open-sourced, indexed by year.' },
   { href: '/gallery/', title: 'Gallery', description: 'Photography collections — concerts, festivals, and travels.' },
   { href: '/now/', title: 'Now', description: 'Current projects, active reading, and immediate focus.' },
-  { href: '/work-with-me/', title: 'Work with me', description: 'Consulting, training engagements, and contact form.' },
+  { href: '/work-with-me/', title: 'Work with me', description: 'Three ways to work together, and the enquiry form.' },
+  { href: '/work-with-me/ai-resilient-organisation/', title: 'AI-Resilient Organisation', description: 'A vendor-neutral AI program for Philippine organisations, in five tiers.' },
   { href: '/colophon/', title: 'Colophon', description: 'The stack, design constraints, and technical specifications.' },
 ];
 
@@ -187,6 +189,32 @@ const seoData = [
           </li>
         ))}
       </ul>
+    </section>
+
+    {/* 4. Program tiers */}
+    <section aria-labelledby="heading-program">
+      <div class="flex items-baseline justify-between border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="heading-program" class="kicker m-0">AI-Resilient Organisation</h2>
+        <span class="mono-micro text-ink-400">{tiers.length} tiers</span>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2">
+        {tiers.map((tier) => (
+          <div class="border border-[var(--line)] p-6 transition-colors">
+            <p class="m-0 mono-micro text-ink-400 uppercase tracking-wider">
+              {tier.data.label}
+            </p>
+            <h3 class="mt-2 mb-0 text-h3 leading-tight">
+              <a href={`/work-with-me/ai-resilient-organisation/${tier.id}/`} class="text-ink-900 no-underline hover:text-red-700 transition-colors">
+                {tier.data.title}
+              </a>
+            </h3>
+            <p class="mt-3 mb-0 subtext text-sm">
+              {tier.data.tagline}
+            </p>
+          </div>
+        ))}
+      </div>
     </section>
 
     {/* 5. Projects */}

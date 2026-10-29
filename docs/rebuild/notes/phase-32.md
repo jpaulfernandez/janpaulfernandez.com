@@ -179,3 +179,27 @@ Course markup. Tests were written first and failed 3/3 before the change.
     card removed, `work-with-me` description rewritten (cards in 32.7).
   - `contentLastmod()` never read `courses`/`services`; only a stale comment removed.
 - Frozen thought `jack-and-the-snack-culture.mdx` untouched; rule 2 diff empty.
+
+## 32.7 Discovery surfaces
+
+- `llms.txt`: "Core Services" replaced by **Work with me** (three modes, from the
+  `workWithMe` singleton) and **AI-Resilient Organisation** (overview + five tier
+  links with taglines). `llms-full.txt`: same two blocks ahead of the essays, with
+  tier facts (for, duration, you leave with) and mode facts incl. "Message for a
+  quote"; no FAQs, no prices. Neither file contains "workshop" or a peso sign.
+- HTML sitemap: "AI-Resilient Organisation" added to main pages plus a five-tier
+  block (the 32.6 commit had already removed the workshops block for the build).
+  XML sitemap lists `/work-with-me/`, the overview and five tiers (7 URLs) unchanged
+  by code.
+- **lastmod not added for the program.** `contentLastmod()` only emits a date a
+  content file owns; the program JSON has no date field, and file mtimes are the
+  checkout time on Vercel, i.e. the build-date signal the function exists to avoid.
+  Same as the other static pages, so no `<lastmod>`. Say so if Paul wants an
+  `updated` field (it would be a schema addition).
+- OG: `program` + `program-<slug>` cards (title / tagline); `work-with-me`
+  description rewritten; `ogImage` passed on the overview and tier pages. Viewed
+  `program-leadership-day.png`: legible, two lines of title, ends on the red rule.
+- Descriptions (chars): `/work-with-me/` 147 (dropped "while you build"); overview
+  152 (unchanged); tiers authored in a `DESCRIPTIONS` map in `[tier].astro` (no new
+  field): pulse 155, leadership-day 155, fluency 159, champions 158, agent-sprint 141.
+  Not derived: tagline + audience ran to 215.

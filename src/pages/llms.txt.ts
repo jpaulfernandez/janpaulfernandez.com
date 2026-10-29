@@ -1,11 +1,15 @@
 import type { APIRoute } from 'astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { getPublishedThoughts } from '../lib/thoughts';
 
 export const GET: APIRoute = async ({ site }) => {
   const siteUrl = site ? site.origin : 'https://www.janpaulfernandez.com';
 
   // Fetch collections
+  const wwm = await getEntry('workWithMe', 'workWithMe');
+  const modes = wwm?.data.modes ?? [];
+  const tiers = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
+
   const thoughts = await getPublishedThoughts();
   const recentThoughts = thoughts.slice(0, 10);
 
@@ -18,6 +22,14 @@ export const GET: APIRoute = async ({ site }) => {
 
 ## About Paul Fernandez
 Paul Fernandez is a technologist in the Philippines. He turns vague business goals into specs a development team can build from. He ran tech operations at Rappler through the 2019 and 2022 Philippine elections, built account-opening software at PSBank, and is now IT manager at Mapúa Malayan Digital College. He writes about technology, money, and psychology, and teaches AI to organisations in Manila and remotely.
+
+## Work with me
+Three ways in, all priced by quote: [Work With Me](${siteUrl}/work-with-me/)
+${modes.map((m) => `- **${m.name}**: ${m.line}`).join('\n')}
+
+## AI-Resilient Organisation
+A vendor-neutral AI program for Philippine organisations, in five tiers: [overview](${siteUrl}/work-with-me/ai-resilient-organisation/)
+${tiers.map((t) => `- [${t.data.title}](${siteUrl}/work-with-me/ai-resilient-organisation/${t.id}/): ${t.data.tagline}`).join('\n')}
 
 ## Site Navigation & Main Pages
 - [Home](${siteUrl}/): Overview and recent writings.

@@ -30,7 +30,17 @@ const partOf = programPage.data.bundles.filter((b) => b.tiers.includes(entry.id)
 const PROGRAM_URL = '/work-with-me/ai-resilient-organisation/';
 const PAGE_URL = `${PROGRAM_URL}${entry.id}/`;
 const ENQUIRE = '/work-with-me/#enquire';
-const description = `${t.tagline} ${t.label} of the AI-Resilient Organisation program, for ${t.audience.charAt(0).toLowerCase()}${t.audience.slice(1)}.`;
+// Authored per tier, 140-160 characters.
+// Deliberately not derived from tagline + audience: those two fields run to
+// 215 characters on some tiers and a tail-clamp would cut mid-clause.
+const DESCRIPTIONS: Record<string, string> = {
+  pulse: 'Find out what your people already do with AI, anonymously. Tier 0 of the AI-Resilient Organisation program: 10 to 12 minutes per person, over 3 to 4 weeks.',
+  'leadership-day': 'Five decisions, a draft policy and a 90-day plan, written by your leaders in one day. Tier 1 of the AI-Resilient Organisation program, for 12 to 25 people.',
+  fluency: 'Every employee knows what is safe to paste, spots a fake, and writes a prompt that works. Tier 2 of the AI-Resilient Organisation program, up to 20 per cohort.',
+  champions: 'Your first working automation, built by your own people, with governance built in. Tier 2.5 of the AI-Resilient Organisation program, for 8 to 15 power users.',
+  'agent-sprint': 'One real process, one prototype agent, and a clear go or no-go, in a day. Tier 3 of the AI-Resilient Organisation program, for 4 to 8 people.',
+};
+const description = DESCRIPTIONS[entry.id] ?? t.tagline;
 
 const trail = [
   { name: 'Home', url: '/' },
@@ -47,7 +57,7 @@ const seoData = [
 ];
 ---
 
-<BaseLayout title={t.title} description={description}>
+<BaseLayout title={t.title} description={description} ogImage={`/og/program-${entry.id}.png`}>
   <JsonLd data={seoData} slot="head" />
 
   <div class="shell">

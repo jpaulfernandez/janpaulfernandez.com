@@ -20,6 +20,7 @@
 // the hero's primary action is a hairline .btn (rebuild-plan §3.1 over §5.1;
 // Paul to confirm). The closing CTA's .btn-primary is the only one in <main>.
 import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import PostListItem from '../components/PostListItem.astro';
@@ -29,6 +30,7 @@ import { person, webSite, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects, recentProjects } from '../lib/projects';
 import { formatDate } from '../lib/dates';
+import portrait from '../assets/paul.webp';
 
 const homeEntry = await getEntry('home', 'home');
 const workWithMe = await getEntry('workWithMe', 'workWithMe');
@@ -71,9 +73,22 @@ const seoData = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  {/* 1 — Hero. Opens the page; no rule. */}
+  {/* 1 — Hero. Opens the page; no rule. The portrait is the LCP element:
+      eager, high priority, never wider than 800px. It comes first in the DOM
+      and stacks above the statement on narrow screens. */}
   <section class="hero">
-    <div class="shell">
+    <div class="shell hero-grid">
+      <figure class="portrait hero-portrait">
+        <Image
+          src={portrait}
+          alt="Paul Fernandez"
+          width={800}
+          widths={[320, 480, 640, 800]}
+          sizes="(min-width: 64rem) 28rem, (min-width: 48rem) 40vw, 70vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </figure>
       <div class="hero-text">
         <h1 class="display hero-statement">{heroStatement}</h1>
         <p class="subtext mt-8 mb-0 max-w-[52ch]">{heroWho}</p>
@@ -213,6 +228,19 @@ const seoData = [
   }
   /* A sentence, not a slogan: one step below the display ladder's top so
    * seventeen words stay four or five lines on a laptop. */
+  .hero-grid {
+    display: grid;
+    gap: var(--space-l) 4rem;
+    align-items: center;
+  }
+  .hero-portrait { width: 70vw; max-width: 22rem; }
+  @media (min-width: 48rem) {
+    .hero-grid { grid-template-columns: 40vw minmax(0, 1fr); }
+    .hero-portrait { width: auto; max-width: none; }
+  }
+  @media (min-width: 64rem) {
+    .hero-grid { grid-template-columns: 28rem minmax(0, 1fr); }
+  }
   .hero-statement {
     font-size: var(--text-h1);
     line-height: 1.05;

@@ -22,3 +22,12 @@
 - Description 160 characters, from the phase file's example.
 - Removed: gallery strip and `getCollection('gallery')`, `cleanSnippet`, `withInlineLinks`, the 32.6 program and "What I do" placeholders, the hero Now rail, the `.statement` / `.photo-sheet__frame` styles. `git grep "heroGreeting\|heroIntro" -- src` → nothing.
 - Checks: build/check/test green; one `h1`, one `panel-tint`, no `ProfilePage`, scripts are the inline `.js` class script, GA4 (two tags) and JSON-LD only; no `_astro/*.js`; no banned words or peso figures; no horizontal scroll at 1280.
+
+## 34.3 Portrait crop
+
+- `.portrait` defined once in `global.css` `@layer components`: hairline `--line` border, `--radius-sm` (2px), overflow hidden; `img` 4:5, `object-fit: cover`, `object-position: 50% 18%`. No grayscale, no hover transition. About's scoped `.portrait`, `:global(img)` grayscale/hover and reduced-motion rules deleted.
+- Home hero: portrait first in the DOM, left column (`28rem` from 64rem, `40vw` from 48rem); below 48rem it stacks above the h1 at `70vw` (max 22rem). At 375px the h1 starts at ~483px, inside the first screen.
+- Home `<Image>`: `widths={[320, 480, 640, 800]}`, the phase file's `sizes`, `loading="eager"`, `fetchpriority="high"`. Added `width={800}` (and `width={720}` on About, whose `widths`/`sizes` are unchanged): without it Astro's fallback `src` is the 4128px original (762 KB) and the `width`/`height` attributes say 4128×6192. With it the fallback is the largest srcset variant.
+- Bytes: 320w 13 KB, 480w 26 KB, 640w 42 KB, 800w 59 KB (Home); About 480w 26 KB, 720w 51 KB. The 799 KB original is still emitted to `_astro/` by the build but referenced by no page.
+- `object-position: 50% 18%` checked at 375, 768 and 1280: the face sits in the upper third at all three. Paul's visual review on the preview still stands (Blocked).
+- Checks: build/check/test green; axe 0 violations on `/` and `/about/`; no horizontal scroll at 375/1280; Home scripts are the `.js` class script, GA4 and JSON-LD only.

@@ -94,28 +94,29 @@ export const { getStaticPaths, GET } = await OGImageRoute({
     return {
       title: pageData.title,
       description: pageData.description,
-      bgGradient: [[250, 246, 244]],       // paper-100 is #FAF6F4
+      bgGradient: [[255, 255, 255]],       // paper is #FFFFFF
       border: {
-        color: [142, 27, 63],              // wine-500 is #8E1B3F
+        color: [255, 92, 52],              // red-500 is #FF5C34
         width: 12,
         side: 'block-end'
       },
       padding: 60,
       font: {
         title: {
-          family: 'Courier Prime',
+          families: ['Fraunces'],
           size: 60,
           weight: 'Normal',
-          color: [28, 10, 16]              // ink-900 is #1C0A10
+          color: [53, 30, 40]              // ink-900
         },
         description: {
-          family: 'Courier Prime',
+          families: ['Inter'],
           size: 26,
-          color: [110, 90, 96]             // ink-500 is #6E5A60
+          color: [89, 76, 87]              // ink-600
         }
       },
       fonts: [
-        './node_modules/@fontsource/courier-prime/files/courier-prime-latin-400-normal.woff'
+        './node_modules/@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2',
+        './node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'
       ]
     };
   }

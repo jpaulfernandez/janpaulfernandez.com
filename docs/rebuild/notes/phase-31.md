@@ -196,3 +196,37 @@ article TOC/byline (ink, underlined on purpose).
 **Grep exception.** `grep -rn "wine-" src` still prints one line: a comment in
 `src/pages/og/[...route].ts` naming the old OG colours. That file is task
 31.6's and is re-themed there.
+
+## 31.6 OG route
+
+**Font loading.** `astro-og-canvas` 0.13.0's README names no font formats and
+says nothing about variable fonts (it only says `fonts` takes file paths or
+URLs; CanvasKit's `FontMgr.FromData` does the parsing). Tested rather than
+assumed: the variable woff2 files load and render. Build log: `Loaded 2 font
+families: Fraunces, Inter`. So the step-3 fallback (static instances in
+`public/fonts/og/`) was **not needed**; `fonts:` points at
+`@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2` and
+`@fontsource-variable/inter/files/inter-latin-wght-normal.woff2`.
+
+**Gotchas.**
+- The `FontConfig` key is `families: string[]`, not `family`. The old route used
+  `family: 'Courier Prime'`, which the library ignores (it fell back to its
+  default Noto Sans stack). Now `families: ['Fraunces']` / `['Inter']`.
+- CanvasKit renders a variable font at its default instance and does not apply
+  `weight`; the Fraunces title therefore comes out at the opsz file's default
+  axis values, which reads heavier than the site's 500. Acceptable on a
+  1200x630 card at 60px; if Paul wants it lighter, the fix is a static
+  Fraunces instance (the step-3 fallback).
+- Only `home` and `thoughts`-style cards use latin glyphs; the em dash and
+  apostrophes in descriptions rendered fine (latin subset).
+
+**Reviewed PNGs** (white ground, ink-900 Fraunces title, ink-600 Inter
+description, red-500 12px rule at the bottom, nothing clipped, long title wraps
+to two lines cleanly):
+- `og/home.png` — ![home](og/home.png)
+- `og/thought.png` (If AI takes all the jobs…) — ![thought](og/thought.png)
+- `og/gallery-set.png` (Daniel Caesar at Wanderland) — ![gallery set](og/gallery-set.png)
+
+**Cleanup.** `@fontsource/courier-prime` uninstalled; `public/fonts/switzer-*`
+removed (the directory is now empty and gone). `grep -rn "wine-" src` → 0.
+Remaining Switzer/Courier mentions: `colophon.astro` only (31.7).

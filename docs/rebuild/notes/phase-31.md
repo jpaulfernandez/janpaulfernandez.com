@@ -48,3 +48,81 @@ phase file.
   is *not* an inline prose link (nav, row links, buttons, cards, tags) must
   override colour and `text-decoration` — components do this in 31.3;
   utility-styled links in markup are 31.5/31.8's concern.
+
+## 31.3 `global.css` components
+
+**Usage inventory** (before the rewrite; counted as whole-token matches inside
+string literals in `src/**/*.{astro,mdx,ts,md}` plus `astro.config.mjs`,
+`<style>` blocks excluded — script in the session scratchpad, not committed):
+
+| Class | Uses | Files | Fate |
+|---|---|---|---|
+| `.anchor-icon` | 1 | astro.config.mjs (rehype-autolink) | keep |
+| `.anchor-link` | 1 | astro.config.mjs (rehype-autolink) | keep |
+| `.brighten-line` | 1 | src/scripts/motion.ts only (dies in 31.4) | **deleted** |
+| `.btn` | 17 | 8 | keep |
+| `.btn-ghost` | 5 | 4 | keep |
+| `.btn-primary` | 12 | 7 | keep |
+| `.card` | 4 | 3 | keep |
+| `.card-interactive` | 2 | 1 (ArticleLayout) | keep |
+| `.display` | 16 | 15 | keep |
+| `.faq` | 4 | 4 | keep |
+| `.faq-mark` | 3 | 3 | keep |
+| `.field` | 10 | 2 | keep |
+| `.field-label` | 10 | 2 | keep |
+| `.kicker` | 39 | 11 | keep |
+| `.lead` | 16 | 14 | keep |
+| `.link` | 6 | 4 | keep |
+| `.link-arrow` | 11 | 6 | keep |
+| `.mono` | 3 | 2 | keep |
+| `.mono-micro` | 50 | 15 | keep |
+| `.panel` | 9 | 6 | keep (hairline box; callers go in 32.6) |
+| `.prose` | 5 | 5 | keep |
+| `.rail` / `.rail-compact` / `.rail-date` / `.rail-item` | 1 each | Timeline.astro | keep |
+| `.row-link` | 6 | 4 | keep |
+| `.row-meta` | 4 | 3 | keep |
+| `.row-title` | 5 | 4 | keep |
+| `.rows` | 8 | 7 | keep |
+| `.section` | 18 | 8 | keep |
+| `.section-ruled` | 14 | 6 | keep |
+| `.section-tight` | 11 | 6 | keep |
+| `.shell` | 34 | 17 | keep |
+| `.shell-narrow` | 3 | 1 | keep |
+| `.skip-link` | 1 | 1 | keep |
+| `.statement-sm` | 11 | 6 | keep |
+| `.subtext` | 32 | 11 | keep |
+| `.tag` | 8 | 7 | keep |
+
+**Deleted:** `.brighten-line`, every `.js [data-reveal…]` / `[data-brighten]` /
+`[data-revealed]` rule, the `.js` lines of the reduced-motion block, the
+`.rail::before` linear-gradient (now a solid `--line`), the hover `:active`
+scale on `.btn`, `.prose th` fill, `.prose code` border.
+
+**Added:** `.panel-tint` (blue-100 ground, 1px `--line`, `--space-m` padding,
+2px radius). It is the one class with **zero uses** in the final file — it is
+required by rebuild-plan §7 and 31.3 step 2, and its first callers arrive in
+Phases 32/34/36. Deliberate exception to "every class has ≥ 1 usage".
+
+**Final check:** every other class selector in `global.css` has ≥ 1 usage
+(same counting script, re-run on the finished file).
+
+**Decisions.**
+- `--line-strong` stays deleted (31.2). Nothing in the rewrite needed a
+  stronger rule; hover states that used it now use `ink-400`.
+- Base `a` is red-700/underlined, so every link-shaped component resets it:
+  `a.card`, `.tag`, `.btn`, `.link-arrow`, `.row-link`, `.anchor-link`,
+  `.skip-link` set `text-decoration: none` and their own colour.
+- `.row-title`, `.faq summary`, `.btn` moved to Inter (§3.2: Fraunces is only
+  display/h1/h2). `.display` and `.statement-sm` are Fraunces 500, `-0.02em`.
+- `.row-link:hover` underlines the title (no colour shift, nothing moves).
+- `.tag[data-active]` and the Now rail's live dot are red-500 fills (§3.1);
+  other rail dots are blue-200.
+- `.kicker`, `.mono-micro`, `.rail-date`, `.tag`, `.field-label` → 12px mono,
+  `0.14em`; `.mono`, `.link-arrow` → 13px. `.field-label` and `.link-arrow` are
+  ink-600 (read/acted on), not ink-400.
+- `.prose` gets `max-width: var(--measure)` (38rem) and drops to 17px/1.6 per
+  31.3 step 2 — narrower than the old 58rem article column. Wide tables still
+  scroll inside it; check by eye in 31.9 (Phase 36 owns the article re-skin).
+- `.section` = `--space-2xl`, `.section-tight` = `--space-xl`.
+- `.prose code, .prose kbd` on blue-100 (no `<kbd>` in content today; the
+  selector is spec'd and costs nothing). `pre` also blue-100 + hairline.

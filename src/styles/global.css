@@ -20,8 +20,8 @@
  *   paper      #FFFFFF   ground  the page
  *   paper-100  #F7F8FA   ground  alternate section ground, once per page
  *
- * A hairline is the only surface: 1px --line, radius ≤ 4px, no shadow, no
- * backdrop-filter, no gradient. Red never carries white text.
+ * A hairline is the only surface: 1px --line, radius ≤ 4px, no shadow, no blur,
+ * no colour ramps. Red never carries white text.
  * ========================================================================= */
 
 @theme {
@@ -211,16 +211,21 @@
  * This is load-bearing, not tidiness. Tailwind 4 emits its utilities inside
  * `@layer utilities`, and an UNLAYERED rule beats any layered one regardless
  * of specificity. Left unlayered, `.btn { display: inline-flex }` here would
- * silently defeat `hidden sm:inline-flex` in the markup — which it did, until
- * the mobile nav shipped a button that would not hide. Declaring these as
+ * silently defeat `hidden sm:inline-flex` in the markup. Declaring these as
  * components puts them below utilities in the cascade, so a utility in the
- * markup always wins, which is the whole point of having utilities.
+ * markup always wins.
  *
- * The reduced-motion block near the end is deliberately left OUT of the layer:
+ * The reduced-motion block after the layer is deliberately left OUT of it:
  * it has to beat utilities too.
  * ------------------------------------------------------------------------- */
 
 @layer components {
+
+/* The `.js` contract. A blocking inline script in <head> adds `js` to <html>
+ * before first paint. Any hidden resting state (a collapsed control, an
+ * unopened viewer) must sit behind a `.js` ancestor selector, so a page whose
+ * scripts are blocked, broken or still loading renders fully usable. No rule
+ * needs it yet; the Phase 35 gallery controls will. */
 
 /* ============================================================================
  * SHELL
@@ -234,94 +239,76 @@
   margin-inline: auto;
   padding-inline: var(--shell-x);
 }
-/* Reading column: 58rem (928px). With desktop padding (--shell-x: 2.5rem = 80px total),
- * inner usable width is 53rem (848px). At 44rem, inner width was compressed to
- * 39rem (624px), which crushed article titles into 4 lines, squeezed 4-column
- * Markdown tables, and rendered architecture diagrams illegible. 58rem restores
- * comfortable diagram legibility and table breathing room while keeping line lengths
- * well within readable bounds. */
+/* Article column (58rem). Leaves room for tables and diagrams; the reading
+ * measure itself is set on .prose. */
 .shell-narrow {
   width: 100%;
-  max-width: 58rem;             /* 928 — comfortable article column */
+  max-width: 58rem;
   margin-inline: auto;
   padding-inline: var(--shell-x);
 }
 
-/* Vertical rhythm between major page sections.
- *
- * Phase 29: these were a hierarchy on paper and a single value in practice —
- * .section-tight appeared 22 times against .section's 3, so every section on
- * every page had identical padding, and six of them stacked on the homepage
- * read as one continuous wall. The fix is to actually use both: .section for
- * a section that starts a new argument, .section-tight for one that continues
- * the previous. See .section-ruled for the other half of it. */
-.section { padding-block: clamp(4rem, 2rem + 8vw, 9rem); }
-.section-tight { padding-block: clamp(3rem, 2rem + 4vw, 5rem); }
+/* Vertical rhythm. .section opens a new argument (pair it with
+ * .section-ruled); a bare .section-tight continues the one before it. */
+.section { padding-block: var(--space-2xl); }
+.section-tight { padding-block: var(--space-xl); }
 
-/* The top hairline, as a class rather than a `border-t` utility repeated in
- * the markup. A printed document rules a line where the argument turns, not
- * at every interval — so this goes on the sections that open something new,
- * and the ones that continue a thought are separated by their padding alone. */
+/* A rule where the argument turns, not at every interval. */
 .section-ruled { border-top: 1px solid var(--line); }
 
 /* ============================================================================
  * TYPE PRIMITIVES
  * ========================================================================= */
 
-/* The hero statement. One per page, at most — the only thing allowed to sit
- * above h1 in the scale. -4% tracking and a line-height under 1 are what make
- * it read as a single mass rather than a stack of words. */
+/* The hero statement. One per page, at most. */
 .display {
   font-family: var(--font-display);
+  font-optical-sizing: auto;
   font-size: var(--text-display);
   font-weight: 500;
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-  color: var(--color-paper-50);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-ink-900);
   text-wrap: balance;
   margin: 0;
 }
 
-/* Phase 21: `.flare` (a wine word inside display type) and `.dim` (the resting
- * state of the word-brightening scrub) are both gone. The flare was applied on
- * fifteen pages, which turned "one accent word" into a tic, and highlighting a
- * keyword in a headline is a growth-marketing device regardless of how it is
- * coloured. Display type is now paper-50, full stop. */
+/* The section-opening line, at heading scale. */
+.statement-sm {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-size: var(--text-h2);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-ink-900);
+  margin: 0;
+}
 
-/* Standfirst / hero sub-paragraph. Phase 29 moved this off paper-400: it is
- * the second most important line on the page and it was painted the same grey
- * as a date stamp. paper-200 keeps it clearly subordinate to the display type
- * without demoting it to metadata. */
+/* Standfirst / hero sub-paragraph — secondary reading copy, not metadata. */
 .lead {
   font-size: var(--text-lead);
   line-height: 1.55;
-  color: var(--color-paper-200);
-  letter-spacing: -0.014em;
+  color: var(--color-ink-600);
   max-width: 40ch;
 }
 
-/* Descriptive subtext — the sentence under a card title, a service, a step.
- * This is the class the 20 `text-small text-paper-400` paragraphs became:
- * reading material, so body size and the paper-200 tier, not 13px metadata
- * grey. Kept as a class rather than a utility pair so the next one is right
- * by default. */
+/* Descriptive subtext — the sentence under a title. Body size, ink-600:
+ * reading material, never the metadata tier. */
 .subtext {
   font-size: var(--text-body);
-  line-height: 1.65;
-  color: var(--color-paper-200);
-  letter-spacing: -0.011em;
+  line-height: 1.6;
+  color: var(--color-ink-600);
 }
 
-/* Section label. Mono, micro, uppercase, with a flat rule running out to the
- * right edge. Phase 21 removed the wine dot and its halo: a glowing accent
- * bullet is decoration, and the rule alone already says "new section". */
+/* Section label. Mono, uppercase, with a hairline running to the right edge. */
 .kicker {
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
+  font-size: 0.75rem;           /* 12 */
   font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
-  color: var(--color-paper-400);
+  letter-spacing: 0.14em;
+  color: var(--color-ink-400);
   margin: 0;
   display: flex;
   align-items: center;
@@ -334,72 +321,73 @@
   background-color: var(--line);
 }
 
-/* Mono metadata — dates, counters, coordinates, the clock. */
+/* Mono metadata — dates, counters, code-ish labels. */
 .mono {
   font-family: var(--font-mono);
-  font-size: var(--text-small);
-  letter-spacing: 0.04em;
+  font-size: 0.8125rem;         /* 13 */
+  letter-spacing: 0.14em;
   font-variant-numeric: tabular-nums;
-  color: var(--color-paper-400);
+  color: var(--color-ink-400);
 }
 .mono-micro {
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
+  font-size: 0.75rem;           /* 12 */
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   font-variant-numeric: tabular-nums;
-  color: var(--color-paper-400);
+  color: var(--color-ink-400);
 }
 
 /* ============================================================================
- * SURFACES
+ * SURFACES — a hairline is the only surface
  * ========================================================================= */
 
-/* Phase 21: the glass card is gone. A white-alpha fill with a 16px radius and
- * a 1px white border is the generic dark-mode component kit, and three of them
- * in a row is a features section no matter what they contain. What is left is
- * a single hairline above the block — the thing a printed document would do. */
+/* A block marked by one hairline above it. */
 .card {
   position: relative;
   border-top: 1px solid var(--line);
-  transition: border-color 0.22s var(--ease-out-quint), color 0.22s var(--ease-out-quint);
+  transition: border-color 0.22s var(--ease-out-quint);
 }
-a.card:hover, .card-interactive:hover {
-  border-top-color: var(--color-paper-400);
-  color: var(--color-paper-50);
-}
+a.card { color: inherit; text-decoration: none; }
+a.card:hover, .card-interactive:hover { border-top-color: var(--color-ink-400); }
 
-/* A bounded block — the contact form, an empty state. One hairline box, no
- * fill: it marks an edge without pretending to be a raised surface. */
+/* A bounded block — one hairline box, no fill. */
 .panel { border: 1px solid var(--line); }
 
-/* Small caps-ish label chip — topic tags, service tags, tool names. */
+/* The one tinted block, at most once per page. Inside it, secondary copy is
+ * ink-600, not ink-400 (the tightest pair). */
+.panel-tint {
+  background-color: var(--color-blue-100);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--space-m);
+}
+
+/* Label chip — topic tags, tool names. */
 .tag {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--color-paper-100);
-  background-color: var(--surface-1);
-  border: 1px solid var(--line-strong);
+  color: var(--color-ink-600);
+  text-decoration: none;
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 0.375rem 0.625rem;
   white-space: nowrap;
-  transition: color 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint);
+  transition: color 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint);
 }
 a.tag:hover {
-  color: var(--color-paper-50);
-  border-color: var(--color-paper-100);
-  background-color: var(--surface-2);
+  color: var(--color-ink-900);
+  border-color: var(--color-ink-400);
 }
-/* The selected topic inverts rather than tinting — a filter that is ON should
- * be unmissable without spending the accent on it. */
+/* The selected filter chip is a red fill carrying ink-900 (5.0:1). */
 .tag[data-active="true"] {
-  color: var(--color-ink-950);
-  background-color: var(--color-paper-100);
-  border-color: var(--color-paper-100);
+  color: var(--color-ink-900);
+  background-color: var(--color-red-500);
+  border-color: var(--color-red-500);
 }
 
 /* ============================================================================
@@ -410,44 +398,32 @@ a.tag:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-body);
   font-weight: 500;
-  letter-spacing: -0.01em;
   line-height: 1;
+  text-decoration: none;
   padding: 0.8125rem 1.25rem;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.22s var(--ease-out-quint), color 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint), transform 0.3s var(--ease-out-quint);
+  transition: background-color 0.22s var(--ease-out-quint), color 0.22s var(--ease-out-quint), border-color 0.22s var(--ease-out-quint);
 }
-.btn:active { transform: scale(0.975); }
 
-/* Phase 21: the solid white pill was the hero's conversion button, and a
- * filled CTA is the loudest SaaS tell on a page. The primary control is now
- * outlined and fills only on hover — present, findable, not shouting. It is
- * used once per page, on the pages that actually ask for something.
- *
- * .btn-wine is deleted rather than restyled: a wine-filled button was the only
- * place the accent appeared as a large field, and nothing referenced it. */
+/* The one red fill. ink-900 on red-500 is 5.0:1 — never white on red. */
 .btn-primary {
-  border-color: var(--color-paper-50);
-  color: var(--color-paper-50);
+  background-color: var(--color-red-500);
+  border-color: var(--color-red-500);
+  color: var(--color-ink-900);
 }
-.btn-primary:hover {
-  background-color: var(--color-paper-50);
-  color: var(--color-ink-950);
-}
+.btn-primary:hover { border-color: var(--color-ink-900); }
 
 .btn-ghost {
   border-color: var(--line);
-  color: var(--color-paper-100);
+  color: var(--color-ink-900);
 }
-.btn-ghost:hover {
-  border-color: var(--color-paper-400);
-  color: var(--color-paper-50);
-}
+.btn-ghost:hover { border-color: var(--color-ink-400); }
 
 /* Text link that ends in an arrow. The arrow travels on hover; the label does
  * not, so the hit target never shifts under the cursor. */
@@ -455,30 +431,31 @@ a.tag:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: var(--text-small);
   font-family: var(--font-mono);
+  font-size: 0.8125rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--color-paper-400);
+  color: var(--color-ink-600);
+  text-decoration: none;
 }
-.link-arrow:hover { color: var(--color-wine-400); }
+.link-arrow:hover { color: var(--color-red-700); }
 .link-arrow::after {
   content: '→';
   transition: transform 0.3s var(--ease-out-quint);
 }
 .link-arrow:hover::after { transform: translateX(0.25rem); }
 
-/* Inline prose link. The only underlined thing on the site. */
+/* Inline prose link. */
 .link {
-  color: var(--color-wine-400);
+  color: var(--color-red-700);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
-  text-decoration-color: color-mix(in srgb, var(--color-wine-400) 40%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--color-red-700) 40%, transparent);
 }
 .link:hover {
-  color: var(--color-paper-50);
-  text-decoration-color: var(--color-paper-50);
+  color: var(--color-ink-900);
+  text-decoration-color: var(--color-ink-900);
 }
 
 /* ============================================================================
@@ -494,37 +471,39 @@ a.tag:hover {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: clamp(1.25rem, 1rem + 1vw, 2rem) 0;
+  padding: var(--space-m) 0;
   min-height: 3.5rem;
-  color: var(--color-paper-100);
+  color: var(--color-ink-900);
+  text-decoration: none;
   isolation: isolate;
 }
-/* Phase 21: the gradient wash that bled in from the left on hover is gone, and
- * so is the 0.5rem nudge on the title. Both are template hover-craft — three
- * things moving at once to acknowledge a mouse. A row is a line in an index;
- * it brightens, and that is the whole feedback. */
-.row-link:hover { color: var(--color-paper-50); }
+/* A row is a line in an index; hovering underlines its title, nothing moves. */
+.row-link:hover .row-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
 
 .row-title {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-h3);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .row-meta {
   font-family: var(--font-mono);
   font-size: var(--text-small);
-  color: var(--color-paper-400);
+  color: var(--color-ink-400);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
   transition: color 0.22s var(--ease-out-quint);
 }
-.row-link:hover .row-meta { color: var(--color-paper-100); }
+.row-link:hover .row-meta { color: var(--color-ink-600); }
 
 /* ============================================================================
- * TIMELINE RAIL — career on /about, entries on /now
+ * TIMELINE RAIL — entries on /now
  * ========================================================================= */
 
 .rail { position: relative; }
@@ -535,7 +514,7 @@ a.tag:hover {
   top: 0.625rem;
   bottom: 0.625rem;
   width: 1px;
-  background: linear-gradient(180deg, var(--line-strong), var(--line), transparent);
+  background-color: var(--line);
 }
 .rail-item { position: relative; padding-left: 2rem; padding-bottom: 3rem; }
 .rail-item:last-child { padding-bottom: 0; }
@@ -547,23 +526,19 @@ a.tag:hover {
   width: 0.4375rem;
   height: 0.4375rem;
   border-radius: 50%;
-  background-color: var(--color-paper-600);
-  transition: background-color 0.22s var(--ease-out-quint);
+  background-color: var(--color-blue-200);
 }
-/* The newest entry is the live one, marked by a filled white node against the
- * grey of the rest. Phase 21 removed its wine halo — a glowing dot is a status
- * light, and this is a date list. */
-.rail-item:first-child::before { background-color: var(--color-paper-50); }
-.rail-item:hover::before { background-color: var(--color-paper-100); }
+/* The newest entry is the live one: the Now rail dot is a red fill (§3.1). */
+.rail-item:first-child::before { background-color: var(--color-red-500); }
 
 .rail-date {
   display: block;
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  color: var(--color-paper-400);
+  font-size: 0.75rem;
+  color: var(--color-ink-400);
   font-variant-numeric: tabular-nums;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   margin-bottom: 0.5rem;
 }
 
@@ -588,33 +563,28 @@ a.tag:hover {
  * ========================================================================= */
 
 .prose {
+  max-width: var(--measure);
   font-family: var(--font-body);
-  font-size: 1.125rem;                /* 18 — long-form gets one step up */
-  line-height: 1.7;
-  letter-spacing: -0.011em;
-  color: var(--color-paper-100);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--color-ink-900);
 }
 /* Flow spacing, not per-element margins: one gap between siblings, owned in
  * one place. Both rules are specificity (0,1,0) so source order decides — the
- * reset must come first. Anything more specific below (`.prose h2`, the lists)
- * then overrides the default gap on purpose. */
+ * reset must come first. */
 .prose > * { margin-block: 0; }
 .prose > * + * { margin-top: 1.5em; }
-.prose strong { color: var(--color-paper-50); font-weight: 600; }
+.prose strong { color: var(--color-ink-900); font-weight: 600; }
 .prose em { font-style: italic; }
 
 .prose h2 {
   font-size: var(--text-h2);
-  color: var(--color-paper-50);
-  letter-spacing: -0.03em;
   line-height: 1.1;
   margin-top: 2em;
   margin-bottom: 0;
 }
 .prose h3 {
   font-size: var(--text-h3);
-  color: var(--color-paper-50);
-  letter-spacing: -0.02em;
   line-height: 1.2;
   margin-top: 1.75em;
   margin-bottom: 0;
@@ -622,15 +592,15 @@ a.tag:hover {
 .prose h2 + *, .prose h3 + * { margin-top: 0.75em; }
 
 .prose a:not(.tag):not(.btn) {
-  color: var(--color-wine-400);
+  color: var(--color-red-700);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
-  text-decoration-color: color-mix(in srgb, var(--color-wine-400) 40%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--color-red-700) 40%, transparent);
 }
 .prose a:not(.tag):not(.btn):hover {
-  color: var(--color-paper-50);
-  text-decoration-color: var(--color-paper-50);
+  color: var(--color-ink-900);
+  text-decoration-color: var(--color-ink-900);
 }
 
 .prose ul, .prose ol {
@@ -638,31 +608,30 @@ a.tag:hover {
   margin-top: 1.25em;
 }
 .prose li { margin-bottom: 0.5em; }
-.prose li::marker { color: var(--color-paper-600); }
+.prose li::marker { color: var(--color-ink-400); }
 .prose ul { list-style-type: square; }
 .prose ol { list-style-type: decimal; }
 
 .prose blockquote {
-  border-left: 2px solid var(--line-strong);
+  border-left: 2px solid var(--line);
   padding-left: 1.5rem;
   font-style: italic;
-  color: var(--color-paper-100);
+  color: var(--color-ink-600);
 }
 
-.prose code {
+.prose code, .prose kbd {
   font-family: var(--font-mono);
   font-size: 0.9em;
-  background-color: var(--surface-2);
-  color: var(--color-paper-50);
+  background-color: var(--color-blue-100);
+  color: var(--color-ink-900);
   padding: 0.15em 0.4em;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
 }
 .prose pre {
-  background-color: var(--color-ink-800);
-  color: var(--color-paper-100);
+  background-color: var(--color-blue-100);
+  color: var(--color-ink-900);
   padding: 1.5rem;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line);
   border-radius: var(--radius-md);
   overflow-x: auto;
   font-family: var(--font-mono);
@@ -670,7 +639,7 @@ a.tag:hover {
   line-height: 1.6;
 }
 .prose pre code {
-  background: transparent; padding: 0; border: none; color: inherit; font-size: inherit;
+  background: transparent; padding: 0; color: inherit; font-size: inherit;
 }
 
 .prose hr {
@@ -679,14 +648,12 @@ a.tag:hover {
   margin-block: 3em;
 }
 
-/* Phase 21: photographs are square-cornered. A rounded photo is a thumbnail. */
 .prose img { border-radius: 0; }
 .prose figure { margin: 0; }
 .prose figcaption {
   font-family: var(--font-mono);
   font-size: var(--text-small);
-  color: var(--color-paper-100);
-  opacity: 0.85;
+  color: var(--color-ink-600);
   margin-top: 0.75rem;
   line-height: 1.5;
 }
@@ -706,17 +673,16 @@ a.tag:hover {
   vertical-align: top;
 }
 .prose th {
-  background-color: var(--surface-1);
   font-weight: 600;
-  color: var(--color-paper-50);
+  color: var(--color-ink-900);
 }
 
-/* Heading anchors (rehype-autolink-headings, appended). The "#" is drawn in
- * CSS rather than emitted as a text node, so anything extracting heading text
- * reads "My Heading", not "My Heading#". */
+/* Heading anchors (rehype-autolink-headings in astro.config.mjs, appended).
+ * The "#" is drawn in CSS rather than emitted as a text node, so anything
+ * extracting heading text reads "My Heading", not "My Heading#". */
 .anchor-link {
   margin-left: 0.5rem;
-  color: var(--color-paper-600);
+  color: var(--color-ink-400);
   text-decoration: none;
   opacity: 0;
   transition: opacity 0.22s var(--ease-out-quint), color 0.22s var(--ease-out-quint);
@@ -726,13 +692,10 @@ h2:hover .anchor-link,
 h3:hover .anchor-link,
 h4:hover .anchor-link,
 .anchor-link:focus-visible { opacity: 1; }
-.anchor-link:hover { color: var(--color-paper-100); }
+.anchor-link:hover { color: var(--color-ink-900); }
 
 /* ============================================================================
- * DISCLOSURE LIST — the FAQ pattern (/work-with-me, /workshops)
- *
- * Native <details>, rung 4 of the YAGNI ladder. Extracted here on its second
- * use rather than pasted into a third scoped <style> block.
+ * DISCLOSURE LIST — the FAQ pattern. Native <details>.
  * ========================================================================= */
 
 .faq { border-bottom: 1px solid var(--line); }
@@ -744,126 +707,61 @@ h4:hover .anchor-link,
   padding-block: 1.25rem;
   cursor: pointer;
   list-style: none;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-body);
-  font-weight: 500;
-  color: var(--color-paper-100);
-  transition: color 0.22s var(--ease-out-quint);
+  font-weight: 600;
+  color: var(--color-ink-900);
 }
 .faq summary::-webkit-details-marker { display: none; }
-.faq summary:hover { color: var(--color-paper-50); }
 .faq-mark {
   flex-shrink: 0;
-  color: var(--color-paper-400);
+  color: var(--color-ink-400);
   font-size: 1.125rem;
   line-height: 1;
   transition: transform 0.3s var(--ease-out-quint);
 }
 .faq[open] .faq-mark { transform: rotate(45deg); }
-.faq[open] summary { color: var(--color-paper-50); }
 .faq p {
   margin: 0 0 1.5rem;
-  max-width: 68ch;
-  color: var(--color-paper-400);
-  line-height: 1.7;
+  max-width: var(--measure);
+  color: var(--color-ink-600);
+  line-height: 1.6;
 }
 
 /* ============================================================================
- * FORM FIELDS — the enquiry forms (/work-with-me, /workshops)
+ * FORM FIELDS — the enquiry forms
  * ========================================================================= */
 
 .field-label {
   display: block;
   margin-bottom: 0.5rem;
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--color-paper-400);
+  letter-spacing: 0.14em;
+  color: var(--color-ink-600);
 }
 .field {
   width: 100%;
   padding: 0.875rem 1rem;
-  background-color: var(--color-ink-700);
-  border: 1px solid var(--line);
+  background-color: var(--color-paper);
+  border: 1px solid var(--color-blue-200);
   border-radius: var(--radius-sm);
-  color: var(--color-paper-50);
+  color: var(--color-ink-900);
   font-family: var(--font-body);
   font-size: var(--text-body);
-  transition: border-color 0.22s var(--ease-out-quint), background-color 0.22s var(--ease-out-quint);
+  transition: border-color 0.22s var(--ease-out-quint);
 }
-.field::placeholder { color: var(--color-paper-600); }
-.field:hover { border-color: var(--line-strong); }
-/* The focus ring is one of the three places wine survives Phase 21 — it is
- * the accent doing its actual job, telling you where the keyboard is. */
-.field:focus {
-  border-color: var(--color-wine-400);
-  background-color: var(--color-ink-800);
-}
+.field::placeholder { color: var(--color-ink-400); }
+.field:hover { border-color: var(--color-ink-400); }
+.field:focus { border-color: var(--color-red-700); }
 textarea.field { resize: vertical; min-height: 8rem; }
-/* A <select> gets the platform arrow back explicitly: `appearance: none` on a
- * dark ground leaves no affordance at all, and drawing a chevron in CSS is a
- * component kit's job, not this site's. */
+/* Keep the platform arrow on <select>: drawing a chevron is a kit's job. */
 select.field {
   appearance: auto;
-  color-scheme: dark;
+  color-scheme: light;
   cursor: pointer;
 }
-
-/* The section-opening line. Short enough to run at heading scale — used on the
- * home page, /work-with-me and /workshops. */
-.statement-sm {
-  font-family: var(--font-display);
-  font-size: var(--text-h2);
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  color: var(--color-paper-50);
-  margin: 0;
-}
-
-/* ============================================================================
- * MOTION
- *
- * Reveal primitives. The hidden resting state is applied ONLY under `.js`,
- * which a blocking inline script in <head> sets before first paint — so with
- * JavaScript off or broken, every [data-reveal] element renders normally
- * instead of staying invisible forever. GSAP then animates from this state.
- * ========================================================================= */
-
-.js [data-reveal] { opacity: 0; will-change: opacity, transform; }
-.js [data-reveal="up"]    { transform: translate3d(0, 1.25rem, 0); }
-.js [data-reveal="fade"]  { transform: none; }
-.js [data-reveal="scale"] { transform: scale(0.985); }
-
-/* Line-by-line brighten. Unlike [data-reveal] this never hides the element:
- * SplitText breaks it into lines and GSAP scrubs each from dim grey to full
- * colour on scroll. This resting opacity is the fallback if the runtime never
- * runs — dim but perfectly readable, not hidden. */
-.js [data-brighten] { opacity: 0.55; }
-.brighten-line { will-change: opacity; }
-
-/* Marks the element GSAP has finished with, so `will-change` is released. */
-[data-revealed] { will-change: auto; }
-
-} /* end @layer components */
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  /* Everything that moves on this site is decorative — the content is all in
-   * the DOM and legible without a single animation running. So neutralise the
-   * lot rather than enumerating it, and un-hide the JS reveal states. */
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-  .js [data-reveal] { opacity: 1 !important; transform: none !important; }
-  .js [data-brighten] { opacity: 1 !important; }
-}
-
-@layer components {
 
 /* ============================================================================
  * SKIP LINK
@@ -874,8 +772,9 @@ select.field {
   left: 1rem;
   top: -4rem;
   z-index: 200;
-  background-color: var(--color-paper-50);
-  color: var(--color-ink-950);
+  background-color: var(--color-ink-900);
+  color: var(--color-paper);
+  text-decoration: none;
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-sm);
   font-weight: 500;
@@ -884,3 +783,14 @@ select.field {
 .skip-link:focus { top: 1rem; }
 
 } /* end @layer components */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  /* Every transition here is decorative; neutralise the lot. */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

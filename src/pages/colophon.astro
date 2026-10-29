@@ -12,10 +12,9 @@ const seoData = [
   ]),
 ];
 
-// Phase 20 rewrote most of these entries. The old page claimed one typeface and
-// "two small vanilla scripts" of client JS; both stopped being true the moment
-// the redesign brought in Switzer and GSAP, and a colophon that lies
-// about its own stack is worse than no colophon.
+// Every entry states a fact about the current build (v3, Phase 31). Update it
+// when the stack changes: a colophon that lies about its own stack is worse
+// than no colophon.
 const stack = [
   {
     label: 'Framework',
@@ -34,8 +33,8 @@ const stack = [
   },
   {
     label: 'Type',
-    value: 'Switzer + Courier Prime',
-    note: 'Switzer (Fontshare) draws the display and the prose; Courier Prime survives from the previous design for labels, dates and code. Both self-hosted, five faces total.',
+    value: 'Fraunces + Inter + JetBrains Mono',
+    note: 'Fraunces draws the headlines, Inter the text and interface, JetBrains Mono the labels, dates and code. All three are variable fonts from Fontsource, self-hosted.',
   },
   {
     label: 'Hosting',
@@ -50,17 +49,17 @@ const stack = [
 ];
 
 const principles = [
-  'Static HTML before an island. Vanilla JS before a framework. CSS before JS. The motion layer is the one deliberate exception, and it is one file.',
+  'Static HTML before an island. Vanilla JS before a framework. CSS before JS. There is no animation library.',
   'Nothing on the page depends on JavaScript to be readable — turn it off and every word is still there.',
   'Reading time is Math.ceil(words / 200), not a dependency.',
-  'One accent colour, used sparingly enough that it still means something.',
-  'Every colour used at body size clears WCAG AA against the near-black ground.',
+  'One red, used like a highlighter: sparingly enough that it still means something.',
+  'Every colour used at body size clears WCAG AA against the white ground.',
 ];
 ---
 
 <BaseLayout
   title="Colophon"
-  description="How this site is built: Astro, Tailwind and Keystatic, statically generated, two typefaces, one accent colour, and the rules it holds itself to."
+  description="How this site is built: Astro, Tailwind and Keystatic, statically generated, three typefaces, one accent colour, and the rules it holds itself to."
   ogImage="/og/colophon.png"
 >
   <JsonLd data={seoData} slot="head" />

@@ -230,3 +230,35 @@ to two lines cleanly):
 **Cleanup.** `@fontsource/courier-prime` uninstalled; `public/fonts/switzer-*`
 removed (the directory is now empty and gone). `grep -rn "wine-" src` → 0.
 Remaining Switzer/Courier mentions: `colophon.astro` only (31.7).
+
+## 31.7 Docs
+
+**CLAUDE.md sections rewritten:** intro line; Workflow step 2 (phase files in
+`docs/rebuild/phase-NN-*.md`, archive not `tasks/`); YAGNI (GSAP/Lenis
+sentences removed); "Client JS" (replaced with the rule-7 budget); "Motion must
+be removable" (deleted, `.js` guard folded into the Client JS bullet);
+"Palette is dark" (now the v3 white palette); "Contrast has a ceiling"
+(replaced by "`ink-900` is the darkest value"); the type-ramp bullet (three
+tiers, `ink-*` names); the hairline bullet (`--line` = blue-200, `.panel-tint`
+once per page); "Two families" (three, Fontsource variable); the dark-mode
+parenthetical. Workflow, commands, YAGNI ladder, `@layer components`, rhythm,
+schema parity, `@id` and the other surviving rules are untouched. No
+branch-per-phase rule was added (work is on `main`). `AGENTS.md` / `GEMINI.md`
+are one-line `@CLAUDE.md` imports. `.claude/skills/fable-frontend-developer/SKILL.md`
+grep for wine|switzer|gsap|dark|data-reveal|courier|lenis|paper-|ink- → no hits;
+no change needed.
+
+**Colophon.** Type row now "Fraunces + Inter + JetBrains Mono" (variable,
+Fontsource, self-hosted); the header comment no longer names Switzer/GSAP; the
+"motion layer is the one deliberate exception" principle now says there is no
+animation library; "one accent colour" and "near-black ground" lines updated
+to the red highlighter and the white ground; meta description says three
+typefaces. (The GSAP stack row was already removed in 31.4.)
+
+**Done-when greps.**
+- `grep -niE "wine|switzer|courier|gsap|lenis|data-reveal|dark|#FFF|paper-50|ink-950" CLAUDE.md`
+  → two intentional hits, both negations: line 39 ("GSAP and the `data-reveal`
+  vocabulary are gone") and line 50 ("Dark mode is not on the list … no dark
+  theme to maintain").
+- `grep -n "Switzer\|Courier\|GSAP" src/pages/colophon.astro` → 0.
+- `grep -rniE "switzer|courier|gsap" src package.json` → 0.

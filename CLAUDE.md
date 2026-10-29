@@ -1,13 +1,13 @@
 # CLAUDE.md — how to work on janpaulfernandez.com
 
-Personal site for Jan Paul Fernandez: Astro 5 + Tailwind 4 + Keystatic (git-based CMS), fully static, deployed on Vercel. Full requirements live in **spec.md**. Build order lives in **plan.md**.
+Personal site for Jan Paul Fernandez: Astro 5 + Tailwind 4 + Keystatic (git-based CMS), fully static, deployed on Vercel. The v3 rebuild is specified in **rebuild-plan.md** (what and why); build order lives in **plan.md**; task detail lives in `docs/rebuild/phase-NN-*.md`. `spec.md` is the v1 spec and is rewritten in task 36.4; where it disagrees with rebuild-plan.md, rebuild-plan.md wins.
 
 These rules apply to any coding agent (Claude, Gemini, GPT) and to humans.
 
 ## Workflow — plan.md is the tracker
 
 1. **Always start at plan.md.** Work the first unchecked task, in order. Don't skip ahead or parallelize phases.
-2. Read the task's phase file in `docs/rebuild/` completely before writing code (finished v1/v2 task files are in `docs/archive/`). It has context, steps, and a **Definition of Done**.
+2. Read the task's phase file in `docs/rebuild/phase-NN-*.md` completely before writing code (finished v1/v2 task files are in `docs/archive/`, not `tasks/`). It has context, steps, and a **Definition of Done**.
 3. A task is complete ONLY when every DoD checkbox passes. Then mark it in plan.md: `[x] (YYYY-MM-DD)`. Never check a box with failing builds/tests or partial work.
 4. If a task is blocked (missing info from Paul, upstream bug), don't improvise around it silently: log it under "Blocked-on-Paul items" in plan.md, use an obvious placeholder, and say so.
 5. If you discover necessary work no task covers, don't just do it — add it to plan.md (new checkbox + task file if non-trivial) so the tracker stays truthful.
@@ -23,7 +23,7 @@ Before adding ANY dependency, abstraction, component, or config, ask in order:
 5. Does an already-installed dependency do it?
 6. Is it one line of code?
 
-Only after all six: add the minimum that works. Concrete house examples: reading time is `Math.ceil(words/200)`, not a package; robots.txt is a static file, not an integration; filters are ~30 lines of vanilla JS, not a React island. GSAP is the standing exception, added deliberately in Phase 20 and scoped to one file — it is not a precedent for the next dependency. (Lenis was the other; Phase 21 removed it.)
+Only after all six: add the minimum that works. Concrete house examples: reading time is `Math.ceil(words/200)`, not a package; robots.txt is a static file, not an integration; filters are ~30 lines of vanilla JS, not a React island.
 
 ## Working principles
 
@@ -36,19 +36,18 @@ Only after all six: add the minimum that works. Concrete house examples: reading
 ## Hard constraints (from spec — violating these is a bug)
 
 - Fully static output. React exists ONLY for the Keystatic admin and must never ship to the public site.
-- **Client JS (amended in Phase 20, trimmed in Phase 21).** The site is no longer zero-JS: `src/scripts/motion.ts` (GSAP + ScrollTrigger + SplitText, ~49KB gzip) loads on every page. That is the *only* sanctioned bundle. Everything else still climbs the YAGNI ladder — vanilla before a framework, CSS before JS, static HTML before an island. **Nothing else may import GSAP:** a page asks for motion with a `data-*` attribute and `motion.ts` decides what it means. The vocabulary is `data-reveal`, `data-reveal-delay`, `data-reveal-stagger`, `data-hero` and `data-brighten` (Phase 28 — SplitText breaks the block into lines and each scrubs from a legible grey to full colour, line by line, on scroll; homepage bio + Thoughts intro). SplitText came back with it (free in GSAP 3.13+, no new dep); Lenis and the unused `data-parallax` stay gone.
-- **Motion must be removable.** Every hidden resting state lives behind a `.js` ancestor class set by a blocking inline script in `<head>`, so a page with the bundle blocked, broken, or still loading renders fully legible. `prefers-reduced-motion` bails out of the runtime entirely. Never put an animation's start state in CSS unguarded by `.js`.
+- **Client JS: zero by default.** The public site ships no JavaScript except the Thoughts and Projects index filters and the Gallery (density control + viewer), each within its budget: 0 KB on Home, About, Now, Work with me, program pages and articles; ≤ 2 KB on the Thoughts and Projects indexes; ≤ 6 KB on the Gallery. The inline `.js` class script in `<head>` and the GA4 tag are the only exceptions. Everything else climbs the YAGNI ladder: vanilla before a framework, CSS before JS, static HTML before an island. There is no animation library (GSAP and the `data-reveal` vocabulary are gone) and none comes back. Any hidden resting state lives only behind the `.js` ancestor class, so the page reads fully with scripts blocked.
 - One `h1` per page. Semantic landmarks. WCAG AA contrast.
 - **Component CSS in `global.css` must sit inside `@layer components`.** Tailwind emits utilities in `@layer utilities`, and an unlayered rule beats any layered one regardless of specificity — an unlayered `.btn { display: inline-flex }` silently defeats `hidden sm:inline-flex` in the markup. Same trap in Astro `<style>` blocks, which scope selectors with an attribute and so outrank a single utility class: hide with a media query there, not with `lg:hidden`.
-- Palette is dark (Phase 20). `ink-*` is the ground, `paper-*` is the type, `wine-*` is the accent — the inverse of the Phase 9–19 meanings. **Phase 21 cut wine back to three places and no others: an inline link, a focus ring, and `KeyTakeaway`.** It is not for headline words (`.flare` is deleted), kicker dots, badges, list markers, filled buttons, or hover states. On the `#0B0B0C` ground, `wine-400` (#E0446F, 4.9:1) is the accent-type colour — links, hover tints, `KeyTakeaway` — after Phase 28 darkened it from the pinker `wine-300`, which is now the focus ring only; `wine-500`/`wine-600` are fills only. `paper-600` is non-text.
-- **Contrast has a ceiling as well as a floor (Phase 29).** The ground is `#0B0B0C` and the brightest type is `paper-50` `#F4F1EE` — **pure `#FFFFFF` and pure black are both out of the palette.** The old `#FFF` on `#050505` was 20.4:1, near the sRGB maximum, and at 104px display it bloomed badly enough that Paul reported eye strain. Peak contrast is now 17.5:1, still well past AAA. Don't reintroduce `#FFF` as a type colour or push the ground below `#0B0B0C`.
-- **The type ramp has four tiers, and subtext is not metadata (Phase 29).** `paper-50` headings → `paper-100` body → `paper-200` (#C7C1BC, 11:1) secondary reading copy → `paper-400` (6.6:1) metadata **only** — dates, counters, kickers, separators. A sentence someone is meant to read never gets `paper-400` or `--text-small`; it gets `.subtext` (body size, `paper-200`). Phase 29 fixed 20 such paragraphs across five pages.
-- **A hairline is the only surface (Phase 21).** If a block must be distinguished from the page it gets a 1px `--line` rule — no fill, no radius beyond 2px, no shadow, no `backdrop-filter`. Glass cards, pill buttons, floating blurred chrome and ambient coloured glows are what made the Phase 20 build read as a SaaS landing page; they do not come back.
+- **Palette is white (v3), nine tokens and no others.** `paper` `#FFFFFF` is the ground (`paper-100` `#F7F8FA` an alternate section ground, at most once per page). Type is `ink-900` (headings, body, nav) → `ink-600` → `ink-400`. `red-500` is for fills, display words ≥ 24px and rules — never body-size text; `red-700` is for inline links, small accent text and the focus ring. `blue-100` / `blue-200` are grounds and hairlines only: blue is a ground, not a type colour, so no blue text. Tailwind's default colours are reset, so an off-palette class is a dead class.
+- **`ink-900` is the darkest value.** No pure black; no white type on red; red fills carry `ink-900` type (5.0:1). Red is scarce: more than one red fill above the fold means one is wrong.
+- **The type ramp has three tiers, and subtext is not metadata.** `ink-900` headings and body → `ink-600` secondary reading copy (8.09:1) → `ink-400` metadata **only** — dates, counters, kickers, separators. A sentence someone is meant to read never gets `ink-400` or `--text-small`; it gets `.subtext` (body size, `ink-600`).
+- **A hairline is the only surface.** If a block must be distinguished from the page it gets a 1px `--line` rule (`--line` is `blue-200`) — radius ≤ 4px, no shadow, no `backdrop-filter`, no gradients, no glows. The one tinted block is `.panel-tint` (`blue-100`), at most once per page. Glass cards, pill buttons, floating blurred chrome and ambient glows read as a SaaS landing page; they do not come back.
 - **Section rhythm carries the structure, not fills (Phase 29).** `.section` + `.section-ruled` opens a new argument; a bare `.section-tight` continues the one before it. Before Phase 29 `.section-tight` was used 22 times against `.section`'s 3, with a `border-t` on every one, so every page read as an undifferentiated wall. Don't default new sections to tight-and-ruled — decide which of the two a section is. A rule marks a turn in the argument, not an interval.
-- Two families: Switzer (display, headings, prose) and Courier Prime (`.mono`, `.kicker`, dates, code). Both self-hosted from `public/fonts` and `@fontsource`.
+- Three families, self-hosted via `@fontsource-variable/*`: **Fraunces** (h1, h2, display), **Inter** (body, h3, UI) and **JetBrains Mono** (`.mono`, `.kicker`, dates, code).
 - Keystatic and Astro content schemas must stay field-identical — check both files in any schema change.
 - Person JSON-LD `@id` is `https://janpaulfernandez.com/#person`, defined once, referenced everywhere.
-- v2 backlog items (search, graveyard, backlinks…) are out of scope. Don't build them "while you're in there." ("Dark mode" left this list in Phase 20 by being resolved, not built: the site is dark, full stop. There is no toggle and no light theme to maintain.)
+- v2 backlog items (search, graveyard, backlinks…) are out of scope. Don't build them "while you're in there." (Dark mode is not on the list: the site is white, full stop; there is no toggle and no dark theme to maintain.)
 
 ## Commands
 

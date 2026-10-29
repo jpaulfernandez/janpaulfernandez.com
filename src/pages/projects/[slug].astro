@@ -1,49 +1,75 @@
 ---
-// Interim stub (33.2): renders the MDX body. Replaced by the generic template in 33.3.
+// Generic project page (33.3). Every case study is an MDX entry in
+// src/content/projects; an entry without a body gets no page at all.
+// Zero client JS (README rule 7).
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import JsonLd from '../../components/JsonLd.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ProjectRow from '../../components/ProjectRow.astro';
 import KeyTakeaway from '../../components/blocks/KeyTakeaway.astro';
 import Callout from '../../components/blocks/Callout.astro';
 import PullQuote from '../../components/blocks/PullQuote.astro';
 import Embed from '../../components/blocks/Embed.astro';
 import { breadcrumbs, person, webPage } from '../../lib/schema';
-import { getProjects, hasPage } from '../../lib/projects';
+import { getProjects, hasPage, KIND_NOUN, relatedProjects } from '../../lib/projects';
 
 export async function getStaticPaths() {
-  const projects = (await getProjects()).filter(hasPage);
-  return projects.map((project) => ({
+  const withPages = (await getProjects()).filter(hasPage);
+  return withPages.map((project) => ({
     params: { slug: project.id },
-    props: { project },
+    props: { project, related: relatedProjects(project, withPages, 3) },
   }));
 }
 
-const { project } = Astro.props;
+const { project, related } = Astro.props;
 const p = project.data;
 const { Content } = await render(project);
 const components = { KeyTakeaway, Callout, PullQuote, Embed };
 const description = p.metaDescription ?? p.summary;
+const url = `/projects/${project.id}/`;
+const host = p.link ? new URL(p.link).hostname : null;
+const kicker = [KIND_NOUN[p.kind], p.period ?? p.year, p.role].filter(Boolean).join(' · ');
 
-const seoData = [
-  webPage({ url: `/projects/${project.id}/`, name: p.title, description }),
-  breadcrumbs([
-    { name: 'Home', url: '/' },
-    { name: 'Projects', url: '/projects/' },
-    { name: p.title, url: `/projects/${project.id}/` },
-  ]),
-  person(),
+const trail = [
+  { name: 'Home', url: '/' },
+  { name: 'Projects', url: '/projects/' },
+  { name: p.title, url },
 ];
+
+const seoData = [webPage({ url, name: p.title, description }), breadcrumbs(trail), person()];
 ---
 
 <BaseLayout title={p.title} description={description} ogImage={`/og/projects-${project.id}.png`}>
   <JsonLd data={seoData} slot="head" />
 
-  <section class="shell pt-40 pb-24">
-    <a href="/projects/" class="mono">← Back to projects</a>
-    <h1 class="display mt-8">{p.title}</h1>
-    <p class="lead mt-6 max-w-[54ch]">{p.summary}</p>
-    <div class="prose mt-12">
-      <Content components={components} />
-    </div>
-  </section>
+  <div class="shell">
+    {/* Head — opens the page; no rule. */}
+    <section class="section">
+      <Breadcrumbs items={trail} />
+      <p class="kicker mt-12">{kicker}</p>
+      <h1 class="display mt-6 max-w-[16ch]">{p.title}</h1>
+      <p class="subtext mt-8 mb-0 max-w-[54ch]">{p.summary}</p>
+      {/* Hairline, not red: the header already carries the one red fill
+          above the fold (rebuild-plan §3.1). */}
+      {host && (
+        <a href={p.link} rel="noopener" class="btn btn-ghost mt-10">Visit {host} ↗</a>
+      )}
+    </section>
+
+    <section class="section section-ruled">
+      <div class="prose">
+        <Content components={components} />
+      </div>
+    </section>
+
+    {related.length > 0 && (
+      <section class="section section-ruled" aria-labelledby="related-heading">
+        <h2 id="related-heading" class="kicker">Related</h2>
+        <ul class="rows mt-8">
+          {related.map((r) => <ProjectRow project={r} />)}
+        </ul>
+      </section>
+    )}
+  </div>
 </BaseLayout>

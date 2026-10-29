@@ -1,0 +1,68 @@
+---
+// One line of a projects index: title · kind · summary · arrow. Used by the
+// projects index (33.4) and a project page's "Related" list (33.3); Home's
+// "Recent projects" (Phase 34) is the third caller.
+//
+// The row's destination follows the entry: a case-study page when it has a
+// body, else its external link, else nothing (an inert row, no arrow).
+// `data-kind` sits on the <li> so the index filter can hide it with the
+// `hidden` utility; nothing here sets `display` on the <li>, so that utility
+// is never outranked by a scoped rule.
+import { hasPage, KIND_NOUN, type ProjectEntry } from '../lib/projects';
+
+interface Props {
+  project: ProjectEntry;
+}
+
+const { project } = Astro.props;
+const p = project.data;
+const href = hasPage(project) ? `/projects/${project.id}/` : p.link;
+const external = !hasPage(project) && Boolean(p.link);
+const host = p.link ? new URL(p.link).hostname : '';
+const Tag = href ? 'a' : 'div';
+---
+
+<li data-kind={p.kind}>
+  <Tag
+    href={href}
+    rel={external ? 'noopener' : undefined}
+    class:list={['project-row', { 'row-link': href }]}
+  >
+    <span class="pr-title row-title">
+      {p.title}{external && <span class="sr-only"> (opens {host})</span>}
+    </span>
+    <span class="pr-kind mono-micro">{KIND_NOUN[p.kind]}</span>
+    <span class="pr-summary subtext">{p.summary}</span>
+    {href && <span class="pr-arrow" aria-hidden="true">{external ? '↗' : '→'}</span>}
+  </Tag>
+</li>
+
+<style>
+  /* Narrow widths: title over kind over summary (the Locomotive fallback,
+   * rebuild-plan §12). From 48rem the four parts sit on one line. */
+  .project-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title arrow'
+      'kind kind'
+      'summary summary';
+    gap: 0.5rem 1.5rem;
+    align-items: baseline;
+    padding: var(--space-m) 0;
+    color: var(--color-ink-900);
+    text-decoration: none;
+  }
+  .pr-title { grid-area: title; font-weight: 500; }
+  .pr-kind { grid-area: kind; }
+  .pr-summary { grid-area: summary; max-width: 60ch; }
+  .pr-arrow { grid-area: arrow; color: var(--color-ink-400); }
+  .row-link:hover .pr-arrow { color: var(--color-ink-900); }
+
+  @media (min-width: 48rem) {
+    .project-row {
+      grid-template-columns: minmax(0, 2fr) 8rem minmax(0, 3fr) 1.25rem;
+      grid-template-areas: 'title kind summary arrow';
+    }
+  }
+</style>

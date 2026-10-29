@@ -70,7 +70,7 @@ const seoData = [
   }),
   breadcrumbs([
     { name: 'Home', url: '/' },
-    { name: 'Writing', url: '/thoughts/' },
+    { name: 'Thoughts', url: '/thoughts/' },
     { name: topicName, url: `/topics/${topic}/` },
   ]),
 ];
@@ -82,12 +82,12 @@ const seoData = [
   <section class="page-head">
     <div class="shell">
       <a href="/thoughts/" class="mono-micro no-underline hover:text-ink-900">
-        ← All writing
+        ← All thoughts
       </a>
       <h1 class="display mt-6">
         #{topic}
       </h1>
-      <p class="lead mt-8">{intro}</p>
+      <p class="subtext mt-8 max-w-[var(--measure)]">{intro}</p>
       <p class="mono-micro mt-6">
         {posts.length} {posts.length === 1 ? 'post' : 'posts'}
       </p>

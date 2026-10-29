@@ -34,7 +34,7 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
     {/* h2, not h3: both callers (/thoughts, /topics/[topic]) render this
         directly under the page h1, and h1 -> h3 is a heading-level skip. */}
     <h2 class="m-0 text-h3 leading-tight">
-      <a href={url} class="post-link text-ink-900 no-underline group-hover:text-red-700 transition-colors">
+      <a href={url} class="post-link text-ink-900 no-underline group-hover:text-red-700 group-hover:underline">
         {title}
       </a>
     </h2>
@@ -74,11 +74,18 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
   }
 
   /* Stretch the title link over the whole row. The topic chips are plain
-   * <li>s here rather than links, so nothing is swallowed by the overlay. */
+   * <li>s here rather than links, so nothing is swallowed by the overlay.
+   * The focus ring moves to the overlay so it outlines the row it opens. */
   .post-link::after {
     content: "";
     position: absolute;
     inset: 0;
+  }
+  .post-link:focus-visible { outline: none; }
+  .post-link:focus-visible::after {
+    outline: 2px solid var(--color-red-700);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   .post-cover {
@@ -89,17 +96,9 @@ const { title, type, topics, date, excerpt, url, readingTime, cover } = Astro.pr
     object-fit: cover;
     border-radius: var(--radius-sm);
     border: 1px solid var(--line);
-    /* Only lightly held back: several covers are night shots that vanish
-     * entirely against the ground at a heavier dim. */
-    filter: grayscale(0.85) brightness(1.05);
-    transition: filter 0.4s var(--ease-out-quint);
   }
-  .group:hover .post-cover { filter: grayscale(0) brightness(1); }
 
   @media (min-width: 40rem) {
     .post-cover { display: block; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .post-cover { filter: none; }
   }
 </style>

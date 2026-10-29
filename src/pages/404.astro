@@ -3,12 +3,15 @@
 // NOT_FOUND body (with an internal region ID) for every mistyped URL.
 import BaseLayout from '../layouts/BaseLayout.astro';
 
+// The v3 IA, in nav order.
 const destinations = [
   { href: '/', label: 'Home' },
-  { href: '/about/', label: 'About' },
-  { href: '/thoughts/', label: 'Writing' },
-  { href: '/gallery/', label: 'Gallery' },
   { href: '/work-with-me/', label: 'Work with me' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/thoughts/', label: 'Thoughts' },
+  { href: '/gallery/', label: 'Gallery' },
+  { href: '/about/', label: 'About' },
+  { href: '/now/', label: 'Now' },
 ];
 ---
 
@@ -24,10 +27,15 @@ const destinations = [
         Nothing here. Either I moved it and forgot to leave a note, or the link was wrong to begin with. The things that do exist:
       </p>
 
-      <nav aria-label="Suggested pages" class="mt-12">
-        <ul class="flex flex-wrap gap-3 list-none m-0 p-0">
+      <nav aria-label="Suggested pages" class="mt-12 max-w-[var(--measure)]">
+        <ul class="rows border-t border-[var(--line)]">
           {destinations.map((d) => (
-            <li><a href={d.href} class="tag">{d.label}</a></li>
+            <li>
+              <a href={d.href} class="row-link">
+                <span class="row-title">{d.label}</span>
+                <span class="row-meta">{d.href}</span>
+              </a>
+            </li>
           ))}
         </ul>
       </nav>

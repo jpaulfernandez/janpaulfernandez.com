@@ -523,7 +523,7 @@ a.tag:hover {
 .row-link:hover .row-meta { color: var(--color-ink-600); }
 
 /* ============================================================================
- * TIMELINE RAIL — entries on /now
+ * TIMELINE RAIL — the career timeline on /about
  * ========================================================================= */
 
 .rail { position: relative; }
@@ -548,8 +548,8 @@ a.tag:hover {
   border-radius: 50%;
   background-color: var(--color-blue-200);
 }
-/* The newest entry is the live one: the Now rail dot is a red fill (§3.1). */
-.rail-item:first-child::before { background-color: var(--color-red-500); }
+/* All career nodes are blue-200. The one red rail dot (§3.1) belongs to /now,
+ * which draws its own .tl rail; this rail is About's career timeline. */
 
 .rail-date {
   display: block;

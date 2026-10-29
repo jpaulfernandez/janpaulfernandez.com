@@ -38,22 +38,22 @@ const seoData = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  <section class="page-head" data-hero>
+  <section class="page-head">
     <div class="shell">
 
       {/* The portrait is tall, so the copy shares its column-height rather
           than leaving the top of the page empty beside it. */}
       <div class="mt-8 grid gap-x-16 gap-y-12 lg:grid-cols-[1.35fr_0.65fr] lg:items-start">
         <div>
-          <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
+          <h1 class="display">
             Jan Paul Fernandez
           </h1>
-          <div class="prose mt-10 max-w-[54ch]" data-reveal="up" data-reveal-delay="0.12">
+          <div class="prose mt-10 max-w-[54ch]">
             <AboutIntro />
           </div>
         </div>
 
-        <figure class="portrait m-0 lg:mt-4" data-reveal="scale" data-reveal-delay="0.18">
+        <figure class="portrait m-0 lg:mt-4">
           <Image
             src={portrait}
             alt="Paul Fernandez"
@@ -77,11 +77,11 @@ const seoData = [
 
     <section aria-labelledby="contact-heading">
       <h2 id="contact-heading" class="kicker">Connect</h2>
-      <p class="statement-sm mt-10 max-w-[22ch]" data-reveal="up">
+      <p class="statement-sm mt-10 max-w-[22ch]">
         Available for consultation, talks, and
         fractional product ownership.
       </p>
-      <div class="mt-10 flex flex-wrap gap-3" data-reveal="up">
+      <div class="mt-10 flex flex-wrap gap-3">
         <a href="/work-with-me/" class="btn btn-primary">Work with me</a>
         <a
           href="https://www.linkedin.com/in/jpaulfernandez/"

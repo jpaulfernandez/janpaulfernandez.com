@@ -112,30 +112,30 @@ const seoData = [
   <JsonLd slot="head" data={seoData} />
 
   <article>
-    <header class="page-head" data-hero>
+    <header class="page-head">
       <div class="shell">
-        <a href="/gallery/" class="mono-micro hover:text-paper-50" data-reveal="fade">
+        <a href="/gallery/" class="mono-micro hover:text-paper-50">
           ← Gallery
         </a>
 
-        <h1 class="display mt-6 max-w-[16ch]" data-reveal="up" data-reveal-delay="0.05">
+        <h1 class="display mt-6 max-w-[16ch]">
           {item.data.title}
         </h1>
 
         {item.data.description && (
-          <p class="lead mt-8 max-w-[52ch]" data-reveal="up" data-reveal-delay="0.1">
+          <p class="lead mt-8 max-w-[52ch]">
             {item.data.description}
           </p>
         )}
 
-        <p class="mono-micro mt-8" data-reveal="fade" data-reveal-delay="0.16">
+        <p class="mono-micro mt-8">
           <time datetime={item.data.publishedDate}>{dateFormatted}</time>
           <span class="mx-2 text-paper-600" aria-hidden="true">/</span>
           <span>{photoList.length} photos</span>
         </p>
 
         {item.data.tags && item.data.tags.length > 0 && (
-          <ul class="mt-6 list-none m-0 p-0 flex flex-wrap gap-2" data-reveal="fade" data-reveal-delay="0.2">
+          <ul class="mt-6 list-none m-0 p-0 flex flex-wrap gap-2">
             {item.data.tags.map((tag) => <li class="tag">{tag}</li>)}
           </ul>
         )}

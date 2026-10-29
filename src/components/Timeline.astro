@@ -27,10 +27,10 @@ const processedEntries = await Promise.all(
 );
 ---
 
-<div class:list={['rail', variant === 'compact' && 'rail-compact']} data-reveal-stagger>
+<div class:list={['rail', variant === 'compact' && 'rail-compact']}>
   {
     processedEntries.map(({ data, Content, id }) => (
-      <article class="rail-item" id={variant === 'full' ? id : undefined} data-reveal="up">
+      <article class="rail-item" id={variant === 'full' ? id : undefined}>
         <span class="rail-date">{data.period}</span>
 
         <div class="flex items-start justify-between gap-4">

@@ -126,3 +126,24 @@ Phases 32/34/36. Deliberate exception to "every class has ≥ 1 usage".
 - `.section` = `--space-2xl`, `.section-tight` = `--space-xl`.
 - `.prose code, .prose kbd` on blue-100 (no `<kbd>` in content today; the
   selector is spec'd and costs nothing). `pre` also blue-100 + hairline.
+
+## 31.4 Remove motion
+
+- `src/scripts/motion.ts` deleted; its `<script>` import removed from
+  `BaseLayout.astro`; `gsap` uninstalled.
+- Attributes stripped from 19 files with the phase file's perl regex (plus a
+  `(?=[\s>\/])` lookahead so it can only end at an attribute boundary). No
+  attribute carried a `{…}` expression. Diffs of Timeline, ArticleLayout,
+  colophon, thoughts/index and index read by hand: no eaten attributes, no
+  `class=""` orphans. Wrappers left in place.
+- Four comments that described the motion system were rewritten (the `.js`
+  script comment in BaseLayout per step 4; three in `index.astro`; one footer
+  comment). The colophon's "Motion — GSAP + ScrollTrigger" stack row was
+  deleted here because 31.4's gate needs zero `ScrollTrigger` hits in `src`;
+  the rest of the colophon (Type row, header comment) is still 31.7's.
+- `git diff v2-final -- src/content` is empty: no content file carried the
+  attributes.
+- After a clean build, no public page references `/_astro/*.js` (the three
+  `.js` files in `_astro/` belong to the Keystatic admin). Built articles have
+  4 `<script` tags: the `.js` class script, two GA4, and the mobile-menu
+  inline script that 31.8 deletes.

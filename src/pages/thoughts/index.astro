@@ -44,10 +44,10 @@ const seoData = [
 <BaseLayout title="Writing" description={description} ogImage="/og/thoughts.png">
   <JsonLd slot="head" data={seoData} />
 
-  <section class="page-head" data-hero>
+  <section class="page-head">
     <div class="shell">
-      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">Writing</h1>
-      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+      <h1 class="display">Writing</h1>
+      <p class="lead mt-8">
         Essays and half-formed notes. About things that
         bother me.
       </p>
@@ -88,7 +88,7 @@ const seoData = [
           )}
         </div>
 
-        <div id="posts-list" class="rows mt-4" data-reveal-stagger>
+        <div id="posts-list" class="rows mt-4">
           {allPosts.map((post) => {
             const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
             const readingTime = Math.max(1, Math.ceil(wordCount / 200));
@@ -96,7 +96,6 @@ const seoData = [
             return (
               <div
                 class="post-row"
-                data-reveal="up"
                 data-type={post.data.type}
                 data-topics={post.data.topics?.join(',')}
               >

@@ -45,24 +45,24 @@ const seoData = [
   {/* ---------------------------------------------------------------------
       HERO. Outcome-led headline, grounded tone, and clear primary CTA.
      --------------------------------------------------------------------- */}
-  <section class="page-head" data-hero>
+  <section class="page-head">
     <div class="shell">
-      <p class="mono-micro flex items-center gap-3" data-reveal="fade">
+      <p class="mono-micro flex items-center gap-3">
         <span class="h-px w-8 bg-[var(--line-strong)]"></span>
         AI Workshop · Manila &amp; remote · English · PHT
       </p>
 
-      <h1 class="display hero-display mt-8" data-reveal="up" data-reveal-delay="0.05">
+      <h1 class="display hero-display mt-8">
         Getting lost in all<br class="hidden sm:inline" /> the AI noise?
       </h1>
 
-      <p class="lead mt-8 max-w-[54ch]" data-reveal="up" data-reveal-delay="0.12">
+      <p class="lead mt-8 max-w-[54ch]">
         No hype and no doomsaying — just a few hours on the work you already have open.
         By the end, the parts that felt like magic feel like something you can direct.
         1-on-1, or a small group you bring.
       </p>
 
-      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up" data-reveal-delay="0.18">
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
         <a href="#enquire" class="btn btn-primary">Talk to me</a>
         <a href="#book" class="link-arrow">1-on-1 &amp; group sessions from ₱2,500</a>
       </div>
@@ -77,7 +77,7 @@ const seoData = [
     <section class="section section-ruled" aria-labelledby="thesis-heading">
       <h2 id="thesis-heading" class="kicker"><span class="kicker__num">01</span>The two halves</h2>
 
-      <div class="thesis mt-10" data-reveal="up">
+      <div class="thesis mt-10">
         <div class="thesis__side">
           <p class="thesis__head">What AI makes <em>for</em> you</p>
           <ul class="thesis__list">
@@ -101,7 +101,7 @@ const seoData = [
         </div>
       </div>
 
-      <p class="thesis__note" data-reveal="up">
+      <p class="thesis__note">
         Same technology. Two completely different skills. Most training only
         teaches the left-hand column — which is how you end up with a team
         that is fast at producing things and defenceless against being fooled
@@ -109,7 +109,7 @@ const seoData = [
       </p>
     </section>
 
-    <section class="avail" aria-labelledby="avail-heading" data-reveal="up">
+    <section class="avail" aria-labelledby="avail-heading">
       <h2 id="avail-heading" class="mono-micro">Open schedule</h2>
       <p class="avail__window">{availability.window}</p>
       <p class="avail__note">{availability.note}</p>
@@ -124,7 +124,7 @@ const seoData = [
 
       <div class="router mt-10">
         {landingSections.map((sec) => (
-          <div id={sec.id} class="router__group" data-reveal="up">
+          <div id={sec.id} class="router__group">
             <div class="router__head">
               <h3 class="router__heading">{sec.heading}</h3>
               <p class="router__signal">{sec.signal}</p>
@@ -144,7 +144,7 @@ const seoData = [
         ))}
       </div>
 
-      <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4" data-reveal="up">
+      <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
         <a href="#enquire" class="btn btn-primary">Talk to me</a>
         <a href="mailto:jpaul.fernandez18@gmail.com" class="link-arrow">Or email directly</a>
       </div>
@@ -155,7 +155,7 @@ const seoData = [
         restated. No fill, no accent: two rules and one line of display type.
        ------------------------------------------------------------------- */}
     <section class="breaker" aria-labelledby="breaker-text">
-      <p id="breaker-text" class="breaker__text" data-reveal="up">
+      <p id="breaker-text" class="breaker__text">
         The test isn't the session. It's whether you're still using it a month later.
       </p>
     </section>
@@ -166,9 +166,9 @@ const seoData = [
        ------------------------------------------------------------------- */}
     <section class="section-tight" aria-labelledby="stats-heading">
       <h2 id="stats-heading" class="kicker"><span class="kicker__num">03</span>Why this keeps coming up</h2>
-      <ul class="stats mt-10" data-reveal-stagger>
+      <ul class="stats mt-10">
         {marketStats.map((stat) => (
-          <li class="stat" data-reveal="up">
+          <li class="stat">
             <p class="stat__figure">{stat.figure}</p>
             <p class="stat__body">
               {stat.body}{' '}
@@ -188,14 +188,14 @@ const seoData = [
     <section class="section section-ruled" aria-labelledby="fit-heading">
       <h2 id="fit-heading" class="kicker"><span class="kicker__num">04</span>Who this is for</h2>
 
-      <div class="mt-10 grid gap-10 md:grid-cols-2 md:gap-16" data-reveal-stagger>
-        <div data-reveal="up">
+      <div class="mt-10 grid gap-10 md:grid-cols-2 md:gap-16">
+        <div>
           <h3 class="text-h3 m-0">Book it if</h3>
           <ul class="fitlist">
             {fit.forYou.map((line) => <li>{line}</li>)}
           </ul>
         </div>
-        <div data-reveal="up">
+        <div>
           <h3 class="text-h3 m-0">Do not book it if</h3>
           <ul class="fitlist">
             {fit.notForYou.map((line) => <li>{line}</li>)}
@@ -206,9 +206,9 @@ const seoData = [
 
     <section class="section-tight" aria-labelledby="process-heading">
       <h2 id="process-heading" class="kicker"><span class="kicker__num">05</span>How it works</h2>
-      <ol class="steps mt-10" data-reveal-stagger>
+      <ol class="steps mt-10">
         {process.map((step, i) => (
-          <li data-reveal="up">
+          <li>
             <span class="mono-micro">{String(i + 1).padStart(2, '0')}</span>
             <h3 class="m-0 mt-2 text-h3">{step.title}</h3>
             <p class="mt-2 mb-0 subtext max-w-[52ch]">{step.body}</p>
@@ -220,7 +220,7 @@ const seoData = [
     <section class="section-tight" aria-labelledby="proof-heading">
       <h2 id="proof-heading" class="kicker"><span class="kicker__num">06</span>Who's in the room</h2>
       <div class="mt-10 grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
-        <figure class="portrait m-0" data-reveal="up">
+        <figure class="portrait m-0">
           <Image
             src={portrait}
             alt="Paul Fernandez"
@@ -228,7 +228,7 @@ const seoData = [
             sizes="(min-width: 1024px) 320px, 100vw"
           />
         </figure>
-        <div data-reveal="up">
+        <div>
           <h3 class="text-h3 m-0">I ran tech operations at Rappler through two national elections.</h3>
           <p class="mt-4 subtext max-w-[50ch]">
             Eleven years shipping things that broke in public when they broke.
@@ -247,7 +247,7 @@ const seoData = [
         </div>
       </div>
 
-      <div class="card mt-12 pt-6" data-reveal="up">
+      <div class="card mt-12 pt-6">
         <p class="mono-micro mb-4 text-paper-400">Data &amp; security baseline</p>
         <ul class="m-0 p-0 list-none grid gap-3 md:grid-cols-2 md:gap-x-10 text-small text-paper-100">
           <li class="flex items-start gap-2.5">
@@ -278,11 +278,11 @@ const seoData = [
       <h2 id="why-heading" class="kicker"><span class="kicker__num">07</span>Why I'm doing this</h2>
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-        <p class="statement-sm max-w-[20ch]" data-reveal="up">
+        <p class="statement-sm max-w-[20ch]">
           My relationship with AI is complicated. I teach it anyway.
         </p>
 
-        <div class="why-prose" data-reveal="up">
+        <div class="why-prose">
           <p>
             I hate how it arrived — trained on everyone's work without asking,
             then sold back to us as magic. I watch it get weaponised to deceive,
@@ -313,9 +313,9 @@ const seoData = [
 
     <section class="section-tight" aria-labelledby="faq-heading">
       <h2 id="faq-heading" class="kicker"><span class="kicker__num">08</span>Questions</h2>
-      <div class="mt-8" data-reveal-stagger>
+      <div class="mt-8">
         {faqItems.map((item) => (
-          <details class="faq" data-reveal="fade">
+          <details class="faq">
             <summary>
               <span>{item.q}</span>
               <span class="faq-mark" aria-hidden="true">+</span>
@@ -331,7 +331,7 @@ const seoData = [
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
-          <p class="statement-sm max-w-[16ch]" data-reveal="up">
+          <p class="statement-sm max-w-[16ch]">
             Tell me what you're stuck on.
           </p>
           <p class="mt-8 mb-0 subtext max-w-[42ch]">
@@ -351,7 +351,6 @@ const seoData = [
           action="https://api.web3forms.com/submit"
           method="POST"
           class="panel p-6 md:p-8 flex flex-col gap-5"
-          data-reveal="up"
         >
           <input type="hidden" name="access_key" value="3adf4959-3a04-4fc5-a990-e1159605181f" />
           <input type="hidden" name="redirect" value="https://www.janpaulfernandez.com/thanks/" />

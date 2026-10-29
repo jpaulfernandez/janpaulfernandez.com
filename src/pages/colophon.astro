@@ -38,11 +38,6 @@ const stack = [
     note: 'Switzer (Fontshare) draws the display and the prose; Courier Prime survives from the previous design for labels, dates and code. Both self-hosted, five faces total.',
   },
   {
-    label: 'Motion',
-    value: 'GSAP + ScrollTrigger',
-    note: 'Short fades as sections come into view, and nothing else. The word-by-word scroll effects, the split-text statements and the smooth-scroll layer were all cut — they made the page harder to read to prove it had been designed. What is left is decorative too: the hidden resting states are applied only once JavaScript has run, and prefers-reduced-motion turns the whole system off.',
-  },
-  {
     label: 'Hosting',
     value: 'Vercel',
     note: 'Static build, pushed from main.',
@@ -70,12 +65,12 @@ const principles = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  <section class="page-head" data-hero>
+  <section class="page-head">
     <div class="shell">
-      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
+      <h1 class="display">
         Colophon
       </h1>
-      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+      <p class="lead mt-8">
         What this site is made of, and the rules it follows. Kept here so the
         next person who asks — usually me, a year from now — has an answer.
       </p>
@@ -85,11 +80,10 @@ const principles = [
   <div class="shell pb-24 md:pb-32">
     <section aria-labelledby="stack-heading">
       <h2 id="stack-heading" class="kicker">Stack</h2>
-      <dl class="mt-8 m-0" data-reveal-stagger>
+      <dl class="mt-8 m-0">
         {stack.map((item) => (
           <div
             class="grid md:grid-cols-[10rem_1fr] gap-x-10 gap-y-2 py-8 border-b border-[var(--line)]"
-            data-reveal="up"
           >
             <dt class="mono-micro">{item.label}</dt>
             <dd class="m-0">
@@ -105,9 +99,9 @@ const principles = [
 
     <section class="section" aria-labelledby="rules-heading">
       <h2 id="rules-heading" class="kicker">Rules</h2>
-      <ul class="mt-10 m-0 p-0 list-none flex flex-col gap-6" data-reveal-stagger>
+      <ul class="mt-10 m-0 p-0 list-none flex flex-col gap-6">
         {principles.map((line) => (
-          <li class="flex gap-5 subtext max-w-[68ch]" data-reveal="up">
+          <li class="flex gap-5 subtext max-w-[68ch]">
             <span class="text-paper-600 shrink-0 mono" aria-hidden="true">—</span>
             <span>{line}</span>
           </li>
@@ -117,7 +111,7 @@ const principles = [
 
     <section aria-labelledby="source-heading">
       <h2 id="source-heading" class="kicker">Source</h2>
-      <p class="mt-10 mb-0 subtext max-w-[62ch]" data-reveal="up">
+      <p class="mt-10 mb-0 subtext max-w-[62ch]">
         Photography is mine. Words are mine. If something here is useful to you,
         take it — no attribution needed.
       </p>

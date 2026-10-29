@@ -15,16 +15,16 @@ const destinations = [
 <BaseLayout title="Page not found" description="That page doesn't exist — here's the way back." noCanonical>
   <meta slot="head" name="robots" content="noindex" />
 
-  <section class="page-404" data-hero>
+  <section class="page-404">
     <div class="shell">
-      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
+      <h1 class="display">
         404
       </h1>
-      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+      <p class="lead mt-8">
         Nothing here. Either I moved it and forgot to leave a note, or the link was wrong to begin with. The things that do exist:
       </p>
 
-      <nav aria-label="Suggested pages" class="mt-12" data-reveal="up" data-reveal-delay="0.16">
+      <nav aria-label="Suggested pages" class="mt-12">
         <ul class="flex flex-wrap gap-3 list-none m-0 p-0">
           {destinations.map((d) => (
             <li><a href={d.href} class="tag">{d.label}</a></li>

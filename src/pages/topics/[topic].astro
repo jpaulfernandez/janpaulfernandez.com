@@ -79,29 +79,29 @@ const seoData = [
 <BaseLayout title={`Writing on ${topicName}`} description={description}>
   <JsonLd slot="head" data={seoData} />
 
-  <section class="page-head" data-hero>
+  <section class="page-head">
     <div class="shell">
-      <a href="/thoughts/" class="mono-micro hover:text-paper-50" data-reveal="fade">
+      <a href="/thoughts/" class="mono-micro hover:text-paper-50">
         ← All writing
       </a>
-      <h1 class="display mt-6" data-reveal="up" data-reveal-delay="0.05">
+      <h1 class="display mt-6">
         #{topic}
       </h1>
-      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">{intro}</p>
-      <p class="mono-micro mt-6" data-reveal="fade" data-reveal-delay="0.16">
+      <p class="lead mt-8">{intro}</p>
+      <p class="mono-micro mt-6">
         {posts.length} {posts.length === 1 ? 'post' : 'posts'}
       </p>
     </div>
   </section>
 
   <div class="shell pb-24 md:pb-32">
-    <ul class="rows" data-reveal-stagger>
+    <ul class="rows">
       {posts.map((post) => {
         const wordCount = post.body ? post.body.split(/\s+/).filter(Boolean).length : 0;
         const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
         return (
-          <li data-reveal="up">
+          <li>
             <PostListItem
               title={post.data.title}
               type={post.data.type}

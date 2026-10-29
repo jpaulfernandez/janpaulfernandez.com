@@ -57,15 +57,15 @@ const steps = [
 <BaseLayout title="Work with me" description={description} ogImage="/og/work-with-me.png">
   <JsonLd data={seoData} slot="head" />
 
-  <section class="page-head" data-hero>
+  <section class="page-head">
     <div class="shell">
-      <h1 class="display max-w-[14ch]" data-reveal="up" data-reveal-delay="0.05">
+      <h1 class="display max-w-[14ch]">
         Work with me
       </h1>
-      <div class="prose mt-8 max-w-[54ch]" data-reveal="up" data-reveal-delay="0.1">
+      <div class="prose mt-8 max-w-[54ch]">
         <IntroContent />
       </div>
-      <div class="mt-10 flex flex-wrap gap-3" data-reveal="up" data-reveal-delay="0.16">
+      <div class="mt-10 flex flex-wrap gap-3">
         <a href="#contact" class="btn btn-primary">Start a conversation</a>
       </div>
     </div>
@@ -76,9 +76,9 @@ const steps = [
     {sortedServices.length > 0 && (
       <section aria-labelledby="services-heading">
         <h2 id="services-heading" class="kicker">What I offer</h2>
-        <ul class="rows mt-8" data-reveal-stagger>
+        <ul class="rows mt-8">
           {sortedServices.map((s, i) => (
-            <li data-reveal="up">
+            <li>
               <div class="grid md:grid-cols-[1fr_1.3fr] gap-x-12 gap-y-5 py-10">
                 <div>
                   <span class="mono-micro block mb-4">
@@ -102,9 +102,9 @@ const steps = [
       {/* Phase 21: still three columns, but .card is now a hairline above the
           block rather than a glass box around it — a ruled three-column spread
           instead of a feature grid. */}
-      <ol class="mt-12 grid gap-x-8 gap-y-10 md:grid-cols-3 list-none m-0 p-0" data-reveal-stagger>
+      <ol class="mt-12 grid gap-x-8 gap-y-10 md:grid-cols-3 list-none m-0 p-0">
         {steps.map((step, i) => (
-          <li class="card pt-5" data-reveal="up">
+          <li class="card pt-5">
             <span class="mono-micro">Step {String(i + 1).padStart(2, '0')}</span>
             <h3 class="mt-5">{step.title}</h3>
             <p class="mt-4 mb-0 subtext">{step.body}</p>
@@ -117,9 +117,9 @@ const steps = [
     {faqItems.length > 0 && (
       <section class="section-tight" aria-labelledby="faq-heading">
         <h2 id="faq-heading" class="kicker">Questions</h2>
-        <div class="mt-8" data-reveal-stagger>
+        <div class="mt-8">
           {faqItems.map((item) => (
-            <details class="faq" data-reveal="fade">
+            <details class="faq">
               <summary>
                 <span>{item.q}</span>
                 <span class="faq-mark" aria-hidden="true">+</span>
@@ -137,7 +137,7 @@ const steps = [
 
       <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
-          <p class="statement-sm max-w-[16ch]" data-reveal="up">
+          <p class="statement-sm max-w-[16ch]">
             Tell me what you're trying to build.
           </p>
           <p class="mt-8 mb-0 subtext">
@@ -152,7 +152,6 @@ const steps = [
           action="https://api.web3forms.com/submit"
           method="POST"
           class="panel p-6 md:p-8 flex flex-col gap-5"
-          data-reveal="up"
         >
           <input type="hidden" name="access_key" value="3adf4959-3a04-4fc5-a990-e1159605181f" />
           <input type="hidden" name="redirect" value="https://www.janpaulfernandez.com/thanks/" />

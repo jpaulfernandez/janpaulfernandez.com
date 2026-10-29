@@ -76,10 +76,10 @@ const isNavActive = (href: string) => {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     {/*
-      Must run before first paint. global.css hides every [data-reveal] behind
-      a `.js` ancestor selector, so this class is what arms the animations —
-      and its absence is what guarantees the page is legible when the motion
-      bundle fails to load, is blocked, or throws.
+      Must run before first paint. Progressive-enhancement scripts (the
+      Thoughts/Projects filters, the Gallery controls in Phase 35) key off
+      this class: any hidden resting state sits behind a `.js` ancestor
+      selector, so a page whose scripts are blocked or broken stays usable.
     */}
     <script is:inline>document.documentElement.classList.add('js');</script>
 
@@ -230,8 +230,8 @@ const isNavActive = (href: string) => {
       <div class="shell">
         <!-- The statement. One per site, and the last thing anyone reads.
              Phase 21: the wine on "have to build it" is gone, and so is the
-             line-by-line mask reveal — it is a plain reveal now. -->
-        <p class="footer-statement" data-reveal="up">
+             line-by-line mask reveal — it is static now. -->
+        <p class="footer-statement">
           Figuring out what to build,<br />
           with the people who have to build it.
         </p>
@@ -406,8 +406,5 @@ const isNavActive = (href: string) => {
       })();
     </script>
 
-    <script>
-      import '../scripts/motion.ts';
-    </script>
   </body>
 </html>

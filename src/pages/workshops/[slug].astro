@@ -51,19 +51,19 @@ const meta = [
 <BaseLayout title={c.title} description={metaDescription} ogImage={`/og/workshops-${entry.id}.png`}>
   <JsonLd data={seoData} slot="head" />
 
-  <section class="page-head" data-hero>
+  <section class="page-head">
     <div class="shell">
-      <a href="/workshops/" class="eyebrow-back" data-reveal="fade">
+      <a href="/workshops/" class="eyebrow-back">
         <span aria-hidden="true">←</span> Back to workshops
       </a>
 
-      <p class="mono-micro mt-6" data-reveal="up">
+      <p class="mono-micro mt-6">
         Course · Interactive · {c.duration}
       </p>
-      <h1 class="display course-title mt-4" data-reveal="up" data-reveal-delay="0.05">{c.title}</h1>
-      <p class="lead mt-6 max-w-[46ch]" data-reveal="up" data-reveal-delay="0.12">{c.tagline}</p>
+      <h1 class="display course-title mt-4">{c.title}</h1>
+      <p class="lead mt-6 max-w-[46ch]">{c.tagline}</p>
 
-      <div class="mt-10" data-reveal="up" data-reveal-delay="0.18">
+      <div class="mt-10">
         <a href={enquireHref} class="btn btn-primary">Talk to me →</a>
       </div>
     </div>
@@ -71,7 +71,7 @@ const meta = [
 
   <div class="shell pb-24 md:pb-32">
     {/* Hairline meta strip — Codecademy pattern, no fill. */}
-    <dl class="meta" data-reveal="up">
+    <dl class="meta">
       {meta.map((m) => (
         <div class="meta__cell">
           <dt class="meta__label">{m.label}</dt>
@@ -82,9 +82,9 @@ const meta = [
 
     <section class="section section-ruled" aria-labelledby="take-heading">
       <h2 id="take-heading" class="kicker">You'll leave with</h2>
-      <ul class="take-list mt-8" data-reveal-stagger>
+      <ul class="take-list mt-8">
         {c.outcomes.map((line) => (
-          <li data-reveal="up"><span class="take-mark" aria-hidden="true">→</span><span>{line}</span></li>
+          <li><span class="take-mark" aria-hidden="true">→</span><span>{line}</span></li>
         ))}
       </ul>
     </section>
@@ -93,25 +93,25 @@ const meta = [
         movement, so the session reads as a sequence rather than a list. */}
     <section class="section-tight" aria-labelledby="cover-heading">
       <h2 id="cover-heading" class="kicker">What we cover</h2>
-      <ol class="arc mt-10" data-reveal-stagger>
+      <ol class="arc mt-10">
         {c.outline.map((row, i) => (
-          <li class="arc__item" data-reveal="up">
+          <li class="arc__item">
             <p class="arc__step"><span class="arc__num">{String(i + 1).padStart(2, '0')}</span>{row.step}</p>
             <p class="arc__desc">{row.item}</p>
           </li>
         ))}
       </ol>
-      <p class="cover-note" data-reveal="up"><span aria-hidden="true">› </span>{c.approachNote}</p>
+      <p class="cover-note"><span aria-hidden="true">› </span>{c.approachNote}</p>
       {c.caveat && (
-        <p class="caveat" data-reveal="up"><span aria-hidden="true">⚠ </span>{c.caveat}</p>
+        <p class="caveat"><span aria-hidden="true">⚠ </span>{c.caveat}</p>
       )}
     </section>
 
     <section class="section section-ruled" aria-labelledby="price-heading">
       <h2 id="price-heading" class="kicker">Formats &amp; price</h2>
-      <ul class="ladder mt-8" data-reveal-stagger>
+      <ul class="ladder mt-8">
         {c.formats.map((f) => (
-          <li class="ladder__row" data-reveal="up">
+          <li class="ladder__row">
             <span class="ladder__label">{f.label}</span>
             <span class="ladder__detail">{f.detail}</span>
             <span class="ladder__price">
@@ -126,9 +126,9 @@ const meta = [
     {c.faq && c.faq.length > 0 && (
       <section class="section-tight" aria-labelledby="faq-heading">
         <h2 id="faq-heading" class="kicker">Questions</h2>
-        <div class="mt-8" data-reveal-stagger>
+        <div class="mt-8">
           {c.faq.map((item) => (
-            <details class="faq" data-reveal="fade">
+            <details class="faq">
               <summary>
                 <span>{item.q}</span>
                 <span class="faq-mark" aria-hidden="true">+</span>
@@ -141,7 +141,7 @@ const meta = [
     )}
 
     {/* Closing CTA — one line and one button, then the way back. */}
-    <section class="cta" aria-labelledby="cta-heading" data-reveal="up">
+    <section class="cta" aria-labelledby="cta-heading">
       <p id="cta-heading" class="cta__text">Bring one real task. We'll spend the session on it.</p>
       <div class="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
         <a href={enquireHref} class="btn btn-primary">Talk to me →</a>

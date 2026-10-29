@@ -63,16 +63,16 @@ const seoData = [
 >
   <JsonLd data={seoData} slot="head" />
 
-  <section class="page-head" data-hero>
+  <section class="page-head">
     <div class="shell">
-      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">
+      <h1 class="display">
         Now
       </h1>
-      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+      <p class="lead mt-8">
         A public log of what I'm focused on — current projects, learning, and
         where my head is at.
       </p>
-      <p class="mono-micro mt-6" data-reveal="fade" data-reveal-delay="0.16">
+      <p class="mono-micro mt-6">
         Last updated {formattedLastUpdated}
       </p>
     </div>
@@ -89,7 +89,7 @@ const seoData = [
               const displayTitle = data.title || data.slug || id;
               const isCurrent = data.date === latestDate;
               return (
-                <article class:list={['tl-item', isCurrent && 'is-current']} data-reveal="up">
+                <article class:list={['tl-item', isCurrent && 'is-current']}>
                   <time class="tl-date" datetime={data.date}>
                     <span class="tl-date-day">{dayLabel}</span>
                     <span class="tl-date-year">{entryYear}</span>

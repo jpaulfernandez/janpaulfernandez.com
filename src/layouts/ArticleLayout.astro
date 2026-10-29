@@ -61,24 +61,22 @@ const breadcrumbsSchema = breadcrumbs([
     {/* The masthead runs at page width; everything below it drops into the
         reading column, so the title can breathe without the body doing the
         same. */}
-    <header class="page-head" data-hero>
+    <header class="page-head">
       <div class="shell-narrow">
-        <a href="/thoughts/" class="mono text-paper-400 hover:text-paper-50" data-reveal="fade">
+        <a href="/thoughts/" class="mono text-paper-400 hover:text-paper-50">
           ← Writing
         </a>
 
-        <h1 class="mt-6 text-h1" data-reveal="up" data-reveal-delay="0.05">{title}</h1>
+        <h1 class="mt-6 text-h1">{title}</h1>
 
         {excerpt && (
-          <p class="lead mt-6 max-w-none text-paper-100" data-reveal="up" data-reveal-delay="0.1">
+          <p class="lead mt-6 max-w-none text-paper-100">
             {excerpt}
           </p>
         )}
 
         <div
           class="mt-8 pt-6 border-t border-[var(--line)] flex flex-wrap items-center gap-x-4 gap-y-2 mono text-small"
-          data-reveal="fade"
-          data-reveal-delay="0.16"
         >
           <span class="text-paper-400 uppercase tracking-widest text-micro">{type}</span>
           <span aria-hidden="true" class="text-paper-400">/</span>
@@ -98,7 +96,7 @@ const breadcrumbsSchema = breadcrumbs([
         </div>
 
         {topics && topics.length > 0 && (
-          <ul class="mt-6 list-none m-0 p-0 flex flex-wrap gap-2" data-reveal="fade" data-reveal-delay="0.2">
+          <ul class="mt-6 list-none m-0 p-0 flex flex-wrap gap-2">
             {topics.map((topic) => (
               <li>
                 <a href={`/topics/${topic}/`} class="tag">{topic}</a>
@@ -112,7 +110,7 @@ const breadcrumbsSchema = breadcrumbs([
     {/* A described cover is a real image-search entry; an undescribed one stays
         decorative (alt="") rather than repeating the h1 to a screen reader. */}
     {cover && typeof cover !== 'string' && (
-      <figure class="shell-narrow mb-16" data-reveal="scale">
+      <figure class="shell-narrow mb-16">
         <Image
           src={cover}
           alt={coverAlt ?? ''}

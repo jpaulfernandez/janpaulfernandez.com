@@ -1,14 +1,52 @@
 {
   "label": "Tier 1",
-  "title": "TODO leadership-day",
-  "tagline": "TODO",
-  "audience": "TODO",
-  "duration": "TODO",
-  "leavesWith": [],
-  "problem": "TODO",
-  "happens": [],
-  "outcomes": "TODO",
-  "artefacts": [],
-  "faq": [],
+  "title": "Is Your Organisation Resilient to AI?",
+  "tagline": "Five decisions, a draft policy and a 90-day plan, written by your leaders in one day.",
+  "audience": "Leadership, IT, HR, the data protection officer and legal (12 to 25 people)",
+  "duration": "1 day",
+  "leavesWith": [
+    "Draft acceptable-use policy with departmental annexes",
+    "Process maps: what AI does, what AI drafts, what only humans do",
+    "Vendor scorecards",
+    "Capability roadmap and champion list",
+    "Incident playbook",
+    "90-day plan"
+  ],
+  "problem": "Your leadership team hasn't decided anything about AI. That is a decision too, and your staff are making it for you, one pasted document at a time. A ban doesn't stop it and a tool purchase doesn't govern it. Someone senior has to write the rules, and the rules only hold if the people who must follow them helped write them.",
+  "happens": [
+    "The morning starts with a photo of a dog, then another dog, then a cat. Within ten minutes everyone in the room can explain why a model is confident and wrong, without any maths.",
+    "Before lunch, each table takes a real process from its own department and cuts it three ways: what AI does, what AI drafts and a human signs, and what stays human-only.",
+    "After lunch, everyone stands for a drill. An employee has pasted the customer list into a free tool, a deepfake of your CEO is trending, and a journalist is calling. You have 72 hours. Who does what in the first hour?",
+    "Department heads draft their own annexes to the policy, on the wall, for their own teams.",
+    "The day ends with five decisions signed and a 90-day plan with names against it. Everything is typed up and returned within 48 hours."
+  ],
+  "outcomes": "Leaders who can explain the technology, rank its risks, state what the law and regulators expect of them, and run the first hours of an incident. They also wrote the rules themselves, which is the part that makes people follow them.",
+  "artefacts": [
+    "Draft acceptable-use policy with departmental annexes",
+    "Human and AI process maps",
+    "Obligations checklist",
+    "Vendor scorecards",
+    "Capability map and champion list",
+    "Incident playbook skeleton",
+    "90-day plan"
+  ],
+  "faq": [
+    {
+      "q": "Do you give legal advice?",
+      "a": "No. I am not a lawyer and this is not legal advice. The obligations checklist maps what the Data Privacy Act, NPC Advisory 2024-04 and the BSP's STARS principles ask of you; your counsel confirms it. For banks, hospitals and BPOs with EU clients, a privacy lawyer can co-facilitate."
+    },
+    {
+      "q": "We have no data protection officer. Is this still for us?",
+      "a": "Yes. That block of the day becomes \"why you need one this quarter and what they would do\"."
+    },
+    {
+      "q": "Is this vendor-neutral?",
+      "a": "Yes. You score the tools you already use against a 12-point checklist and decide to approve, restrict or reject each one."
+    },
+    {
+      "q": "Do we get certificates?",
+      "a": "Yes, certificates of participation. The outcomes are aligned to PSF-AAI, the Philippine skills framework for AI and analytics. That is an alignment, not an accreditation, and I don't call it one."
+    }
+  ],
   "order": 1
 }

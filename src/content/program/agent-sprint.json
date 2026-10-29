@@ -1,14 +1,56 @@
 {
   "label": "Tier 3",
-  "title": "TODO agent-sprint",
-  "tagline": "TODO",
-  "audience": "TODO",
-  "duration": "TODO",
-  "leavesWith": [],
-  "problem": "TODO",
-  "happens": [],
-  "outcomes": "TODO",
-  "artefacts": [],
-  "faq": [],
+  "title": "Agents That Work",
+  "tagline": "One real process, one prototype agent, and a clear go or no-go, in a day.",
+  "audience": "4 to 8 people: developers or analysts, a process owner, and IT or security",
+  "duration": "1 day, plus a half-day scoping session",
+  "leavesWith": [
+    "Prototype repo that you own",
+    "Eval set and the results of three runs",
+    "Harness checklist",
+    "Runbook",
+    "Go or no-go memo"
+  ],
+  "problem": "Most AI pilots stall at proof of concept. Usually the scope was too wide and nobody defined what done looks like, so a demo that dazzled in week one is still a demo in month six. An agent that can read, write and send is also a different kind of risk from a chatbot, and most teams find that out by accident. This day builds one narrow agent on one real process and tests it before anyone trusts it.",
+  "happens": [
+    "A half-day scoping session beforehand picks the one process and agrees what done means.",
+    "\"Agent on a leash\". The agent starts with no tools and makes something up. Add a read tool and it reads. Add a write tool and it writes to the wrong place. Add an approval gate and it asks first. The team watches each failure happen.",
+    "The team writes eight to ten test cases before any code. If you can't say what a right answer looks like, you can't tell whether the agent got it.",
+    "The hidden instruction. A planted line in a document tells the agent to email a file out. Then the team fixes it, and writes the fix into the checklist.",
+    "Day one runs on redacted or synthetic data in a sandbox. Nothing writes to production.",
+    "At the end of the day the sponsor sees the demo and hears one of three things: go, go with changes, or no-go."
+  ],
+  "outcomes": "A team that can build, test and constrain an agent, and can tell leadership with evidence whether to pilot it. A no-go is a valid result. A tested no-go costs far less than a six-month pilot that fails quietly. We build in Claude Code or Codex, your choice, and the method carries over to other stacks.",
+  "artefacts": [
+    "Prototype repo, yours",
+    "Eval set and three runs",
+    "Harness checklist",
+    "Cost and latency sheet",
+    "Risk map against your acceptable-use policy and NPC and BSP expectations",
+    "Runbook",
+    "Go or no-go memo"
+  ],
+  "faq": [
+    {
+      "q": "Is this vendor-neutral?",
+      "a": "The concepts are. We build in Claude Code or Codex, your choice, and the method carries over to other stacks."
+    },
+    {
+      "q": "Will you touch our production data?",
+      "a": "No. Day one uses redacted or synthetic data in a sandbox, and nothing writes to production."
+    },
+    {
+      "q": "Who owns the code?",
+      "a": "You do. My access is removed at handover and the keys are rotated."
+    },
+    {
+      "q": "What if the answer is no-go?",
+      "a": "That's a valid result. A tested no-go costs less than a six-month pilot that fails."
+    },
+    {
+      "q": "Do we need to have done the other tiers?",
+      "a": "It helps. The Champions session produces a list of automatable steps that feeds straight into choosing the process. It isn't required."
+    }
+  ],
   "order": 4
 }

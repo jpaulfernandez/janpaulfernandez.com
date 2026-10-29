@@ -1,14 +1,55 @@
 {
   "label": "Tier 2",
-  "title": "TODO fluency",
-  "tagline": "TODO",
-  "audience": "TODO",
-  "duration": "TODO",
-  "leavesWith": [],
-  "problem": "TODO",
-  "happens": [],
-  "outcomes": "TODO",
-  "artefacts": [],
-  "faq": [],
+  "title": "AI Fluency & Digital Self-Defence",
+  "tagline": "Every employee knows what is safe to paste, spots a fake, and writes a prompt that works.",
+  "audience": "Everyone, in cohorts of up to 20",
+  "duration": "4 hours per cohort",
+  "leavesWith": [
+    "Personal prompt library of three tested prompts",
+    "Paste-test card",
+    "Red-flags checklist",
+    "A before-and-after task they did themselves"
+  ],
+  "problem": "Your staff taught themselves AI by trial and error. They also get the scam calls, the cloned voices and the \"urgent, from the CEO\" messages. Most of them have never been shown where the line sits between a good use of AI and a leak. A hundred people each guessing differently is not a policy. This is the session that puts the same habits in every head.",
+  "happens": [
+    "The paste test. Each person marks up a real document of their own in green, amber and red before anything goes near a chatbot. The room goes quiet.",
+    "The boss-call drill. \"The CEO\" phones the finance officer and asks for an urgent transfer. The cohort practises the same three moves: pause, call back on a number you already have, use the safe word.",
+    "The spot-the-fake gauntlet. Teams score points for naming the verification step, not for guessing. Eyes fail. Habits don't.",
+    "The prompt duel. Two teams take the same real task through three rounds of prompt and revision, and the room judges the results blind.",
+    "Scams in the Philippines arrive in Taglish, so the training can too. Frontline cohorts run in Taglish by default.",
+    "Two to four weeks later, a follow-up clinic brings people back with one prompt that worked and one that didn't, and reworks them with coaching."
+  ],
+  "outcomes": "People who know what not to paste, check before they trust, report what looks wrong, and get better drafts out of the tools your company has approved. They can explain, in their own words, what a language model does and why it is sometimes confidently wrong. They know the basics of the Data Privacy Act that apply to them as employees, and what to do the moment they realise they over-shared. The best of them are your candidates for the Champions session, which is the next step.",
+  "artefacts": [
+    "Personal prompt library: three tested prompts",
+    "Paste-test card, using your company's data classification or a generic one",
+    "Red-flags checklist for AI fakes, phishing, voice clones and one-time-password tricks",
+    "Verification card",
+    "\"I over-shared, now what\" card",
+    "Their own marked-up document and before-and-after task",
+    "Certificate of participation"
+  ],
+  "faq": [
+    {
+      "q": "Is this vendor-neutral?",
+      "a": "Yes. We teach how the technology works, then practise on the tools your company has approved."
+    },
+    {
+      "q": "Can it run online?",
+      "a": "Yes, as four one-hour sessions or two two-hour sessions. The boss-call drill works well on video."
+    },
+    {
+      "q": "Is my data safe in the session?",
+      "a": "Demos never use your live data. Participants mark up their own documents on paper or on approved tools only."
+    },
+    {
+      "q": "Do we get certificates?",
+      "a": "Yes, certificates of participation for everyone who completes the session. The content is aligned to PSF-AAI. That is not an accreditation, and I don't call it one."
+    },
+    {
+      "q": "What comes after this?",
+      "a": "The Champions session, for the eight to fifteen people your staff already ask for help. It builds on this one, and attendance here is the entry ticket."
+    }
+  ],
   "order": 2
 }

@@ -1,14 +1,53 @@
 {
   "label": "Tier 2.5",
-  "title": "TODO champions",
-  "tagline": "TODO",
-  "audience": "TODO",
-  "duration": "TODO",
-  "leavesWith": [],
-  "problem": "TODO",
-  "happens": [],
-  "outcomes": "TODO",
-  "artefacts": [],
-  "faq": [],
+  "title": "AI Champions",
+  "tagline": "Your first working automation, built by your own people, with governance built in.",
+  "audience": "8 to 15 hand-picked power users who have done the fluency session",
+  "duration": "4 hours",
+  "leavesWith": [
+    "One working automation per champion, documented and handed to IT",
+    "Champion playbook",
+    "Monthly report template",
+    "A list of further automatable steps in each department"
+  ],
+  "problem": "Training fades. Without people inside the organisation who can help a colleague at their desk, the policy goes back in the drawer within a month and the old habits return. You also need someone in each department who can say \"that's fine to automate\" or \"that one goes to IT first\". Those people exist already. They are the ones everybody asks. What they lack is a safe way to build, and a way to answer for what they build.",
+  "happens": [
+    "Each champion arrives with one process from their own department and five real cases, redacted. Nobody builds on a toy example.",
+    "The morning starts by finding the step. Each champion maps the process on sticky notes and applies a four-question filter: is it frequent, is it rule-based, is the data reachable, and is it low-harm if wrong. Then they pick the narrowest slice worth building.",
+    "They set up an assistant on company knowledge, using a tool your IT has approved, and test it on their five cases. Then they wire the flow: a trigger, an AI step, a human check, an output.",
+    "Every champion answers four governance questions about what they built. Where does the data go? Who approves, and can it ever act without a human? What is logged? How do we switch it off, and who can?",
+    "Pairs practise coaching. One plays a colleague who pasted a client file into a free tool. The other walks them through the paste test and the over-shared card, without panic.",
+    "Each champion gives a three-minute demo to the room, with IT taking notes on anything that needs approval before it goes live."
+  ],
+  "outcomes": "Champions who can build something small and safe, coach a colleague through the paste test, and run a 20-minute clinic for their own team. The point of the session is the four governance questions. A champion who can build but can't answer them is a liability, so the build is the vehicle and the answers are the product. Each one reports usage, questions and near-misses to the steering group in the same format, so leadership hears one consistent picture instead of fifteen anecdotes.",
+  "artefacts": [
+    "One working automation per champion, on approved tools",
+    "A one-page automation sheet for IT: purpose, data flow, approval, logging, off-switch, owner. These become the first entries in your AI inventory",
+    "Champion playbook: clinic format, FAQ, escalation route, a list of what not to answer, the paste-test coaching script",
+    "Monthly champion report template",
+    "Candidate list of further automatable steps, as input to the agent sprint"
+  ],
+  "faq": [
+    {
+      "q": "Who should be a champion?",
+      "a": "Curious people your staff already ask for help. Seniority doesn't matter, and I push back if HR sends only managers."
+    },
+    {
+      "q": "Which tools?",
+      "a": "The ones your IT approves: n8n, Make, Zapier, Power Automate, or a custom assistant on company accounts. Never personal accounts. The champion builds; IT advises and approves."
+    },
+    {
+      "q": "What if IT hasn't approved a tool yet?",
+      "a": "Then we build custom assistants only, plus a short vendor-evaluation exercise using the leadership day's checklist. The flow build moves to a follow-on session once a tool is approved."
+    },
+    {
+      "q": "Do we get certificates?",
+      "a": "Yes, certificates of participation. The content is aligned to PSF-AAI, which is not an accreditation, and I don't call it one."
+    },
+    {
+      "q": "What keeps it going afterwards?",
+      "a": "A monthly champion clinic online: new tool features, incident review, two champions demoing, questions. A refresh every six months covers policy updates and new scam patterns."
+    }
+  ],
   "order": 3
 }

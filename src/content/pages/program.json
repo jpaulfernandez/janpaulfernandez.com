@@ -1,15 +1,139 @@
 {
-  "headline": "TODO",
-  "sub": "TODO",
-  "promise": "TODO",
-  "stats": [],
-  "steps": [],
-  "proofPoints": [],
-  "addOns": [],
-  "bundles": [],
-  "foundingHeading": "TODO",
-  "foundingIntro": "TODO",
-  "foundingDiscount": "TODO",
-  "foundingGive": [],
-  "foundingTerms": []
+  "headline": "Your people are already using AI. Make it safe, then make it useful.",
+  "sub": "A vendor-neutral program for Philippine organisations. We measure how your staff use AI, write the rules with your leaders, and train every team on their own documents. Every session leaves you with something you can use the next day.",
+  "promise": "In one quarter you will know what AI is doing inside your organisation. You will have a signed policy your people understand, staff who can spot a fake and write a good prompt, one working automation, and data that shows whether behaviour changed.",
+  "stats": [
+    {
+      "figure": "78%",
+      "claim": "of Filipino employees across 13 industries use AI in their daily work.",
+      "sponsor": "Sprout Solutions, State of HR 2026, July 2026. Sprout sells HR and payroll software.",
+      "sourceUrl": "https://www.philstar.com/headlines/2026/07/22/2543892/78-filipino-workers-use-ai-work-few-receive-training-study"
+    },
+    {
+      "figure": "35%",
+      "claim": "say their company provides AI upskilling specific to their role.",
+      "sponsor": "Sprout Solutions, State of HR 2026, July 2026. Sprout sells HR and payroll software.",
+      "sourceUrl": "https://www.philstar.com/headlines/2026/07/22/2543892/78-filipino-workers-use-ai-work-few-receive-training-study"
+    },
+    {
+      "figure": "12%",
+      "claim": "of Philippine businesses have a formal and comprehensive responsible-AI framework.",
+      "sponsor": "Strand Partners study of Philippine AI adoption, 2026, commissioned by AWS. AWS sells cloud and AI services.",
+      "sourceUrl": "https://newsbytes.ph/2026/10/15/ai-adoption-among-ph-businesses-jumps-52-in-a-year-study/"
+    },
+    {
+      "figure": "24%",
+      "claim": "is how many employees businesses estimate are confident judging whether sensitive information may go into an AI tool in line with the rules.",
+      "sponsor": "Strand Partners study of Philippine AI adoption, 2026, commissioned by AWS. AWS sells cloud and AI services.",
+      "sourceUrl": "https://newsbytes.ph/2026/10/15/ai-adoption-among-ph-businesses-jumps-52-in-a-year-study/"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Pulse",
+      "line": "Measure what's happening"
+    },
+    {
+      "name": "Leadership day",
+      "line": "Decide the rules"
+    },
+    {
+      "name": "Fluency cohorts",
+      "line": "Teach everyone"
+    },
+    {
+      "name": "Champions",
+      "line": "Build the first automation"
+    },
+    {
+      "name": "Agent sprint",
+      "line": "Prototype one agent"
+    },
+    {
+      "name": "30/60/90",
+      "line": "Re-measure"
+    }
+  ],
+  "proofPoints": [
+    {
+      "label": "Credentials",
+      "text": "Head of Tech Operations at Rappler from 2018 to 2023, during the height of attacks on press freedom, where security and disinformation were daily work. I built PHVote, Rappler's election-results platform, and ran it through the 2019 and 2022 national elections. Before that, systems analyst at Philippine Savings Bank."
+    },
+    {
+      "label": "Method",
+      "text": "Simplify, then do. Each module opens with one concrete demo, then puts your team to work on your own documents and processes. No slide marathons."
+    },
+    {
+      "label": "Artefacts",
+      "text": "Every session produces something you keep: a draft AI policy, process maps, vendor scorecards, prompt libraries, a working automation, a tested prototype agent."
+    }
+  ],
+  "addOns": [
+    "90-minute Executive Briefing",
+    "30/60/90 check-in: a re-pulse plus a 2-hour clinic",
+    "Department deep-dive (half-day)"
+  ],
+  "bundles": [
+    {
+      "name": "Starter",
+      "contents": "Pulse and the Executive Briefing",
+      "whoFor": "First contact. SMEs. Leaders who want evidence before committing a day.",
+      "tiers": [
+        "pulse"
+      ]
+    },
+    {
+      "name": "Resilience",
+      "contents": "Pulse, the leadership day and a 90-day check-in",
+      "whoFor": "Regulated or client-audited firms: banks, lenders, BPOs, hospitals.",
+      "tiers": [
+        "pulse",
+        "leadership-day"
+      ]
+    },
+    {
+      "name": "Fluency at scale",
+      "contents": "Six fluency cohorts, Champions and one check-in",
+      "whoFor": "Any company rolling out Copilot, Gemini, ChatGPT Enterprise or Claude.",
+      "tiers": [
+        "fluency",
+        "champions"
+      ]
+    },
+    {
+      "name": "Whole-org",
+      "contents": "Pulse, the leadership day, eight fluency cohorts, Champions and three check-ins",
+      "whoFor": "Mid-size organisations doing it properly, start to finish.",
+      "tiers": [
+        "pulse",
+        "leadership-day",
+        "fluency",
+        "champions"
+      ]
+    },
+    {
+      "name": "Builder",
+      "contents": "Champions, the agent sprint and two clinics",
+      "whoFor": "IT departments, tech teams, global in-house centres.",
+      "tiers": [
+        "champions",
+        "agent-sprint"
+      ]
+    }
+  ],
+  "foundingHeading": "Founding clients: 25% off, for the first three only",
+  "foundingIntro": "The program is new. I want real before-and-after data, and I'll pay for it with a discount.",
+  "foundingDiscount": "25% off any bundle price, shown on the invoice.",
+  "foundingGive": [
+    "A named testimonial from your sponsor, approved by you before use.",
+    "A before-and-after Pulse: the core survey re-run at about 90 days.",
+    "Permission to publish anonymised, aggregate results. You are not named unless you agree in writing, and the rule of no group under 10 still applies.",
+    "One reference call with a prospective client."
+  ],
+  "foundingTerms": [
+    "Open to the first three signed clients only.",
+    "Applies to bundles, not single tiers.",
+    "No other discount stacks on top.",
+    "Anonymity rules and the data-processing clause are unchanged."
+  ]
 }

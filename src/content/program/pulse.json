@@ -1,14 +1,49 @@
 {
   "label": "Tier 0",
-  "title": "TODO pulse",
-  "tagline": "TODO",
-  "audience": "TODO",
-  "duration": "TODO",
-  "leavesWith": [],
-  "problem": "TODO",
-  "happens": [],
-  "outcomes": "TODO",
-  "artefacts": [],
-  "faq": [],
+  "title": "AI Readiness Pulse",
+  "tagline": "Find out what your people already do with AI, anonymously.",
+  "audience": "All staff, including deskless and frontline",
+  "duration": "3 to 4 weeks, 10 to 12 minutes per respondent",
+  "leavesWith": [
+    "One-page scorecard",
+    "Heat map by department",
+    "Top five risky behaviours",
+    "Shadow-AI inventory of the tools and accounts people use"
+  ],
+  "problem": "You can't govern what you can't see. Staff won't tell IT which tools they use, and they won't tell HR what they paste into them. So the policy gets written about an organisation that doesn't exist, and the real one carries on regardless. The Pulse is the cheapest way to see the real one before anyone decides anything.",
+  "happens": [
+    "A 10 to 12 minute survey built around ten everyday scenarios. One of them: a client emails you a contract and you paste it into a free chatbot on your phone. Each scenario is rated three ways: how common it is in my team, how acceptable it is, and whether I did it last month.",
+    "The gap between \"my team does this\" and \"I did this\" shows what people won't say about themselves. That gap is the most useful number in the report.",
+    "A free-text box asks which tools people use and for what. The answers become your real shadow-AI inventory, with the tool names left in and the people left out.",
+    "Deskless and frontline staff answer by QR code, in English or Filipino, on their own phones.",
+    "I run it as an independent third party, so staff are answering someone who doesn't report to their manager."
+  ],
+  "outcomes": "You see where you stand on AI literacy and risk control, which departments are most exposed, and which five behaviours to fix first. If you go on to the leadership day, the results decide what the day spends its time on.",
+  "artefacts": [
+    "One-page scorecard",
+    "Heat map by department",
+    "Top five risky behaviours",
+    "Tool and account inventory",
+    "All-staff summary",
+    "A note on how to tailor the leadership day to what the survey found"
+  ],
+  "faq": [
+    {
+      "q": "Is my data safe in the Pulse?",
+      "a": "By design, yes. I run it as an independent third party. No names, emails or IP addresses are recorded, no group smaller than 10 is reported, and free text appears only as paraphrased themes. Raw responses are deleted or returned 30 days after the report. These rules are written into the contract and the client cannot override them."
+    },
+    {
+      "q": "Can we buy it on its own?",
+      "a": "No. A survey with no decision session after it creates anxiety, not change. The Pulse is an add-on to the leadership day or a bundle."
+    },
+    {
+      "q": "Is it industry-specific?",
+      "a": "There is a generic core, plus a sector module for banking and finance, BPO, healthcare, education or government."
+    },
+    {
+      "q": "Is it vendor-neutral?",
+      "a": "Yes. It asks which tools people use and what they put into them, whatever the brand."
+    }
+  ],
   "order": 0
 }

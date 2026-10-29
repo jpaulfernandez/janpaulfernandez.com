@@ -203,3 +203,27 @@ Course markup. Tests were written first and failed 3/3 before the change.
   152 (unchanged); tiers authored in a `DESCRIPTIONS` map in `[tier].astro` (no new
   field): pulse 155, leadership-day 155, fluency 159, champions 158, agent-sprint 141.
   Not derived: tagline + audience ran to 215.
+
+## 32.8 Verify (local; 2026-10-29)
+
+- Gates green: build, `astro check` 0 errors, 50 tests.
+- axe (`@axe-core/cli`, chromedriver 156, `serve dist/client -l 4400`, server stopped):
+  0 violations on Home, `/work-with-me/`, the overview, all five tiers, `/sitemap/`,
+  `/thanks/`.
+- JS: every program page has `<script>` = `.js` class + two GA4 + the JSON-LD block;
+  no `/_astro/*.js`. One `<h1>` per page; `.panel-tint` once on `/work-with-me/` and
+  the overview, none on tiers. 10 `<option>`s; `#with-you/#for-you/#advise/#enquire`
+  present.
+- JSON-LD parses on all seven: `/work-with-me/` WebPage + Service x4 + FAQPage +
+  BreadcrumbList + Person; tiers WebPage + FAQPage + BreadcrumbList + Person.
+- Greps: peso/`PHP ` over all of `dist/client` -> nothing (Home included); banned words
+  and "Angeles" over `dist/client/work-with-me` -> nothing; `workshop` in
+  src/config -> redirect map only; `getCollection('courses'|'services')` -> 0; rule 2
+  diff empty; every `href` on Home, the program pages, `/thanks/` and `/sitemap/` resolves
+  in `dist/client`. Stats: 4 `sourceUrl`s, 4 linked sources on the overview.
+- Redirects read from `.vercel/output/config.json`: six 301 routes, targets exactly as
+  in 32.6 (the `/workshops/` form folds into the `^/workshops$` source). Live one-hop
+  check not possible without a preview.
+- **Not run:** Web3Forms submission, live redirects, validator.schema.org / Rich Results,
+  manual keyboard pass. All logged in plan.md Blocked. The Phase 32 DoD box is left
+  unchecked for that reason.

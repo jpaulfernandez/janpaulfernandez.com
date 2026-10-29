@@ -1,0 +1,299 @@
+---
+// sitemap.astro — Visual HTML sitemap for human visitors and crawlers.
+// Dynamically queries all content collections at build time, so any new
+// page, article, workshop, project, or gallery entry is automatically listed.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { breadcrumbs, person, webPage } from '../lib/schema';
+import { getPublishedThoughts } from '../lib/thoughts';
+import { getProjects } from '../lib/projects';
+import { formatDate } from '../lib/dates';
+
+const thoughts = await getPublishedThoughts();
+const courses = (await getCollection('courses')).sort((a, b) => a.data.order - b.data.order);
+const projects = await getProjects();
+const gallerySets = (await getCollection('gallery')).sort(
+  (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
+);
+
+// Extract and count all unique topics across published thoughts
+const topicCounts = new Map<string, number>();
+for (const post of thoughts) {
+  for (const topic of post.data.topics || []) {
+    topicCounts.set(topic, (topicCounts.get(topic) ?? 0) + 1);
+  }
+}
+const topics = Array.from(topicCounts.entries()).sort(([a], [b]) => a.localeCompare(b));
+
+const TOPIC_NAMES: Record<string, string> = {
+  ai: 'AI',
+  culture: 'Culture',
+  engineering: 'Engineering',
+  media: 'Media',
+  philosophy: 'Philosophy',
+  product: 'Product',
+  psychology: 'Psychology',
+  technology: 'Technology',
+  workflows: 'Workflows',
+};
+
+const mainPages = [
+  { href: '/', title: 'Home', description: 'Overview, current focus, and featured writing.' },
+  { href: '/about/', title: 'About', description: 'Background, track record in banking and elections, and principles.' },
+  { href: '/thoughts/', title: 'Writing', description: 'Essays and notes on technology, economics, and psychology.' },
+  { href: '/projects/', title: 'Projects', description: 'Things built, shipped, and open-sourced, indexed by year.' },
+  { href: '/workshops/', title: 'Workshops', description: 'AI workshops and training for individuals and teams.' },
+  { href: '/gallery/', title: 'Gallery', description: 'Photography collections — concerts, festivals, and travels.' },
+  { href: '/now/', title: 'Now', description: 'Current projects, active reading, and immediate focus.' },
+  { href: '/work-with-me/', title: 'Work with me', description: 'Consulting, training engagements, and contact form.' },
+  { href: '/colophon/', title: 'Colophon', description: 'The stack, design constraints, and technical specifications.' },
+];
+
+const feedLinks = [
+  { href: '/sitemap-index.xml', title: 'XML Sitemap Index', note: 'Standard sitemaps.org format for search engines' },
+  { href: '/rss.xml', title: 'RSS Feed', note: 'Full-text syndication feed for RSS readers' },
+  { href: '/llms.txt', title: 'llms.txt', note: 'Curated plain-text site summary for AI crawlers' },
+  { href: '/llms-full.txt', title: 'llms-full.txt', note: 'Complete corpus for language models' },
+];
+
+const description =
+  'A full index of every page, essay, project, workshop, and photo gallery published on janpaulfernandez.com.';
+
+const seoData = [
+  webPage({
+    url: '/sitemap/',
+    name: 'Sitemap — Paul Fernandez',
+    description,
+  }),
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Sitemap', url: '/sitemap/' },
+  ]),
+  person(),
+];
+---
+
+<BaseLayout
+  title="Sitemap"
+  description={description}
+  ogImage="/og/sitemap.png"
+>
+  <JsonLd data={seoData} slot="head" />
+
+  <section class="page-head" data-hero>
+    <div class="shell">
+      <h1 class="display" data-reveal="up" data-reveal-delay="0.05">Sitemap</h1>
+      <p class="lead mt-8" data-reveal="up" data-reveal-delay="0.1">
+        A directory of every page, essay, project, and workshop on this site.
+        Updated automatically on every build.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-4 text-paper-400 mono-micro" data-reveal="up" data-reveal-delay="0.15">
+        <a href="/sitemap-index.xml" class="hover:text-paper-50 transition-colors">
+          XML Sitemap →
+        </a>
+        <span>·</span>
+        <a href="/rss.xml" class="hover:text-paper-50 transition-colors">
+          RSS Feed →
+        </a>
+        <span>·</span>
+        <a href="/llms.txt" class="hover:text-paper-50 transition-colors">
+          llms.txt →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell pb-24 md:pb-32 space-y-16 md:space-y-24">
+    {/* 1. Main Pages */}
+    <section aria-labelledby="heading-main">
+      <div class="border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="heading-main" class="kicker m-0">Core Pages</h2>
+      </div>
+
+      <ul class="list-none m-0 p-0 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {mainPages.map((page) => (
+          <li class="border border-[var(--line)] p-5 hover:border-paper-400 transition-colors">
+            <h3 class="m-0 text-h3 leading-tight">
+              <a href={page.href} class="hover:text-wine-400 transition-colors">
+                {page.title}
+              </a>
+            </h3>
+            <p class="mt-2 mb-0 subtext text-sm">
+              {page.description}
+            </p>
+            <p class="mt-3 mb-0 mono-micro text-paper-400">
+              {page.href}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* 2. Writing / Thoughts */}
+    <section aria-labelledby="heading-writing">
+      <div class="flex items-baseline justify-between border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="heading-writing" class="kicker m-0">Writing</h2>
+        <span class="mono-micro text-paper-400">{thoughts.length} {thoughts.length === 1 ? 'thought' : 'thoughts'}</span>
+      </div>
+
+      <div class="divide-y divide-[var(--line)]">
+        {thoughts.map((post) => (
+          <article class="py-5 first:pt-0 last:pb-0 flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 md:gap-8">
+            <div class="min-w-0">
+              <h3 class="m-0 text-body font-medium leading-snug">
+                <a href={`/thoughts/${post.id}/`} class="hover:text-wine-400 transition-colors">
+                  {post.data.title}
+                </a>
+              </h3>
+              {post.data.excerpt && (
+                <p class="mt-1 mb-0 subtext text-sm line-clamp-2 max-w-[65ch]">
+                  {post.data.excerpt}
+                </p>
+              )}
+            </div>
+
+            <div class="shrink-0 flex items-center gap-3 mono-micro text-paper-400">
+              {post.data.topics && post.data.topics.length > 0 && (
+                <span class="hidden sm:inline">
+                  {post.data.topics.map((t) => TOPIC_NAMES[t] ?? t).join(', ')}
+                </span>
+              )}
+              <time datetime={post.data.publishedDate}>
+                {formatDate(post.data.publishedDate)}
+              </time>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {/* 3. Topics */}
+    <section aria-labelledby="heading-topics">
+      <div class="flex items-baseline justify-between border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="heading-topics" class="kicker m-0">Topics</h2>
+        <span class="mono-micro text-paper-400">{topics.length} archives</span>
+      </div>
+
+      <ul class="list-none m-0 p-0 flex flex-wrap gap-3">
+        {topics.map(([topic, count]) => (
+          <li>
+            <a
+              href={`/topics/${topic}/`}
+              class="inline-flex items-center gap-2 border border-[var(--line)] px-4 py-2 hover:border-paper-400 hover:text-wine-400 transition-colors"
+            >
+              <span class="font-medium">{TOPIC_NAMES[topic] ?? topic}</span>
+              <span class="mono-micro text-paper-400">({count})</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* 4. Workshops */}
+    <section aria-labelledby="heading-workshops">
+      <div class="flex items-baseline justify-between border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="heading-workshops" class="kicker m-0">Workshops</h2>
+        <span class="mono-micro text-paper-400">{courses.length} courses</span>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2">
+        {courses.map((course) => (
+          <div class="border border-[var(--line)] p-6 hover:border-paper-400 transition-colors">
+            <p class="m-0 mono-micro text-paper-400 uppercase tracking-wider">
+              {course.data.audiences.join(' · ')}
+            </p>
+            <h3 class="mt-2 mb-0 text-h3 leading-tight">
+              <a href={`/workshops/${course.id}/`} class="hover:text-wine-400 transition-colors">
+                {course.data.title}
+              </a>
+            </h3>
+            <p class="mt-3 mb-0 subtext text-sm">
+              {course.data.tagline}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* 5. Projects */}
+    <section aria-labelledby="heading-projects">
+      <div class="flex items-baseline justify-between border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="heading-projects" class="kicker m-0">Projects</h2>
+        <span class="mono-micro text-paper-400">{projects.length} {projects.length === 1 ? 'project' : 'projects'}</span>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2">
+        {projects.map((project) => (
+          <div class="border border-[var(--line)] p-6 hover:border-paper-400 transition-colors">
+            <p class="m-0 mono-micro text-paper-400">
+              {project.data.year}
+            </p>
+            <h3 class="mt-2 mb-0 text-h3 leading-tight">
+              <a href={`/projects/${project.id}/`} class="hover:text-wine-400 transition-colors">
+                {project.data.title}
+              </a>
+            </h3>
+            <p class="mt-3 mb-0 subtext text-sm">
+              {project.data.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* 6. Gallery */}
+    <section aria-labelledby="heading-gallery">
+      <div class="flex items-baseline justify-between border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="heading-gallery" class="kicker m-0">Photo Galleries</h2>
+        <span class="mono-micro text-paper-400">{gallerySets.length} sets</span>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2">
+        {gallerySets.map((set) => (
+          <div class="border border-[var(--line)] p-6 hover:border-paper-400 transition-colors">
+            <p class="m-0 mono-micro text-paper-400">
+              {set.data.photos.length} photos · {formatDate(set.data.publishedDate)}
+            </p>
+            <h3 class="mt-2 mb-0 text-h3 leading-tight">
+              <a href={`/gallery/${set.id}/`} class="hover:text-wine-400 transition-colors">
+                {set.data.title}
+              </a>
+            </h3>
+            {set.data.description && (
+              <p class="mt-3 mb-0 subtext text-sm">
+                {set.data.description}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* 7. Feeds & Raw Endpoints */}
+    <section aria-labelledby="heading-feeds">
+      <div class="border-b border-[var(--line)] pb-4 mb-8">
+        <h2 id="heading-feeds" class="kicker m-0">Feeds & Machine-Readable Data</h2>
+      </div>
+
+      <ul class="list-none m-0 p-0 grid gap-4 sm:grid-cols-2">
+        {feedLinks.map((feed) => (
+          <li class="border border-[var(--line)] p-4 flex items-center justify-between gap-4">
+            <div>
+              <a href={feed.href} class="font-medium hover:text-wine-400 transition-colors">
+                {feed.title}
+              </a>
+              <p class="mt-1 mb-0 subtext text-xs">
+                {feed.note}
+              </p>
+            </div>
+            <span class="mono-micro text-paper-400 shrink-0">
+              {feed.href}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>

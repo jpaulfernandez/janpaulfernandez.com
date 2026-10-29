@@ -14,6 +14,7 @@ User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://www.janpaulfernandez.com/sitemap-index.xml
+Sitemap: https://www.janpaulfernandez.com/sitemap.xml
 
 # Plain-text summaries for LLMs:
 #   https://www.janpaulfernandez.com/llms.txt       (index)

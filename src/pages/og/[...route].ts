@@ -45,6 +45,10 @@ const pagesObj: Record<string, { title: string; description: string }> = {
   'colophon': {
     title: 'Colophon',
     description: 'How this site is built — the stack, the type, and the rules it follows.'
+  },
+  'sitemap': {
+    title: 'Sitemap',
+    description: 'An overview of all pages, essays, projects, photo galleries, and workshops.'
   }
 };
 

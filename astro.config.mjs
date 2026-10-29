@@ -89,6 +89,7 @@ export default defineConfig({
   trailingSlash: 'always',
   redirects: {
     '/workshop': '/workshops/',
+    '/sitemap.xml': '/sitemap-index.xml',
   },
   adapter: vercel(),
   security: {

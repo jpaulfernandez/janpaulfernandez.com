@@ -284,8 +284,8 @@ export default config({
       path: 'src/content/pages/home',
       format: { data: 'json' },
       schema: {
-        heroGreeting: fields.text({ label: 'Hero Greeting (e.g. "Hi, I\'m Paul.")', validation: { isRequired: true } }),
-        heroIntro: fields.text({ label: 'Hero Intro Statement', multiline: true, validation: { isRequired: true } }),
+        heroStatement: fields.text({ label: 'Hero Statement (the h1)', validation: { isRequired: true } }),
+        heroWho: fields.text({ label: 'Hero Who (credentials and location)', multiline: true, validation: { isRequired: true } }),
       },
     }),
     about: singleton({

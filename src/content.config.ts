@@ -40,8 +40,8 @@ const home = defineCollection({
     base: 'src/content/pages',
   }),
   schema: z.object({
-    heroGreeting: z.string(),
-    heroIntro: z.string(),
+    heroStatement: z.string(),
+    heroWho: z.string(),
   }),
 });
 

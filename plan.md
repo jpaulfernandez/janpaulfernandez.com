@@ -28,6 +28,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - **Wikidata item** (Phase 30 B2): create it and add the Q-ID to `sameAs`. Off-site, no code.
 - Phase 31 visual review (31.9 last box / Phase 31 DoD) — main is local-only, nothing pushed; review on a preview before pushing.
 - **GitHub profile URL for the footer (31.8).** No profile URL exists in the repo; the footer omits GitHub until Paul confirms `https://github.com/jpaulfernandez` (one line in `elsewhere` in `BaseLayout.astro`).
+- **Phase 34 Home copy (34.1).** Approve `heroStatement` and `heroWho`: the "eleven years" figure (PSBank 2015 to 2026), "a college of working students" (from the rebuild-plan draft, not verified against another source), and the delivery-area list "Metro Manila, Clark, Cebu and online" (program spec doc 09 has two other variants). Spec doc 09 line 199 says Paul is based in Angeles City near Clark; the phase file and README say Manila, so Manila is used. Closing CTA wording (34.2): spec says "Book a 20-minute scoping call", the phase file says "Book a scoping call"; the phase file's wording will be used. See `docs/rebuild/notes/phase-34.md`.
 
 ## v3 rebuild (approved 2026-10-29)
 
@@ -75,7 +76,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 
 ### Phase 34 — Home + About + Now · [phase file](docs/rebuild/phase-34-home-about-now.md)
 
-- [ ] 34.1 Home singleton fields
+- [x] (2026-10-29) 34.1 Home singleton fields (copy approval pending — see Blocked)
 - [ ] 34.2 Home page sections
 - [ ] 34.3 Portrait crop
 - [ ] 34.4 About

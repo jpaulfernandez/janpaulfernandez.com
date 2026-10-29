@@ -12,7 +12,7 @@ const homeEntry = await getEntry('home', 'home');
 if (!homeEntry) {
   throw new Error('Home page singleton is missing. Run the seed scripts first.');
 }
-const { heroGreeting, heroIntro } = homeEntry.data;
+const { heroStatement, heroWho } = homeEntry.data;
 
 function cleanSnippet(raw?: string, max = 160) {
   if (!raw) return '';
@@ -113,12 +113,11 @@ const seoData = [
           </p>
 
           <h1 class="display mt-8 max-w-[16ch]">
-            {heroGreeting}
+            {heroStatement}
           </h1>
 
           <p class="lead mt-8 max-w-[46ch]">
-            I help teams figure out what to build. Most of that work turns out to be
-            getting everyone to agree on what the words mean.
+            {heroWho}
           </p>
 
           {/* Hero actions: the program is the featured offer */}
@@ -184,35 +183,6 @@ const seoData = [
     </div>
   </section>
 
-  {/* ---------------------------------------------------------------------
-      MANIFESTO. The bio, set as a statement.
-
-      Phase 21 cut the word-by-word scroll brightening that ran here — it was
-      Linear's "Designed in California" section almost line for line, and a
-      reader who stopped scrolling was left with a half-lit sentence. Phase 28
-      brought back a plainer whole-block version; Phase 31 removed motion
-      entirely, so the statement is static.
-     --------------------------------------------------------------------- */}
-  {heroIntro && (
-    <section class="section section-ruled" aria-labelledby="intro-heading">
-      <div class="shell">
-        <h2 id="intro-heading" class="kicker">Who I am</h2>
-        <div class="statement mt-10 space-y-6">
-          {heroIntro.split('\n\n').map((paragraph) => (
-            <p class="m-0">
-              {withInlineLinks(paragraph).map((seg) =>
-                // Anchor kept on one line: Astro preserves whitespace from JSX
-                // children, so a wrapped <a> would pad the link text with spaces.
-                // prettier-ignore
-                typeof seg === 'string' ? seg : <a href={seg.href} class="link" {...(seg.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{seg.label}</a>
-              )}
-            </p>
-          ))}
-        </div>
-        <a href="/about/" class="link-arrow mt-10">The longer version</a>
-      </div>
-    </section>
-  )}
 
   {/* ---------------------------------------------------------------------
       WRITING

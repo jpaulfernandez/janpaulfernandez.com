@@ -1,0 +1,57 @@
+---
+// The six-step strip of the AI-Resilient Organisation program
+// (programPage.steps): Pulse → … → 30/60/90. A plain ordered list; on wide
+// screens the steps sit in a row, each under a hairline. Used on Work with me
+// and the program overview (Phase 34 adds Home).
+interface Props {
+  steps: { name: string; line: string }[];
+}
+
+const { steps } = Astro.props;
+---
+
+<ol class="steps">
+  {steps.map((step, i) => (
+    <li class="step">
+      <span class="mono-micro" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+      <span class="step-name">{step.name}</span>
+      <span class="step-line">{step.line}</span>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0 1.5rem;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    column-gap: 0.75rem;
+    align-items: baseline;
+    padding-block: 0.875rem;
+    border-top: 1px solid var(--line);
+    align-content: start;
+  }
+  .step .mono-micro { grid-row: span 2; }
+  .step-name { font-weight: 600; color: var(--color-ink-900); }
+  .step-line { color: var(--color-ink-600); }
+
+  @media (min-width: 40rem) {
+    .steps { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 64rem) {
+    .steps { grid-template-columns: repeat(6, 1fr); }
+    .step {
+      grid-template-columns: 1fr;
+      row-gap: 0.5rem;
+      padding-block: 1rem 0;
+    }
+    .step .mono-micro { grid-row: auto; }
+  }
+</style>

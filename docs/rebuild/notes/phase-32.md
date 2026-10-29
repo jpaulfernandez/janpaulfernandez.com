@@ -73,3 +73,41 @@ workWithMe.modes yes (§5.5) · intro yes · faq yes (drafted).
 Text kept as the simplest). `name` is always emitted (= title, existing
 `serviceType` unchanged); `url` / `areaServed` only when given. No Offer, price or
 Course markup. Tests were written first and failed 3/3 before the change.
+
+## 32.4 `/work-with-me/`
+
+- Four sections inside one `.shell` (section rules sit within the gutters, as on
+  About): Head `.section` → Three ways in / The program / Enquire, each
+  `.section.section-ruled`. The program block is the one `.panel-tint`.
+- **Red fills.** The form's submit is `.btn-primary` (far below the fold, where
+  the header button is off-screen). No other page button. Mode rows link to
+  `#enquire` with a `.link-arrow` ("Enquire about this", plus an sr-only mode
+  name so the three links are distinguishable).
+- **Select not preset** (README departure 3). Options: Not sure yet · With you ·
+  For you · Advising · the five tier titles in `order` · Something else (10).
+- Form hidden inputs (`access_key`, `redirect`, `subject`, `from_name`,
+  `botcheck`) carried over byte-for-byte; new visible fields `organisation`
+  (`autocomplete="organization"`, optional) and `interested_in`.
+- **Shared pieces (second use → extracted):** `src/components/TierTable.astro`
+  (Work with me + overview; `linkTitles` / `enquireHref` props cover the two
+  link schemes the task specifies), `src/components/ProgramSteps.astro` (the
+  six-step `<ol>`; Phase 34 reuses it on Home). `global.css` gains `.table-wrap`
+  and `.data-table` in `@layer components` (tier table + bundles table). Both
+  are outside 32.4's file list; noted here.
+- **Bug found and fixed:** `.table-wrap` needs `position: relative`. Without it
+  the absolutely positioned `.sr-only` caption/header text escapes the scroll
+  box and widened the 375px page to 685px (mobile browsers then zoom out).
+- JSON-LD: `WebPage`, `Service` ×3 (`url` `/work-with-me/#<anchor>`), `Service`
+  for the program (`url` = overview), `FAQPage` (6), `BreadcrumbList`, one
+  `Person`. `areaServed: 'Philippines'` on all four (copy says "Philippine
+  organisations"; Text is valid per 32.3).
+- Meta description drafted now (150 chars); 32.7 still owns the 140–160 check.
+- BaseLayout: the header-CTA comment ("#enquire lands in 32.4") updated; no
+  markup change.
+- Done-when: one `<h1>`, one `.panel-tint`, ids `enquire` / `with-you` /
+  `for-you` / `advise`, 10 `<option>`s, `<script>` tags = `.js` class + two GA4 +
+  the JSON-LD data block, no `/_astro/*.js`. axe 0 violations. Viewed at 1280
+  and 375 (no horizontal page scroll; the tier table scrolls inside its box).
+- **Not done:** the Web3Forms test submission → `/thanks/`. It must run on a
+  Vercel preview and sends Paul an email; there is no preview (work is on
+  `main`, unpushed). Left for 32.8 / Paul.

@@ -729,6 +729,42 @@ h4:hover .anchor-link,
 }
 
 /* ============================================================================
+ * DATA TABLE — the program tier and bundle tables (Phase 32). Ruled rows, no
+ * fills. The wrapper scrolls sideways on narrow screens instead of reflowing.
+ * ========================================================================= */
+
+/* position: relative keeps the .sr-only caption and header text (absolutely
+ * positioned) inside the scroll box; without it they escape and widen the page. */
+.table-wrap { position: relative; overflow-x: auto; }
+.data-table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  text-align: left;
+}
+.data-table th,
+.data-table td {
+  padding: 1rem 1.5rem 1rem 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.data-table th:last-child,
+.data-table td:last-child { padding-right: 0; }
+.data-table thead th {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-ink-400);
+  padding-top: 0;
+}
+.data-table tbody th { font-weight: 600; color: var(--color-ink-900); }
+.data-table td { color: var(--color-ink-600); }
+
+/* ============================================================================
  * FORM FIELDS — the enquiry forms
  * ========================================================================= */
 

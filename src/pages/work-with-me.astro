@@ -1,157 +1,167 @@
 ---
-// work-with-me.astro
+// work-with-me.astro — rebuild-plan §5.5, task 32.4. Four sections: head,
+// three ways in, the program (the page's one .panel-tint), enquire + FAQ.
+// Zero client JS (README rule 7): the rows link to #enquire and the select is
+// not preset (README departure 3).
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import JsonLd from '../components/JsonLd.astro';
-import { service, faqPage, breadcrumbs, person } from '../lib/schema';
+import ProgramSteps from '../components/ProgramSteps.astro';
+import TierTable from '../components/TierTable.astro';
+import { service, faqPage, webPage, breadcrumbs, person } from '../lib/schema';
 
-const workWithMeEntry = await getEntry('workWithMe', 'workWithMe');
-if (!workWithMeEntry) {
-  throw new Error('Work with me page singleton is missing. Run seed scripts first.');
+const entry = await getEntry('workWithMe', 'workWithMe');
+const programPage = await getEntry('programPage', 'program');
+if (!entry || !programPage) {
+  throw new Error('workWithMe or programPage singleton is missing.');
 }
-const { Content: IntroContent } = await render(workWithMeEntry);
+const { Content: Intro } = await render(entry);
+const { modes, faq } = entry.data;
+const program = programPage.data;
+const tiers = (await getCollection('program')).sort((a, b) => a.data.order - b.data.order);
 
-const services = await getCollection('services');
-const sortedServices = services.sort((a, b) => a.data.order - b.data.order);
-
-const faqItems = sortedServices.flatMap((s) => s.data.faq || []);
-
-const serviceSchemas = sortedServices.map((s) =>
-  service({ title: s.data.title, description: s.data.description })
-);
-const faqSchema = faqItems.length > 0 ? faqPage(faqItems) : null;
-const breadcrumbsSchema = breadcrumbs([
-  { name: 'Home', url: '/' },
-  { name: 'Work with me', url: '/work-with-me/' },
-]);
-
-const seoData = [
-  ...serviceSchemas,
-  ...(faqSchema ? [faqSchema] : []),
-  breadcrumbsSchema,
-// T30/A2. `person()` rides along so the `@id` this page references actually
-// resolves here. Google parses structured data per-document, so without it the
-// reference dangles and the page publishes an entity with no name.
-  person(),
-];
+const PROGRAM_URL = '/work-with-me/ai-resilient-organisation/';
+const AREA = 'Philippines';
 
 const description =
-  'How to work with me: product consultation, AI workshops, and fractional product ownership.';
+  'Work with Paul Fernandez on AI and service design in the Philippines: build it together, have it built for you, or get advice while you build. Enquire for a quote.';
 
 const steps = [
-  {
-    title: 'Discovery call',
-    body: '30 minutes, free. Map the problem, weigh options, and define success.',
-  },
-  {
-    title: 'Proposal',
-    body: 'A clear scope, fixed cost, and defined deliverables. You know exactly what you are buying before we start.',
-  },
-  {
-    title: 'Hands-on',
-    body: 'Working together directly — through advisory sessions, team workshops, or embedded product ownership.',
-  },
+  'A 20-minute scoping call.',
+  'A one-page proposal within two working days.',
+  'If it fits, we start.',
+];
+
+const interestOptions = [
+  'Not sure yet',
+  ...modes.map((m) => m.name),
+  ...tiers.map((t) => t.data.title),
+  'Something else',
+];
+
+const seoData = [
+  webPage({ url: '/work-with-me/', name: 'Work with me', description }),
+  ...modes.map((m) =>
+    service({
+      title: m.name,
+      description: m.line,
+      url: `/work-with-me/#${m.anchor}`,
+      areaServed: AREA,
+    })
+  ),
+  service({
+    title: 'AI-Resilient Organisation',
+    description: program.sub,
+    url: PROGRAM_URL,
+    areaServed: AREA,
+  }),
+  faqPage(faq),
+  breadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Work with me', url: '/work-with-me/' },
+  ]),
+  // One person() so the provider @id resolves in this document.
+  person(),
 ];
 ---
 
 <BaseLayout title="Work with me" description={description} ogImage="/og/work-with-me.png">
   <JsonLd data={seoData} slot="head" />
 
-  <section class="page-head">
-    <div class="shell">
-      <h1 class="display max-w-[14ch]">
-        Work with me
-      </h1>
-      <div class="prose mt-8 max-w-[54ch]">
-        <IntroContent />
+  <div class="shell">
+    {/* Head — opens the page; no rule. */}
+    <section class="section">
+      <h1 class="display">Work with me</h1>
+      <div class="prose intro mt-10">
+        <Intro />
       </div>
-      <div class="mt-10 flex flex-wrap gap-3">
-        <a href="#contact" class="btn btn-primary">Start a conversation</a>
-      </div>
-    </div>
-  </section>
-
-  <div class="shell pb-24 md:pb-32">
-    {/* Services — number on the left, name at h2 scale, copy on the right. */}
-    {sortedServices.length > 0 && (
-      <section aria-labelledby="services-heading">
-        <h2 id="services-heading" class="kicker">What I offer</h2>
-        <ul class="rows mt-8">
-          {sortedServices.map((s, i) => (
-            <li>
-              <div class="grid md:grid-cols-[1fr_1.3fr] gap-x-12 gap-y-5 py-10">
-                <div>
-                  <span class="mono-micro block mb-4">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <h3 class="m-0 text-h2 leading-[1.05]">{s.data.title}</h3>
-                </div>
-                <p class="m-0 subtext self-center">
-                  {s.data.description}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
-
-    {/* How it works */}
-    <section class="section" aria-labelledby="process-heading">
-      <h2 id="process-heading" class="kicker">How it works</h2>
-      {/* Phase 21: still three columns, but .card is now a hairline above the
-          block rather than a glass box around it — a ruled three-column spread
-          instead of a feature grid. */}
-      <ol class="mt-12 grid gap-x-8 gap-y-10 md:grid-cols-3 list-none m-0 p-0">
-        {steps.map((step, i) => (
-          <li class="card pt-5">
-            <span class="mono-micro">Step {String(i + 1).padStart(2, '0')}</span>
-            <h3 class="mt-5">{step.title}</h3>
-            <p class="mt-4 mb-0 subtext">{step.body}</p>
-          </li>
-        ))}
-      </ol>
     </section>
 
-    {/* FAQ */}
-    {faqItems.length > 0 && (
-      <section class="section-tight" aria-labelledby="faq-heading">
-        <h2 id="faq-heading" class="kicker">Questions</h2>
-        <div class="mt-8">
-          {faqItems.map((item) => (
-            <details class="faq">
-              <summary>
-                <span>{item.q}</span>
-                <span class="faq-mark" aria-hidden="true">+</span>
-              </summary>
-              <p>{item.a}</p>
-            </details>
-          ))}
+    {/* Three ways in — ruled rows, not cards. */}
+    <section class="section section-ruled" aria-labelledby="ways-heading">
+      <h2 id="ways-heading" class="kicker">Three ways in</h2>
+      <ul class="rows mt-8">
+        {modes.map((mode) => (
+          <li id={mode.anchor} class="mode">
+            <div>
+              <h3 class="m-0">{mode.name}</h3>
+              <p class="subtext mt-4 mb-0 max-w-[40ch]">{mode.line}</p>
+            </div>
+            <div>
+              <dl class="facts">
+                <div>
+                  <dt class="mono-micro">Who it's for</dt>
+                  <dd>{mode.whoFor}</dd>
+                </div>
+                <div>
+                  <dt class="mono-micro">How it runs</dt>
+                  <dd>{mode.runsAs}</dd>
+                </div>
+                <div>
+                  <dt class="mono-micro">Price</dt>
+                  <dd>{mode.priceSignal}</dd>
+                </div>
+              </dl>
+              <a href="#enquire" class="link-arrow mt-6">
+                Enquire about this<span class="sr-only">: {mode.name}</span>
+              </a>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p class="subtext mt-8 mb-0">I also do 1-on-1 sessions — ask.</p>
+    </section>
+
+    {/* The program — the page's only tinted block. */}
+    <section class="section section-ruled" aria-labelledby="program-heading">
+      <h2 id="program-heading" class="kicker">The program</h2>
+      <div class="panel-tint program mt-8">
+        <h3 class="program-name m-0">AI-Resilient Organisation</h3>
+        <p class="subtext mt-4 mb-0 max-w-[60ch]">{program.headline} {program.sub}</p>
+
+        <div class="mt-10">
+          <ProgramSteps steps={program.steps} />
         </div>
-      </section>
-    )}
 
-    {/* Contact */}
-    <section id="contact" class="section section-ruled" aria-labelledby="contact-heading">
-      <h2 id="contact-heading" class="kicker">Get in touch</h2>
+        <div class="mt-12">
+          <TierTable
+            id="wwm-tiers"
+            tiers={tiers}
+            caption="The five tiers of the AI-Resilient Organisation program"
+          />
+        </div>
 
-      <div class="mt-10 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <a href={PROGRAM_URL} class="link-arrow mt-8">See the program</a>
+      </div>
+    </section>
+
+    {/* Enquire — the header's "Book a scoping call" lands here. */}
+    <section id="enquire" class="section section-ruled" aria-labelledby="enquire-heading">
+      <h2 id="enquire-heading" class="kicker">Enquire</h2>
+
+      <div class="enquire mt-10">
         <div>
-          <p class="statement-sm max-w-[16ch]">
-            Tell me what you're trying to build.
+          <p class="statement-sm max-w-[16ch]">Tell me what you're working on.</p>
+          <p class="subtext mt-6 mb-0">
+            Or email me:
+            <a href="mailto:jpaul.fernandez18@gmail.com" class="link">jpaul.fernandez18@gmail.com</a>
           </p>
-          <p class="mt-8 mb-0 subtext">
-            Or skip the form —
-            <a href="mailto:jpaul.fernandez18@gmail.com" class="link">
-              jpaul.fernandez18@gmail.com
-            </a>
-          </p>
+
+          <h3 class="kicker mt-12">What happens next</h3>
+          <ol class="next mt-4">
+            {steps.map((s, i) => (
+              <li>
+                <span class="mono-micro" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ol>
         </div>
 
         <form
           action="https://api.web3forms.com/submit"
           method="POST"
-          class="panel p-6 md:p-8 flex flex-col gap-5"
+          class="panel form"
         >
           <input type="hidden" name="access_key" value="3adf4959-3a04-4fc5-a990-e1159605181f" />
           <input type="hidden" name="redirect" value="https://www.janpaulfernandez.com/thanks/" />
@@ -170,19 +180,83 @@ const steps = [
           </div>
 
           <div>
+            <label for="organisation" class="field-label">Organisation (optional)</label>
+            <input type="text" id="organisation" name="organisation" autocomplete="organization" class="field" />
+          </div>
+
+          <div>
+            <label for="interested_in" class="field-label">Interested in</label>
+            <select id="interested_in" name="interested_in" class="field">
+              {interestOptions.map((o) => <option value={o}>{o}</option>)}
+            </select>
+          </div>
+
+          <div>
             <label for="message" class="field-label">Message</label>
             <textarea id="message" name="message" required rows="5" class="field"></textarea>
           </div>
 
-          <button type="submit" class="btn btn-primary self-start">Send it →</button>
+          <button type="submit" class="btn btn-primary self-start">Send it</button>
         </form>
+      </div>
+
+      <h3 class="kicker mt-24" id="faq-heading">Questions</h3>
+      <div class="faq-list mt-4">
+        {faq.map((item) => (
+          <details class="faq">
+            <summary>
+              <span>{item.q}</span>
+              <span class="faq-mark" aria-hidden="true">+</span>
+            </summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
       </div>
     </section>
   </div>
 </BaseLayout>
 
 <style>
-  .page-head {
-    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  .intro { color: var(--color-ink-600); }
+
+  /* Mode rows: name and line left, the facts right; one hairline between. */
+  .mode {
+    display: grid;
+    gap: 1.5rem 3rem;
+    padding-block: var(--space-l);
+  }
+  .facts { display: grid; gap: 1rem; }
+  .facts dd { margin: 0.25rem 0 0; color: var(--color-ink-600); max-width: 52ch; }
+
+  .program-name {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-size: var(--text-h2);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .enquire { display: grid; gap: 3rem 4rem; }
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: var(--space-m);
+  }
+
+  .next { list-style: none; padding: 0; }
+  .next li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    align-items: baseline;
+    padding-block: 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .faq-list { max-width: 48rem; }
+
+  @media (min-width: 64rem) {
+    .mode { grid-template-columns: 1fr 1.2fr; }
+    .enquire { grid-template-columns: 0.9fr 1.1fr; align-items: start; }
   }
 </style>

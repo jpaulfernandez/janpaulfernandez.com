@@ -1,0 +1,72 @@
+---
+// The five-tier table of the AI-Resilient Organisation program, used on
+// /work-with-me/ and on the program overview. No price column (R5): the last
+// cell is an "Enquire" link. On Work with me it opens the tier page; on the
+// overview the tier title opens the tier page and "Enquire" goes to the form.
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  tiers: CollectionEntry<'program'>[];
+  /** Screen-reader caption; also names the scroll region. */
+  caption: string;
+  /** Unique on the page; the caption's id. */
+  id: string;
+  /** Link each tier title to its page. */
+  linkTitles?: boolean;
+  /** Where "Enquire" points. Omitted: the tier's own page. */
+  enquireHref?: string;
+}
+
+const { tiers, caption, id, linkTitles = false, enquireHref } = Astro.props;
+const tierUrl = (slug: string) => `/work-with-me/ai-resilient-organisation/${slug}/`;
+const captionId = `${id}-caption`;
+---
+
+<div class="table-wrap" role="region" aria-labelledby={captionId} tabindex="0">
+  <table class="data-table">
+    <caption id={captionId} class="sr-only">{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Tier</th>
+        <th scope="col">Promise</th>
+        <th scope="col">For</th>
+        <th scope="col">Duration</th>
+        <th scope="col"><span class="sr-only">Enquire</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {tiers.map((t) => (
+        <tr>
+          <th scope="row">
+            <span class="mono-micro block">{t.data.label}</span>
+            {linkTitles ? (
+              <a href={tierUrl(t.id)} class="tier-link">{t.data.title}</a>
+            ) : (
+              t.data.title
+            )}
+          </th>
+          <td>{t.data.tagline}</td>
+          <td>{t.data.audience}</td>
+          <td>{t.data.duration}</td>
+          <td>
+            <a href={enquireHref ?? tierUrl(t.id)} class="link">
+              Enquire<span class="sr-only"> about {t.data.title}</span>
+            </a>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .tier-link {
+    color: var(--color-ink-900);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--line);
+  }
+  .tier-link:hover { text-decoration-color: var(--color-ink-900); }
+  tbody th { min-width: 11rem; }
+</style>

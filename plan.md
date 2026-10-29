@@ -63,7 +63,8 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 ### Phase 33 — Projects · [phase file](docs/rebuild/phase-33-projects.md)
 
 - [x] (2026-10-29) 33.1 `src/lib/projects.ts` helpers, tests first (`astro check` deferred to 33.2 per the phase file: types need the new schema)
-- [ ] 33.2 Projects schema replaced; Oddhalls migrated to MDX
+- [x] (2026-10-29) 33.2 Projects schema replaced; Oddhalls migrated to MDX
+- [x] (2026-10-29) 33.2a Not in any task text: `description` became `summary`, so `index.astro`, `sitemap.astro`, `og/[...route].ts` and the old `projects/index.astro` were touched by one line each; thoughts body field in `keystatic.config.ts` extracted to a shared `articleBody()`
 - [ ] 33.3 Generic project page template
 - [ ] 33.4 Projects index with kind filter
 - [ ] 33.5 Seed entries

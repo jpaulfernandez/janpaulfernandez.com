@@ -155,16 +155,25 @@ const programPage = defineCollection({
   }),
 });
 
+// `year` is the year it shipped or was last worked on; `period` carries the range for display.
 const projects = defineCollection({
   loader: glob({
-    pattern: '*.json',
+    pattern: '*.{md,mdx}',
     base: 'src/content/projects',
   }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
+    kind: z.enum(['product', 'work', 'talk', 'side']),
     year: z.string(),
-    description: z.string(),
+    period: z.string().optional(),
+    role: z.string().optional(),
+    summary: z.string(),
+    metaDescription: z.string().optional(),
     link: z.string().optional(),
+    cover: image().optional(),
+    tags: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    order: z.number().optional(),
   }),
 });
 

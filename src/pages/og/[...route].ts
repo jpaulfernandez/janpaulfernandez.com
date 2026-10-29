@@ -81,7 +81,7 @@ const projectsList = await getProjects();
 projectsList.forEach((p) => {
   pagesObj[`projects-${p.id}`] = {
     title: p.data.title,
-    description: p.data.description,
+    description: p.data.metaDescription ?? p.data.summary,
   };
 });
 

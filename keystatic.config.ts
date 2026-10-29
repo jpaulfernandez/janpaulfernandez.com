@@ -1,6 +1,64 @@
 import { config, fields, collection, singleton } from '@keystatic/core';
 import { block, wrapper } from '@keystatic/core/content-components';
 
+// Shared by thoughts and projects: same toolbar, same four components.
+const articleBody = (assetDir: string) =>
+  fields.mdx({
+    label: 'Body',
+    options: {
+      bold: true,
+      italic: true,
+      heading: [2, 3, 4],
+      blockquote: true,
+      orderedList: true,
+      unorderedList: true,
+      table: true,
+      link: true,
+      divider: true,
+      codeBlock: true,
+      image: {
+        directory: `src/assets/${assetDir}`,
+        publicPath: `../../assets/${assetDir}`,
+      },
+    },
+    components: {
+      KeyTakeaway: wrapper({
+        label: 'Key Takeaway',
+        schema: {
+          content: fields.child({ kind: 'block', placeholder: 'Key takeaway text...' }),
+        },
+      }),
+      Callout: wrapper({
+        label: 'Callout',
+        schema: {
+          variant: fields.select({
+            label: 'Variant',
+            options: [
+              { label: 'Note', value: 'note' },
+              { label: 'Idea', value: 'idea' },
+              { label: 'Warning', value: 'warning' },
+            ],
+            defaultValue: 'note',
+          }),
+          content: fields.child({ kind: 'block', placeholder: 'Callout text...' }),
+        },
+      }),
+      PullQuote: wrapper({
+        label: 'Pull Quote',
+        schema: {
+          content: fields.child({ kind: 'block', placeholder: 'Pull quote text...' }),
+        },
+      }),
+      Embed: block({
+        label: 'Embed',
+        schema: {
+          url: fields.url({ label: 'Embed URL', validation: { isRequired: true } }),
+          title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+        },
+      }),
+    },
+  });
+
 export default config({
   storage: {
     kind: 'github',
@@ -94,61 +152,7 @@ export default config({
         publishedDate: fields.date({ label: 'Published Date', validation: { isRequired: true } }),
         updatedDate: fields.date({ label: 'Updated Date (Optional)' }),
         draft: fields.checkbox({ label: 'Draft', defaultValue: false }),
-        body: fields.mdx({
-          label: 'Body',
-          options: {
-            bold: true,
-            italic: true,
-            heading: [2, 3, 4],
-            blockquote: true,
-            orderedList: true,
-            unorderedList: true,
-            table: true,
-            link: true,
-            divider: true,
-            codeBlock: true,
-            image: {
-              directory: 'src/assets/thoughts',
-              publicPath: '../../assets/thoughts',
-            },
-          },
-          components: {
-            KeyTakeaway: wrapper({
-              label: 'Key Takeaway',
-              schema: {
-                content: fields.child({ kind: 'block', placeholder: 'Key takeaway text...' }),
-              },
-            }),
-            Callout: wrapper({
-              label: 'Callout',
-              schema: {
-                variant: fields.select({
-                  label: 'Variant',
-                  options: [
-                    { label: 'Note', value: 'note' },
-                    { label: 'Idea', value: 'idea' },
-                    { label: 'Warning', value: 'warning' },
-                  ],
-                  defaultValue: 'note',
-                }),
-                content: fields.child({ kind: 'block', placeholder: 'Callout text...' }),
-              },
-            }),
-            PullQuote: wrapper({
-              label: 'Pull Quote',
-              schema: {
-                content: fields.child({ kind: 'block', placeholder: 'Pull quote text...' }),
-              },
-            }),
-            Embed: block({
-              label: 'Embed',
-              schema: {
-                url: fields.url({ label: 'Embed URL', validation: { isRequired: true } }),
-                title: fields.text({ label: 'Title', validation: { isRequired: true } }),
-              },
-            }),
-          },
-        }),
+        body: articleBody('thoughts'),
       },
     }),
     program: collection({
@@ -194,13 +198,46 @@ export default config({
       label: 'Projects',
       slugField: 'slug',
       path: 'src/content/projects/*',
-      format: { data: 'json' },
+      format: { contentField: 'body' },
       schema: {
-        slug: fields.slug({ name: { label: 'Slug', description: 'Used for filename' } }),
+        slug: fields.slug({ name: { label: 'Slug', description: 'Used for filename and URL' } }),
         title: fields.text({ label: 'Title', validation: { isRequired: true } }),
-        year: fields.text({ label: 'Year', description: 'Display year, e.g. 2026', validation: { isRequired: true } }),
-        description: fields.text({ label: 'Description (one line)', validation: { isRequired: true } }),
+        kind: fields.select({
+          label: 'Kind',
+          options: [
+            { label: 'Product', value: 'product' },
+            { label: 'Work', value: 'work' },
+            { label: 'Talk', value: 'talk' },
+            { label: 'Side project', value: 'side' },
+          ],
+          defaultValue: 'product',
+        }),
+        year: fields.text({
+          label: 'Year',
+          description: 'The year it shipped or was last worked on, e.g. 2026. Groups the index.',
+          validation: { isRequired: true },
+        }),
+        period: fields.text({ label: 'Period (display only)', description: 'e.g. 2018–2023' }),
+        role: fields.text({ label: 'Role' }),
+        summary: fields.text({ label: 'Summary (one line)', validation: { isRequired: true } }),
+        metaDescription: fields.text({
+          label: 'Meta description (optional, 140–160 chars)',
+          description: 'SEO description for the case-study page. Falls back to the summary.',
+          multiline: true,
+        }),
         link: fields.url({ label: 'Link (optional external URL)', validation: { isRequired: false } }),
+        cover: fields.image({
+          label: 'Cover Image',
+          directory: 'src/assets/projects',
+          publicPath: '../../assets/projects',
+        }),
+        tags: fields.array(fields.text({ label: 'Tag' }), {
+          label: 'Tags',
+          itemLabel: (item) => item.value || 'Tag',
+        }),
+        featured: fields.checkbox({ label: 'Featured', defaultValue: false }),
+        order: fields.integer({ label: 'Order', description: 'Within a year, lowest first. Blank sorts last.' }),
+        body: articleBody('projects'),
       },
     }),
     gallery: collection({

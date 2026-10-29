@@ -155,25 +155,6 @@ const programPage = defineCollection({
   }),
 });
 
-const services = defineCollection({
-  loader: glob({
-    pattern: '*.json',
-    base: 'src/content/services',
-  }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    icon: z.string().optional(),
-    order: z.number(),
-    faq: z.array(
-      z.object({
-        q: z.string(),
-        a: z.string(),
-      })
-    ).optional(),
-  }),
-});
-
 const projects = defineCollection({
   loader: glob({
     pattern: '*.json',
@@ -184,49 +165,6 @@ const projects = defineCollection({
     year: z.string(),
     description: z.string(),
     link: z.string().optional(),
-  }),
-});
-
-const courses = defineCollection({
-  loader: glob({
-    pattern: '*.json',
-    base: 'src/content/courses',
-  }),
-  schema: z.object({
-    title: z.string(),
-    tagline: z.string(),
-    audiences: z.array(z.enum(['personal', 'business', 'org'])),
-    duration: z.string(),
-    formatLabel: z.string(),
-    whoFor: z.string(),
-    approach: z.string(),
-    approachNote: z.string(),
-    outcomes: z.array(z.string()),
-    outline: z.array(
-      z.object({
-        step: z.string(),
-        item: z.string(),
-      })
-    ),
-    formats: z.array(
-      z.object({
-        label: z.string(),
-        detail: z.string(),
-        price: z.string(),
-        priceNote: z.string().optional(),
-      })
-    ),
-    priceSignal: z.string(),
-    caveat: z.string().optional(),
-    faq: z
-      .array(
-        z.object({
-          q: z.string(),
-          a: z.string(),
-        })
-      )
-      .optional(),
-    order: z.number(),
   }),
 });
 
@@ -283,5 +221,5 @@ const gallery = defineCollection({
   }),
 });
 
-export const collections = { now, career, home, about, workWithMe, seo, thoughts, services, projects, gallery, courses, program, programPage };
+export const collections = { now, career, home, about, workWithMe, seo, thoughts, projects, gallery, program, programPage };
 

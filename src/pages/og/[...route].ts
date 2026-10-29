@@ -7,7 +7,6 @@ import { getProjects } from '../../lib/projects';
 // guessable /og/<slug>.png URLs, leaking unpublished titles and excerpts.
 const thoughts = await getPublishedThoughts();
 const gallerySets = await getCollection('gallery');
-const courses = await getCollection('courses');
 
 const pagesObj: Record<string, { title: string; description: string }> = {
   'home': {
@@ -22,13 +21,9 @@ const pagesObj: Record<string, { title: string; description: string }> = {
     title: 'Now',
     description: 'What I am working on, learning, and focused on right now.'
   },
-  'workshops': {
-    title: 'AI Workshop',
-    description: 'Workshops and talks for yourself or your organisation — run on the work you already have open.'
-  },
   'work-with-me': {
     title: 'Work With Me',
-    description: 'Consultation, workshops, and fractional product ownership.'
+    description: 'Three ways to work together, and the AI-Resilient Organisation program.'
   },
   'thoughts': {
     title: 'Writing',
@@ -48,7 +43,7 @@ const pagesObj: Record<string, { title: string; description: string }> = {
   },
   'sitemap': {
     title: 'Sitemap',
-    description: 'An overview of all pages, essays, projects, photo galleries, and workshops.'
+    description: 'An overview of all pages, essays, projects, and photo galleries.'
   }
 };
 
@@ -65,15 +60,6 @@ gallerySets.forEach((set) => {
   pagesObj[`gallery-${set.id}`] = {
     title: set.data.title,
     description: set.data.description ?? 'Photography by Paul Fernandez.'
-  };
-});
-
-// Each course page gets its own card, keyed workshops-<slug>, so a shared
-// /workshops/[slug] page never falls back to the generic site card.
-courses.forEach((c) => {
-  pagesObj[`workshops-${c.id}`] = {
-    title: c.data.title,
-    description: c.data.tagline
   };
 });
 

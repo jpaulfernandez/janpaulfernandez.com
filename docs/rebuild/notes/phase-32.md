@@ -150,3 +150,32 @@ Course markup. Tests were written first and failed 3/3 before the change.
   `₱`/`PHP `, banned-word grep clean over `dist/client/work-with-me`. axe 0
   violations on `/work-with-me/`, the overview and all five tiers. Viewed at
   1280 and 375; no horizontal page scroll.
+
+## 32.6 Retire workshops
+
+- Deleted: `src/pages/workshops.astro`, `src/pages/workshops/[slug].astro`,
+  `src/lib/workshops.ts` + test, `src/content/courses`, `src/content/services`;
+  `course()` / `CourseInput` and its test; the `courses` and `services`
+  collections in both `keystatic.config.ts` and `src/content.config.ts`.
+  `global.css` had no class used only by the deleted pages (checked class by class),
+  so nothing to remove there.
+- **Redirects** (`astro.config.mjs`; `/workshop` retargeted, no chains):
+  `/workshop`, `/workshops/` -> `/work-with-me/ai-resilient-organisation/`;
+  `/workshops/ai-fluency/` -> `.../fluency/`; `/workshops/leadership-ai/` ->
+  `.../leadership-day/`; `/workshops/ai-for-business/` -> `/work-with-me/#advise`;
+  `/workshops/vibe-coding/` -> `/work-with-me/`. Built config emits slash-less
+  sources behind the adapter's 308 trailing-slash rule; live check is Blocked
+  (needs a preview).
+- **Outside the task text (plan.md 32.6a):**
+  - `index.astro`: workshop block rewritten as a short "The program" section
+    (no cards, no peso, no availability), hero button -> program, "What I do" now
+    lists the three Work with me modes (read from the `workWithMe` singleton, not
+    static copy). Home rewrite stays 34.2.
+  - `thanks.astro`: "mid-workshop" -> "mid-session".
+  - `schema.ts`: Person description "teaches AI workshops" -> "teaches AI to
+    organisations"; `knowsAbout` comments re-pointed. `llms.txt.ts` About line the same.
+  - `sitemap.astro`: workshop block and nav entry removed (needed for the build);
+    program entries come in 32.7. `og/[...route].ts`: courses loop and `workshops`
+    card removed, `work-with-me` description rewritten (cards in 32.7).
+  - `contentLastmod()` never read `courses`/`services`; only a stale comment removed.
+- Frozen thought `jack-and-the-snack-culture.mdx` untouched; rule 2 diff empty.

@@ -7,7 +7,6 @@ import { person, webSite, breadcrumbs } from '../lib/schema';
 import { getPublishedThoughts } from '../lib/thoughts';
 import { getProjects } from '../lib/projects';
 import { formatDate } from '../lib/dates';
-import { availability } from '../lib/workshops';
 
 const homeEntry = await getEntry('home', 'home');
 if (!homeEntry) {
@@ -60,9 +59,9 @@ const latestNowEntries = [...(await getCollection('now'))]
 const latestThoughts = (await getPublishedThoughts()).slice(0, 4);
 const latestProjects = (await getProjects()).slice(0, 3);
 
-const services = (await getCollection('services')).sort(
-  (a, b) => a.data.order - b.data.order
-);
+// Phase 32.6 minimum repair: "What I do" reads the three Work with me modes
+// (the old `services` collection is gone). Home's real rewrite is Phase 34.
+const modes = (await getEntry('workWithMe', 'workWithMe'))?.data.modes ?? [];
 
 // A contact sheet for the gallery teaser. Frames are interleaved across sets
 // so the row never shows the same concert twice in a row.
@@ -84,7 +83,7 @@ const stripShots = gallerySets
 const photoCount = gallerySets.reduce((n, set) => n + set.data.photos.length, 0);
 
 // No ProfilePage here — this page is a hub (now-feed, recent writing,
-// workshops teaser), not a profile. That node lives on /about/, which is the
+// program teaser), not a profile. That node lives on /about/, which is the
 // case Google's docs actually name. Emitting it from both pages made two
 // documents claim to be the ProfilePage for the same URL.
 const seoData = [
@@ -122,9 +121,9 @@ const seoData = [
             getting everyone to agree on what the words mean.
           </p>
 
-          {/* Hero actions: Featured workshop CTA distinction */}
+          {/* Hero actions: the program is the featured offer */}
           <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
-            <a href="/workshops/" class="btn btn-primary">See the AI Workshop →</a>
+            <a href="/work-with-me/ai-resilient-organisation/" class="btn btn-primary">See the program →</a>
             <a href="/thoughts/" class="link-arrow">Read the writing</a>
             <a href="/work-with-me/" class="link-arrow">Work with me</a>
           </div>
@@ -161,88 +160,26 @@ const seoData = [
   </section>
 
   {/* ---------------------------------------------------------------------
-      WORKSHOPS. Featured offering highlighted directly under the hero.
-      Two-audience hairline split: for you & business owners, or your org.
+      PROGRAM. Minimum repair in 32.6 (the old stack is retired, and no
+      prices are published). Home's real rewrite is Phase 34.2.
      --------------------------------------------------------------------- */}
-  <section class="section section-ruled" aria-labelledby="workshops-heading">
+  <section class="section section-ruled" aria-labelledby="program-heading">
     <div class="shell">
       <div class="flex items-end justify-between gap-6">
-        <h2 id="workshops-heading" class="kicker flex-1">Featured workshop</h2>
-        <a href="/workshops/" class="link-arrow shrink-0">All sessions &amp; pricing</a>
+        <h2 id="program-heading" class="kicker flex-1">The program</h2>
+        <a href="/work-with-me/ai-resilient-organisation/" class="link-arrow shrink-0">All five tiers</a>
       </div>
 
-      <div class="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-        <div>
-          <p class="statement-sm max-w-[22ch]">
-            Getting lost in all the AI noise?
-          </p>
-          <p class="mt-4 mb-0 subtext max-w-[48ch]">
-            A workshop that puts you to work on your own real tasks with AI — one-on-one, in a small group, or with your whole team.
-          </p>
-        </div>
-        <div class="border-t border-[var(--line)] pt-6 lg:border-t-0 lg:pt-0">
-          <p class="mono-micro text-ink-400">Open schedule</p>
-          <p class="mt-2 text-small text-ink-900 font-medium">{availability.window}</p>
-          <p class="mt-1 mb-0 subtext max-w-[44ch]">
-            {availability.note}
-          </p>
-        </div>
-      </div>
-
-      {/* Scannable dual-track cards with hairline border */}
-      <div class="mt-12 grid gap-8 md:grid-cols-2">
-        <div class="card pt-6 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between gap-4 mb-4">
-              <span class="mono-micro">01 · For you &amp; business owners</span>
-              <span class="mono">From ₱2,500</span>
-            </div>
-            <h3 class="text-h3 m-0">Personal</h3>
-            <p class="mt-3 subtext">
-              1-on-1 or a small group you bring — an interactive workshop on the work you actually do.
-            </p>
-            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-ink-600 list-none p-0">
-              <li class="flex items-center gap-2">
-                <span class="text-ink-400">↳</span> Understand how AI works, and how to spot fakes online
-              </li>
-              <li class="flex items-center gap-2">
-                <span class="text-ink-400">↳</span> Explore where AI realistically fits in your business
-              </li>
-              <li class="flex items-center gap-2">
-                <span class="text-ink-400">↳</span> Vibe coding &amp; web basics — build your own idea, shipped live
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="card pt-6 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between gap-4 mb-4">
-              <span class="mono-micro">02 · For your organisation</span>
-              <span class="mono">Message to quote</span>
-            </div>
-            <h3 class="text-h3 m-0">Enterprise / Org</h3>
-            <p class="mt-3 subtext">
-              Your people are already using AI tools. Where's the line, and how do you keep the company safe from misuse?
-            </p>
-            <ul class="mt-6 space-y-2 border-t border-[var(--line)] pt-4 text-ink-600 list-none p-0">
-              <li class="flex items-center gap-2">
-                <span class="text-ink-400">↳</span> Leadership AI training + the policy-making exercise
-              </li>
-              <li class="flex items-center gap-2">
-                <span class="text-ink-400">↳</span> AI fluency for the whole team, to one standard
-              </li>
-              <li class="flex items-center gap-2">
-                <span class="text-ink-400">↳</span> Something specific to a department, or a speaker slot
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <p class="statement-sm mt-10 max-w-[22ch]">
+        Getting lost in all the AI noise?
+      </p>
+      <p class="mt-4 mb-0 subtext max-w-[52ch]">
+        AI-Resilient Organisation is a five-tier program for Philippine organisations whose people are already using AI tools: from an anonymous readiness survey to a hands-on agent sprint.
+      </p>
 
       <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-        <a href="/workshops/" class="btn btn-primary">Explore the AI workshop →</a>
-        <a href="/workshops/#enquire" class="link-arrow">Talk to me</a>
+        <a href="/work-with-me/ai-resilient-organisation/" class="btn btn-primary">Explore the program →</a>
+        <a href="/work-with-me/#enquire" class="link-arrow">Talk to me</a>
       </div>
     </div>
   </section>
@@ -322,7 +259,7 @@ const seoData = [
       same ruled list the writing and the projects use — three things I do,
       in one column, in the site's own index pattern.
      --------------------------------------------------------------------- */}
-  {services.length > 0 && (
+  {modes.length > 0 && (
     <section class="section section-ruled" aria-labelledby="services-heading">
       <div class="shell">
         <div class="flex items-end justify-between gap-6">
@@ -335,12 +272,12 @@ const seoData = [
         </p>
 
         <ul class="rows mt-8">
-          {services.map((service) => (
+          {modes.map((mode) => (
             <li>
               <div class="py-6 md:py-8">
-                <h3 class="m-0">{service.data.title}</h3>
+                <h3 class="m-0">{mode.name}</h3>
                 <p class="mt-3 mb-0 subtext max-w-[60ch]">
-                  {service.data.description}
+                  {mode.line}
                 </p>
               </div>
             </li>

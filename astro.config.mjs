@@ -61,9 +61,6 @@ function contentLastmod() {
   // /now/ is a dated journal, so its freshness is the newest entry's date —
   // a real, content-owned signal, same as the thoughts above. The individual
   // entries have no URLs of their own; they all live on this one page.
-  // `courses` is deliberately NOT read here: the collection carries no date
-  // field, and inventing one would be exactly the build-timestamp signal this
-  // function exists to avoid.
   for (const file of readdirSync('src/content/now').filter((f) => /\.mdx?$/.test(f))) {
     const src = readFileSync(`src/content/now/${file}`, 'utf-8');
     bump('/now/', field(src, 'date'));
@@ -88,8 +85,14 @@ export default defineConfig({
   // it rather than serve a second 200 at a URL the page tells Google to ignore.
   trailingSlash: 'always',
   redirects: {
-    '/workshop': '/workshops/',
     '/sitemap.xml': '/sitemap-index.xml',
+    // Retired /workshops/* stack (Phase 32.6). Every target is final: no chains.
+    '/workshop': '/work-with-me/ai-resilient-organisation/',
+    '/workshops/': '/work-with-me/ai-resilient-organisation/',
+    '/workshops/ai-fluency/': '/work-with-me/ai-resilient-organisation/fluency/',
+    '/workshops/leadership-ai/': '/work-with-me/ai-resilient-organisation/leadership-day/',
+    '/workshops/ai-for-business/': '/work-with-me/#advise',
+    '/workshops/vibe-coding/': '/work-with-me/',
   },
   adapter: vercel(),
   security: {

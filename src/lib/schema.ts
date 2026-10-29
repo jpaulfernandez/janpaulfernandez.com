@@ -38,11 +38,11 @@ const PERSON_DESCRIPTION =
   'transformation and tech operations at Rappler — running election-night ' +
   'results through the 2019 and 2022 national votes — and is now IT Manager ' +
   'at Mapúa Malayan Digital College. He writes about technology, economics ' +
-  'and psychology, and teaches AI workshops.';
+  'and psychology, and teaches AI to organisations.';
 
 /**
  * Every entry here is provable from content already on this site — the career
- * collection, the workshop pages, or the essays. An unsupported knowsAbout
+ * collection, the program pages, or the essays. An unsupported knowsAbout
  * claim is worse than no claim, so nothing goes in this list that a crawler
  * cannot corroborate on the page it came from.
  *
@@ -56,9 +56,9 @@ const PERSON_KNOWS_ABOUT = [
   'Knowledge graphs and ontology',  // career/rappler.md — CMS migration
   'Digital transformation',         // home.json, Rappler
   'Financial technology',           // career/psbank.md — account opening
-  'AI literacy',                    // /workshops/ai-fluency/ + the explainers
-  'AI governance and policy',       // /workshops/leadership-ai/ policy exercise
-  'Product discovery',              // /work-with-me/, services collection
+  'AI literacy',                    // /work-with-me/ai-resilient-organisation/fluency/ + the explainers
+  'AI governance and policy',       // .../leadership-day/ policy exercise
+  'Product discovery',              // /work-with-me/
   'Requirements elicitation',       // home.json — standing between the two sides
   'IT infrastructure management',   // career/mmdc.md
 ];
@@ -268,30 +268,6 @@ export function service(s: ServiceInput) {
     description: s.description,
     ...(s.url ? { url: abs(s.url) } : {}),
     ...(s.areaServed ? { areaServed: s.areaServed } : {}),
-    provider: {
-      '@id': PERSON_ID,
-    },
-  };
-}
-
-export interface CourseInput {
-  title: string;
-  description: string;
-  /** Site-relative canonical path, e.g. `/workshops/ai-fluency/`. */
-  url: string;
-}
-
-/**
- * Course schema for the per-course workshop pages. Provider is Paul (the one
- * @id every graph keys on) — there is no separate teaching organisation.
- */
-export function course(c: CourseInput) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Course',
-    name: c.title,
-    description: c.description,
-    url: abs(c.url),
     provider: {
       '@id': PERSON_ID,
     },

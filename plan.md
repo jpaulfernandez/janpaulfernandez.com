@@ -23,6 +23,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - **Cloudflare Images migration for the gallery (not started — needs credentials).** `src/assets/gallery` is 68 MB; `.git` is 310 MB. Blocked on a Cloudflare account ID + API token. Out of scope for the rebuild.
 - **Before the program is announced (not before it is merged):** BIR registration and official receipts before the first corporate invoice; written MMDC employer clearance covering outside work and public use of title and history.
 - **Phase 32 copy review (32.2).** Confirm the founding-offer terms text; confirm the facilitator proof points (the MMDC "former IT Manager" and Master's lines from the program spec were left out because `about.md` contradicts them: TODO(Paul)); review the six Work-with-me FAQ answers and the mode copy (drafted, not authored by Paul). See `docs/rebuild/notes/phase-32.md`.
+- **Phase 32 live checks (need a Vercel preview, README rule 9).** (a) Web3Forms test submission on `/work-with-me/` lands on `/thanks/` — sends one email to Paul, tell him first (32.4). (b) The seven old URLs (`/workshop`, `/workshops`, `/workshops/`, `/workshops/ai-fluency/`, `/workshops/leadership-ai/`, `/workshops/ai-for-business/`, `/workshops/vibe-coding/`) each return one-hop 301 to the target in `astro.config.mjs`, `#advise` surviving. The built `.vercel/output/config.json` matches the table, but its sources are slash-less (`^/workshops/ai-fluency$`) and sit behind the adapter's no-slash-to-slash 308 rule, so Vercel may need an extra entry per slash form if a hop is added (32.8).
 - **Wikidata item** (Phase 30 B2): create it and add the Q-ID to `sameAs`. Off-site, no code.
 - Phase 31 visual review (31.9 last box / Phase 31 DoD) — main is local-only, nothing pushed; review on a preview before pushing.
 - **GitHub profile URL for the footer (31.8).** No profile URL exists in the repo; the footer omits GitHub until Paul confirms `https://github.com/jpaulfernandez` (one line in `elsewhere` in `BaseLayout.astro`).
@@ -51,9 +52,10 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 32.1 Schemas: `program` collection + singleton, `workWithMe.modes[]`
 - [x] (2026-10-29) 32.2 Program copy entered from doc 09 / doc 07
 - [x] (2026-10-29) 32.3 Service + FAQPage structured data
-- [x] (2026-10-29) 32.4 `/work-with-me/` rewrite
+- [x] (2026-10-29) 32.4 `/work-with-me/` rewrite (Web3Forms live test pending — see Blocked)
 - [x] (2026-10-29) 32.5 Program overview + tier pages
-- [ ] 32.6 Retire `/workshops` (courses, services, redirects)
+- [x] (2026-10-29) 32.6 Retire `/workshops` (courses, services, redirects)
+- [x] (2026-10-29) 32.6a Not in any task text: Home minimum repair (workshops block, `services` read and peso figures out; points at the program), `thanks.astro` "mid-workshop" wording, Person description "teaches AI workshops" (`schema.ts`), `llms.txt` About line. Home's real rewrite stays 34.2
 - [ ] 32.7 llms.txt, HTML sitemap, OG, meta descriptions
 - [ ] 32.8 Verify
 - [ ] **Phase 32 Definition of Done**

@@ -6,9 +6,6 @@ export const GET: APIRoute = async ({ site }) => {
   const siteUrl = site ? site.origin : 'https://www.janpaulfernandez.com';
 
   // Fetch collections
-  const services = await getCollection('services');
-  const sortedServices = [...services].sort((a, b) => a.data.order - b.data.order);
-
   const thoughts = await getPublishedThoughts();
   const recentThoughts = thoughts.slice(0, 10);
 
@@ -20,20 +17,16 @@ export const GET: APIRoute = async ({ site }) => {
 > Technologist in the Philippines. Ran tech operations at Rappler through two national elections, built banking software at PSBank, and is now IT manager at MMDC. Helps teams figure out what to build.
 
 ## About Paul Fernandez
-Paul Fernandez is a technologist in the Philippines. He turns vague business goals into specs a development team can build from. He ran tech operations at Rappler through the 2019 and 2022 Philippine elections, built account-opening software at PSBank, and is now IT manager at Mapúa Malayan Digital College. He writes about technology, money, and psychology, and runs AI workshops for teams in Manila and remotely.
-
-## Core Services & Ways to Work Together
-${sortedServices.map(s => `- **${s.data.title}**: ${s.data.description}`).join('\n')}
+Paul Fernandez is a technologist in the Philippines. He turns vague business goals into specs a development team can build from. He ran tech operations at Rappler through the 2019 and 2022 Philippine elections, built account-opening software at PSBank, and is now IT manager at Mapúa Malayan Digital College. He writes about technology, money, and psychology, and teaches AI to organisations in Manila and remotely.
 
 ## Site Navigation & Main Pages
-- [Home](${siteUrl}/): Overview, services, and recent writings.
+- [Home](${siteUrl}/): Overview and recent writings.
 - [About](${siteUrl}/about/): Comprehensive background, philosophy, and career history.
 - [Writing](${siteUrl}/thoughts/): Essays and notes on technology, economics, and psychology.
 - [Now](${siteUrl}/now/): Public journal and timeline of what Paul is currently focused on, building, and learning.
 - [Gallery](${siteUrl}/gallery/): Concert and live music photography in Manila.
-- [Workshops](${siteUrl}/workshops/): AI workshops — booked 1-on-1 or as a small private group you bring (from ₱2,500), or in-house for an organisation (message to quote). Course pages: AI fluency & media literacy, AI for business, vibe coding with web basics, and leadership AI training + policy exercise. Scope boundaries and the inquiry form.
 - [Projects](${siteUrl}/projects/): Things Paul has built, shipped, and tinkered with, including Oddhalls.
-- [Work With Me](${siteUrl}/work-with-me/): Booking information, consultation packages, and direct contact form.
+- [Work With Me](${siteUrl}/work-with-me/): Three ways to work together, the AI-Resilient Organisation program, and the enquiry form.
 
 ## Recent Thoughts & Articles
 ${recentThoughts.map(t => `- [${t.data.title}](${siteUrl}/thoughts/${t.id}/): ${t.data.excerpt || ''}`).join('\n')}

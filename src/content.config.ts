@@ -59,7 +59,100 @@ const workWithMe = defineCollection({
     base: 'src/content/pages',
     generateId: () => 'workWithMe',
   }),
-  schema: z.object({}),
+  schema: z.object({
+    modes: z.array(
+      z.object({
+        name: z.string(),
+        line: z.string(),
+        whoFor: z.string(),
+        runsAs: z.string(),
+        priceSignal: z.string(),
+        anchor: z.string(),
+      })
+    ),
+    faq: z.array(
+      z.object({
+        q: z.string(),
+        a: z.string(),
+      })
+    ),
+  }),
+});
+
+// One JSON per tier of the AI-Resilient Organisation program. The file slug is
+// the tier id (pulse, leadership-day, fluency, champions, agent-sprint).
+// No price field of any kind: the program is "Enquire" only (rebuild-plan R5).
+const program = defineCollection({
+  loader: glob({
+    pattern: '*.json',
+    base: 'src/content/program',
+  }),
+  schema: z.object({
+    label: z.string(),
+    title: z.string(),
+    tagline: z.string(),
+    audience: z.string(),
+    duration: z.string(),
+    leavesWith: z.array(z.string()),
+    problem: z.string(),
+    happens: z.array(z.string()),
+    outcomes: z.string(),
+    artefacts: z.array(z.string()),
+    faq: z.array(
+      z.object({
+        q: z.string(),
+        a: z.string(),
+      })
+    ),
+    order: z.number(),
+  }),
+});
+
+// Program overview copy. Named `programPage` because `program` is the tiers.
+const programPage = defineCollection({
+  loader: glob({
+    pattern: 'program.json',
+    base: 'src/content/pages',
+  }),
+  schema: z.object({
+    headline: z.string(),
+    sub: z.string(),
+    promise: z.string(),
+    stats: z.array(
+      z.object({
+        figure: z.string(),
+        claim: z.string(),
+        sponsor: z.string(),
+        sourceUrl: z.string().url(),
+      })
+    ),
+    steps: z.array(
+      z.object({
+        name: z.string(),
+        line: z.string(),
+      })
+    ),
+    proofPoints: z.array(
+      z.object({
+        label: z.string(),
+        text: z.string(),
+      })
+    ),
+    addOns: z.array(z.string()),
+    bundles: z.array(
+      z.object({
+        name: z.string(),
+        contents: z.string(),
+        whoFor: z.string(),
+        tiers: z.array(z.string()),
+      })
+    ),
+    foundingHeading: z.string(),
+    foundingIntro: z.string(),
+    foundingDiscount: z.string(),
+    foundingGive: z.array(z.string()),
+    foundingTerms: z.array(z.string()),
+  }),
 });
 
 const services = defineCollection({
@@ -190,5 +283,5 @@ const gallery = defineCollection({
   }),
 });
 
-export const collections = { now, career, home, about, workWithMe, seo, thoughts, services, projects, gallery, courses };
+export const collections = { now, career, home, about, workWithMe, seo, thoughts, services, projects, gallery, courses, program, programPage };
 

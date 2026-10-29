@@ -47,7 +47,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 
 ### Phase 32 — Work with me + program · [phase file](docs/rebuild/phase-32-work-with-me-program.md)
 
-- [ ] 32.1 Schemas: `program` collection + singleton, `workWithMe.modes[]`
+- [x] (2026-10-29) 32.1 Schemas: `program` collection + singleton, `workWithMe.modes[]`
 - [ ] 32.2 Program copy entered from doc 09 / doc 07
 - [ ] 32.3 Service + FAQPage structured data
 - [ ] 32.4 `/work-with-me/` rewrite

@@ -1,1 +1,5 @@
+---
+modes: []
+faq: []
+---
 I help organizations figure out what to build and get it built right — without hiring me to write the code. With experience spanning banking systems, newsroom platforms, and digital education, I offer digital transformation consulting, workshops and talks, and fractional product ownership: I translate your requirements into something a dev team can run with, and speak their language on your behalf.

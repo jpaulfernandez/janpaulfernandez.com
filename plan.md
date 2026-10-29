@@ -90,7 +90,7 @@ Carried forward from the archived tracker on 2026-10-29; items the rebuild makes
 - [x] (2026-10-29) 35.1 `libraryOrder()`, tests first; masonry packer removed
 - [x] (2026-10-29) 35.2 Gallery schema: `photos[].date`, dead fields deleted
 - [x] (2026-10-29) 35.3 Library grid
-- [ ] 35.4 Density control (buttons, wheel, keys, pinch)
+- [x] (2026-10-29) 35.4 Density control (buttons, wheel, keys, pinch)
 - [ ] 35.5 Viewer with pinch-zoom
 - [ ] 35.6 Set pages re-skin
 - [ ] 35.7 Verify (Paul: real iPhone + Android)

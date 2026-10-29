@@ -56,6 +56,26 @@ const seoData = [
         <p class="mono-micro">
           {library.length} photographs · {sets.length} sets
         </p>
+        {/* Hidden until .js: without the script the grid sits at 6 / 3. */}
+        <div class="density" role="group" aria-label="Photos per row">
+          <button
+            type="button"
+            id="density-out"
+            class="density-btn"
+            aria-label="Zoom out: more photos per row"
+            aria-keyshortcuts="-"
+            title="Zoom out (−)"
+          >−</button>
+          <span id="density-level" class="density-level mono" aria-live="polite"></span>
+          <button
+            type="button"
+            id="density-in"
+            class="density-btn"
+            aria-label="Zoom in: fewer photos per row"
+            aria-keyshortcuts="="
+            title="Zoom in (=)"
+          >+</button>
+        </div>
       </div>
     </div>
   </section>
@@ -121,6 +141,11 @@ const seoData = [
   <Lightbox />
 </BaseLayout>
 
+<script>
+  import { initDensity } from '../../scripts/gallery';
+  initDensity(document.getElementById('library'));
+</script>
+
 <style>
   .page-head {
     padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(2rem, 1.5rem + 2vw, 3rem);
@@ -133,6 +158,40 @@ const seoData = [
     justify-content: space-between;
     gap: 1rem;
     flex-wrap: wrap;
+  }
+
+  /* The density control: real buttons, hairline, no fill. Absent with JS
+   * off (the .js contract), so a no-JS visitor never sees dead controls. */
+  .density { display: none; }
+  :global(.js) .density {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .density-btn {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    line-height: 1;
+    color: var(--color-ink-900);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .density-btn:hover { border-color: var(--color-ink-400); }
+  .density-btn:disabled {
+    color: var(--color-ink-400);
+    border-color: var(--line);
+    cursor: default;
+  }
+  .density-level {
+    min-width: 7.5em;
+    text-align: center;
   }
 
   /* The library. `--cols` is the only thing gallery.ts changes. touch-action

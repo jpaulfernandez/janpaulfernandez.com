@@ -2,7 +2,7 @@
 
 ## 36.1
 - Phase-file drift (scout, confirmed): KeyTakeaway was already blue-100 + red-700 label with no gradient; only the stale "wine" comment, the 0.18em tracking and the missing 3px red-500 left rule changed. Embed already had `bg-paper-100`; only the border moved from `--line` to the explicit `blue-200` utility (same colour).
-- PullQuote: italic was **not** loaded (global.css imports only `fraunces/opsz.css`), so the browser was synthesising one and the block rendered `font-style: normal` anyway. Now `font-style: italic` + `import '@fontsource-variable/fraunces/opsz-italic.css'` in PullQuote's frontmatter (opsz-italic, not the phase's `wght-italic`, to match the opsz axis of the roman). Not preloaded. Verified in the pane: one `Fraunces Variable` italic face `loaded`, computed `italic`. Rule is now `border-left: 2px solid blue-200` (was a 1px `::before`).
+- PullQuote: italic was **not** loaded (global.css imports only `fraunces/opsz.css`), so the browser was synthesising one and the block rendered `font-style: normal` anyway. Now `font-style: italic` + an italic import in PullQuote's frontmatter, not preloaded. 36.1 first used `opsz-italic.css` (81 KB latin, matches the roman's opsz axis); 36.3 switched to the phase file's `wght-italic.css` (46 KB) after Lighthouse showed the italic, which every article with a pull quote requests at load, costing ~0.3 s of simulated mobile LCP. Verified in the pane: one `Fraunces Variable` italic face `loaded`, computed `italic`. Rule is now `border-left: 2px solid blue-200` (was a 1px `::before`).
 - Callout: idea rule `ink-600` (was ink-900, label now ink-400 like note), warning rule `red-500` (was red-700), label `red-700` unchanged; tracking 0.14em; body explicitly ink-900. Variant prop and labels unchanged.
 - ArticleLayout: `.prose` max-width is lifted in the layout's scoped style and `p, ul, ol, blockquote, h2, h3, h4` children get `--measure` (38rem). Other `.prose` users (About, Now, Work with me, projects, Timeline) are untouched. Extra rule beyond the phase: Markdown wraps each diagram in a bare `<p>`, so `p:has(> img)` gets `max-width: none` — without it the five diagrams in `a-quick-map-on-large-language-models` stayed at 608px. At 1280: text 608px (38rem), table and diagrams 848px (the 58rem container), KeyTakeaway/Callout full container.
 - Cover: `<figure class="shell">`, `widths={[800,1200,1600]}`, `sizes="(min-width: 84rem) 80rem, 100vw"`, eager + `fetchpriority="high"`, no border/radius. 1200px wide at 1280 (shell edge to edge).
@@ -21,3 +21,25 @@
 - HTML sitemap: sections reordered to Pages, Program, Projects, Thoughts, Topics, Photo sets (+ Feeds); "Writing" → "Thoughts", "Core Pages" → "Pages", "AI-Resilient Organisation" → "Program", "Photo Galleries" → "Photo sets"; `subtext text-sm/text-xs` → `subtext` (reading copy at body size). Counts read from the collections: 9 pages, 5 tiers, 1 case study, 6 thoughts, 9 topics, 4 sets.
 - Outside the listed files (logged in plan.md): global `.rail-item:first-child::before` red-500 removed — only About's career Timeline uses `.rail` (Now draws its own `.tl` rail and keeps its red dot), so it was a stray red fill flagged by Phase 34.
 - Checked, not changed: `/work-with-me/` FAQ `.faq-mark` does rotate to × when open (computed `matrix(0.707…)`); the "stays +" report was likely read mid-transition. It still animates (0.3s rotate); the TOC lost its rotate in 36.1, so Paul may want the FAQ to match.
+
+## 36.3 (local only — not ticked)
+Built site served with `npx serve dist/client -l 4400`, `npx lighthouse@12.8.2` (Chrome 156, headless=new, default simulated throttling), mobile = default preset, desktop = `--preset=desktop`. Reports: `$SCRATCHPAD/lh/u{1..5}-{mobile,desktop}.report.{json,html}` (session scratchpad, not in the repo).
+
+| URL | Mobile P / A / BP / SEO | Desktop P / A / BP / SEO |
+|---|---|---|
+| `/` | **87** / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/work-with-me/` | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/work-with-me/ai-resilient-organisation/` | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/thoughts/if-ai-takes-all-the-jobs-what-do-we-actually-do/` | **93** / 100 / 100 / 100 (median of 3, after the italic fix) | 100 / 100 / 100 / 100 |
+| `/gallery/` | 95 / 100 / 100 / 100 (median of 3: 94, 95, 95) | 100 / 100 / 100 / 100 |
+
+CLS is 0 on every run, so the metric-matched fallback `@font-face` remedy is not needed. TBT ≤ 30 ms everywhere. Every miss is mobile LCP under Lantern's simulated 1.6 Mbps link, where everything requested before the observed LCP shares the bandwidth.
+
+- **`/` mobile 87 — cause: GA4.** LCP element is the portrait (41 KB, eager, `fetchpriority="high"`, sized `sizes` — already right). With `googletagmanager.com` + `google-analytics.com` blocked: **99**, LCP 4.1 s → 2.3 s. The gtag script is 177 KB and its evaluation (153 ms observed, ×4 simulated) is the largest main-thread item. Per R8 the tag stays; Paul's decision. Delta: −12 points.
+- **Article mobile 93 — cause: early bytes on a cover page.** LCP element is the cover (800w, 90 KB, eager, `fetchpriority="high"`). Fix applied: PullQuote italic → `wght-italic` (−36 KB; 92–93 → 93 stable). Diagnosed but not applied: (a) the eight Markdown body images ship one 1600w file each with no `srcset` (02 alone is 178 KB) and three of them start loading at ~27 ms because Chrome's lazy-load margin reaches them; a copy of the page without them scores 95. Setting `image: { layout: 'constrained' }` in `astro.config.mjs` gives every Markdown image a `srcset` (mobile picks 750w: 178 → 61 KB) and measured **94**; it was reverted because it rewrites every `<Image>` on the site (adds `srcset`, inline `--fit/--pos` style and `data-astro-image` to the gallery, PostListItem covers, portrait, logos — new hashes for all) and is a site-wide decision outside 36.3's "no files unless a score fails, fix only the cause". An MDX `img` override component is the narrower alternative. (b) Blocking GA4 did not move this page (91–93, noise). Thought content stays frozen either way.
+- `/gallery/` mobile sits on the line (94–95): LCP is the `p.lead` text; the eager first rows of thumbnails share the link. Not changed.
+- These are local `serve` numbers (HTTP/1.1, no Vercel headers). The phase records the **Vercel preview** numbers; there is no preview because this work stays local on `main` (no push). 36.3 stays unticked until the preview run and the GA4 call.
+
+axe (`@axe-core/cli` 4.14 via npx, chromedriver 156.0.8078.73): 0 violations on `/thoughts/what-is-a-token-anyway/`, `/thoughts/if-ai-takes-all-the-jobs-what-do-we-actually-do/`, `/thoughts/`, `/topics/ai/`, `/404.html`, `/sitemap/`, `/about/`, `/thanks/`, `/colophon/`.
+
+JS: articles ship only the 45 B `.js` class script + gtag + JSON-LD (0 KB module JS); `/thoughts/` filter inline module 984 B / 492 B gzip.

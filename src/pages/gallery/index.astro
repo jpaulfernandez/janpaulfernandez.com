@@ -1,103 +1,32 @@
 ---
-// index.astro (Gallery index — one flat wall of photographs)
+// index.astro (Gallery index — one date-sorted library of every photograph)
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { lightboxWidth } from '../../lib/gallery';
+import { libraryOrder, lightboxWidth } from '../../lib/gallery';
 import { collectionPage, breadcrumbs } from '../../lib/schema';
 
-const sets = (await getCollection('gallery')).sort(
-  (a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
+const collection = await getCollection('gallery');
+const sets = [...collection].sort((a, b) =>
+  a.data.publishedDate < b.data.publishedDate ? 1 : a.data.publishedDate > b.data.publishedDate ? -1 : 0
 );
 
-type Shot = {
-  /** Stable per-photo key — `${set.id}:${src}` — seeds the width hash. */
-  key: string;
-  image: ImageMetadata;
-  /** Right-sized source for the lightbox — the originals are ~1.5 MB each. */
-  fullSrc: string;
-  /** Empty unless the photo carries its own caption — the lightbox's set link
-   *  already says where it came from, so the set title is not repeated here. */
-  caption: string;
-  setTitle: string;
-  setId: string;
-  /** Position in [0,1) used to spread each set evenly across the wall. */
-  spread: number;
-  /** Column bucket and width chosen by the build-time masonry packer. */
-  column: number;
-  widthFactor: number;
-};
-
-// Flatten every set into a single list of photographs. The cover is usually
-// also the first photo, so dedupe on the resolved asset path.
-const shots: Shot[] = [];
-sets.forEach((set) => {
-  const seen = new Set<string>();
-  const own: Shot[] = [];
-
-  const add = (image: ImageMetadata | undefined, caption: string) => {
-    if (!image || seen.has(image.src)) return;
-    seen.add(image.src);
-    own.push({
-      key: `${set.id}:${image.src}`,
-      image,
-      fullSrc: '',
-      caption,
-      setTitle: set.data.title,
-      setId: set.id,
-      spread: 0,
-      column: 0,
-      widthFactor: 1,
-    });
-  };
-
-  // The cover is normally also photos[0], which add() then dedupes away — so it
-  // has to inherit that entry's caption rather than come through blank.
-  const captionFor = (image: ImageMetadata) =>
-    set.data.photos.find((p) => p.image === image)?.caption || '';
-
-  if (set.data.cover) add(set.data.cover, captionFor(set.data.cover));
-  set.data.photos.forEach((p) => add(p.image, p.caption || ''));
-
-  // Evenly distribute this set's photos across the full 0–1 range, so a
-  // 50-shot set and a 12-shot set both run the length of the wall instead of
-  // sitting as two solid blocks.
-  own.forEach((shot, i) => {
-    shot.spread = (i + 0.5) / own.length;
-  });
-  shots.push(...own);
-});
-
-// Stable interleave: sets stay in reverse-chronological order on ties, so the
-// output is identical on every build.
-shots.sort((a, b) => a.spread - b.spread);
-
-// Build-time masonry: deterministic pseudo-random widths + shortest-column
-// packing, so the wall reads as a scatter of sizes, not a 3-col grid. (88 of
-// the 95 shots are the same 4:3 crop — equal-width columns can't break the
-// grid.) The browser just flexes the three columns that come out of here.
-// TEMP (35.1): masonryLayout is gone; 35.3 rewrites this page. Round-robin columns.
-shots.forEach((shot, i) => {
-  shot.column = i % 3;
-  shot.widthFactor = 1;
-});
-const wallColumns = [0, 1, 2].map((c) => shots.filter((s) => s.column === c));
-
-// Lightbox sources: 1600px on the long edge, which is plenty for a full-screen
-// view and roughly a tenth of the original file.
-await Promise.all(
-  shots.map(async (shot) => {
-    shot.fullSrc = (await getImage({ src: shot.image, width: lightboxWidth(shot.image) })).src;
-  })
+// Every photo of every set, newest first, cover deduped (src/lib/gallery.ts).
+// Each gets a 1600px viewer source — the originals are ~1.5 MB each.
+const library = await Promise.all(
+  libraryOrder(collection).map(async (photo) => ({
+    ...photo,
+    fullSrc: (await getImage({ src: photo.image, width: lightboxWidth(photo.image) })).src,
+  }))
 );
 
 const description =
   'Concert and live-music photography by Paul Fernandez — Wanderland, BINI, HONNE, '
   + 'Daniel Caesar and other nights in Manila. Shot from the pit and the crowd.';
 
-// The wall itself is 95 loose frames; the sets are what a crawler can name and
+// The library is 95 loose frames; the sets are what a crawler can name and
 // link to, so the ItemList indexes the sets rather than every photograph.
 const seoData = [
   collectionPage({
@@ -123,76 +52,50 @@ const seoData = [
         Concerts, festivals, places — shot from
         wherever I could get.
       </p>
-      <p class="mono-micro mt-6">
-        {shots.length} photographs · {sets.length} sets
-      </p>
+      <div class="head-row mt-6">
+        <p class="mono-micro">
+          {library.length} photographs · {sets.length} sets
+        </p>
+      </div>
     </div>
   </section>
 
+  {/* One grid. With JS off every thumbnail is a plain link to its set page;
+      gallery.ts turns the click into the viewer. Square crop is CSS only. */}
+  <div class="shell">
+    <div class="library" id="library">
+      {library.map((photo, index) => {
+        const alt = photo.caption || photo.setTitle;
+        return (
+          <a
+            href={`/gallery/${photo.setSlug}/`}
+            class="photo-trigger"
+            data-src={photo.fullSrc}
+            data-alt={alt}
+            data-caption={photo.caption}
+            data-href={`/gallery/${photo.setSlug}/`}
+            data-href-label={`${photo.setTitle} →`}
+            aria-label={`View larger: ${alt}`}
+          >
+            <Image
+              src={photo.image}
+              alt={alt}
+              width={720}
+              widths={[160, 320, 480, 720]}
+              sizes="(min-width: 48rem) 17vw, 34vw"
+              class="library-img"
+              decoding="async"
+              loading={index < 12 ? 'eager' : 'lazy'}
+            />
+          </a>
+        );
+      })}
+    </div>
+  </div>
+
+  {/* The sets still exist as their own pages — reachable from here and from
+      the viewer, without grouping the library itself. */}
   <div class="shell pb-24 md:pb-32">
-    {shots.length > 0 && (
-      <>
-        {/* Mobile: the original 2-column flow — at 375px the tidy grid reads
-            as intentional, and the packed wall is too fine below 640px. */}
-        <div class="wall wall-mobile sm:hidden">
-          {shots.map((shot, idx) => (
-            <a
-              href={shot.fullSrc}
-              class="photo-trigger wall-item"
-              data-src={shot.fullSrc}
-              data-alt={shot.caption || shot.setTitle}
-              data-caption={shot.caption}
-              data-href={`/gallery/${shot.setId}/`}
-              data-href-label={`${shot.setTitle} →`}
-              aria-label={`View larger: ${shot.caption || shot.setTitle}`}
-            >
-              <Image
-                src={shot.image}
-                alt={shot.caption || shot.setTitle}
-                class="wall-img"
-                width={560}
-                loading={idx < 6 ? 'eager' : 'lazy'}
-                decoding="async"
-              />
-            </a>
-          ))}
-        </div>
-
-        {/* Desktop: the build-time masonry — width varies per shot, columns
-            are packed to similar height, so the wall reads as a scatter. */}
-        <div class="wall wall-masonry hidden sm:flex">
-          {wallColumns.map((column) => (
-            <div class="wall-col">
-              {column.map((shot, idx) => (
-                <a
-                  href={shot.fullSrc}
-                  class="photo-trigger wall-item"
-                  style={`width: ${shot.widthFactor * 100}%`}
-                  data-src={shot.fullSrc}
-                  data-alt={shot.caption || shot.setTitle}
-                  data-caption={shot.caption}
-                  data-href={`/gallery/${shot.setId}/`}
-                  data-href-label={`${shot.setTitle} →`}
-                  aria-label={`View larger: ${shot.caption || shot.setTitle}`}
-                >
-                  <Image
-                    src={shot.image}
-                    alt={shot.caption || shot.setTitle}
-                    class="wall-img"
-                    width={560}
-                    loading={idx < 6 ? 'eager' : 'lazy'}
-                    decoding="async"
-                  />
-                </a>
-              ))}
-            </div>
-          ))}
-        </div>
-      </>
-    )}
-
-    {/* The sets still exist as their own pages — reachable from here and from
-        the lightbox, without grouping the wall itself. */}
     {sets.length > 0 && (
       <section class="section-tight" aria-labelledby="sets-heading">
         <h2 id="sets-heading" class="kicker">Sets</h2>
@@ -220,71 +123,50 @@ const seoData = [
 
 <style>
   .page-head {
-    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+    padding-block: clamp(8rem, 6rem + 8vw, 12rem) clamp(2rem, 1.5rem + 2vw, 3rem);
   }
 
-  /* Mobile wall (hidden ≥640px): the original CSS-columns flow. 2-column at
-   * 375px reads as an intentional grid, and the packed masonry is too fine
-   * below 640px to matter. */
-  .wall-mobile {
-    columns: 2;
-    column-gap: 0.75rem;
-  }
-
-  /* Desktop wall (shown ≥640px): the three buckets produced by the build-time
-   * packer in masonryLayout(). Display must come from `hidden sm:flex` — an
-   * unlayered rule here would beat the Tailwind utility and leak the wall
-   * onto mobile. */
-  .wall-masonry {
-    gap: 0.75rem;
-    align-items: flex-start;
-  }
-  .wall-col {
-    flex: 1 1 0;
-    min-width: 0;
+  /* Counter left, density control (35.4) right, one row. */
+  .head-row {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
-  /* An <a> now, not a <button>: the href is the full-size image, so the wall
-     still works with JS off. These reset the anchor back to a bare frame. */
-  .wall-item {
+  /* The library. `--cols` is the only thing gallery.ts changes. touch-action
+   * hands two-finger gestures over the grid to the density pinch; page zoom
+   * stays available everywhere else and the viewer has its own zoom. */
+  .library {
+    --cols: 3;
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    gap: 2px;
+    touch-action: pan-x pan-y;
+  }
+  @media (min-width: 48rem) {
+    .library { --cols: 6; }
+  }
+
+  .photo-trigger {
     display: block;
-    text-decoration: none;
-    color: inherit;
-    width: 100%;
-    margin: 0 0 0.75rem;
-    padding: 0;
-    border: 0;
-    border-radius: var(--radius-sm);
     background: var(--color-paper-100);
     cursor: zoom-in;
-    overflow: hidden;
-    break-inside: avoid;
-    /* Chromium still splits an unbroken block across columns without this. */
-    -webkit-column-break-inside: avoid;
   }
-  /* In the flex layout the column gap owns the spacing; both rules for a
-     uniform margin-zero there. Width per shot is set inline by the packer. */
-  .wall-masonry .wall-item { margin: 0; }
+  .photo-trigger:focus-visible {
+    outline: 2px solid var(--color-red-700);
+    outline-offset: 2px;
+    border-radius: 0;
+    position: relative;
+    z-index: 1;
+  }
 
-  .wall-img {
+  .library-img {
     display: block;
     width: 100%;
     height: auto;
-    /* The wall is 95 concert frames — every one of them saturated stage
-     * lighting. Held at 70% they read as one surface; the hovered frame is
-     * the only one at full colour, which is what points the cursor. */
-    filter: grayscale(0.7) brightness(0.85);
-    transition: filter 0.4s var(--ease-out-quint);
-  }
-  .wall-item:hover .wall-img,
-  .wall-item:focus-visible .wall-img {
-    filter: grayscale(0) brightness(1);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .wall-img { filter: none; }
+    aspect-ratio: 1;
+    object-fit: cover;
   }
 </style>

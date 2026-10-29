@@ -52,3 +52,15 @@ Logged in plan.md "Blocked-on-Paul": seed-list confirmation, Rappler year, Anakl
 - `llms.txt`: the Projects line now links the index with one indented bullet per `hasPage` project (Oddhalls). `llms-full.txt.ts` has no projects reference; unchanged.
 - HTML sitemap: only `hasPage` projects, count reads "1 case study".
 - `astro.config.mjs` `contentLastmod()` read, not changed: it has no `/projects/` entries.
+
+## 33.7 Verification (2026-10-29, built `dist/client` served with `npx serve -l 4400`, stopped afterwards)
+- Gates: `npm run build`, `npx astro check` (0 errors), `npm test` (63 passed) green.
+- Rows: `data-kind` product 1, side 1, work 5 = 7; years 2026 / 2023 / 2022 / 2019 / 2018; one `h1`; no "Talks" chip, no AIM entry.
+- Filter (browser, JS on): All 7 rows and 5 years; Products 1 (2026 only); Side projects 1 (2026 only); Work 5 (all five years); All restores; status text updates ("Showing 5 projects"). JS off (`js` class removed): 7 rows visible, filter bar `display: none`. No horizontal scroll at the pane width. Keyboard and 375px passes were done in 33.4 and the row markup did not change.
+- JS budget: `/projects/` has one module script, 593 B raw, 345 B gzip (inlined, no `/_astro/*.js`), plus the `.js` class script and GA4. `/projects/oddhalls/`: no module script and no `/_astro/*.js`; only the `.js` script, GA4 and JSON-LD.
+- Axe (`@axe-core/cli` 4.14.0, chromedriver 156): 0 violations on `/projects/` and `/projects/oddhalls/`. Only Oddhalls has a project page, so there are no other project pages to test.
+- Files: `ls dist/client/projects` is `index.html oddhalls`; the only `og/projects-*.png` is `projects-oddhalls.png`.
+- JSON-LD: see 33.6. `llms.txt` and the HTML sitemap list Oddhalls only.
+- Oddhalls parity vs `oddhalls-before.txt`: 55 of 63 before-sentences match verbatim; the other 8 are the `<title>`, head noise (preload comment, GA4 snippet), and text that is joined differently (Visit/Explore buttons, the five figure captions where label and text are now one paragraph, per 33.2). No sentence changed or missing. Same six images (cull, design, develop-hero, develop, photobook-phone, reel webp).
+- Greps: `wine-|text-paper-N|bg-ink-N` and `data-reveal|data-hero|gsap` in `src/pages/projects` → nothing. `[slug].astro` has no Oddhalls copy or `assets/projects` imports. Rule 2 diff (`v2-final` vs about/now/thoughts) is empty. `grep "₱\|PHP " dist/client` → nothing. `oddhalls.json` is gone.
+- Phase 33 DoD box left unticked: the seed list, the Rappler year (placeholder 2023), the Anakloud role and the Oddhalls `<title>` change are all pending Paul (plan.md Blocked-on-Paul). Phase 34 can start from the code side: `recentProjects(all, 3)` is unchanged and returns Oddhalls, Anakloud, Eyelicium (orders 1-3, all 2026); only Oddhalls has a page, Eyelicium has an external link, Anakloud is inert.
